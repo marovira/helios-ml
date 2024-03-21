@@ -6,7 +6,7 @@ import typing
 T = typing.TypeVar("T")
 
 
-def get_from_optional(opt_var: typing.Optional[T], raise_on_empty: bool = False) -> T:
+def get_from_optional(opt_var: T | None, raise_on_empty: bool = False) -> T:
     """
     Given a variable whose type is Optional[T], assert that the variable is not None and
     return it without the Optional type.
