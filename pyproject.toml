@@ -19,9 +19,10 @@ dynamic = ["version", "readme"]
 
 [project.optional-dependencies]
 dev = [
-    "black==24.2.0",
+    #"black==24.2.0",
     "mypy==1.8.0",
-    "pylint==3.1.0",
+    "ruff==0.3.4",
+    #"pylint==3.1.0",
     "pytest==8.1.1",
     "pre-commit==3.6.2",
     "types-Pillow==10.2.0.20240311"
@@ -44,6 +45,20 @@ Issues = "https://github.com/marovira/pyro-ml/issues"
 
 [tool.mypy]
 warn_unused_configs = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 90
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["E", "F", "UP", "B", "SIM", "I"]
+
+fixable = ["I"]
+unfixable = []
+
+[tool.ruff.format]
+line-ending = "lf"
 
 [tool.pytest.ini_options]
 testpaths = "test"
