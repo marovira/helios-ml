@@ -1,5 +1,3 @@
-import typing
-
 import numpy.typing as npt
 import torch
 import torchvision.transforms.v2 as T
@@ -10,9 +8,7 @@ from pyro import core
 TRANSFORM_REGISTRY = core.Registry("transform")
 
 
-def create_transform(
-    type_name: str, args: dict[str, typing.Any] | None = None
-) -> nn.Module:
+def create_transform(type_name: str, **kwargs) -> nn.Module:
     """
     Create a transform of the given type.
 
@@ -21,15 +17,12 @@ def create_transform(
 
     Args:
         type_name (str): the type of the transform to create.
-        args (dict[str, Any] | None): optional dictionary of arguments for the transform.
+        kwargs: any arguments you wish to pass into the transform.
 
     Returns:
         nn.Module: the constructed transform.
     """
-    if args is None:
-        args = {}
-
-    return TRANSFORM_REGISTRY.get(type_name)(**args)
+    return TRANSFORM_REGISTRY.get(type_name)(**kwargs)
 
 
 @TRANSFORM_REGISTRY.register

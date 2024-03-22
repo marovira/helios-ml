@@ -12,7 +12,7 @@ from pyro import core
 DATASET_REGISTRY = core.Registry("dataset")
 
 
-def create_dataset(type_name: str, args: dict[str, typing.Any] | None = None):
+def create_dataset(type_name: str, **kwargs):
     """
     Create a dataset of the given type.
 
@@ -21,15 +21,12 @@ def create_dataset(type_name: str, args: dict[str, typing.Any] | None = None):
 
     Args:
         type_name (str): the type of the dataset to create.
-        args (dict[str, Any] | None): optional dictionary of arguments for the dataset.
+        kwargs: any arguments you wish to pass into the dataset.
 
     Returns:
         nn.Module: the constructed transform.
     """
-    if args is None:
-        args = {}
-
-    return DATASET_REGISTRY.get(type_name)(**args)
+    return DATASET_REGISTRY.get(type_name)(**kwargs)
 
 
 class DatasetSplit(enum.Enum):
