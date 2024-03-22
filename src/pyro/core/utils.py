@@ -40,6 +40,35 @@ def get_from_optional(opt_var: T | None, raise_on_empty: bool = False) -> T:
     return opt_var
 
 
+def convert_to_list(var: T | list[T]) -> list[T]:
+    """
+    Convert the input into a list if it's not one already.
+
+    This is a utility that replaces the following pattern:
+        ```py
+        def some_fun(x: int | list[int]) -> None:
+            if isinance(x, list):
+                x = [x]
+            for elem in x:
+                ...
+
+            # The above code an be replaced with this:
+            for elem in convert_to_list(x):
+                ...
+        ```
+
+    Args:
+        var (T : list[T]): an object that can be either a single object or a list.
+
+    Returns:
+        list[T]: if the input was a list, no operation is done. Otherwise, the object is
+        converted to a list and returned.
+    """
+    if isinstance(var, list):
+        return var
+    return [var]
+
+
 class ChdirContext:
     """
     Allow switching between the current working directory and another within a scope.

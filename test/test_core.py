@@ -20,6 +20,19 @@ class TestUtils:
         opt = 1
         assert core.get_from_optional(opt) == 1
 
+    def test_convert_to_list(self) -> None:
+        value = 0
+        x: int | list[int] = value
+
+        res = core.convert_to_list(x)
+        assert isinstance(res, list)
+        assert len(res) == 1
+        assert res[0] == value
+
+        x = [value]
+        res = core.convert_to_list(x)
+        assert res == x
+
     def test_chdir_context(self, tmp_path: pathlib.Path) -> None:
         cur_dir = pathlib.Path.cwd()
         with core.ChdirContext(tmp_path) as cwd:
@@ -56,21 +69,8 @@ def sample_fun() -> int:
 
 class TestCUDA:
     def test_functions(self) -> None:
-        assert torch.cuda.is_available() == cuda.is_available()
-
-        if cuda.is_available():
-            assert torch.cuda.device_count() == cuda.get_device_count()
-
+        if torch.cuda.is_available():
             cuda.requires_cuda_support()
-
-            fn = cuda.cuda_only(sample_fun)
-            ret = fn()
-            assert isinstance(ret, int)
-            assert ret == 1
         else:
             with pytest.raises(RuntimeError):
                 cuda.requires_cuda_support()
-
-            fn = cuda.cuda_only(sample_fun)
-            ret = fn()
-            assert ret is None

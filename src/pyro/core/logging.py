@@ -7,8 +7,7 @@ import numpy.typing as npt
 import torch
 import torch.utils.tensorboard as tb
 
-from pyro.core import cuda
-from pyro.core import distributed as dist
+from .distributed import get_rank
 
 
 class FileLogger:
@@ -24,11 +23,11 @@ class FileLogger:
     def __init__(self, log_file: pathlib.Path):
         """Create the file logger with the given log file."""
         self._logger = logging.getLogger("pyro")
+        self._rank = get_rank()
+
         format_str = "[%(asctime)s] [%(levelname)s]: %(message)s"
 
-        rank = dist.get_rank() if cuda.is_available() else 0
-
-        if rank != 0:
+        if self._rank != 0:
             self._logger.setLevel(logging.ERROR)
         else:
             self._logger.setLevel(logging.INFO)
@@ -37,7 +36,6 @@ class FileLogger:
         file_handler.setFormatter(logging.Formatter(format_str))
         self._logger.addHandler(file_handler)
 
-    @dist.main_only
     def info(self, msg: str) -> None:
         """
         Log using the INFO tag.
@@ -47,6 +45,9 @@ class FileLogger:
         Args:
             msg (str): the message to log
         """
+        if self._rank != 0:
+            return
+
         self._logger.info(msg)
 
     def warning(self, msg: str) -> None:
@@ -91,12 +92,12 @@ class TensorboardWriter:
         run_path: pathlib.Path,
     ):
         """Create the Tensorboard writer."""
-        rank = dist.get_rank() if cuda.is_available() else 0
+        rank = get_rank()
+        self._writer: tb.SummaryWriter | None = None
 
         if rank == 0:
             self._writer = tb.SummaryWriter(log_dir=str(run_path), flush_secs=20)
 
-    @dist.main_only
     def add_scalar(
         self, tag: str, scalar_value: float | str, global_step: int | None = None
     ) -> None:
@@ -108,9 +109,11 @@ class TensorboardWriter:
             scalar_value (float | str): the scalar to plot.
             global_step (int | None): the step for the given scalar.
         """
+        if self._writer is None:
+            return
+
         self._writer.add_scalar(tag, scalar_value, global_step, new_style=True)
 
-    @dist.main_only
     def add_scalars(
         self, main_tag: str, tag_scalar_dict: dict[str, float], global_step: int | None
     ) -> None:
@@ -123,9 +126,11 @@ class TensorboardWriter:
             corresponding values.
             global_step (int | None): global step value to record.
         """
+        if self._writer is None:
+            return
+
         self._writer.add_scalars(main_tag, tag_scalar_dict, global_step)
 
-    @dist.main_only
     def add_image(
         self,
         tag: str,
@@ -143,9 +148,11 @@ class TensorboardWriter:
             dataformats (str): image data format specification in the form CHW, HWC, HW,
             WH, etc.
         """
+        if self._writer is None:
+            return
+
         self._writer.add_image(tag, img_tensor, global_step, dataformats=dataformats)
 
-    @dist.main_only
     def add_images(
         self,
         tag: str,
@@ -163,9 +170,11 @@ class TensorboardWriter:
             dataformats (str): image data format specification in the form NCHW, NHWC,
             CHW, HWC, HW, WH, etc.
         """
+        if self._writer is None:
+            return
+
         self._writer.add_images(tag, img_tensor, global_step, dataformats=dataformats)
 
-    @dist.main_only
     def add_text(self, tag: str, text_string: str, global_step: int | None = None):
         """
         Add text data to log.
@@ -175,9 +184,11 @@ class TensorboardWriter:
             text_string (str): string to save.
             global_step (int): global step value to record.
         """
+        if self._writer is None:
+            return
+
         self._writer.add_text(tag, text_string, global_step)
 
-    @dist.main_only
     def add_graph(
         self,
         model: torch.nn.Module,
@@ -196,9 +207,11 @@ class TensorboardWriter:
             use_strict_trace (bool): whether to pass keyword argument strict to
             torch.jit.trace.
         """
+        if self._writer is None:
+            return
+
         self._writer.add_graph(model, input_to_model, verbose, use_strict_trace)
 
-    @dist.main_only
     def add_pr_curve(
         self,
         tag: str,
@@ -225,9 +238,11 @@ class TensorboardWriter:
             global_step (Optional[int]): global step value to record.
             num_thresholds (int): number of thresholds used to draw the curve.
         """
+        if self._writer is None:
+            return
+
         self._writer.add_pr_curve(tag, labels, predictions, global_step, num_thresholds)
 
-    @dist.main_only
     def add_hparams(
         self,
         hparam_dict: dict[str, typing.Any],
@@ -251,18 +266,25 @@ class TensorboardWriter:
             run_name (str): name of the run, to be included as part of the logdir.
             global_step (Optional[int]): global step value to record.
         """
+        if self._writer is None:
+            return
+
         self._writer.add_hparams(
             hparam_dict, metric_dict, hparam_domain_discrete, run_name, global_step
         )
 
-    @dist.main_only
     def flush(self) -> None:
         """Flush any cached values to Tensorboard."""
+        if self._writer is None:
+            return
+
         self._writer.flush()
 
-    @dist.main_only
     def close(self) -> None:
         """Close the Tensorboard writer."""
+        if self._writer is None:
+            return
+
         self._writer.close()
 
 

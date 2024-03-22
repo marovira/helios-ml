@@ -1,62 +1,9 @@
-import functools
 import os
-import typing
 
 import torch
 import torch.distributed as dist
 
-from pyro.core import cuda
 
-
-def main_only(func: typing.Callable) -> typing.Callable:
-    """
-    Mark functions that should only run on the main process.
-
-    For distributed training, the main process is associated with the process whose rank
-    is 0.
-
-    Args:
-        func (Callable): the function to mark
-
-    Returns:
-        Callable: the marked function.
-    """
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        if not cuda.is_available():
-            return func(*args, **kwargs)
-
-        rank = get_rank()
-        if rank == 0:
-            return func(*args, **kwargs)
-        return None
-
-    return wrapper
-
-
-@cuda.cuda_only
-def dist_only(func: typing.Callable) -> typing.Callable:
-    """
-    Mark functions that should only run when torch.distributed is available.
-
-    Args:
-        func (Callable): the function to mark
-
-    Returns:
-        Callable: the marked function.
-    """
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        if dist.is_available():
-            return func(*args, **kwargs)
-        return None
-
-    return wrapper
-
-
-@dist_only
 def init_dist(rank: int, world_size: int, backend: str = "nccl") -> None:
     """
     Initialize the distributed process group.
@@ -72,13 +19,11 @@ def init_dist(rank: int, world_size: int, backend: str = "nccl") -> None:
     dist.init_process_group(backend, rank=rank, world_size=world_size)
 
 
-@dist_only
 def shutdown_dist() -> None:
     """Shutdown the distributed process group."""
     dist.destroy_process_group()
 
 
-@dist_only
 def get_dist_info() -> tuple[int, int]:
     """
     Get the rank and world size of the current distributed run.
@@ -99,7 +44,6 @@ def get_dist_info() -> tuple[int, int]:
     return rank, world_size
 
 
-@dist_only
 def get_rank() -> int:
     """
     Get the rank of the device the process is running on.
@@ -112,7 +56,6 @@ def get_rank() -> int:
     return get_dist_info()[0]
 
 
-@dist_only
 def gather_into_tensor(tensor: torch.Tensor, size: tuple[int]) -> torch.Tensor:
     """
     Gathers the tensors across all processes and merges them into a single tensor.
@@ -133,7 +76,6 @@ def gather_into_tensor(tensor: torch.Tensor, size: tuple[int]) -> torch.Tensor:
     return out
 
 
-@dist_only
 def all_reduce_tensors(
     tensor: torch.Tensor | list[torch.Tensor], **kwargs
 ) -> torch.Tensor:
