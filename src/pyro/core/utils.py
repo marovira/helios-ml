@@ -8,9 +8,23 @@ T = typing.TypeVar("T")
 
 def get_from_optional(opt_var: T | None, raise_on_empty: bool = False) -> T:
     """
-    Given a variable whose type is Optional[T], assert that the variable is not None and
-    return it without the Optional type.
-    Note: the raise_on_empty is intended for testing only.
+    Ensure the given variable is not None and return it.
+
+    This is useful when dealing with variables that can be None at declaration but are set
+    elsewhere. In those instances, Mypy is unable to determine that the variable was set,
+    so it will issue a warning. The workaround is to add asserts, but that can get tedious
+    very quickly. This function can be used as an alternative.
+    Ex:
+        ```py
+        var: int | None = None
+        # ... Set var to a valid value some place else.
+
+        assert var is not None
+        v = var
+
+        # Alternatively:
+        v = core.get_from_optional(var)
+        ```
 
     Args:
         opt_var (Optional[T]): the optional variable.
@@ -28,39 +42,58 @@ def get_from_optional(opt_var: T | None, raise_on_empty: bool = False) -> T:
 
 class ChdirContext:
     """
-    Context manager that allows easy switching between the current working directory
-    (usually the invocation directory of the script) and a new path. Upon entering, the
-    current directory will be switched to the new path and the previous working directory
-    returned. Upon exiting, the original working directory will be restored.
+    Allow switching between the current working directory and another within a scope.
+
+    The intention is to facilitate temporary switches of the current working directory
+    (such as when attempting to resolve relative paths) by creating a context in which the
+    working directory is automatically switched to a new one. Upon exiting of the context,
+    the original working directory is restored.
 
     Ex:
+        ```py
         os.chdir(".")   # <- Starting working directory
         with ChdirContext("/new/path") as prev_cwd:
             # prev_cwd is the starting working directory
             Path.cwd() # <- This is /new/path now
             ...
         Path.cwd() # <- Back to the starting working directory.
+        ```
 
     Args:
         target_path (pathlib.Path): the path to switch to.
     """
 
     def __init__(self, target_path: pathlib.Path):
+        """
+        Create the context manager with the given path.
+
+        Args:
+            target_path (pathlib.Path): the path to switch to.
+        """
         self.start_path = pathlib.Path.cwd()
         self.target_path = target_path
 
     def __enter__(self) -> pathlib.Path:
+        """
+        Perform the switch from the current working directory to the new one.
+
+        Returns:
+            pathlib.Path: the previous working directory.
+        """
         os.chdir(self.target_path)
         return self.start_path
 
     def __exit__(self, exc_type, exc_value, exc_traceback) -> None:
+        """Restores the previous working directory."""
         os.chdir(self.start_path)
 
 
 class AverageTimer:
     """
-    Timer with moving average determined by a sliding window.
-    Used to determine the average time between splits.
+    Compute elapsed times using moving average.
+
+    The timer will determine the elapsed time between a series of points using a sliding
+    window moving average.
 
     Args:
         sliding_window (int): the number of steps of which the moving average will be
@@ -68,6 +101,13 @@ class AverageTimer:
     """
 
     def __init__(self, sliding_window: int = 200):
+        """
+        Create the timer with the given sliding window.
+
+        Args:
+            sliding_window (int): the number of steps of which the moving average will be
+            computed.
+        """
         self._sliding_window = sliding_window
 
         self._time_sum: float = 0
@@ -76,15 +116,11 @@ class AverageTimer:
         self.start()
 
     def start(self) -> None:
-        """
-        Starts the timer.
-        """
+        """Start the timer."""
         self._current_time = time.time()
 
     def record(self) -> None:
-        """
-        Records a new step in the timer.
-        """
+        """Record a new step in the timer."""
         self._step_count += 1
         self._time_sum += time.time() - self._current_time
 
@@ -95,7 +131,5 @@ class AverageTimer:
         self._current_time = time.time()
 
     def get_average_time(self) -> float:
-        """
-        Returns the moving average over the current step count.
-        """
+        """Return the moving average over the current step count."""
         return self._time_sum / self._step_count
