@@ -50,12 +50,23 @@ warn_unused_configs = true
 target-version = "py311"
 line-length = 90
 indent-width = 4
+src = ["src"]
 
 [tool.ruff.lint]
-select = ["E", "F", "UP", "B", "SIM", "I"]
+select = ["E", "F", "UP", "B", "SIM", "I", "D"]
+ignore = [
+    "D100" # Ignore module docstring.
+]
 
-fixable = ["I"]
+fixable = ["I", "D200"]
+extend-safe-fixes = ["D200"]
 unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"test/*" = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
 
 [tool.ruff.format]
 line-ending = "lf"
