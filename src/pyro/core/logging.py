@@ -10,7 +10,7 @@ import torch.utils.tensorboard as tb
 from .distributed import get_rank
 
 
-class FileLogger:
+class RootLogger:
     """
     Logger used to log while training to a file.
 
@@ -20,21 +20,26 @@ class FileLogger:
         log_file (pathlib.Path): path to the log file.
     """
 
-    def __init__(self, log_file: pathlib.Path):
+    def __init__(self, log_file: pathlib.Path | None = None):
         """Create the file logger with the given log file."""
         self._logger = logging.getLogger("pyro")
         self._rank = get_rank()
 
         format_str = "[%(asctime)s] [%(levelname)s]: %(message)s"
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(logging.Formatter(format_str))
+        self._logger.addHandler(stream_handler)
+        self._logger.propagate = False
 
         if self._rank != 0:
             self._logger.setLevel(logging.ERROR)
         else:
             self._logger.setLevel(logging.INFO)
 
-        file_handler = logging.FileHandler(str(log_file), "w")
-        file_handler.setFormatter(logging.Formatter(format_str))
-        self._logger.addHandler(file_handler)
+        if log_file is not None:
+            file_handler = logging.FileHandler(str(log_file), "w")
+            file_handler.setFormatter(logging.Formatter(format_str))
+            self._logger.addHandler(file_handler)
 
     def info(self, msg: str) -> None:
         """
@@ -288,7 +293,7 @@ class TensorboardWriter:
         self._writer.close()
 
 
-ACTIVE_LOGGERS: dict[str, FileLogger | TensorboardWriter] = {}
+ACTIVE_LOGGERS: dict[str, RootLogger | TensorboardWriter] = {}
 
 
 def get_default_log_name(run_name: str) -> str:
@@ -329,9 +334,9 @@ def create_default_loggers(
         run_path = runs_root / base_name
         ACTIVE_LOGGERS["tensorboard"] = TensorboardWriter(run_path)
 
-    if enable_file_logging and "root" not in ACTIVE_LOGGERS:
-        log_file = logs_root / f"{base_name}.log"
-        ACTIVE_LOGGERS["root"] = FileLogger(log_file)
+    if "root" not in ACTIVE_LOGGERS:
+        log_file = logs_root / f"{base_name}.log" if enable_file_logging else None
+        ACTIVE_LOGGERS["root"] = RootLogger(log_file)
 
 
 def flush_default_loggers() -> None:
@@ -348,7 +353,7 @@ def close_default_loggers() -> None:
     ACTIVE_LOGGERS.clear()
 
 
-def get_root_logger() -> FileLogger:
+def get_root_logger() -> RootLogger:
     """
     Get the root logger instance.
 
@@ -360,7 +365,7 @@ def get_root_logger() -> FileLogger:
             "error: root logger has not been created. Did you forget to call "
             "create_base_loggers?"
         )
-    return typing.cast(FileLogger, ACTIVE_LOGGERS["root"])
+    return typing.cast(RootLogger, ACTIVE_LOGGERS["root"])
 
 
 def get_tensorboard_writer() -> TensorboardWriter:
