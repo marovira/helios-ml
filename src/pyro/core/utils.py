@@ -27,7 +27,7 @@ def get_from_optional(opt_var: T | None, raise_on_empty: bool = False) -> T:
         ```
 
     Args:
-        opt_var (Optional[T]): the optional variable.
+        opt_var (T | None): the optional variable.
         raise_on_empty (bool): if True, an exception is raised when the optional is None.
 
     Returns:
@@ -133,3 +133,132 @@ class AverageTimer:
     def get_average_time(self) -> float:
         """Return the moving average over the current step count."""
         return self._time_sum / self._step_count
+
+
+class Registry:
+    """
+    Provides a name -> object mapping to allow users to create custom types.
+
+    Usage:
+        ```py
+        # Create a registry:
+        TEST_REGISTRY = Registry("test")
+
+        # Register as a decorator:
+        @TEST_REGISTRY.register
+        class TestClass:
+            ...
+
+        # Register in code:
+        TEST_REGISTRY.register(TestClass)
+        TEST_REGISTRY.register(test_function)
+        ```
+    Args:
+        name (str): the name of the registry.
+    """
+
+    def __init__(self, name: str):
+        """
+        Create the registry with the given name.
+
+        Args:
+            name (str): the name of the registry.
+        """
+        self._name = name
+        self._obj_map: dict[str, typing.Any] = {}
+
+    def _do_register(self, name: str, obj: typing.Any, suffix: str | None = None) -> None:
+        """
+        Register the function/class.
+
+        Args:
+            name (str): the name of the object to register.
+            obj (Any): the object to register.
+            suffix (str | None): an optional suffix to add to the name upon
+            registration.
+        """
+        if isinstance(suffix, str):
+            name = name + "_" + suffix
+
+        assert (
+            name not in self._obj_map
+        ), f"error: an object named '{name}' already exists in the "
+        f"'{self._name}' registry"
+
+        self._obj_map[name] = obj
+
+    def register(
+        self,
+        obj: typing.Any | None = None,
+        suffix: str | None = None,
+    ):
+        """
+        Register the given object.
+
+        Args:
+            obj (Any | None): the type to add.
+            suffix (str | None): the suffix to add to the type name.
+        """
+        if obj is None:
+
+            def deco(func_or_class: typing.Any):
+                name = func_or_class.__name__
+                self._do_register(name, func_or_class, suffix)
+                return func_or_class
+
+            return deco
+
+        name = obj.__name__
+        self._do_register(name, obj, suffix)
+        return None
+
+    def get(self, name: str, suffix: str | None = None) -> typing.Any:
+        """
+        Get the object that corresponds to the given name.
+
+        Args:
+            name (str): the name of the type.
+            suffix (str): the suffix to use if the type isn't found with the given name.
+
+        Returns:
+            Any: the requested type.
+        """
+        ret = self._obj_map.get(name)
+        if ret is None and suffix is not None:
+            name_suff = name + "_" + suffix
+            ret = self._obj_map.get(name_suff)
+            print(f"warning: found {name_suff} instead of {name}")
+            if ret is None:
+                raise KeyError(
+                    f"No object called '{name}' found in the '{self._name}' registrar"
+                )
+        return ret
+
+    def __contains__(self, name: str) -> bool:
+        """
+        Check if the registry contains the given name.
+
+        Args:
+            name (str): the name to check.
+
+        Returns:
+            bool: true if the name exists, false otherwise.
+        """
+        return name in self._obj_map
+
+    def __iter__(self) -> typing.Iterable:
+        """Get an iterable over the registry items."""
+        return iter(self._obj_map.items())
+
+    def __str__(self) -> str:
+        """Get the name of the registry."""
+        return self._name
+
+    def keys(self) -> typing.Iterable:
+        """
+        Return a set-like object providing a view into the registry's keys.
+
+        Return:
+            Iterable: an iterable of the registry keys.
+        """
+        return self._obj_map.keys()

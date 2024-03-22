@@ -1,6 +1,7 @@
 import math
 import pathlib
 import time
+import typing
 
 import pytest
 import torch
@@ -37,6 +38,16 @@ class TestUtils:
 
         avg_time = timer.get_average_time()
         assert math.isclose(avg_time, 0.1, abs_tol=1e-3)
+
+    def test_register(self) -> None:
+        test_registry = core.Registry("test")
+
+        test_registry.register(sample_fun)
+
+        assert str(test_registry) == "test"
+        assert len(typing.cast(typing.Sized, test_registry.keys())) == 1
+        assert "sample_fun" in test_registry
+        assert test_registry.get("sample_fun") == sample_fun
 
 
 def sample_fun() -> int:
