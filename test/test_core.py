@@ -22,7 +22,7 @@ class TestUtils:
 
     def test_convert_to_list(self) -> None:
         value = 0
-        x: int | list[int] = value
+        x: int | list[int] | tuple[int, ...] = value
 
         res = core.convert_to_list(x)
         assert isinstance(res, list)
@@ -32,6 +32,11 @@ class TestUtils:
         x = [value]
         res = core.convert_to_list(x)
         assert res == x
+
+        x = (1, 3, 4)
+        res = core.convert_to_list(x)
+        assert len(x) == len(res)
+        assert list(x) == res
 
     def test_chdir_context(self, tmp_path: pathlib.Path) -> None:
         cur_dir = pathlib.Path.cwd()

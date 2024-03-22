@@ -40,7 +40,7 @@ def get_from_optional(opt_var: T | None, raise_on_empty: bool = False) -> T:
     return opt_var
 
 
-def convert_to_list(var: T | list[T]) -> list[T]:
+def convert_to_list(var: T | list[T] | tuple[T, ...]) -> list[T]:
     """
     Convert the input into a list if it's not one already.
 
@@ -66,6 +66,8 @@ def convert_to_list(var: T | list[T]) -> list[T]:
     """
     if isinstance(var, list):
         return var
+    if isinstance(var, tuple):
+        return list(var)
     return [var]
 
 
