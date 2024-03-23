@@ -19,10 +19,8 @@ dynamic = ["version", "readme"]
 
 [project.optional-dependencies]
 dev = [
-    #"black==24.2.0",
     "mypy==1.8.0",
     "ruff==0.3.4",
-    #"pylint==3.1.0",
     "pytest==8.1.1",
     "pre-commit==3.6.2",
     "types-Pillow==10.2.0.20240311"
@@ -57,12 +55,35 @@ indent-width = 4
 src = ["src"]
 
 [tool.ruff.lint]
-select = ["E", "F", "UP", "B", "SIM", "I", "D"]
-ignore = [
-    "D100" # Ignore module docstring.
+select = [
+    "E",
+    "F",
+    "UP",
+    "B",
+    "SIM",
+    "I",
+    "D",
+    "N",
+    "A",
+    "C4",
+    "T10",
+    "ICN",
+    "PIE",
+    "SLF",
+    "PTH",
+    "ERA",
+    "NPY",
+    "RUF100",
 ]
 
-fixable = ["I", "D200"]
+ignore = [
+    "D100", # Module docstring.
+    "N806", # Variable names should be lower-case.
+    "N802", # Function name should be lower-case.
+    "N812", # Imported lower-case as non-lower-case.
+]
+
+fixable = ["I", "D200", "D201", "D202", "RUF100"]
 extend-safe-fixes = ["D200"]
 unfixable = []
 
