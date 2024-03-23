@@ -3,7 +3,6 @@ import enum
 import random
 import typing
 
-import numpy as np
 import torch
 import torch.utils.data as tud
 
@@ -105,7 +104,6 @@ def create_dataloader(
 
     def seed_worker(worker_id: int):
         worker_seed = torch.initial_seed() % 2**32
-        np.random.seed(worker_seed)
         random.seed(worker_seed)
 
     g = torch.Generator()

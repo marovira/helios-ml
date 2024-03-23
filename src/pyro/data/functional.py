@@ -22,7 +22,7 @@ def load_image(path: pathlib.Path, out_fmt: str = "") -> npt.NDArray:
     Returns:
         np.ndarray: the loaded image.
     """
-    with open(path, "rb") as infile:
+    with path.open(mode="rb") as infile:
         img = PIL.Image.open(infile)
         out = img.convert(out_fmt) if out_fmt != "" else img.convert("RGB")
         return np.array(out)

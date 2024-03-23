@@ -100,7 +100,7 @@ class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
             self._restart_weights
         ), "periods and restart_weights should have the same length."
         self._cumulative_period = [
-            sum(self._periods[0 : i + 1]) for i in range(0, len(self._periods))
+            sum(self._periods[0 : i + 1]) for i in range(len(self._periods))
         ]
         super().__init__(optimizer, last_epoch)
 
