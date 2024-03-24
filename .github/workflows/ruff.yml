@@ -1,0 +1,61 @@
+name: Ruff
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - 'README.md'
+      - '.pre-commit-config.yaml'
+      - 'data/**'
+      - "LICENSE"
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    stategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Linux",
+            os: ubunut-latest,
+            }
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        id: setup_python
+        with:
+          python-version: "3.11"
+
+      - name: Cache virtualenv
+        uses: actions/cache@v3
+        with:
+          key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('requirements/ci.txt') }}
+          path: venv
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          python -m pip install -r requirements/ci.txt
+          echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
+          echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
+
+      - name: Install Pyro
+        shell: bash
+        run: |
+          pip install .
+          ruff check src/pyro
+
+      - name: Lint
+        run: |
+          ruff check src/pyro
+          ruff check test
