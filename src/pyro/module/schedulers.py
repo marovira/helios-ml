@@ -60,7 +60,7 @@ def _get_position_from_periods(iteration: int, cummulative_period: list[int]) ->
     return 0
 
 
-@SCHEDULER_REGISTRY.register()
+@SCHEDULER_REGISTRY.register
 class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
     """
     A cosine annealing with restarts LR scheduler.
@@ -126,7 +126,7 @@ class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
         ]
 
 
-@SCHEDULER_REGISTRY.register()
+@SCHEDULER_REGISTRY.register
 class MultiStepRestartLR(lr_scheduler.LRScheduler):
     """
     Multi-step with restarts LR scheduler.

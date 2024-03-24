@@ -4,6 +4,7 @@ import time
 import typing
 
 T = typing.TypeVar("T")
+T_Any = typing.TypeVar("T_Any", bound=typing.Any)
 
 
 def get_from_optional(opt_var: T | None, raise_on_empty: bool = False) -> T:
@@ -218,30 +219,20 @@ class Registry:
 
         self._obj_map[name] = obj
 
-    def register(
-        self,
-        obj: typing.Any | None = None,
-        suffix: str | None = None,
-    ):
+    def register(self, obj: T_Any, suffix: str | None = None) -> T_Any:
         """
         Register the given object.
 
         Args:
-            obj (Any | None): the type to add.
+            obj (T_Any): the type to add. Must have a __name__ attribute.
             suffix (str | None): the suffix to add to the type name.
+
+        Returns:
+            T_Any: the registered type.
         """
-        if obj is None:
-
-            def deco(func_or_class: typing.Any):
-                name = func_or_class.__name__
-                self._do_register(name, func_or_class, suffix)
-                return func_or_class
-
-            return deco
-
         name = obj.__name__
         self._do_register(name, obj, suffix)
-        return None
+        return obj
 
     def get(self, name: str, suffix: str | None = None) -> typing.Any:
         """

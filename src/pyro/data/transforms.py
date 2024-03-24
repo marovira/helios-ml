@@ -37,6 +37,7 @@ class ToTensor(nn.Module):
 
     def __init__(self, dtype: torch.dtype = torch.float32, scale: bool = True):
         """Create the transform."""
+        super().__init__()
         self._transform = T.Compose([T.ToImage(), T.ToDtype(dtype, scale=scale)])
 
     def forward(
