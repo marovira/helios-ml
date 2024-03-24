@@ -26,6 +26,13 @@ dev = [
     "types-Pillow==10.2.0.20240311"
 ]
 
+ci = [
+    "mypy==1.8.0",
+    "ruff==0.3.4",
+    "pytest==8.1.1",
+    "types-Pillow==10.2.0.20240311"
+]
+
 [tool.setuptools_scm]
 
 [tool.setuptools.packages.find]
