@@ -17,16 +17,10 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
+    name: "Linux"
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        config:
-          - {
-            name: "Linux",
-            os: ubunut-latest,
-            }
     steps:
       - uses: actions/checkout@v3
 
