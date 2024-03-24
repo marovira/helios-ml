@@ -50,13 +50,16 @@ jobs:
           pip install .
           ruff check src/pyro
 
-      - name: Run Linters
+      - name: Ruff
         run: |
           ruff check src/pyro
           ruff check test
+
+      - name: Mypy
+        run: |
           mypy src/pyro
           mypy test
 
-      - name: Run Tests
+      - name: Pytest
         run: |
           pytest
