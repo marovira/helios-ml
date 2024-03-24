@@ -1,4 +1,4 @@
-name: PyTest
+name: "Tests"
 
 on:
   push:
@@ -16,15 +16,16 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: "Linux"
+  test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         id: setup_python
         with:
           python-version: "3.11"
@@ -49,6 +50,13 @@ jobs:
           pip install .
           ruff check src/pyro
 
-      - name: Test
+      - name: Run Linters
+        run: |
+          ruff check src/pyro
+          ruff check test
+          mypy src/pyro
+          mypy test
+
+      - name: Run Tests
         run: |
           pytest
