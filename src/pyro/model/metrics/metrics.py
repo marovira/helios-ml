@@ -1,3 +1,5 @@
+import typing
+
 import numpy as np
 import numpy.typing as npt
 import torch
@@ -20,18 +22,19 @@ from .functional import (
 METRICS_REGISTRY = core.Registry("metrics")
 
 
-def create_metric(type_name: str, **kwargs) -> nn.Module:
+def create_metric(type_name: str, *args: typing.Any, **kwargs: typing.Any) -> nn.Module:
     """
     Create the metric function for the given type.
 
     Args:
         type_name (str): the type of the loss to create.
-        kwargs: any arguments you wish to pass into the loss.
+        args: positional arguments to pass into the metric.
+        kwargs: keyword arguments to pass into the metric.
 
     Returns:
         Callable: the metric function
     """
-    return METRICS_REGISTRY.get(type_name)(**kwargs)
+    return METRICS_REGISTRY.get(type_name)(*args, **kwargs)
 
 
 @METRICS_REGISTRY.register

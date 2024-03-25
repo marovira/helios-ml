@@ -1,5 +1,6 @@
 import collections as col
 import math
+import typing
 
 from torch import nn, optim
 from torch.optim import lr_scheduler
@@ -22,18 +23,21 @@ SCHEDULER_REGISTRY = core.Registry("scheduler")
 _register_default_schedulers(SCHEDULER_REGISTRY)
 
 
-def create_scheduler(type_name: str, **kwargs) -> nn.Module:
+def create_scheduler(
+    type_name: str, *args: typing.Any, **kwargs: typing.Any
+) -> nn.Module:
     """
     Create the scheduler for the given type.
 
     Args:
         type_name (str): the type of the scheduler to create.
-        kwargs: any arguments you wish to pass into the scheduler.
+        args: positional arguments to pass into the scheduler.
+        kwargs: keyword arguments to pass into the scheduler.
 
     Returns:
         nn.Module: the scheduler.
     """
-    return SCHEDULER_REGISTRY.get(type_name)(**kwargs)
+    return SCHEDULER_REGISTRY.get(type_name)(*args, **kwargs)
 
 
 def _get_position_from_periods(iteration: int, cummulative_period: list[int]) -> int:
