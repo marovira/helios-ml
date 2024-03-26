@@ -1,4 +1,5 @@
-import collections
+import abc
+import dataclasses
 import enum
 import random
 import typing
@@ -61,9 +62,6 @@ class DatasetSplit(enum.Enum):
         )
 
 
-SampledDataLoader = collections.namedtuple("SampledDataLoader", ["dataloader", "sampler"])
-
-
 def create_dataloader(
     dataset: tud.Dataset,
     random_seed: int = 0,
@@ -74,7 +72,7 @@ def create_dataloader(
     drop_last: bool = False,
     debug_mode: bool = False,
     is_distributed: bool = False,
-) -> SampledDataLoader:
+) -> tuple[tud.DataLoader, tud.DistributedSampler | None]:
     """
     Create the dataloader for the given dataset.
 
@@ -109,7 +107,7 @@ def create_dataloader(
     g = torch.Generator()
     g.manual_seed(random_seed)
 
-    return SampledDataLoader(
+    return (
         tud.DataLoader(
             dataset,
             batch_size=batch_size,
@@ -125,47 +123,117 @@ def create_dataloader(
     )
 
 
-class PyroDataModule:
+@dataclasses.dataclass
+class DataLoaderParams:
     """
-    The PyroDataModule standardizes the different splits, data preparation and transforms.
+    Params used to create the dataloader object.
 
-    The benefit is consistent data splits, data preparation, and transforms across runs.
-    The API is similar to PyTorch Lightning's LightningDataModule, major difference is
-    that this class does not have serialization capabilities.
+    Args:
+        random_seed (int): value to use as seed for the worker processes.
+        batch_size (int): number of samplers per batch.
+        shuffle (bool): if true, samples are randomly shuffled.
+        num_workers (int): number of worker processes for loading data.
+        pin_memory (bool): if true, use page-locked device memory.
+        drop_last (bool): if true, remove the final batch.
+        debug_mode (bool): if true, set number of workers to 0.
+        is_distributed (bool): if true, create the distributed sampler.
+    """
 
+    random_seed: int = 0
+    batch_size: int = 1
+    shuffle: bool = False
+    num_workers: int = 0
+    pin_memory: bool = True
+    drop_last: bool = False
+    debug_mode: bool = False
+    is_distributed: bool = False
+
+    def to_dict(self) -> dict[str, typing.Any]:
+        """Convert the params object to a dictionary using shallow copies."""
+        return {
+            field.name: getattr(self, field.name) for field in dataclasses.fields(self)
+        }
+
+    @classmethod
+    def from_dict(cls, table: dict[str, typing.Any]):
+        """Create a new params object from the given table."""
+        params = cls()
+        keys = [field.name for field in dataclasses.fields(params)]
+
+        for key in keys:
+            if key in table:
+                setattr(params, key, table[key])
+
+        return params
+
+
+@dataclasses.dataclass
+class Dataset:
+    """
+    The dataset and corresponding data loader params.
+
+    Args:
+        dataset (torch.utils.data.Dataset): the dataset.
+        params (DataLoaderParams): the data loader params.
+    """
+
+    dataset: tud.Dataset
+    params: DataLoaderParams
+
+    def dict(self) -> dict[str, typing.Any]:
+        """Convert to a dictionary."""
+        res = self.params.to_dict()
+        res["dataset"] = self.dataset
+        return res
+
+
+class PyroDataModule(abc.ABC):
+    """
+    Base class that groups together the creation of the main training datasets.
+
+    The use of this class is to standardize the way datasets and their respective
+    dataloaders are created, thereby allowing consistent settings across models.
     Ex:
         ```py
+        from torchvision.datasets import CIFAR10
         from pyro import data
 
         class MyDataModule(data.PyroDataModule):
-            def prepare_data(self):
-                # Download or stream any data.
+            def prepare_data(self) -> None:
+                # Use this function to prepare the data for your datasets. This will be
+                # called before the distributed processes are created (if using) so you
+                # should not set any state here.
+                CIFAR10(download=True) # download the dataset only.
 
-            def setup(self, split: DatasetSplit | None):
-                # Create the datasets here. If None is given as split, instantiate all of
-                # your datasets.
-                self._train = ...
-                self._val = ...
+            def setup(self) -> None:
+                # Create the training dataset using a DataLoaderParams instance. Note that
+                # you MUST assign it to self._train_dataset.
+                self._train_dataset = self._create_dataset(CIFAR10(train=True),
+                                                           DataLoaderParams(...))
 
-            def train_dataloader(self):
-                # To create the dataloader, call self._create_dataloader with the
-                # settings you require. It will automatically handle the creation of the
-                # dataloader + sampler.
-                return self._create_dataloader(self._train, ...)
+                # It is also possible to create a dataset using a table of key-value pairs
+                # that was loaded from a config file or manually created. Let's use one to
+                # create the validation split:
+                settings = {"batch_size": 1, ...}
 
-            def val_dataloader(self):
-                return self._create_dataloader(self._val, ...)
+                # We can now use it to assign to self._valid_dataset like this:
+                self._valid_dataset = self._create_dataset(CIFAR10(train=False), settings)
 
-            def teardown(self):
-                # Clear up any state here.
-                ...
+                # Finally, if you need a testing split, you can create it like this:
+                self._test_dataset = self._create_dataset(CIFAR10(train=False), settings)
 
+            def teardown(self) -> None:
+                # Use this function to clean up any state. It will be called after
+                # training is done.
         ```
     """
 
     def __init__(self) -> None:
-        """Create the DataModule."""
+        """Create the data module."""
         self._is_distributed: bool = False
+        self._train_dataset: Dataset | None = None
+        self._valid_dataset: Dataset | None = None
+        self._test_dataset: Dataset | None = None
 
     @property
     def is_distributed(self) -> bool:
@@ -176,7 +244,7 @@ class PyroDataModule:
     def is_distributed(self, val: bool) -> None:
         self._is_distributed = val
 
-    def prepare_data(self) -> None:
+    def prepare_data(self) -> None:  # noqa: B027
         """
         Prepare data for training.
 
@@ -186,62 +254,64 @@ class PyroDataModule:
         any state here.
         """
 
-    def setup(self, split: DatasetSplit | None = None) -> None:
-        """
-        Construct the dataset(s) associated with the given split.
+    @abc.abstractmethod
+    def setup(self) -> None:
+        """Construct all required datasets."""
 
-        This will be called on each process if using distributed training. The special
-        None value is used to signal the DataModule to create all of the datasets it
-        holds.
+    def train_dataloader(
+        self,
+    ) -> tuple[tud.DataLoader, tud.DistributedSampler | None] | None:
+        """Create the train dataloader (if available)."""
+        if self._train_dataset is None:
+            return None
+        return self._create_dataloader(self._train_dataset)
 
-        Args:
-            split (DatasetSplit | None): the split to create.
-        """
+    def valid_dataloader(
+        self,
+    ) -> tuple[tud.DataLoader, tud.DistributedSampler | None] | None:
+        """Create the valid dataloader (if available)."""
+        if self._valid_dataset is None:
+            return None
+        return self._create_dataloader(self._valid_dataset)
 
-    def _create_dataloader(self, dataset: tud.Dataset, **kwargs) -> SampledDataLoader:
-        """
-        Construct the dataloader from the given dataset.
+    def test_dataloader(
+        self,
+    ) -> tuple[tud.DataLoader, tud.DistributedSampler | None] | None:
+        """Create the test dataloader (if available)."""
+        if self._test_dataset is None:
+            return None
+        return self._create_dataloader(self._test_dataset)
 
-        You can use this function to automatically create the DataLoader (and Sampler)
-        using the given arguments instead of having to create it yourself. Note that you
-        DO NOT have to manage the distributed case, it will be automatically handled for
-        you.
-
-        Args:
-            dataset (Dataset): the dataset.
-            kwargs (dict): arguments for dataloader creation.
-
-        Returns:
-            SampledDataLoader: the dataloader + sampler pair.
-        """
-        return create_dataloader(dataset, is_distributed=self._is_distributed, **kwargs)
-
-    def train_dataloader(self) -> SampledDataLoader | None:
-        """
-        Return the dataloader for the training split.
-
-        Returns:
-            SampledDataLoader | None: the dataloader.
-        """
-        return None
-
-    def val_dataloader(self) -> SampledDataLoader | None:
-        """
-        Return the dataloader for the validation split.
-
-        Returns:
-            SampledDataLoader | None: the dataloader.
-        """
-        return None
-
-    def test_dataloader(self) -> SampledDataLoader | None:
-        """
-        Return the dataloader for the testing split.
-
-        Returns:
-            SampledDataLoader | None: the dataloader.
-        """
-        return None
-
-    def teardown(self) -> None:
+    def teardown(self) -> None:  # noqa: B027
         """Clean up any state after training is over."""
+
+    def _create_dataset(
+        self, dataset: tud.Dataset, params: DataLoaderParams | dict[str, typing.Any]
+    ) -> Dataset:
+        """
+        Create a dataset object from a Torch dataset and a params.
+
+        This is a convenience function to help you create the dataset objects. The params
+        object can either be the fully filled in DataLoaderParams instance, or it can be a
+        dict containing all of the necessary settings. If a dict is passed in, it will be
+        used to populate the corresponding DataLoaderParams object.
+
+        Args:
+            dataset (torch.utils.data.Dataset): the dataset.
+            params (DataLoaderParams | dict[str, Any]): either a params object or a dict.
+
+        Returns:
+            Dataset: the new dataset object.
+        """
+        return Dataset(
+            dataset,
+            params
+            if isinstance(params, DataLoaderParams)
+            else DataLoaderParams.from_dict(params),
+        )
+
+    def _create_dataloader(
+        self, dataset: Dataset
+    ) -> tuple[tud.DataLoader, tud.DistributedSampler | None]:
+        dataset.params.is_distributed = self._is_distributed
+        return create_dataloader(**dataset.dict())
