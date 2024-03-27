@@ -7,7 +7,6 @@ import torch
 
 from pyro import core
 from pyro.core import distributed as dist
-from pyro.core import rng
 
 MODEL_REGISTRY = core.Registry("model")
 
@@ -148,23 +147,27 @@ class Model(abc.ABC):
             fast_init (bool): if True, only networks are loaded.
         """
 
-    @abc.abstractmethod
-    def load(self, chkpt: Checkpoint) -> None:
+    def load_state_dict(self, state_dict: dict[str, typing.Any]) -> None:
         """
-        Load the network and training state from the given checkpoint.
+        Load the model state from the given state dictionary.
+
+        Use this function to restore any training state from a checkpoint. Note that any
+        weights will have been automatically mapped to the correct device.
 
         Args:
-            chkpt: (Checkpoint): the saved checkpoint to load from.
+            state_dict (dict[str, Any]): the state dictionary to load from.
         """
 
-    @abc.abstractmethod
-    def save(self, chkpt_path: pathlib.Path) -> None:
+    def state_dict(self) -> dict[str, typing.Any]:
         """
-        Save the training state to the given checkpoint path.
+        Get the state dictionary of the model.
 
-        Args:
-            chkpt_path (pathlib.Path): the path of the checkpoint to save to.
+        Use this function to save any state that you require for checkpoints.
+
+        Returns:
+            dict[str, Any]: the state dictionary of the model.
         """
+        return {}
 
     def append_metadata_to_chkpt_name(self, chkpt_name: str) -> str:
         """
@@ -182,6 +185,26 @@ class Model(abc.ABC):
             str: the name with any additional metadata.
         """
         return chkpt_name
+
+    def strip_training_data(
+        self, state_dict: dict[str, typing.Any]
+    ) -> dict[str, typing.Any]:
+        """
+        Remove any training data from the state dictionary.
+
+        Use this function to convert a checkpoint into a pre-trained network. Note that
+        the auxiliary training state (log information, training settings, etc.) will be
+        removed automatically before this function is called. The returned dictionary
+        should contain only the necessary information to re-create the network(s) along
+        with any additional data you require.
+
+        Args:
+            state_dict (dict[str, Any]): the state dictionary.
+
+        Returns:
+            dict[str, Any]: the state dictionary without any training data.
+        """
+        return state_dict
 
     def train(self) -> None:
         """Switch the model to training mode."""
@@ -292,19 +315,3 @@ class Model(abc.ABC):
             bool: false if no improvements were seen in the last validation cycle.
         """
         return True
-
-    def _save_random_state(self, state_dict: dict[str, typing.Any]) -> None:
-        """
-        Save the current RNG state into the given dictionary.
-
-        This MUST be called prior to saving.
-        """
-        state_dict["rng_state"] = rng.get_rng_state()
-
-    def _load_random_state(self, state_dict: dict[str, typing.Any]) -> None:
-        """
-        Restore the RNG state from the given dictionary.
-
-        This MUST be called when loading from a previously saved checkpoint.
-        """
-        rng.restore_rng_state(state_dict["rng_state"])

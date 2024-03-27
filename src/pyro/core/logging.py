@@ -8,6 +8,7 @@ import torch
 import torch.utils.tensorboard as tb
 
 from .distributed import get_rank
+from .utils import get_from_optional
 
 
 class RootLogger:
@@ -20,14 +21,15 @@ class RootLogger:
         log_file (pathlib.Path): path to the log file.
     """
 
-    def __init__(self, log_file: pathlib.Path | None = None):
-        """Create the file logger with the given log file."""
+    def __init__(self: "RootLogger"):
+        """Create the root logger with stream output as default."""
         self._logger = logging.getLogger("pyro")
         self._rank = get_rank()
+        self._format_str = "[%(asctime)s] [%(levelname)s]: %(message)s"
+        self._log_file: pathlib.Path | None = None
 
-        format_str = "[%(asctime)s] [%(levelname)s]: %(message)s"
         stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(logging.Formatter(format_str))
+        stream_handler.setFormatter(logging.Formatter(self._format_str))
         self._logger.addHandler(stream_handler)
         self._logger.propagate = False
 
@@ -36,10 +38,35 @@ class RootLogger:
         else:
             self._logger.setLevel(logging.INFO)
 
-        if log_file is not None:
-            file_handler = logging.FileHandler(str(log_file), "w")
-            file_handler.setFormatter(logging.Formatter(format_str))
-            self._logger.addHandler(file_handler)
+    def setup(self, log_file: pathlib.Path | None = None) -> None:
+        """
+        Finish configuring the root logger.
+
+        In particular, this function will create the file logger provided that the input
+        path is not None. If the path points to a file that already exists, then the
+        logger will automatically append to the file, otherwise a new file will be
+        created.
+
+        Args:
+            log_file (pathlib.Path | None): the path to the log file (if using).
+        """
+        if log_file is None:
+            return
+
+        mode = "a" if log_file.exists() else "w"
+        file_handler = logging.FileHandler(str(log_file), mode=mode)
+        file_handler.setFormatter(logging.Formatter(self._format_str))
+        self._logger.addHandler(file_handler)
+        self._log_file = log_file
+
+    @property
+    def log_file(self) -> pathlib.Path | None:
+        """
+        Return the path to the current log file.
+
+        If the path for the log file was originally None, this will return None as well.
+        """
+        return self._log_file
 
     def info(self, msg: str) -> None:
         """
@@ -92,16 +119,32 @@ class TensorboardWriter:
         run_path (Path): path to the directory for the run.
     """
 
-    def __init__(
-        self,
-        run_path: pathlib.Path,
-    ):
+    def __init__(self: "TensorboardWriter"):
         """Create the Tensorboard writer."""
-        rank = get_rank()
+        self._rank = get_rank()
         self._writer: tb.SummaryWriter | None = None
+        self._run_path: pathlib.Path | None = None
 
-        if rank == 0:
+    def setup(self, run_path: pathlib.Path) -> None:
+        """
+        Finish configuring the TensorboardWriter.
+
+        In particular, this function will create the writer instance and assign it to the
+        given path. If the path already exists, Tensorboard will automatically append to
+        the previous run. In distributed training, the writer will only be created on rank
+        0.
+
+        Args:
+            run_path: (pathlib.Path): the path to the run folder.
+        """
+        if self._rank == 0:
             self._writer = tb.SummaryWriter(log_dir=str(run_path), flush_secs=20)
+            self._run_path = run_path
+
+    @property
+    def run_path(self) -> pathlib.Path:
+        """Return the path to the current run folder."""
+        return get_from_optional(self._run_path)
 
     def add_scalar(
         self, tag: str, scalar_value: float | str, global_step: int | None = None
@@ -310,33 +353,67 @@ def get_default_log_name(run_name: str) -> str:
     return run_name + f"_{current_time}"
 
 
-def create_default_loggers(
-    run_name: str,
-    logs_root: pathlib.Path,
-    enable_tensorboard: bool = True,
-    enable_file_logging: bool = False,
+def create_default_loggers(enable_tensorboard: bool = True) -> None:
+    """
+    Construct the RootLogger and TensorboardWriter instances.
+
+    In distributed training, this function should be called AFTER the processes have been
+    created to ensure each process gets a copy of the loggers.
+    """
+    # Root logger is always created.
+    if "root" not in ACTIVE_LOGGERS:
+        ACTIVE_LOGGERS["root"] = RootLogger()
+
+    if enable_tensorboard and "tensorboard" not in ACTIVE_LOGGERS:
+        ACTIVE_LOGGERS["tensorboard"] = TensorboardWriter()
+
+
+def restore_default_loggers(
+    log_path: pathlib.Path | None = None, run_path: pathlib.Path | None = None
 ) -> None:
     """
-    Construct the base loggers with the given paths (if any).
+    Restore the default loggers from a previous run.
 
-    Logs can be disabled by passing None as the corresponding root.
+    This function should be called whenever the loggers need to continue logging to the
+    same file/folder as a previous run.
+
+    Args:
+        log_path (pathlib.Path | None): path to the log file (if using).
+        run_path (pathlib.Path | None): path to the Tensorboard run folder (if using).
+    """
+    if "root" not in ACTIVE_LOGGERS:
+        raise RuntimeError(
+            "error: root logger hasn't been created. Did you forget to call "
+            "create_default_loggers?"
+        )
+
+    if log_path is not None:
+        ACTIVE_LOGGERS["root"].setup(log_path)
+
+    if "tensorboard" in ACTIVE_LOGGERS and run_path is not None:
+        ACTIVE_LOGGERS["tensorboard"].setup(run_path)
+
+
+def setup_default_loggers(
+    run_name: str,
+    log_root: pathlib.Path | None = None,
+    runs_root: pathlib.Path | None = None,
+) -> None:
+    """
+    Call the setup functions on the default loggers.
+
+    This function should be called when the loggers don't need to continue from a previous
+    run. If you need that, call restore_default_loggers instead.
 
     Args:
         run_name (str): the name of the current run.
-        runs_root (pathlib.Path | None): the path to store the Tensorboard logs.
-        logs_root (pathlib.Path | None): the path to store
-
+        log_root (pathlib.Path | None): path to the logs folder (if using).
+        runs_root (pathlib.Path | None): path to the Tensorboard runs folder (if using).
     """
     base_name = get_default_log_name(run_name)
-    runs_root = logs_root / "runs"
-
-    if enable_tensorboard and "tensorboard" not in ACTIVE_LOGGERS:
-        run_path = runs_root / base_name
-        ACTIVE_LOGGERS["tensorboard"] = TensorboardWriter(run_path)
-
-    if "root" not in ACTIVE_LOGGERS:
-        log_file = logs_root / f"{base_name}.log" if enable_file_logging else None
-        ACTIVE_LOGGERS["root"] = RootLogger(log_file)
+    run_path = None if runs_root is None else runs_root / base_name
+    log_path = None if log_root is None else log_root / f"{base_name}.log"
+    restore_default_loggers(log_path, run_path)
 
 
 def flush_default_loggers() -> None:
@@ -368,16 +445,15 @@ def get_root_logger() -> RootLogger:
     return typing.cast(RootLogger, ACTIVE_LOGGERS["root"])
 
 
-def get_tensorboard_writer() -> TensorboardWriter:
+def get_tensorboard_writer() -> TensorboardWriter | None:
     """
     Return the Tensorboard writter.
+
+    If Tensorboard is disabled, this function will return None
 
     Return:
         TensorboardWriter: the Tensorboard logger.
     """
     if "tensorboard" not in ACTIVE_LOGGERS:
-        raise KeyError(
-            "error: tensorboard logger has not been created. Did you forget to call "
-            "create_base_loggers?"
-        )
+        return None
     return typing.cast(TensorboardWriter, ACTIVE_LOGGERS["tensorboard"])
