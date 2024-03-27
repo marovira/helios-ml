@@ -108,21 +108,27 @@ class RNGState:
     dict = dataclasses.asdict
 
 
-def seed_rngs(seed: int | None = None) -> None:
+def seed_rngs(seed: int | None = None, skip_torch: bool = False) -> None:
     """
     Seed the default RNGs with the given seed.
 
     If no seed is given, then the default seed from Pyro will be used. The RNGs that will
     be seeded are: PyTorch (+ CUDA if available), stdlib random, and the default Numpy
     generator.
+    The skip_torch flag is intended to be used when seeding worker processes for
+    dataloaders. In those cases, the RNGs for PyTorch have already been seeded, so we
+    shouldn't be re-seeding them.
 
     Args:
         seed (int | None): optional value to seed the random generators with.
+        skip_torch (bool): if True, torch RNGs won't be seeded.
     """
     seed = get_default_seed() if seed is None else seed
-    torch.manual_seed(seed)
-    if torch.cuda.is_available():
-        torch.cuda.manual_seed_all(seed)
+
+    if not skip_torch:
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(seed)
     random.seed(seed)
     create_default_numpy_rng(seed)
 
