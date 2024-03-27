@@ -1,5 +1,4 @@
 import pathlib
-import platform
 
 import torch
 from torch import nn
@@ -27,16 +26,6 @@ class MLPModel(nn.Module):
 
 
 class TestONNX:
-    def test_dynamo(self, tmp_path: pathlib.Path) -> None:
-        if platform.system() == "Windows":
-            return
-        model = MLPModel()
-        tensor_x = torch.rand((97, 8), dtype=torch.float32)
-        out_path = tmp_path / "mlp.onnx"
-        onnx.export_to_onnx_dynamo(out_path, model, tensor_x)
-
-        assert out_path.exists()
-
     def test_jit(self, tmp_path: pathlib.Path) -> None:
         model = MLPModel()
         tensor_x = torch.rand((97, 8), dtype=torch.float32)

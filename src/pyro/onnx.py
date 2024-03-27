@@ -55,32 +55,3 @@ def export_to_onnx(
         ort_inputs = {ort_session.get_inputs()[0].name: to_numpy(net_args)}
         ort_outs = ort_session.run(None, ort_inputs)
         np.testing.assert_allclose(to_numpy(out), ort_outs[0], rtol=rtol, atol=atol)
-
-
-def export_to_onnx_dynamo(
-    out_path: pathlib.Path,
-    net: nn.Module,
-    *net_args,
-    export_options: torch.onnx.ExportOptions | None = None,
-    **net_kwargs,
-):
-    """
-    Export the given network to ONNX format using TorchDynamo.
-
-    The resulting onnx network will be checked for correctness after it is created, but no
-    further validation will be performed.
-
-    Args:
-        out_path (pathlib.Path): the path to save the exported network to.
-        net (nn.Module): the network to convert.
-        net_args: positional arguments for the network.
-        export_options (torch.onnx.ExportOptions | None): any export options.
-        net_kwargs: keyword arguments to the network.
-    """
-    onnx_program = torch.onnx.dynamo_export(
-        net, *net_args, **net_kwargs, export_options=export_options
-    )
-    onnx_program.save(out_path)
-
-    onnx_model = onnx.load(out_path)
-    onnx.checker.check_model(onnx_model)

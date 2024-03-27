@@ -3,7 +3,6 @@
 mypy==1.8.0
 onnx==1.16.0
 onnxruntime==1.17.1
-onnxscript==0.1.0.dev20240327; platform_system != "Windows"
 opencv-python==4.9.0.80
 pytest==8.1.1
 ruff==0.3.4
