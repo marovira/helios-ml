@@ -90,8 +90,8 @@ ignore = [
     "N812", # Imported lower-case as non-lower-case.
 ]
 
-fixable = ["I", "D200", "D201", "D202", "RUF100"]
-extend-safe-fixes = ["D200"]
+fixable = ["I", "D200", "D201", "D202", "D205", "RUF100"]
+extend-safe-fixes = ["D200", "D205"]
 unfixable = []
 
 [tool.ruff.lint.per-file-ignores]
