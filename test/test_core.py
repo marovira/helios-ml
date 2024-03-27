@@ -1,13 +1,17 @@
+import dataclasses
 import math
 import pathlib
+import random
 import time
 import typing
 
+import numpy as np
+import numpy.typing as npt
 import pytest
 import torch
 
 from pyro import core
-from pyro.core import cuda
+from pyro.core import cuda, rng
 
 
 class TestUtils:
@@ -79,3 +83,59 @@ class TestCUDA:
         else:
             with pytest.raises(RuntimeError):
                 cuda.requires_cuda_support()
+
+
+@dataclasses.dataclass
+class ExpectedRNG:
+    torch_vals = torch.tensor([0, 1, 8, 6, 5, 7, 3, 9, 6, 9])
+    rand_vals = [0, 9, 2, 3, 6, 6, 2, 6, 7, 4]
+    np_vals = [3, 2, 3, 4, 4, 3, 1, 3, 3, 1]
+
+
+class TestRNG:
+    def check_torch(self, a: torch.Tensor, b: torch.Tensor) -> None:
+        assert torch.all(a == b)
+
+    def check_rand(self, a: list[int], b: list[int]) -> None:
+        assert a == b
+
+    def check_np(self, a: list[int], b: npt.NDArray) -> None:
+        assert np.all(a == b)
+
+    def test_seed_rngs(self) -> None:
+        exp = ExpectedRNG()
+        rng.seed_rngs()
+
+        np_gen = rng.get_default_numpy_rng().generator
+
+        self.check_torch(exp.torch_vals, torch.randint(10, [10]))
+        self.check_rand(exp.rand_vals, [random.randint(0, 9) for _ in range(10)])
+        self.check_np(exp.np_vals, np_gen.integers(0, 10, 10))
+
+    def test_rng_restore(self) -> None:
+        exp = ExpectedRNG()
+        rng.seed_rngs()
+        np_gen = rng.get_default_numpy_rng().generator
+
+        # Check the first 5 entries.
+        self.check_torch(exp.torch_vals[:5], torch.randint(10, [5]))
+        self.check_rand(exp.rand_vals[:5], [random.randint(0, 9) for _ in range(5)])
+        self.check_np(exp.np_vals[:5], np_gen.integers(0, 10, 5))
+
+        # Grab the states and re-seed the generators.
+        state = rng.get_rng_state()
+        rng.seed_rngs(0)
+        np_gen = rng.get_default_numpy_rng().generator
+
+        # Generate a few numbers to move the generators along.
+        torch.randint(10, [10])
+        [random.randint(0, 9) for _ in range(10)]
+        np_gen.integers(0, 10, 10)
+
+        # Now restore the RNG state and read the final 5 numbers.
+        rng.restore_rng_state(state)
+        np_gen = rng.get_default_numpy_rng().generator
+
+        self.check_torch(exp.torch_vals[5:], torch.randint(10, [5]))
+        self.check_rand(exp.rand_vals[5:], [random.randint(0, 9) for _ in range(5)])
+        self.check_np(exp.np_vals[5:], np_gen.integers(0, 10, 5))
