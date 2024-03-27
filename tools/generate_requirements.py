@@ -6,8 +6,7 @@ def generate_requirements_file(
     repo_dir: pathlib.Path, name: str, req_list: list[str], header: list[str]
 ) -> None:
     """
-    Generates a requirements file located under
-    <repo_dir>/requirements/<name>.txt.
+    Generate a requirements file located under <repo_dir>/requirements/<name>.txt.
 
     Args:
         repo_dir (Path): the root of the repository.
@@ -25,10 +24,7 @@ def generate_requirements_file(
 
 
 def main() -> None:
-    """
-    Generates the requirements files for each of the dependency lists contained in
-    pyproject.toml.
-    """
+    """Generate the requirements files for each dependency list in pyproject.toml."""
     script_path = pathlib.Path(__file__)
     repo_dir = script_path.parent.parent
     script_relative = script_path.relative_to(repo_dir)
