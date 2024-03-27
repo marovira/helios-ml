@@ -20,7 +20,7 @@ class RandomDataModule(data.PyroDataModule):
         params = {
             "batch_size": 2,
             "shuffle": True,
-            "num_workers": 4,
+            "num_workers": 2,
             "random_seed": rng.get_default_seed(),
         }
         self._train_dataset = self._create_dataset(RandomDataset(), params)
@@ -46,12 +46,12 @@ class TestDataModule:
         return [
             torch.tensor([[359, 639, 636], [963, 738, 996]]),
             torch.tensor([[766, 97, 292], [500, 324, 687]]),
-            torch.tensor([[624, 693, 364], [815, 519, 804]]),
-            torch.tensor([[60, 251, 823], [327, 945, 138]]),
             torch.tensor([[15, 841, 180], [553, 266, 928]]),
             torch.tensor([[269, 806, 472], [694, 632, 678]]),
-            torch.tensor([[459, 656, 19], [620, 700, 454]]),
-            torch.tensor([[890, 85, 522], [739, 134, 839]]),
+            torch.tensor([[92, 228, 424], [421, 568, 705]]),
+            torch.tensor([[686, 769, 903], [440, 610, 126]]),
+            torch.tensor([[809, 833, 629], [340, 810, 512]]),
+            torch.tensor([[23, 322, 577], [757, 651, 429]]),
         ]
 
     def check_batches(self, exp: list[torch.Tensor], val: list[torch.Tensor]) -> None:
@@ -81,7 +81,6 @@ class TestDataModule:
         dataloader = self.prepare_dataloader()
         batches = []
         for batch in dataloader:
-            print(batch)
             batches.append(batch)
 
         exp_batches = self.get_expected_train_batches()
