@@ -1,13 +1,13 @@
 import abc
 import dataclasses
 import enum
-import random
 import typing
 
 import torch
 import torch.utils.data as tud
 
 from pyro import core
+from pyro.core import rng
 
 DATASET_REGISTRY = core.Registry("dataset")
 
@@ -62,6 +62,11 @@ class DatasetSplit(enum.Enum):
         )
 
 
+def _seed_worker(worker_id: int) -> None:
+    worker_seed = torch.initial_seed() % 2**32
+    rng.seed_rngs(worker_seed, skip_torch=True)
+
+
 def create_dataloader(
     dataset: tud.Dataset,
     random_seed: int = 0,
@@ -100,10 +105,6 @@ def create_dataloader(
         else None
     )
 
-    def seed_worker(worker_id: int):
-        worker_seed = torch.initial_seed() % 2**32
-        random.seed(worker_seed)
-
     g = torch.Generator()
     g.manual_seed(random_seed)
 
@@ -116,7 +117,7 @@ def create_dataloader(
             pin_memory=pin_memory,
             drop_last=drop_last,
             sampler=sampler,
-            worker_init_fn=seed_worker,
+            worker_init_fn=_seed_worker,
             generator=g,
         ),
         sampler,
@@ -139,7 +140,7 @@ class DataLoaderParams:
         is_distributed (bool): if true, create the distributed sampler.
     """
 
-    random_seed: int = 0
+    random_seed: int = rng.get_default_seed()
     batch_size: int = 1
     shuffle: bool = False
     num_workers: int = 0
