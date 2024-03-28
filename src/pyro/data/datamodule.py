@@ -1,4 +1,5 @@
 import abc
+import copy
 import dataclasses
 import enum
 import typing
@@ -8,6 +9,13 @@ import torch.utils.data as tud
 
 from pyro import core
 from pyro.core import rng
+
+from .samplers import (
+    ResumableDistributedSampler,
+    ResumableRandomSampler,
+    ResumableSamplerType,
+    ResumableSequentialSampler,
+)
 
 DATASET_REGISTRY = core.Registry("dataset")
 
@@ -77,7 +85,7 @@ def create_dataloader(
     drop_last: bool = False,
     debug_mode: bool = False,
     is_distributed: bool = False,
-) -> tuple[tud.DataLoader, tud.DistributedSampler | None]:
+) -> tuple[tud.DataLoader, ResumableSamplerType]:
     """
     Create the dataloader for the given dataset.
 
@@ -95,30 +103,37 @@ def create_dataloader(
         is_distributed (bool): if true, create the distributed sampler.
 
     Returns:
-        tuple[Dataloader, DistributedSampler | None]: the dataloader and sampler.
+        tuple[Dataloader, Sampler]: the dataloader and sampler.
     """
     assert len(typing.cast(typing.Sized, dataset))
 
-    sampler: tud.DistributedSampler | None = (
-        tud.DistributedSampler(dataset, shuffle=shuffle, drop_last=drop_last)
-        if is_distributed
-        else None
-    )
-
-    g = torch.Generator()
-    g.manual_seed(random_seed)
+    sampler: ResumableSamplerType
+    if is_distributed:
+        sampler = ResumableDistributedSampler(
+            dataset, shuffle=shuffle, drop_last=drop_last, seed=random_seed
+        )
+    else:
+        if shuffle:
+            sampler = ResumableRandomSampler(
+                dataset,  # type: ignore[arg-type]
+                seed=random_seed,
+                batch_size=batch_size,
+            )
+        else:
+            sampler = ResumableSequentialSampler(
+                dataset,  # type: ignore[arg-type]
+                batch_size=batch_size,
+            )
 
     return (
         tud.DataLoader(
             dataset,
             batch_size=batch_size,
-            shuffle=None if is_distributed else shuffle,
             num_workers=num_workers if not debug_mode else 0,
             pin_memory=pin_memory,
             drop_last=drop_last,
             sampler=sampler,
             worker_init_fn=_seed_worker,
-            generator=g,
         ),
         sampler,
     )
@@ -259,25 +274,19 @@ class PyroDataModule(abc.ABC):
     def setup(self) -> None:
         """Construct all required datasets."""
 
-    def train_dataloader(
-        self,
-    ) -> tuple[tud.DataLoader, tud.DistributedSampler | None] | None:
+    def train_dataloader(self) -> tuple[tud.DataLoader, ResumableSamplerType] | None:
         """Create the train dataloader (if available)."""
         if self._train_dataset is None:
             return None
         return self._create_dataloader(self._train_dataset)
 
-    def valid_dataloader(
-        self,
-    ) -> tuple[tud.DataLoader, tud.DistributedSampler | None] | None:
+    def valid_dataloader(self) -> tuple[tud.DataLoader, ResumableSamplerType] | None:
         """Create the valid dataloader (if available)."""
         if self._valid_dataset is None:
             return None
         return self._create_dataloader(self._valid_dataset)
 
-    def test_dataloader(
-        self,
-    ) -> tuple[tud.DataLoader, tud.DistributedSampler | None] | None:
+    def test_dataloader(self) -> tuple[tud.DataLoader, ResumableSamplerType] | None:
         """Create the test dataloader (if available)."""
         if self._test_dataset is None:
             return None
@@ -306,13 +315,13 @@ class PyroDataModule(abc.ABC):
         """
         return Dataset(
             dataset,
-            params
+            copy.deepcopy(params)
             if isinstance(params, DataLoaderParams)
             else DataLoaderParams.from_dict(params),
         )
 
     def _create_dataloader(
         self, dataset: Dataset
-    ) -> tuple[tud.DataLoader, tud.DistributedSampler | None]:
+    ) -> tuple[tud.DataLoader, ResumableSamplerType]:
         dataset.params.is_distributed = self._is_distributed
         return create_dataloader(**dataset.dict())

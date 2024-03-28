@@ -3,7 +3,10 @@ from torch.utils import data as tud
 
 from pyro import core, data
 from pyro.core import rng
+from pyro.data import samplers as pds
 from pyro.data import transforms as pdt
+
+DATASET_SIZE: int = 16
 
 
 class RandomDataset(tud.Dataset):
@@ -12,18 +15,53 @@ class RandomDataset(tud.Dataset):
         return gen.integers(0, 1000, 3)
 
     def __len__(self):
-        return 16
+        return DATASET_SIZE
 
 
-class RandomDataModule(data.PyroDataModule):
+class SequentialDataset(tud.Dataset):
+    def __init__(self):
+        super().__init__()
+
+        self._samples = [
+            torch.tensor([359, 639, 636]),
+            torch.tensor([963, 738, 996]),
+            torch.tensor([766, 97, 292]),
+            torch.tensor([500, 324, 687]),
+            torch.tensor([15, 841, 180]),
+            torch.tensor([553, 266, 928]),
+            torch.tensor([269, 806, 472]),
+            torch.tensor([694, 632, 678]),
+            torch.tensor([92, 228, 424]),
+            torch.tensor([421, 568, 705]),
+            torch.tensor([686, 769, 903]),
+            torch.tensor([440, 610, 126]),
+            torch.tensor([809, 833, 629]),
+            torch.tensor([340, 810, 512]),
+            torch.tensor([23, 322, 577]),
+            torch.tensor([757, 651, 429]),
+        ]
+
+    def __getitem__(self, index):
+        return self._samples[index]
+
+    def __len__(self):
+        return DATASET_SIZE
+
+
+class SampleDataModule(data.PyroDataModule):
     def setup(self) -> None:
-        params = {
-            "batch_size": 2,
-            "shuffle": True,
-            "num_workers": 2,
-            "random_seed": rng.get_default_seed(),
-        }
+        params = data.DataLoaderParams(
+            batch_size=2, num_workers=2, random_seed=rng.get_default_seed()
+        )
+
+        params.shuffle = True
         self._train_dataset = self._create_dataset(RandomDataset(), params)
+
+        params.num_workers = 2
+        self._valid_dataset = self._create_dataset(SequentialDataset(), params)
+
+        params.shuffle = False
+        self._test_dataset = self._create_dataset(SequentialDataset(), params)
 
 
 class TestTransforms:
@@ -54,34 +92,132 @@ class TestDataModule:
             torch.tensor([[23, 322, 577], [757, 651, 429]]),
         ]
 
+    def get_expected_valid_batches(self) -> list[torch.Tensor]:
+        return [
+            torch.tensor([[809, 833, 629], [694, 632, 678]]),
+            torch.tensor([[359, 639, 636], [553, 266, 928]]),
+            torch.tensor([[500, 324, 687], [963, 738, 996]]),
+            torch.tensor([[421, 568, 705], [15, 841, 180]]),
+            torch.tensor([[766, 97, 292], [23, 322, 577]]),
+            torch.tensor([[269, 806, 472], [757, 651, 429]]),
+            torch.tensor([[340, 810, 512], [440, 610, 126]]),
+            torch.tensor([[92, 228, 424], [686, 769, 903]]),
+        ]
+
+    def get_expected_test_batches(self) -> list[torch.Tensor]:
+        return [
+            torch.tensor([[359, 639, 636], [963, 738, 996]]),
+            torch.tensor([[766, 97, 292], [500, 324, 687]]),
+            torch.tensor([[15, 841, 180], [553, 266, 928]]),
+            torch.tensor([[269, 806, 472], [694, 632, 678]]),
+            torch.tensor([[92, 228, 424], [421, 568, 705]]),
+            torch.tensor([[686, 769, 903], [440, 610, 126]]),
+            torch.tensor([[809, 833, 629], [340, 810, 512]]),
+            torch.tensor([[23, 322, 577], [757, 651, 429]]),
+        ]
+
     def check_batches(self, exp: list[torch.Tensor], val: list[torch.Tensor]) -> None:
         for b, exp_b in zip(exp, val, strict=True):
             assert torch.all(b == exp_b)
 
-    def prepare_dataloader(
-        self, skip_seed: bool = False, get_valid: bool = False
-    ) -> tud.DataLoader:
+    def prepare(
+        self, split: data.DatasetSplit, skip_seed: bool = False
+    ) -> tuple[tud.DataLoader, tud.Sampler]:
         if not skip_seed:
             rng.seed_rngs()
 
-        datamodule = RandomDataModule()
+        datamodule = SampleDataModule()
         datamodule.setup()
 
-        ret = (
-            datamodule.train_dataloader()
-            if not get_valid
-            else datamodule.valid_dataloader()
-        )
-
-        dataloader, _ = core.get_from_optional(ret)
-        assert dataloader is not None
-        return dataloader
+        if split == data.DatasetSplit.TRAIN:
+            return core.get_from_optional(datamodule.train_dataloader())
+        if split == data.DatasetSplit.VALID:
+            return core.get_from_optional(datamodule.valid_dataloader())
+        return core.get_from_optional(datamodule.test_dataloader())
 
     def test_worker_seeding(self) -> None:
-        dataloader = self.prepare_dataloader()
+        dataloader, _ = self.prepare(data.DatasetSplit.TRAIN)
+
         batches = []
         for batch in dataloader:
             batches.append(batch)
 
         exp_batches = self.get_expected_train_batches()
         self.check_batches(exp_batches, batches)
+
+    def test_resume_random(self) -> None:
+        dataloader, sampler = self.prepare(data.DatasetSplit.VALID)
+        assert isinstance(sampler, pds.ResumableRandomSampler)
+
+        half_step = len(dataloader) // 2
+        exp_batches = self.get_expected_valid_batches()
+
+        batches = []
+        sampler.set_epoch(0)
+        for step, batch in enumerate(dataloader):
+            if step >= half_step:
+                break
+            batches.append(batch)
+
+        self.check_batches(exp_batches[:half_step], batches)
+
+        # Grab the state and clear everything.
+        rng_state = rng.get_rng_state()
+
+        del dataloader, sampler
+        batches = []
+        rng.seed_rngs(0)
+
+        # Restore everything.
+        rng.restore_rng_state(rng_state)
+        dataloader, sampler = self.prepare(data.DatasetSplit.VALID, skip_seed=True)
+        assert isinstance(sampler, pds.ResumableRandomSampler)
+        sampler.set_epoch(0)
+        sampler.start_iter = half_step
+
+        # Continue.
+        for batch in dataloader:
+            batches.append(batch)
+
+        self.check_batches(exp_batches[half_step:], batches)
+
+    def test_resume_sequential(self) -> None:
+        dataloader, sampler = self.prepare(data.DatasetSplit.TEST)
+        assert isinstance(sampler, pds.ResumableSequentialSampler)
+
+        half_step = len(dataloader) // 2
+        exp_batches = self.get_expected_test_batches()
+
+        batches = []
+        sampler.set_epoch(0)
+        for step, batch in enumerate(dataloader):
+            if step >= half_step:
+                break
+            batches.append(batch)
+
+        self.check_batches(exp_batches[:half_step], batches)
+
+        # Grab the state and clear everything.
+        rng_state = rng.get_rng_state()
+
+        del dataloader, sampler
+        batches = []
+        rng.seed_rngs(0)
+
+        # Restore everything.
+        rng.restore_rng_state(rng_state)
+        dataloader, sampler = self.prepare(data.DatasetSplit.TEST, skip_seed=True)
+        assert isinstance(sampler, pds.ResumableSequentialSampler)
+        sampler.set_epoch(0)
+        sampler.start_iter = half_step
+
+        # Continue.
+        for batch in dataloader:
+            batches.append(batch)
+
+        self.check_batches(exp_batches[half_step:], batches)
+
+
+if __name__ == "__main__":
+    t = TestDataModule()
+    t.test_resume_sequential()
