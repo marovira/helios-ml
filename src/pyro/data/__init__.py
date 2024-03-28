@@ -6,6 +6,7 @@ Holds all functions and classes related to datasets, dataloaders, and data proce
 
 from .datamodule import (
     DATASET_REGISTRY,
+    DataLoaderParams,
     DatasetSplit,
     PyroDataModule,
     create_dataloader,
@@ -15,6 +16,7 @@ from .transforms import TRANSFORM_REGISTRY, create_transform
 
 __all__ = [
     "DATASET_REGISTRY",
+    "DataLoaderParams",
     "DatasetSplit",
     "PyroDataModule",
     "create_dataloader",
