@@ -1,0 +1,495 @@
+import dataclasses
+import enum
+import itertools
+import pathlib
+import typing
+
+import torch
+import torch.multiprocessing as mp
+import tqdm
+
+import pyro.model as pym
+from pyro import core, data
+from pyro.core import distributed as dist
+from pyro.core import logging, rng
+
+
+class TrainingUnit(enum.Enum):
+    """Defines the types of units for training steps."""
+
+    ITERATION = 0
+    EPOCH = 1
+
+    @classmethod
+    def from_str(cls, label: str) -> "TrainingUnit":
+        """
+        Convert the given string to the corresponding enum value.
+
+        Must be one of "iteration" or "epoch".
+
+        Args:
+            label (str): the label to convert.
+
+        Returns:
+            TrainingUnit: the corresponding value.
+        """
+        if label == "iteration":
+            return cls.ITERATION
+        if label == "epoch":
+            return cls.EPOCH
+
+        raise ValueError(
+            "invalid training unit. Expected one of 'iteration' or 'epoch' but "
+            f"received '{label}'"
+        )
+
+
+@dataclasses.dataclass
+class TrainingState:
+    """
+    The training state.
+
+    Args:
+        current_iteration (int): the current iteration number. Note that this refers to
+        the iteration in which gradients are updated. This may or may not be equal to the
+        global_iteration count (see below).
+        current_runnint_step (int): similar to current_iteration, this represents the
+        current step used to compute the running averages of the loss values. This must be
+        reset every time a validation cycle is performed.
+        global_iteration (int): the total iteration count.
+        global_epoch (int): the total epoch count.
+        rank (int): the current rank if training is distributed. 0 otherwise.
+        running_loss (Dict[str, float]): the running average of each of the loss values.
+        Must be reset every time a validation cycle is performed.
+        early_stop_cycles (int): the current number of validation cycles for early stop.
+    """
+
+    current_iteration: int = 0
+    current_running_step: int = 0
+    global_iteration: int = 0
+    global_epoch: int = 0
+    early_stop_cycles: int = 0
+    early_stop_count: int = 0
+
+    dict = dataclasses.asdict
+
+
+def find_last_checkpoint(root: pathlib.Path) -> pathlib.Path | None:
+    """
+    Find the last saved checkpoint (if available).
+
+    The function assumes that checkpoint names contain 'epoch_<epoch>' and 'iter_<iter>'
+    in the name, in which case it will return the path to the checkpoint with the highest
+    epoch and/or iteration count.
+
+    Args:
+        root (pathlib.Path): the path where the checkpoints are stored.
+
+    Returns:
+        pathlib.Path | None: the path to the last checkpoint (if any).
+    """
+    epoch = 0
+    ite = 0
+    last_chkpt = None
+    for path in root.glob("*.pth"):
+        elems = str(path.stem).split("_")
+
+        idx = elems.index("epoch") + 1
+        e = int(elems[idx])
+
+        idx = elems.index("iter") + 1
+        i = int(elems[idx])
+
+        if e > epoch or i > ite:
+            epoch = e
+            ite = i
+            last_chkpt = path
+
+    return last_chkpt
+
+
+def spawn_handler(
+    rank: int,
+    world_size: int,
+    trainer: "Trainer",
+    datamodule: data.PyroDataModule,
+    model: pym.Model,
+) -> None:
+    """Spawn callback for distributed training."""
+    dist.init_dist(rank, world_size)
+
+    trainer.model = model
+    trainer.datamodule = datamodule
+    trainer.rank = trainer.gpu_ids[rank]
+    trainer._train()  # noqa: SLF001
+
+    dist.shutdown_dist()
+
+
+class Trainer:
+    """
+    Automates the training, validation, and testing code.
+
+    The trainer handles all of the required steps to setup the correct environment
+    (including handling distributed training), the training/validation/testing loops, and
+    any clean up afterwards.
+
+    Args:
+        train_unit (TrainingUnit): the unit used for training.
+        total_steps (int | float): the total number of steps to train for.
+        valid_frequency (int): frequency with which to perform validation.
+        chkpt_frequency (int): frequency with which to save checkpoints.
+        print_frequency (int): frequency with which to log.
+        accumulation_steps (int): number of steps for gradient accumulation.
+        enable_cudnn_benchmark (bool): enable/disable CuDNN benchmark.
+        enable_deterministic (bool): enable/disable PyTorch deterministic.
+        early_stop_cycles (int): number of cycles after which training will stop if no
+        improvement is seen during validation.
+        use_cpu: (bool | None): if True, CPU will be used.
+        gpus (list[int] | None): IDs of GPUs to use.
+        ranomd_seed (int | None): the seed to use for RNGs.
+        enable_tensorboard (bool): enable/disable Tensorboard logging.
+        enable_file_logging (bool): enable/disable file logging.
+        chkpt_root (pathlib.Path): root folder in which checkpoints will be placed.
+        log_path (pathlib.Path): root folder in which logs will be saved.
+        run_path (pathlib.Path): root folder in which Tensorboard runs will be saved.
+        run_name (str): name of the current run.
+    """
+
+    def __init__(
+        self,
+        train_unit: TrainingUnit = TrainingUnit.ITERATION,
+        total_steps: int | float = 0,
+        valid_frequency: int = 0,
+        chkpt_frequency: int = 0,
+        print_frequency: int = 0,
+        accumulation_steps: int = 1,
+        enable_cudnn_benchmark: bool = True,
+        enable_deterministic: bool = False,
+        early_stop_cycles: int = 0,
+        use_cpu: bool | None = None,
+        gpus: list[int] | None = None,
+        random_seed: int | None = None,
+        enable_tensorboard: bool = True,
+        enable_file_logging: bool = True,
+        chkpt_root: pathlib.Path | None = None,
+        log_path: pathlib.Path | None = None,
+        run_path: pathlib.Path | None = None,
+        run_name: str = "",
+    ):
+        """Create the trainer."""
+        self._model: pym.Model | None = None
+        self._datamodule: data.PyroDataModule | None = None
+        self._rank: int = 0
+
+        self._use_cpu: bool = False
+        self._device: torch.device | None = None
+        self._map_loc: str | dict[str, str] = ""
+        self._gpu_ids: list[int] = [] if gpus is None else gpus
+        self._is_distributed: bool = False
+
+        self._train_unit = train_unit
+        self._total_steps = total_steps
+        self._accumulation_steps = accumulation_steps
+        self._valid_frequency = valid_frequency
+        self._chkpt_frequency = chkpt_frequency
+        self._print_frequency = print_frequency
+        self._enable_cudnn_benchmark = enable_cudnn_benchmark
+        self._enable_deterministic = enable_deterministic
+        self._early_stop_cycles = early_stop_cycles
+        self._enable_tensorboard = enable_tensorboard
+        self._enable_file_logging = enable_file_logging
+        self._random_seed = rng.get_default_seed() if random_seed is None else random_seed
+
+        self._chkpt_root = chkpt_root
+        self._log_path = log_path
+        self._run_path = run_path
+
+        self._run_name = run_name
+
+        self._validate_flags()
+        self._setup_device_flags(use_cpu)
+
+    @property
+    def model(self) -> pym.Model:
+        """Return the model."""
+        return core.get_from_optional(self._model)
+
+    @model.setter
+    def model(self, model: pym.Model) -> None:
+        self._model = model
+
+    @property
+    def datamodule(self) -> data.PyroDataModule:
+        """Return the datamodule."""
+        return core.get_from_optional(self._datamodule)
+
+    @datamodule.setter
+    def datamodule(self, datamodule: data.PyroDataModule) -> None:
+        self._datamodule = datamodule
+
+    @property
+    def rank(self) -> int:
+        """Return the rank of the trainer."""
+        return self._rank
+
+    @rank.setter
+    def rank(self, r) -> None:
+        self._rank = r
+
+    @property
+    def gpu_ids(self) -> list[int]:
+        """Return the list of GPU IDs to use for training."""
+        return self._gpu_ids
+
+    def fit(self, model: pym.Model, datamodule: data.PyroDataModule) -> None:
+        """
+        Run the full training routine.
+
+        Args:
+            model (pym.Model): the model to run on.
+            datamodule (data.PyroDataModule): the datamodule to use.
+        """
+        datamodule.prepare_data()
+
+        if self._is_distributed:
+            world_size = len(self._gpu_ids)
+            mp.spawn(
+                spawn_handler,
+                args=(world_size, self, datamodule, model),
+                nprocs=world_size,
+                join=True,
+            )
+            return
+
+        self.model = model
+        self.datamodule = datamodule
+        self.rank = 0
+        self._train()
+
+    def _train(self) -> None:
+        self.configure_env()
+
+        self.datamodule.is_distributed = self._is_distributed
+        self.datamodule.setup()
+
+        self.model.map_loc = self._map_loc
+        self.model.is_distributed = self._is_distributed
+        self.model.device = core.get_from_optional(self._device)
+        self.model.setup()
+
+        if self._chkpt_root is None:
+            self._chkpt_root = pathlib.Path.cwd() / "chkpt"
+
+        name = self.model.save_name
+        self._chkpt_root = self._chkpt_root / name
+        self._chkpt_root.mkdir(parents=True, exist_ok=True)
+
+        if self._log_path is not None:
+            self._log_path.mkdir(parents=True, exist_ok=True)
+        if self._run_path is not None:
+            self._run_path.mkdir(parents=True, exist_ok=True)
+
+        training_state: TrainingState
+        chkpt_path = find_last_checkpoint(self._chkpt_root)
+        if chkpt_path is not None:
+            state_dict = torch.load(chkpt_path, map_location=self._map_loc)
+            logging.restore_default_loggers(
+                state_dict.get("log_path", None), state_dict.get("run_path", None)
+            )
+
+            self.model.load_state_dict(state_dict["model"])
+            training_state = TrainingState(**state_dict["training_state"])
+        else:
+            logging.setup_default_loggers("", self._log_path, self._run_path)
+            training_state = TrainingState()
+
+        root_logger = logging.get_root_logger()
+        root_logger.info(core.get_env_info_str())
+        if chkpt_path is not None:
+            root_logger.info(f"Resuming training from checkpoint {str(chkpt_path)}")
+
+        self.model.on_training_start()
+        if self._train_unit == TrainingUnit.ITERATION:
+            self._train_on_iteration(training_state)
+        else:
+            self._train_on_epoch(training_state)
+
+        self.model.on_training_end()
+        logging.flush_default_loggers()
+        logging.close_default_loggers()
+
+    def configure_env(self) -> None:
+        """Configure the training environment."""
+        rng.seed_rngs(self._random_seed)
+        torch.use_deterministic_algorithms(self._enable_deterministic)
+
+        if not self._use_cpu:
+            self._device = torch.device(f"cuda:{self.rank}")
+            self._map_loc = {"cuda:0": f"cuda:{self.rank}"}
+            torch.backends.cudnn.benchmark = self._enable_cudnn_benchmark
+            torch.cuda.set_device(self._device)
+
+        logging.create_default_loggers(self._enable_tensorboard)
+
+    def _validate_flags(self):
+        """Ensure that all the settings and flags are valid."""
+        if isinstance(self._total_steps, float) and self._total_steps != float("inf"):
+            raise ValueError(
+                "error: expected 'total_steps' to be of type 'int' or 'infinity', but "
+                f"received {self._total_steps}"
+            )
+
+        if self._chkpt_frequency == 0:
+            self._chkpt_frequency = self._valid_frequency
+
+        if self._enable_deterministic and self._enable_cudnn_benchmark:
+            raise ValueError(
+                "error: CUDA benchmark and deterministic flags are mutually exclusive"
+            )
+
+        if self._total_steps == float("inf") and self._early_stop_cycles == 0:
+            raise ValueError(
+                f"error: given 'total_steps' with value {self._total_steps}, "
+                "'early_stop_cycles' must be non-zero"
+            )
+
+        if self._enable_tensorboard:
+            if self._run_path is None:
+                raise ValueError(
+                    "error: Tensorboard requested but no run directory was given"
+                )
+            if not self._run_path.is_dir():
+                raise ValueError("error: run path must be a directory")
+
+        if self._enable_file_logging:
+            if self._log_path is None:
+                raise ValueError(
+                    "error: file logging requested but no log directory was given"
+                )
+
+            if not self._log_path.is_dir():
+                raise ValueError("error: log path must be a directory")
+
+    def _setup_device_flags(self, use_cpu: bool | None):
+        """
+        Configure the device state.
+
+        If the CPU is being used, this will automatically set the correct settings. If the
+        GPU will be used, then it will only verify that the GPU IDs are correct. The
+        remaining state will be set afterwards.
+        The use_cpu flag is used to determine whether the CPU will be used for training.
+        If it is None, then the value is determined by whether CUDA is available.
+
+        Args:
+            use_cpu (bool | None): whether to use the CPU or not.
+        """
+        if use_cpu is None:
+            use_cpu = not torch.cuda.is_available()
+
+        if use_cpu:
+            self._use_cpu = True
+            self._device = torch.device("cpu")
+            self._map_loc = {"cuda:0": "cpu"}
+            self._gpu_ids = []
+            self._is_distributed = False
+            return
+
+        if not torch.cuda.is_available():
+            raise RuntimeError(
+                "error: CUDA usage is requested, but CUDA is not available"
+            )
+
+        # At this point we know that CUDA exists and that we're supposed to use it. For
+        # now, just verify that the GPU IDs are valid, but don't set the device or the map
+        # location. Those need to be set after we launch distributed training (if using)
+        # to ensure they get set to the correct thing.
+
+        valid_ids = list(range(torch.cuda.device_count()))
+        if len(self._gpu_ids) == 0:
+            self._gpu_ids = valid_ids
+
+        for gpu_id in self._gpu_ids:
+            if gpu_id not in valid_ids:
+                raise RuntimeError(f"error: {gpu_id} is not a valid GPU")
+
+        self._is_distributed = len(self._gpu_ids) > 1
+
+    def _save_checkpoint(self, state: TrainingState) -> None:
+        chkpt_root = core.get_from_optional(self._chkpt_root)
+
+        epoch = state.global_epoch
+        ite = state.global_iteration
+        filename = f"{self.model.save_name}_epoch_{epoch}_iter_{ite}"
+        self.model.append_metadata_to_chkpt_name(filename)
+        filename += ".pth"
+
+        state_dict: dict[str, typing.Any] = {}
+
+        state_dict["training_state"] = state.dict()
+        if self._log_path is not None:
+            state_dict["log_path"] = self._log_path
+        if self._run_path is not None:
+            state_dict["run_path"] = self._run_path
+
+        state_dict["model"] = self.model.state_dict()
+        torch.save(state_dict, chkpt_root / filename)
+
+    def _train_on_iteration(self, state: TrainingState) -> None:
+        total_steps = self._total_steps
+        save_freq = self._chkpt_frequency
+        val_freq = self._valid_frequency
+        print_freq = self._print_frequency
+        accumulation_steps = self._accumulation_steps
+        perform_validation: bool = True
+        training_done: bool = False
+        root_logger = logging.get_root_logger()
+
+        ret = self.datamodule.train_dataloader()
+        if ret is None:
+            raise ValueError("error: no training dataloader is returned")
+
+        dataloader, sampler = ret
+
+        self.model.train()
+        with tqdm.contrib.logging.logging_redirect_tqdm():  # type: ignore[attr-defined]
+            for epoch in itertools.count():
+                if training_done:
+                    break
+                state.global_epoch += 1
+                root_logger.info(f"Starting epoch {epoch}")
+                sampler.set_epoch(epoch)
+
+                with tqdm.tqdm(
+                    total=len(dataloader),
+                    desc=f"Epoch {epoch + 1}",
+                    unit="it",
+                    enabled=self._is_distributed and self.rank == 0,
+                ) as pbar:
+                    for batch in dataloader:
+                        if state.global_iteration % accumulation_steps == 0:
+                            state.current_iteration += 1
+                            perform_validation = True
+                        else:
+                            perform_validation = False
+
+                        state.global_iteration += 1
+                        batch["step"] = state.global_iteration
+                        if state.current_iteration > total_steps:
+                            training_done = True
+                            break
+
+                        self.model.on_training_batch_start()
+                        self.model.train_step(batch)
+                        self.model.on_training_batch_end(
+                            state.current_iteration % print_freq == 0
+                        )
+                        pbar.update()
+
+                        if state.current_iteration % val_freq == 0 and perform_validation:
+                            pass
+                        if state.current_iteration % save_freq == 0 and self.rank == 0:
+                            self._save_checkpoint(state)
+
+    def _train_on_epoch(self, state: TrainingState) -> None:
+        pass
