@@ -216,7 +216,9 @@ class Model(abc.ABC):
         automatically for you.
         """
 
-    def on_training_batch_end(self, should_log: bool = False) -> None:
+    def on_training_batch_end(
+        self, should_log: bool = False, avg_time: float = 0
+    ) -> None:
         """
         Perform any actions when a training batch ends.
 
@@ -226,6 +228,7 @@ class Model(abc.ABC):
 
         Args:
             should_log (bool): if true, then logging should be performed.
+            avg_time (float): average time between batches. Useful for logging.
         """
         if self._is_distributed:
             for _, loss in self._loss_items.items():
