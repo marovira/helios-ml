@@ -1,5 +1,4 @@
 import abc
-import dataclasses
 import pathlib
 import typing
 
@@ -55,27 +54,6 @@ def find_pretrained_file(root: pathlib.Path, name: str) -> pathlib.Path:
     raise RuntimeError(
         f"error: unable to find a pretrained network named {name} at {str(root)}"
     )
-
-
-@dataclasses.dataclass
-class Checkpoint:
-    """
-    Represents the state loaded from a previously saved checkpoint.
-
-    Args:
-        path (Optional[pathlib.Path]): the path of the loaded checkpoint. If it's None,
-        then no checkpoint is held and state_dict is also None.
-        state_dict (Optional[dict[str, Any]]): the state dictionary of the loaded
-        checkpoint. May be None, in which case path is also None and no checkpoint is
-        held.
-        epoch (int): the epoch the checkpoint was saved on.
-        ite (int): the iteration the checkpoint was saved on.
-    """
-
-    path: pathlib.Path | None = None
-    state_dict: dict[str, typing.Any] | None = None
-    epoch: int = 0
-    ite: int = 0
 
 
 class Model(abc.ABC):
@@ -238,13 +216,16 @@ class Model(abc.ABC):
         automatically for you.
         """
 
-    def on_training_batch_end(self) -> None:
+    def on_training_batch_end(self, should_log: bool = False) -> None:
         """
         Perform any actions when a training batch ends.
 
         This function is called after train_step is called. By default, it will gather all
         the losses (if using distributed training), but you may also use it to log your
         losses or perform any additional tasks after the training step.
+
+        Args:
+            should_log (bool): if true, then logging should be performed.
         """
         if self._is_distributed:
             for _, loss in self._loss_items.items():
