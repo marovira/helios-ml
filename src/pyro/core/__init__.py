@@ -9,6 +9,7 @@ from .utils import (
     ChdirContext,
     Registry,
     convert_to_list,
+    get_env_info_str,
     get_from_optional,
 )
 
@@ -17,5 +18,6 @@ __all__ = [
     "ChdirContext",
     "Registry",
     "get_from_optional",
+    "get_env_info_str",
     "convert_to_list",
 ]

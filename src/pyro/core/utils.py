@@ -1,10 +1,47 @@
 import os
 import pathlib
+import platform
+import sys
 import time
 import typing
 
+import torch
+import torchvision
+
+from ..version import __version__
+
 T = typing.TypeVar("T")
 T_Any = typing.TypeVar("T_Any", bound=typing.Any)
+
+
+def get_env_info_str() -> str:
+    """
+    Return a string with the pyro header and the environment information.
+
+    Returns:
+        str: the message string.
+    """
+    msg = r"""
+#===========================================#
+  _____   __     __  _____     ____
+ |  __ \  \ \   / / |  __ \   / __ \
+ | |__) |  \ \_/ /  | |__) | | |  | |
+ |  ___/    \   /   |  _  /  | |  | |
+ | |         | |    | | \ \  | |__| |
+ |_|         |_|    |_|  \_\  \____/
+    """
+    msg += (
+        "\nEnvironment info: "
+        f"\n\tPyro: {__version__}"
+        f"\n\tPyTorch: {torch.__version__}"
+        f"\n\tTorchVision: {torchvision.__version__}"
+        f"\n\tOS: {platform.platform()}"
+        f"\n\tPython: {sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[3]}"
+    )
+    if torch.cuda.is_available():
+        msg += f"\n\tCUDA version: {torch.version.cuda}"
+    msg += "\n#===========================================#\n\n"
+    return msg
 
 
 def get_from_optional(opt_var: T | None, raise_on_empty: bool = False) -> T:
