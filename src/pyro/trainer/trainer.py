@@ -2,16 +2,20 @@ import dataclasses
 import enum
 import itertools
 import pathlib
+import time
 import typing
 
 import torch
+import torch.distributed as td
 import torch.multiprocessing as mp
+import torch.utils.data as tud
 import tqdm
 
 import pyro.model as pym
 from pyro import core, data
 from pyro.core import distributed as dist
 from pyro.core import logging, rng
+from pyro.data.samplers import ResumableSamplerType
 
 
 class TrainingUnit(enum.Enum):
@@ -53,22 +57,17 @@ class TrainingState:
         current_iteration (int): the current iteration number. Note that this refers to
         the iteration in which gradients are updated. This may or may not be equal to the
         global_iteration count (see below).
-        current_runnint_step (int): similar to current_iteration, this represents the
-        current step used to compute the running averages of the loss values. This must be
-        reset every time a validation cycle is performed.
         global_iteration (int): the total iteration count.
         global_epoch (int): the total epoch count.
-        rank (int): the current rank if training is distributed. 0 otherwise.
-        running_loss (Dict[str, float]): the running average of each of the loss values.
-        Must be reset every time a validation cycle is performed.
-        early_stop_cycles (int): the current number of validation cycles for early stop.
+        dataset_iter (int): the current batch index of the dataset. This is reset every
+        epoch.
+        early_stop_count (int): the current number of validation cycles for early stop.
     """
 
     current_iteration: int = 0
-    current_running_step: int = 0
     global_iteration: int = 0
     global_epoch: int = 0
-    early_stop_cycles: int = 0
+    dataset_iter: int = 0
     early_stop_count: int = 0
 
     dict = dataclasses.asdict
@@ -120,7 +119,7 @@ def spawn_handler(
 
     trainer.model = model
     trainer.datamodule = datamodule
-    trainer.rank = trainer.gpu_ids[rank]
+    trainer.rank = rank
     trainer._train()  # noqa: SLF001
 
     dist.shutdown_dist()
@@ -172,6 +171,7 @@ class Trainer:
         random_seed: int | None = None,
         enable_tensorboard: bool = True,
         enable_file_logging: bool = True,
+        enable_progress_bar: bool = True,
         chkpt_root: pathlib.Path | None = None,
         log_path: pathlib.Path | None = None,
         run_path: pathlib.Path | None = None,
@@ -186,6 +186,7 @@ class Trainer:
         self._device: torch.device | None = None
         self._map_loc: str | dict[str, str] = ""
         self._gpu_ids: list[int] = [] if gpus is None else gpus
+        self._active_gpu: int = 0
         self._is_distributed: bool = False
 
         self._train_unit = train_unit
@@ -200,6 +201,7 @@ class Trainer:
         self._enable_tensorboard = enable_tensorboard
         self._enable_file_logging = enable_file_logging
         self._random_seed = rng.get_default_seed() if random_seed is None else random_seed
+        self._enable_progress_bar = enable_progress_bar
 
         self._chkpt_root = chkpt_root
         self._log_path = log_path
@@ -236,6 +238,7 @@ class Trainer:
     @rank.setter
     def rank(self, r) -> None:
         self._rank = r
+        self._active_gpu = self._gpu_ids[r]
 
     @property
     def gpu_ids(self) -> list[int]:
@@ -292,6 +295,7 @@ class Trainer:
 
         training_state: TrainingState
         chkpt_path = find_last_checkpoint(self._chkpt_root)
+        resume_training = False
         if chkpt_path is not None:
             state_dict = torch.load(chkpt_path, map_location=self._map_loc)
             logging.restore_default_loggers(
@@ -300,6 +304,7 @@ class Trainer:
 
             self.model.load_state_dict(state_dict["model"])
             training_state = TrainingState(**state_dict["training_state"])
+            resume_training = True
         else:
             logging.setup_default_loggers("", self._log_path, self._run_path)
             training_state = TrainingState()
@@ -310,10 +315,11 @@ class Trainer:
             root_logger.info(f"Resuming training from checkpoint {str(chkpt_path)}")
 
         self.model.on_training_start()
-        if self._train_unit == TrainingUnit.ITERATION:
-            self._train_on_iteration(training_state)
-        else:
-            self._train_on_epoch(training_state)
+        with tqdm.contrib.logging.logging_redirect_tqdm():  # type: ignore[attr-defined]
+            if self._train_unit == TrainingUnit.ITERATION:
+                self._train_on_iteration(training_state, resume_training)
+            else:
+                self._train_on_epoch(training_state)
 
         self.model.on_training_end()
         logging.flush_default_loggers()
@@ -325,8 +331,8 @@ class Trainer:
         torch.use_deterministic_algorithms(self._enable_deterministic)
 
         if not self._use_cpu:
-            self._device = torch.device(f"cuda:{self.rank}")
-            self._map_loc = {"cuda:0": f"cuda:{self.rank}"}
+            self._device = torch.device(f"cuda:{self._active_gpu}")
+            self._map_loc = {"cuda:0": f"cuda:{self._active_gpu}"}
             torch.backends.cudnn.benchmark = self._enable_cudnn_benchmark
             torch.cuda.set_device(self._device)
 
@@ -435,61 +441,197 @@ class Trainer:
         state_dict["model"] = self.model.state_dict()
         torch.save(state_dict, chkpt_root / filename)
 
-    def _train_on_iteration(self, state: TrainingState) -> None:
+    def _train_on_iteration(self, state: TrainingState, resume_training: bool) -> None:
         total_steps = self._total_steps
         save_freq = self._chkpt_frequency
         val_freq = self._valid_frequency
         print_freq = self._print_frequency
         accumulation_steps = self._accumulation_steps
+        enable_progress_bar = self._enable_progress_bar
+        early_stop_cycles = self._early_stop_cycles
+
         perform_validation: bool = True
         training_done: bool = False
         root_logger = logging.get_root_logger()
+        iter_timer = core.AverageTimer()
 
-        ret = self.datamodule.train_dataloader()
-        if ret is None:
-            raise ValueError("error: no training dataloader is returned")
+        pbar_disabled = (
+            self._is_distributed and self.rank != 0
+        ) or not enable_progress_bar
+        pbar = tqdm.tqdm(
+            total=total_steps if total_steps != float("inf") else None,
+            desc="Training iterations",
+            unit="it",
+            disable=pbar_disabled,
+        )
 
-        dataloader, sampler = ret
+        dataloader: tud.DataLoader
+        sampler: ResumableSamplerType
+        dataloader, sampler = core.get_from_optional(self.datamodule.train_dataloader())
 
+        sampler.start_iter = state.dataset_iter
         self.model.train()
-        with tqdm.contrib.logging.logging_redirect_tqdm():  # type: ignore[attr-defined]
-            for epoch in itertools.count():
-                if training_done:
+
+        for epoch in itertools.count(start=state.global_epoch):
+            if training_done:
+                break
+            root_logger.info(f"Starting epoch {epoch}")
+            sampler.set_epoch(epoch)
+            epoch_start = time.time()
+
+            iter_timer.start()
+            for batch in dataloader:
+                if state.global_iteration % accumulation_steps == 0:
+                    state.current_iteration += 1
+                    perform_validation = True
+                else:
+                    perform_validation = False
+
+                state.global_iteration += 1
+                batch["step"] = state.global_iteration
+                if state.current_iteration > total_steps:
+                    training_done = True
                     break
-                state.global_epoch += 1
-                root_logger.info(f"Starting epoch {epoch}")
-                sampler.set_epoch(epoch)
 
-                with tqdm.tqdm(
-                    total=len(dataloader),
-                    desc=f"Epoch {epoch + 1}",
-                    unit="it",
-                    enabled=self._is_distributed and self.rank == 0,
-                ) as pbar:
-                    for batch in dataloader:
-                        if state.global_iteration % accumulation_steps == 0:
-                            state.current_iteration += 1
-                            perform_validation = True
-                        else:
-                            perform_validation = False
+                self.model.on_training_batch_start()
+                self.model.train_step(batch)
+                iter_timer.record()
+                self.model.on_training_batch_end(
+                    state.current_iteration % print_freq == 0,
+                    iter_timer.get_average_time(),
+                )
+                pbar.update()
+                state.dataset_iter += 1
 
-                        state.global_iteration += 1
-                        batch["step"] = state.global_iteration
-                        if state.current_iteration > total_steps:
-                            training_done = True
-                            break
+                if state.current_iteration % val_freq == 0 and perform_validation:
+                    self._validate()
+                    if not self.model.have_metrics_improved():
+                        state.early_stop_count += 1
+                    else:
+                        state.early_stop_count = 0
+                if state.current_iteration % save_freq == 0 and self.rank == 0:
+                    self._save_checkpoint(state)
 
-                        self.model.on_training_batch_start()
-                        self.model.train_step(batch)
-                        self.model.on_training_batch_end(
-                            state.current_iteration % print_freq == 0
-                        )
-                        pbar.update()
+            root_logger.info(f"Epoch {epoch} completed in {time.time() - epoch_start}s")
+            if state.early_stop_count >= early_stop_cycles:
+                training_done = True
 
-                        if state.current_iteration % val_freq == 0 and perform_validation:
-                            pass
-                        if state.current_iteration % save_freq == 0 and self.rank == 0:
-                            self._save_checkpoint(state)
+            state.dataset_iter = 0
+            state.global_epoch += 1
 
     def _train_on_epoch(self, state: TrainingState) -> None:
-        pass
+        total_steps = self._total_steps
+        save_freq = self._chkpt_frequency
+        val_freq = self._valid_frequency
+        print_freq = self._print_frequency
+        enable_progress_bar = self._enable_progress_bar
+        early_stop_cycles = self._early_stop_cycles
+
+        training_done: bool = False
+        root_logger = logging.get_root_logger()
+        iter_timer = core.AverageTimer()
+
+        pbar_disabled = (
+            self._is_distributed and self.rank != 0
+        ) or not enable_progress_bar
+        pbar = tqdm.tqdm(
+            total=total_steps if total_steps != float("inf") else None,
+            desc="Training epochs",
+            unit="epoch",
+            disable=pbar_disabled,
+        )
+
+        dataloader: tud.DataLoader
+        sampler: ResumableSamplerType
+        dataloader, sampler = core.get_from_optional(self.datamodule.train_dataloader())
+
+        sampler.start_iter = state.dataset_iter
+        self.model.train()
+        iterator = (
+            range(state.global_epoch, int(total_steps))
+            if total_steps != float("inf")
+            else itertools.count(start=state.global_epoch)
+        )
+
+        for epoch in iterator:
+            if training_done:
+                break
+
+            if state.global_epoch > total_steps:
+                training_done = True
+                break
+
+            root_logger.info(f"Starting epoch {epoch}")
+            sampler.set_epoch(epoch)
+            epoch_start = time.time()
+            iter_timer.start()
+            for batch in dataloader:
+                state.global_iteration += 1
+                state.current_iteration += 1
+                batch["step"] = state.global_iteration
+
+                self.model.on_training_batch_start()
+                self.model.train_step(batch)
+                iter_timer.record()
+                self.model.on_training_batch_end(
+                    state.current_iteration % print_freq == 0,
+                    iter_timer.get_average_time(),
+                )
+                state.dataset_iter += 1
+
+            if state.global_epoch % val_freq == 0:
+                self._validate()
+                if not self.model.have_metrics_improved():
+                    state.early_stop_count += 1
+                else:
+                    state.early_stop_count = 0
+            if state.global_epoch % save_freq == 0 and self.rank == 0:
+                self._save_checkpoint(state)
+
+            root_logger.info(f"Epoch {epoch} completed in {time.time() - epoch_start}s")
+            pbar.update()
+            if state.early_stop_count >= early_stop_cycles:
+                training_done = True
+
+            state.dataset_iter = 0
+            state.global_epoch += 1
+
+    def _validate(self) -> None:
+        if self.datamodule.valid_dataloader() is None:
+            return
+
+        dataloader: tud.DataLoader
+        sampler: ResumableSamplerType
+        dataloader, sampler = core.get_from_optional(self.datamodule.valid_dataloader())
+
+        enable_progress_bar = self._enable_progress_bar
+        pbar_disabled = (
+            self._is_distributed and self.rank != 0
+        ) or not enable_progress_bar
+        pbar = tqdm.tqdm(
+            total=len(dataloader),
+            desc="Validation",
+            unit="it",
+            disable=pbar_disabled,
+            leave=False,
+        )
+
+        if self._enable_cudnn_benchmark:
+            torch.backends.cudnn.benchmark = False
+
+        self.model.eval()
+        self.model.on_validation_start()
+        for batch in dataloader:
+            self.model.on_validation_batch_start()
+            self.model.valid_step(batch)
+            self.model.on_validation_batch_end()
+            pbar.update()
+
+        self.model.train()
+        self.model.on_validation_end()
+
+        if self._enable_cudnn_benchmark:
+            torch.backends.cudnn.benchmark = False
+
+        if self._is_distributed:
+            td.barrier()
