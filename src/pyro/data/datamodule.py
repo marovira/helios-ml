@@ -10,6 +10,9 @@ import torch.utils.data as tud
 from pyro import core
 from pyro.core import rng
 
+if typing.TYPE_CHECKING:
+    from ..trainer import Trainer
+
 from .samplers import (
     ResumableDistributedSampler,
     ResumableRandomSampler,
@@ -250,6 +253,7 @@ class PyroDataModule(abc.ABC):
         self._train_dataset: Dataset | None = None
         self._valid_dataset: Dataset | None = None
         self._test_dataset: Dataset | None = None
+        self._trainer: Trainer | None = None
 
     @property
     def is_distributed(self) -> bool:
@@ -259,6 +263,15 @@ class PyroDataModule(abc.ABC):
     @is_distributed.setter
     def is_distributed(self, val: bool) -> None:
         self._is_distributed = val
+
+    @property
+    def trainer(self) -> Trainer:
+        """Reference to the trainer."""
+        return core.get_from_optional(self._trainer)
+
+    @trainer.setter
+    def trainer(self, t) -> None:
+        self._trainer = t
 
     def prepare_data(self) -> None:  # noqa: B027
         """
