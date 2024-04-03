@@ -48,6 +48,13 @@ class TrainingUnit(enum.Enum):
         )
 
 
+class TrainerMode(enum.Enum):
+    """Defines the types of actions that the trainer can do."""
+
+    TRAIN = 0
+    TEST = 1
+
+
 @dataclasses.dataclass
 class TrainingState:
     """
@@ -59,6 +66,7 @@ class TrainingState:
         global_iteration count (see below).
         global_iteration (int): the total iteration count.
         global_epoch (int): the total epoch count.
+        validation_cycles (int): the number of validation cycles.
         dataset_iter (int): the current batch index of the dataset. This is reset every
         epoch.
         early_stop_count (int): the current number of validation cycles for early stop.
@@ -67,6 +75,7 @@ class TrainingState:
     current_iteration: int = 0
     global_iteration: int = 0
     global_epoch: int = 0
+    validation_cycles: int = 0
     dataset_iter: int = 0
     early_stop_count: int = 0
 
@@ -113,6 +122,7 @@ def spawn_handler(
     trainer: "Trainer",
     datamodule: data.PyroDataModule,
     model: pym.Model,
+    mode: TrainerMode,
 ) -> None:
     """Spawn callback for distributed training."""
     dist.init_dist(rank, world_size)
@@ -120,7 +130,10 @@ def spawn_handler(
     trainer.model = model
     trainer.datamodule = datamodule
     trainer.rank = rank
-    trainer._train()  # noqa: SLF001
+    if mode == TrainerMode.TRAIN:
+        trainer._train()  # noqa: SLF001
+    elif mode == TrainerMode.TEST:
+        trainer._test()  # noqa: SLF001
 
     dist.shutdown_dist()
 
@@ -253,13 +266,28 @@ class Trainer:
             model (pym.Model): the model to run on.
             datamodule (data.PyroDataModule): the datamodule to use.
         """
+        self._launch(model, datamodule, TrainerMode.TRAIN)
+
+    def test(self, model: pym.Model, datamodule: data.PyroDataModule) -> None:
+        """
+        Run the full testing routine.
+
+        Args:
+            model (pym.Model): the model to run on.
+            datamodule (data.PyroDataModule): the datamodule to use.
+        """
+        self._launch(model, datamodule, TrainerMode.TEST)
+
+    def _launch(
+        self, model: pym.Model, datamodule: data.PyroDataModule, mode: TrainerMode
+    ) -> None:
         datamodule.prepare_data()
 
         if self._is_distributed:
             world_size = len(self._gpu_ids)
             mp.spawn(
                 spawn_handler,
-                args=(world_size, self, datamodule, model),
+                args=(world_size, self, datamodule, model, mode),
                 nprocs=world_size,
                 join=True,
             )
@@ -268,17 +296,22 @@ class Trainer:
         self.model = model
         self.datamodule = datamodule
         self.rank = 0
-        self._train()
+        if mode == TrainerMode.TRAIN:
+            self._train()
+        elif mode == TrainerMode.TEST:
+            self._test()
 
     def _train(self) -> None:
-        self.configure_env()
+        self._configure_env()
 
         self.datamodule.is_distributed = self._is_distributed
+        self.datamodule.trainer = self
         self.datamodule.setup()
 
         self.model.map_loc = self._map_loc
         self.model.is_distributed = self._is_distributed
         self.model.device = core.get_from_optional(self._device)
+        self.model.trainer = self
         self.model.setup()
 
         if self._chkpt_root is None:
@@ -306,7 +339,7 @@ class Trainer:
             training_state = TrainingState(**state_dict["training_state"])
             resume_training = True
         else:
-            logging.setup_default_loggers("", self._log_path, self._run_path)
+            logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
             training_state = TrainingState()
 
         root_logger = logging.get_root_logger()
@@ -325,7 +358,74 @@ class Trainer:
         logging.flush_default_loggers()
         logging.close_default_loggers()
 
-    def configure_env(self) -> None:
+    def _test(self) -> None:
+        self._configure_env()
+
+        self.datamodule.is_distributed = self._is_distributed
+        self.datamodule.trainer = self
+        self.datamodule.setup()
+
+        self.model.map_loc = self._map_loc
+        self.model.is_distributed = self._is_distributed
+        self.model.device = core.get_from_optional(self._device)
+        self.model.trainer = self
+        self.model.setup()
+
+        if self._chkpt_root is None:
+            self._chkpt_root = pathlib.Path.cwd() / "chkpt"
+
+        name = self.model.save_name
+        self._chkpt_root = self._chkpt_root / name
+        chkpt_path = find_last_checkpoint(self._chkpt_root)
+        if chkpt_path is not None:
+            state_dict = torch.load(chkpt_path, map_location=self._map_loc)
+            logging.restore_default_loggers(
+                state_dict.get("log_path", None), state_dict.get("run_path", None)
+            )
+
+            self.model.load_state_dict(state_dict["model"], fast_init=True)
+        else:
+            logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
+
+        root_logger = logging.get_root_logger()
+        root_logger.info(core.get_env_info_str())
+        if chkpt_path is not None:
+            root_logger.info(f"Testing using checkpoint {str(chkpt_path)}")
+        else:
+            root_logger.info("Testing from loaded model")
+
+        if self.datamodule.test_dataloader() is None:
+            return
+
+        dataloader: tud.DataLoader
+        sampler: ResumableSamplerType
+        dataloader, sampler = core.get_from_optional(self.datamodule.test_dataloader())
+
+        enable_progress_bar = self._enable_progress_bar
+        pbar_disabled = (
+            self._is_distributed and self.rank != 0
+        ) or not enable_progress_bar
+        pbar = tqdm.tqdm(
+            total=len(dataloader),
+            desc="Testing",
+            unit="it",
+            disable=pbar_disabled,
+            leave=False,
+        )
+
+        torch.backends.cudnn.benchmark = False
+
+        self.model.eval()
+        self.model.on_testing_start()
+        for idx, batch in enumerate(dataloader):
+            self.model.on_testing_batch_start(idx)
+            self.model.test_step(batch, idx)
+            self.model.on_testing_batch_end(idx)
+            pbar.update()
+
+        self.model.on_testing_end()
+
+    def _configure_env(self) -> None:
         """Configure the training environment."""
         rng.seed_rngs(self._random_seed)
         torch.use_deterministic_algorithms(self._enable_deterministic)
@@ -488,15 +588,15 @@ class Trainer:
                     perform_validation = False
 
                 state.global_iteration += 1
-                batch["step"] = state.global_iteration
                 if state.current_iteration > total_steps:
                     training_done = True
                     break
 
-                self.model.on_training_batch_start()
-                self.model.train_step(batch)
+                self.model.on_training_batch_start(state)
+                self.model.train_step(batch, state)
                 iter_timer.record()
                 self.model.on_training_batch_end(
+                    state,
                     state.current_iteration % print_freq == 0,
                     iter_timer.get_average_time(),
                 )
@@ -504,7 +604,8 @@ class Trainer:
                 state.dataset_iter += 1
 
                 if state.current_iteration % val_freq == 0 and perform_validation:
-                    self._validate()
+                    self._validate(state.validation_cycles)
+                    state.validation_cycles += 1
                     if not self.model.have_metrics_improved():
                         state.early_stop_count += 1
                     else:
@@ -570,21 +671,23 @@ class Trainer:
                 state.current_iteration += 1
                 batch["step"] = state.global_iteration
 
-                self.model.on_training_batch_start()
-                self.model.train_step(batch)
+                self.model.on_training_batch_start(state)
+                self.model.train_step(batch, state)
                 iter_timer.record()
                 self.model.on_training_batch_end(
+                    state,
                     state.current_iteration % print_freq == 0,
                     iter_timer.get_average_time(),
                 )
                 state.dataset_iter += 1
 
             if state.global_epoch % val_freq == 0:
-                self._validate()
+                self._validate(state.validation_cycles)
                 if not self.model.have_metrics_improved():
                     state.early_stop_count += 1
                 else:
                     state.early_stop_count = 0
+                state.validation_cycles += 1
             if state.global_epoch % save_freq == 0 and self.rank == 0:
                 self._save_checkpoint(state)
 
@@ -596,7 +699,7 @@ class Trainer:
             state.dataset_iter = 0
             state.global_epoch += 1
 
-    def _validate(self) -> None:
+    def _validate(self, val_cycle: int) -> None:
         if self.datamodule.valid_dataloader() is None:
             return
 
@@ -620,15 +723,15 @@ class Trainer:
             torch.backends.cudnn.benchmark = False
 
         self.model.eval()
-        self.model.on_validation_start()
-        for batch in dataloader:
-            self.model.on_validation_batch_start()
-            self.model.valid_step(batch)
-            self.model.on_validation_batch_end()
+        self.model.on_validation_start(val_cycle)
+        for idx, batch in enumerate(dataloader):
+            self.model.on_validation_batch_start(idx)
+            self.model.valid_step(batch, idx)
+            self.model.on_validation_batch_end(idx)
             pbar.update()
 
         self.model.train()
-        self.model.on_validation_end()
+        self.model.on_validation_end(val_cycle)
 
         if self._enable_cudnn_benchmark:
             torch.backends.cudnn.benchmark = False

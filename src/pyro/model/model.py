@@ -7,6 +7,9 @@ import torch
 from pyro import core
 from pyro.core import distributed as dist
 
+if typing.TYPE_CHECKING:
+    from ..trainer import Trainer, TrainingState
+
 MODEL_REGISTRY = core.Registry("model")
 
 # Tell Ruff to ignore the empty-method-without-abstract-decorator check, since a lot of
@@ -62,7 +65,7 @@ class Model(abc.ABC):
     def __init__(self, save_name: str, display_name: str):
         """Create the model."""
         self._save_name: str = save_name
-        self._display_name: str = display_name
+        self._trainer: Trainer | None
 
         self._is_distributed: bool = False
         self._map_loc: str | dict[str, str] = ""
@@ -70,16 +73,12 @@ class Model(abc.ABC):
 
         self._loss_items: dict[str, torch.Tensor] = {}
         self._val_scores: dict[str, float] = {}
+        self._test_scores: dict[str, float] = {}
 
     @property
     def save_name(self) -> str:
         """The name of the model used for saving checkpoints and final networks."""
         return self._save_name
-
-    @property
-    def display_name(self) -> str:
-        """The name of the model used for display/logging purposes."""
-        return self._display_name
 
     @property
     def is_distributed(self) -> bool:
@@ -108,6 +107,15 @@ class Model(abc.ABC):
     def device(self, dev: torch.device) -> None:
         self._device = dev
 
+    @property
+    def trainer(self) -> Trainer:
+        """Reference to the trainer."""
+        return core.get_from_optional(self._trainer)
+
+    @trainer.setter
+    def trainer(self, t) -> None:
+        self._trainer = t
+
     @abc.abstractmethod
     def setup(self, fast_init: bool = False) -> None:
         """
@@ -118,22 +126,29 @@ class Model(abc.ABC):
         after the distributed processes have been launched (if applicable).
 
         The fast_init flag is used to indicate that the model is going to be used to strip
-        training data from any saved checkpoints. As such, you should ONLY load the
-        network(s) and nothing else.
+        training data from any saved checkpoints or for testing. As such, you should
+        ONLY load the network(s) and nothing else.
 
         Args:
             fast_init (bool): if True, only networks are loaded.
         """
 
-    def load_state_dict(self, state_dict: dict[str, typing.Any]) -> None:
+    def load_state_dict(
+        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+    ) -> None:
         """
         Load the model state from the given state dictionary.
 
         Use this function to restore any training state from a checkpoint. Note that any
         weights will have been automatically mapped to the correct device.
 
+        The fast_init flag is used to indicate that the model is going to be used to strip
+        training data from any saved checkpoints or for testing. As such, you should
+        ONLY load the network(s) and nothing else.
+
         Args:
             state_dict (dict[str, Any]): the state dictionary to load from.
+            fast_init (bool): if True, only networks need to be loaded.
         """
 
     def state_dict(self) -> dict[str, typing.Any]:
@@ -194,18 +209,21 @@ class Model(abc.ABC):
         You may use this function to log the network architecture, hyper-params, etc.
         """
 
-    def on_training_batch_start(self) -> None:
+    def on_training_batch_start(self, state: TrainingState) -> None:
         """
         Perform any actions when a training batch is started.
 
         This function is called before train_step is called. By default, it will clear out
         the loss table, but you may also use it to do any additional tasks prior to the
         training step itself.
+
+        Args:
+            state (TrainingState): the current training state.
         """
         self._loss_items.clear()
 
     @abc.abstractmethod
-    def train_step(self, batch: typing.Any) -> None:
+    def train_step(self, batch: typing.Any, state: TrainingState) -> None:
         """
         Perform a single training step.
 
@@ -213,11 +231,16 @@ class Model(abc.ABC):
         this function, you should perform the forward and backward passes for your
         network(s). If you use schedulers, they should be updated here as well. Note that
         you do not have to clear the losses or gather them. This will be handled
-        automatically for you.
+        automatically for you. Also keep in mind that the contents of the batch have NOT
+        been moved to the current device. It is your responsibility to do so.
+
+        Args:
+            batch (Any): the batch data returned from the dataset.
+            state (TrainingState): the current training state.
         """
 
     def on_training_batch_end(
-        self, should_log: bool = False, avg_time: float = 0
+        self, state: TrainingState, should_log: bool = False, avg_time: float = 0
     ) -> None:
         """
         Perform any actions when a training batch ends.
@@ -227,6 +250,7 @@ class Model(abc.ABC):
         losses or perform any additional tasks after the training step.
 
         Args:
+            state (TrainingState): the current training state.
             should_log (bool): if true, then logging should be performed.
             avg_time (float): average time between batches. Useful for logging.
         """
@@ -245,47 +269,62 @@ class Model(abc.ABC):
     def eval(self) -> None:
         """Switch the model to evaluation mode."""
 
-    def on_validation_start(self) -> None:
+    def on_validation_start(self, validation_cycle: int) -> None:
         """
         Perform any necessary actions when validation starts.
 
         By default, this will clear out the table of validation values, but you may use it
         for any other tasks that should happen when validation begins.
+
+        Args:
+            validation_cycle (int): the validation cycle number.
         """
         self._val_scores.clear()
 
-    def on_validation_batch_start(self) -> None:
+    def on_validation_batch_start(self, step: int) -> None:
         """
         Perform any actions when a validation batch is started.
 
         This function is called before valid_step is called. No steps are performed by
         default.
+
+        Args:
+            step (int): the current validation batch.
         """
 
-    @abc.abstractmethod
-    def valid_step(self, batch: typing.Any) -> None:
+    def valid_step(self, batch: typing.Any, step: int) -> None:
         """
         Perform a single validation step.
 
         The input is the returned value from the datasets you supplied to the trainer. In
         this function, you should perform any steps necessary to compute the validation
         metric(s) for your network(s).
+
+        Args:
+            batch (Any): the batch data returned from the dataset.
+            step (int): the current validation batch.
         """
 
-    def on_validation_batch_end(self) -> None:
+    def on_validation_batch_end(self, step: int) -> None:
         """
         Perform any actions when a validation batch ends.
 
-        This function is called after train_step is called. No steps are performed by
+        This function is called after valid_step is called. No steps are performed by
         default.
+
+        Args:
+            step (int): the current validation batch.
         """
 
-    def on_validation_end(self) -> None:
+    def on_validation_end(self, validation_cycle: int) -> None:
         """
         Perform any necessary actions when validation ends.
 
         You may use this function to compute any final validation metrics as well as log
         them.
+
+        Args:
+            validation_cycle (int): the validation cycle number.
         """
 
     def have_metrics_improved(self) -> bool:
@@ -299,3 +338,55 @@ class Model(abc.ABC):
             bool: false if no improvements were seen in the last validation cycle.
         """
         return True
+
+    def on_testing_start(self) -> None:
+        """
+        Perform any necessary actions when testing starts.
+
+        By default, this will clear out the table of testing values, but you may use it
+        for any other tasks that should happen when testing begins.
+        """
+        self._test_scores.clear()
+
+    def on_testing_batch_start(self, step: int) -> None:
+        """
+        Perform any actions when a testing batch is started.
+
+        This function is called before test_step is called. No steps are performed by
+        default.
+
+        Args:
+            step (int): the current testing batch.
+        """
+
+    def test_step(self, batch: typing.Any, step: int) -> None:
+        """
+        Perform a single testing step.
+
+        The input is the returned value from the datasets you supplied to the trainer. In
+        this function, you should perform any steps necessary to compute the testing
+        metric(s) for your network(s).
+
+        Args:
+            batch (Any): the batch data returned from the dataset.
+            step (int): the current validation batch.
+        """
+
+    def on_testing_batch_end(self, step: int) -> None:
+        """
+        Perform any actions when a testing batch ends.
+
+        This function is called after test_step is called. No steps are performed by
+        default.
+
+        Args:
+            step (int): the current testing batch.
+        """
+
+    def on_testing_end(self) -> None:
+        """
+        Perform any necessary actions when testing ends.
+
+        You may use this function to compute any final testing metrics as well as log
+        them.
+        """
