@@ -12,6 +12,7 @@ import torch.distributed as td
 import torch.multiprocessing as mp
 import torch.utils.data as tud
 import tqdm
+from tqdm.contrib.logging import logging_redirect_tqdm
 
 import pyro.model as pym
 from pyro import core, data
@@ -161,7 +162,7 @@ class Trainer:
         improvement is seen during validation.
         use_cpu: (bool | None): if True, CPU will be used.
         gpus (list[int] | None): IDs of GPUs to use.
-        ranomd_seed (int | None): the seed to use for RNGs.
+        random_seed (int | None): the seed to use for RNGs.
         enable_tensorboard (bool): enable/disable Tensorboard logging.
         enable_file_logging (bool): enable/disable file logging.
         chkpt_root (pathlib.Path): root folder in which checkpoints will be placed.
@@ -178,9 +179,9 @@ class Trainer:
         chkpt_frequency: int = 0,
         print_frequency: int = 0,
         accumulation_steps: int = 1,
-        enable_cudnn_benchmark: bool = True,
+        enable_cudnn_benchmark: bool = False,
         enable_deterministic: bool = False,
-        early_stop_cycles: int = 0,
+        early_stop_cycles: int | None = None,
         use_cpu: bool | None = None,
         gpus: list[int] | None = None,
         random_seed: int | None = None,
@@ -328,52 +329,21 @@ class Trainer:
 
     def _train(self) -> None:
         self._configure_env()
+        self._setup_datamodule()
+        self._setup_model()
+        self._prepare_roots()
 
-        self.datamodule.is_distributed = self._is_distributed
-        self.datamodule.trainer = self
-        self.datamodule.setup()
-
-        self.model.map_loc = self._map_loc
-        self.model.is_distributed = self._is_distributed
-        self.model.device = core.get_from_optional(self._device)
-        self.model.trainer = self
-        self.model.setup()
-
-        if self._chkpt_root is None:
-            self._chkpt_root = pathlib.Path.cwd() / "chkpt"
-
-        name = self.model.save_name
-        self._chkpt_root = self._chkpt_root / name
-        self._chkpt_root.mkdir(parents=True, exist_ok=True)
-
-        if self._log_path is not None:
-            self._log_path.mkdir(parents=True, exist_ok=True)
-        if self._run_path is not None:
-            self._run_path.mkdir(parents=True, exist_ok=True)
-
-        training_state: TrainingState
-        chkpt_path = find_last_checkpoint(self._chkpt_root)
-        resume_training = False
-        if chkpt_path is not None:
-            state_dict = torch.load(chkpt_path, map_location=self._map_loc)
-            logging.restore_default_loggers(
-                state_dict.get("log_path", None), state_dict.get("run_path", None)
-            )
-
-            self.model.load_state_dict(state_dict["model"])
-            training_state = TrainingState(**state_dict["training_state"])
-            resume_training = True
-        else:
-            logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
-            training_state = TrainingState()
+        chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
+        training_state, resume_training = self._load_checkpoint(chkpt_path)
 
         root_logger = logging.get_root_logger()
-        root_logger.info(core.get_env_info_str())
         if chkpt_path is not None:
             root_logger.info(f"Resuming training from checkpoint {str(chkpt_path)}")
+        else:
+            root_logger.info(core.get_env_info_str())
 
         self.model.on_training_start()
-        with tqdm.contrib.logging.logging_redirect_tqdm():  # type: ignore[attr-defined]
+        with logging_redirect_tqdm(loggers=[root_logger.logger]):
             if self._train_unit == TrainingUnit.ITERATION:
                 self._train_on_iteration(training_state, resume_training)
             else:
@@ -385,32 +355,12 @@ class Trainer:
 
     def _test(self) -> None:
         self._configure_env()
+        self._setup_datamodule()
+        self._setup_model()
+        self._prepare_roots(mkdir=False)
 
-        self.datamodule.is_distributed = self._is_distributed
-        self.datamodule.trainer = self
-        self.datamodule.setup()
-
-        self.model.map_loc = self._map_loc
-        self.model.is_distributed = self._is_distributed
-        self.model.device = core.get_from_optional(self._device)
-        self.model.trainer = self
-        self.model.setup()
-
-        if self._chkpt_root is None:
-            self._chkpt_root = pathlib.Path.cwd() / "chkpt"
-
-        name = self.model.save_name
-        self._chkpt_root = self._chkpt_root / name
-        chkpt_path = find_last_checkpoint(self._chkpt_root)
-        if chkpt_path is not None:
-            state_dict = torch.load(chkpt_path, map_location=self._map_loc)
-            logging.restore_default_loggers(
-                state_dict.get("log_path", None), state_dict.get("run_path", None)
-            )
-
-            self.model.load_state_dict(state_dict["model"], fast_init=True)
-        else:
-            logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
+        chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
+        self._load_checkpoint(chkpt_path, skip_rng=True, model_fast_init=True)
 
         root_logger = logging.get_root_logger()
         root_logger.info(core.get_env_info_str())
@@ -463,6 +413,32 @@ class Trainer:
 
         logging.create_default_loggers(self._enable_tensorboard)
 
+    def _setup_datamodule(self) -> None:
+        self.datamodule.is_distributed = self._is_distributed
+        self.datamodule.trainer = self
+        self.datamodule.setup()
+
+    def _setup_model(self) -> None:
+        self.model.map_loc = self._map_loc
+        self.model.is_distributed = self._is_distributed
+        self.model.device = core.get_from_optional(self._device)
+        self.model.trainer = self
+        self.model.setup()
+
+    def _prepare_roots(self, mkdir=True) -> None:
+        if self._chkpt_root is None:
+            self._chkpt_root = pathlib.Path.cwd() / "chkpt"
+
+        name = self.model.save_name
+        self._chkpt_root = self._chkpt_root / name
+        if mkdir:
+            self._chkpt_root.mkdir(parents=True, exist_ok=True)
+
+            if self._log_path is not None:
+                self._log_path.mkdir(parents=True, exist_ok=True)
+            if self._run_path is not None:
+                self._run_path.mkdir(parents=True, exist_ok=True)
+
     def _validate_flags(self):
         """Ensure that all the settings and flags are valid."""
         if isinstance(self._total_steps, float) and self._total_steps != float("inf"):
@@ -490,7 +466,8 @@ class Trainer:
                 raise ValueError(
                     "error: Tensorboard requested but no run directory was given"
                 )
-            if not self._run_path.is_dir():
+
+            if self._run_path.exists() and not self._run_path.is_dir():
                 raise ValueError("error: run path must be a directory")
 
         if self._enable_file_logging:
@@ -499,7 +476,7 @@ class Trainer:
                     "error: file logging requested but no log directory was given"
                 )
 
-            if not self._log_path.is_dir():
+            if self._log_path.exists() and not self._log_path.is_dir():
                 raise ValueError("error: log path must be a directory")
 
     def _setup_device_flags(self, use_cpu: bool | None):
@@ -556,15 +533,37 @@ class Trainer:
         filename += ".pth"
 
         state_dict: dict[str, typing.Any] = {}
-
         state_dict["training_state"] = state.dict()
-        if self._log_path is not None:
-            state_dict["log_path"] = self._log_path
-        if self._run_path is not None:
-            state_dict["run_path"] = self._run_path
-
         state_dict["model"] = self.model.state_dict()
+        state_dict["rng"] = rng.get_rng_state_dict()
+
+        if self._enable_file_logging:
+            state_dict["log_path"] = logging.get_root_logger().log_file
+
+        if self._enable_tensorboard:
+            writer = core.get_from_optional(logging.get_tensorboard_writer())
+            state_dict["run_path"] = writer.run_path
+
         torch.save(state_dict, chkpt_root / filename)
+
+    def _load_checkpoint(
+        self,
+        chkpt_path: pathlib.Path | None,
+        skip_rng: bool = False,
+        model_fast_init: bool = False,
+    ) -> tuple[TrainingState, bool]:
+        if chkpt_path is None:
+            logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
+            return TrainingState(), False
+
+        state_dict = torch.load(chkpt_path, map_location=self._map_loc)
+        logging.restore_default_loggers(
+            state_dict.get("log_path", None), state_dict.get("run_path", None)
+        )
+        if not skip_rng:
+            rng.load_rng_state_dict(state_dict["rng"])
+        self.model.load_state_dict(state_dict["model"], fast_init=model_fast_init)
+        return TrainingState(**state_dict["training_state"]), True
 
     def _train_on_iteration(self, state: TrainingState, resume_training: bool) -> None:
         total_steps = self._total_steps
@@ -600,7 +599,7 @@ class Trainer:
         for epoch in itertools.count(start=state.global_epoch):
             if training_done:
                 break
-            root_logger.info(f"Starting epoch {epoch}")
+            root_logger.info(f"Starting epoch {epoch + 1}")
             sampler.set_epoch(epoch)
             epoch_start = time.time()
 
@@ -638,12 +637,17 @@ class Trainer:
                 if state.current_iteration % save_freq == 0 and self.rank == 0:
                     self._save_checkpoint(state)
 
-            root_logger.info(f"Epoch {epoch} completed in {time.time() - epoch_start}s")
-            if state.early_stop_count >= early_stop_cycles:
-                training_done = True
-
             state.dataset_iter = 0
             state.global_epoch += 1
+
+            root_logger.info(
+                f"Epoch {epoch + 1} completed in {time.time() - epoch_start:.2f}s"
+            )
+            if (
+                early_stop_cycles is not None
+                and state.early_stop_count >= early_stop_cycles
+            ):
+                training_done = True
 
     def _train_on_epoch(self, state: TrainingState) -> None:
         total_steps = self._total_steps
@@ -687,14 +691,13 @@ class Trainer:
                 training_done = True
                 break
 
-            root_logger.info(f"Starting epoch {epoch}")
+            root_logger.info(f"Starting epoch {epoch + 1}")
             sampler.set_epoch(epoch)
             epoch_start = time.time()
             iter_timer.start()
             for batch in dataloader:
                 state.global_iteration += 1
                 state.current_iteration += 1
-                batch["step"] = state.global_iteration
 
                 self.model.on_training_batch_start(state)
                 self.model.train_step(batch, state)
@@ -706,6 +709,9 @@ class Trainer:
                 )
                 state.dataset_iter += 1
 
+            state.dataset_iter = 0
+            state.global_epoch += 1
+
             if state.global_epoch % val_freq == 0:
                 self._validate(state.validation_cycles)
                 if not self.model.have_metrics_improved():
@@ -716,13 +722,15 @@ class Trainer:
             if state.global_epoch % save_freq == 0 and self.rank == 0:
                 self._save_checkpoint(state)
 
-            root_logger.info(f"Epoch {epoch} completed in {time.time() - epoch_start}s")
+            root_logger.info(
+                f"Epoch {epoch + 1} completed in {time.time() - epoch_start:.2f}s"
+            )
             pbar.update()
-            if state.early_stop_count >= early_stop_cycles:
+            if (
+                early_stop_cycles is not None
+                and state.early_stop_count >= early_stop_cycles
+            ):
                 training_done = True
-
-            state.dataset_iter = 0
-            state.global_epoch += 1
 
     def _validate(self, val_cycle: int) -> None:
         if self.datamodule.valid_dataloader() is None:
