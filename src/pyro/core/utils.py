@@ -182,6 +182,7 @@ class AverageTimer:
         self._time_sum: float = 0
         self._step_count: int = 0
         self._current_time: float = 0
+        self._avg_time: float = 0
         self.start()
 
     def start(self) -> None:
@@ -192,6 +193,7 @@ class AverageTimer:
         """Record a new step in the timer."""
         self._step_count += 1
         self._time_sum += time.time() - self._current_time
+        self._avg_time = self._time_sum / self._step_count
 
         if self._step_count > self._sliding_window:
             self._step_count = 0
@@ -201,7 +203,7 @@ class AverageTimer:
 
     def get_average_time(self) -> float:
         """Return the moving average over the current step count."""
-        return self._time_sum / self._step_count
+        return self._avg_time
 
 
 class Registry:
