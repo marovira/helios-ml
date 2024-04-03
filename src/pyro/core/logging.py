@@ -60,6 +60,11 @@ class RootLogger:
         self._log_file = log_file
 
     @property
+    def logger(self) -> logging.Logger:
+        """Return the logger instance."""
+        return self._logger
+
+    @property
     def log_file(self) -> pathlib.Path | None:
         """
         Return the path to the current log file.
