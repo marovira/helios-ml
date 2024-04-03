@@ -64,7 +64,7 @@ def find_pretrained_file(root: pathlib.Path, name: str) -> pathlib.Path:
 class Model(abc.ABC):
     """Base class for training models."""
 
-    def __init__(self, save_name: str, display_name: str):
+    def __init__(self, save_name: str):
         """Create the model."""
         self._save_name: str = save_name
         self._trainer: Trainer | None
