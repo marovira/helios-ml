@@ -194,6 +194,7 @@ class Trainer:
         self._model: pym.Model | None = None
         self._datamodule: data.PyroDataModule | None = None
         self._rank: int = 0
+        self._callbacks: dict[str, typing.Callable] = {}
 
         self._use_cpu: bool = False
         self._device: torch.device | None = None
@@ -257,6 +258,28 @@ class Trainer:
     def gpu_ids(self) -> list[int]:
         """Return the list of GPU IDs to use for training."""
         return self._gpu_ids
+
+    @property
+    def callbacks(self) -> dict[str, typing.Callable]:
+        """Return the table of callbacks."""
+        return self._callbacks
+
+    def register_callback(self, name: str, callback: typing.Callable) -> None:
+        """
+        Register a callback.
+
+        Callbacks are used to inject additional code or behaviour into the training code.
+        You may call these at any time through the trainer instance that is attached to
+        the datamodule and the model.
+
+        Args:
+            name (str): the name of the callback.
+            callback (typing.Callable): the callback to register.
+        """
+        if name in self._callbacks:
+            raise KeyError(f"error: {name} has already been registered as a callback")
+
+        self._callbacks[name] = callback
 
     def fit(self, model: pym.Model, datamodule: data.PyroDataModule) -> None:
         """
