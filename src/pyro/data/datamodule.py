@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import copy
 import dataclasses
@@ -48,7 +50,7 @@ class DatasetSplit(enum.Enum):
     TEST = 2
 
     @staticmethod
-    def from_str(label: str) -> "DatasetSplit":
+    def from_str(label: str) -> DatasetSplit:
         """
         Convert the given string to the corresponding enum value.
 

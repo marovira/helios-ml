@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import abc
 import pathlib
 import typing
@@ -17,7 +19,7 @@ MODEL_REGISTRY = core.Registry("model")
 # ruff: noqa: B027
 
 
-def create_model(type_name: str, *args: typing.Any, **kwargs: typing.Any) -> "Model":
+def create_model(type_name: str, *args: typing.Any, **kwargs: typing.Any) -> Model:
     """
     Create the model for the given type.
 

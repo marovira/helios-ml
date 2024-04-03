@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import dataclasses
 import enum
 import itertools
@@ -25,7 +27,7 @@ class TrainingUnit(enum.Enum):
     EPOCH = 1
 
     @classmethod
-    def from_str(cls, label: str) -> "TrainingUnit":
+    def from_str(cls, label: str) -> TrainingUnit:
         """
         Convert the given string to the corresponding enum value.
 
