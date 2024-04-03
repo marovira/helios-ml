@@ -1,4 +1,5 @@
-import dataclasses
+from __future__ import annotations
+
 import random
 import typing
 from collections import abc
@@ -88,26 +89,6 @@ def get_default_numpy_rng() -> DefaultNumpyRNG:
     return _get_safe_default_rng()
 
 
-@dataclasses.dataclass
-class RNGState:
-    """
-    Contains the random state for each of the random number generators used for training.
-
-    Args:
-        torch_state (torch.Tensor): random state for torch.
-        rand_state (tuple): random state for Python's random.
-        numpy_state (Mapping[str, Any]): the state for the default Numpy generator.
-        cuda_state (torch.Tensor): random state for torch.cuda.
-    """
-
-    torch_state: torch.Tensor
-    rand_state: tuple
-    numpy_state: abc.Mapping[str, typing.Any]
-    cuda_state: torch.Tensor | None = None
-
-    dict = dataclasses.asdict
-
-
 def seed_rngs(seed: int | None = None, skip_torch: bool = False) -> None:
     """
     Seed the default RNGs with the given seed.
@@ -133,34 +114,38 @@ def seed_rngs(seed: int | None = None, skip_torch: bool = False) -> None:
     create_default_numpy_rng(seed)
 
 
-def get_rng_state() -> RNGState:
+def get_rng_state_dict() -> dict[str, typing.Any]:
     """
-    Get the state for the default RNGs.
+    Get the state dict for the default RNGs.
 
     Default RNGs are: PyTorch (+ CUDA if available) and Random.
 
     Returns:
         RandomState: the state of all RNGs.
     """
-    return RNGState(
-        torch_state=torch.get_rng_state(),
-        rand_state=random.getstate(),
-        numpy_state=get_default_numpy_rng().state_dict(),
-        cuda_state=torch.cuda.get_rng_state() if torch.cuda.is_available() else None,
-    )
+    state = {
+        "torch": torch.get_rng_state(),
+        "rand": random.getstate(),
+        "numpy": get_default_numpy_rng().state_dict(),
+    }
+
+    if torch.cuda.is_available():
+        state["cuda"] = torch.cuda.get_rng_state()
+
+    return state
 
 
-def restore_rng_state(state: RNGState) -> None:
+def load_rng_state_dict(state_dict: dict[str, typing.Any]) -> None:
     """
-    Restore the default RNGs from the given state.
+    Restore the default RNGs from the given state dict.
 
     See get_rng_state for the list of default RNGs.
 
     Args:
-        state (RandomState): the state of the RNGs
+        state_dict (dict[str, typing.Any]): the state of the RNGs
     """
-    torch.set_rng_state(state.torch_state)
-    random.setstate(state.rand_state)
-    get_default_numpy_rng().load_state_dict(state.numpy_state)
-    if torch.cuda.is_available() and state.cuda_state is not None:
-        torch.cuda.set_rng_state(state.cuda_state)
+    torch.set_rng_state(state_dict["torch"])
+    random.setstate(state_dict["rand"])
+    get_default_numpy_rng().load_state_dict(state_dict["numpy"])
+    if torch.cuda.is_available() and "cuda" in state_dict:
+        torch.cuda.set_rng_state(state_dict["cuda"])

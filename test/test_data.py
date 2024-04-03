@@ -162,14 +162,14 @@ class TestDataModule:
         self.check_batches(exp_batches[:half_step], batches)
 
         # Grab the state and clear everything.
-        rng_state = rng.get_rng_state()
+        rng_state = rng.get_rng_state_dict()
 
         del dataloader, sampler
         batches = []
         rng.seed_rngs(0)
 
         # Restore everything.
-        rng.restore_rng_state(rng_state)
+        rng.load_rng_state_dict(rng_state)
         dataloader, sampler = self.prepare(data.DatasetSplit.VALID, skip_seed=True)
         assert isinstance(sampler, pds.ResumableRandomSampler)
         sampler.set_epoch(0)
@@ -198,14 +198,14 @@ class TestDataModule:
         self.check_batches(exp_batches[:half_step], batches)
 
         # Grab the state and clear everything.
-        rng_state = rng.get_rng_state()
+        rng_state = rng.get_rng_state_dict()
 
         del dataloader, sampler
         batches = []
         rng.seed_rngs(0)
 
         # Restore everything.
-        rng.restore_rng_state(rng_state)
+        rng.load_rng_state_dict(rng_state)
         dataloader, sampler = self.prepare(data.DatasetSplit.TEST, skip_seed=True)
         assert isinstance(sampler, pds.ResumableSequentialSampler)
         sampler.set_epoch(0)

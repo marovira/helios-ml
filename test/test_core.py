@@ -123,7 +123,7 @@ class TestRNG:
         self.check_np(exp.np_vals[:5], np_gen.integers(0, 10, 5))
 
         # Grab the states and re-seed the generators.
-        state = rng.get_rng_state()
+        state = rng.get_rng_state_dict()
         rng.seed_rngs(0)
         np_gen = rng.get_default_numpy_rng().generator
 
@@ -133,7 +133,7 @@ class TestRNG:
         np_gen.integers(0, 10, 10)
 
         # Now restore the RNG state and read the final 5 numbers.
-        rng.restore_rng_state(state)
+        rng.load_rng_state_dict(state)
         np_gen = rng.get_default_numpy_rng().generator
 
         self.check_torch(exp.torch_vals[5:], torch.randint(10, [5]))
