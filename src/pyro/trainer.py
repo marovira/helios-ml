@@ -121,7 +121,7 @@ def find_last_checkpoint(root: pathlib.Path) -> pathlib.Path | None:
 def spawn_handler(
     rank: int,
     world_size: int,
-    trainer: "Trainer",
+    trainer: Trainer,
     datamodule: data.PyroDataModule,
     model: pym.Model,
     mode: TrainerMode,
