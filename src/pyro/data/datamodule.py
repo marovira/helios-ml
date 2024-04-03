@@ -167,7 +167,7 @@ class DataLoaderParams:
     pin_memory: bool = True
     drop_last: bool = False
     debug_mode: bool = False
-    is_distributed: bool = False
+    is_distributed: bool | None = None
 
     def to_dict(self) -> dict[str, typing.Any]:
         """Convert the params object to a dictionary using shallow copies."""
@@ -338,5 +338,7 @@ class PyroDataModule(abc.ABC):
     def _create_dataloader(
         self, dataset: Dataset
     ) -> tuple[tud.DataLoader, ResumableSamplerType]:
-        dataset.params.is_distributed = self._is_distributed
+        # Only override the distributed flag if it hasn't been set by the user.
+        if dataset.params.is_distributed is None:
+            dataset.params.is_distributed = self._is_distributed
         return create_dataloader(**dataset.dict())
