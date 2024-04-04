@@ -154,14 +154,17 @@ class TensorboardWriter:
         return get_from_optional(self._run_path)
 
     def add_scalar(
-        self, tag: str, scalar_value: float | str, global_step: int | None = None
+        self,
+        tag: str,
+        scalar_value: float | str | torch.Tensor,
+        global_step: int | None = None,
     ) -> None:
         """
         Add scalar data to the log.
 
         Args:
             tag (str): name of the scalar to plot.
-            scalar_value (float | str): the scalar to plot.
+            scalar_value (float | str | torch.Tensor): the scalar to plot.
             global_step (int | None): the step for the given scalar.
         """
         if self._writer is None:
@@ -170,15 +173,18 @@ class TensorboardWriter:
         self._writer.add_scalar(tag, scalar_value, global_step, new_style=True)
 
     def add_scalars(
-        self, main_tag: str, tag_scalar_dict: dict[str, float], global_step: int | None
+        self,
+        main_tag: str,
+        tag_scalar_dict: dict[str, float | torch.Tensor],
+        global_step: int | None,
     ) -> None:
         """
         Add multiple scalars to the log.
 
         Args:
             main_tag (str): the parent name for the tags
-            tag_scalar_dict (dict[str, float]): key-value pair storing tag and
-            corresponding values.
+            tag_scalar_dict (dict[str, float | torch.Tensor]): key-value pair storing tag
+            and corresponding values.
             global_step (int | None): global step value to record.
         """
         if self._writer is None:
