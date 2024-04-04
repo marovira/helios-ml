@@ -12,7 +12,6 @@ import torch.distributed as td
 import torch.multiprocessing as mp
 import torch.utils.data as tud
 import tqdm
-from tqdm.contrib.logging import logging_redirect_tqdm
 
 import pyro.model as pym
 from pyro import core, data
@@ -336,18 +335,13 @@ class Trainer:
         chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
         training_state, resume_training = self._load_checkpoint(chkpt_path)
 
-        root_logger = logging.get_root_logger()
-        if chkpt_path is not None:
-            root_logger.info(f"Resuming training from checkpoint {str(chkpt_path)}")
-        else:
-            root_logger.info(core.get_env_info_str())
+        self._print_header(chkpt_path)
 
         self.model.on_training_start()
-        with logging_redirect_tqdm(loggers=[root_logger.logger]):
-            if self._train_unit == TrainingUnit.ITERATION:
-                self._train_on_iteration(training_state, resume_training)
-            else:
-                self._train_on_epoch(training_state)
+        if self._train_unit == TrainingUnit.ITERATION:
+            self._train_on_iteration(training_state, resume_training)
+        else:
+            self._train_on_epoch(training_state)
 
         self.model.on_training_end()
         logging.flush_default_loggers()
@@ -362,12 +356,7 @@ class Trainer:
         chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
         self._load_checkpoint(chkpt_path, skip_rng=True, model_fast_init=True)
 
-        root_logger = logging.get_root_logger()
-        root_logger.info(core.get_env_info_str())
-        if chkpt_path is not None:
-            root_logger.info(f"Testing using checkpoint {str(chkpt_path)}")
-        else:
-            root_logger.info("Testing from loaded model")
+        self._print_header(chkpt_path, for_training=False)
 
         if self.datamodule.test_dataloader() is None:
             return
@@ -438,6 +427,30 @@ class Trainer:
                 self._log_path.mkdir(parents=True, exist_ok=True)
             if self._run_path is not None:
                 self._run_path.mkdir(parents=True, exist_ok=True)
+
+    def _print_header(
+        self, chkpt_path: pathlib.Path | None, for_training: bool = True
+    ) -> None:
+        root_logger = logging.get_root_logger()
+
+        print(core.get_env_info_str())
+
+        if for_training:
+            if chkpt_path is not None:
+                msg = f"Resuming training from checkpoint {str(chkpt_path)}"
+                root_logger.info(msg)
+                print(f"{msg}\n")
+            else:
+                root_logger.info(core.get_env_info_str())
+        else:
+            root_logger.info(core.get_env_info_str())
+            msg = (
+                f"Testing using checkpoint {str(chkpt_path)}"
+                if chkpt_path is not None
+                else "Testing from loaded model"
+            )
+            root_logger.info(msg)
+            print(f"{msg}\n")
 
     def _validate_flags(self):
         """Ensure that all the settings and flags are valid."""
@@ -695,19 +708,27 @@ class Trainer:
             sampler.set_epoch(epoch)
             epoch_start = time.time()
             iter_timer.start()
-            for batch in dataloader:
-                state.global_iteration += 1
-                state.current_iteration += 1
+            with tqdm.tqdm(
+                total=len(dataloader),
+                desc=f"Epoch {epoch + 1}",
+                unit="iter",
+                disable=pbar_disabled,
+                leave=False,
+            ) as ite_pbar:
+                for batch in dataloader:
+                    state.global_iteration += 1
+                    state.current_iteration += 1
 
-                self.model.on_training_batch_start(state)
-                self.model.train_step(batch, state)
-                iter_timer.record()
-                self.model.on_training_batch_end(
-                    state,
-                    state.current_iteration % print_freq == 0,
-                    iter_timer.get_average_time(),
-                )
-                state.dataset_iter += 1
+                    self.model.on_training_batch_start(state)
+                    self.model.train_step(batch, state)
+                    iter_timer.record()
+                    self.model.on_training_batch_end(
+                        state,
+                        state.current_iteration % print_freq == 0,
+                        iter_timer.get_average_time(),
+                    )
+                    state.dataset_iter += 1
+                    ite_pbar.update()
 
             state.dataset_iter = 0
             state.global_epoch += 1
