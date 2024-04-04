@@ -107,6 +107,16 @@ class RootLogger:
         """
         self._logger.error(msg)
 
+    def exception(self, msg: str, **kwargs) -> None:
+        """
+        Log an exception.
+
+        Args:
+            msg (str): the message to log
+            kwargs (Any): keyword arguments to logging.exception
+        """
+        self._logger.exception(msg, **kwargs)
+
     def flush(self) -> None:
         """Flush the log."""
         for handler in self._logger.handlers:

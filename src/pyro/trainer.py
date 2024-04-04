@@ -296,7 +296,13 @@ class Trainer:
             model (pym.Model): the model to run on.
             datamodule (data.PyroDataModule): the datamodule to use.
         """
-        self._launch(model, datamodule, TrainerMode.TRAIN)
+        try:
+            self._launch(model, datamodule, TrainerMode.TRAIN)
+        except Exception as e:
+            root_logger = logging.get_root_logger()
+            root_logger.exception("error: uncaught exception")
+            logging.close_default_loggers()
+            raise RuntimeError("error: uncaught exception") from e
 
     def test(self, model: pym.Model, datamodule: data.PyroDataModule) -> None:
         """
@@ -306,7 +312,13 @@ class Trainer:
             model (pym.Model): the model to run on.
             datamodule (data.PyroDataModule): the datamodule to use.
         """
-        self._launch(model, datamodule, TrainerMode.TEST)
+        try:
+            self._launch(model, datamodule, TrainerMode.TEST)
+        except Exception as e:
+            root_logger = logging.get_root_logger()
+            root_logger.exception("error: uncaught exception")
+            logging.close_default_loggers()
+            raise RuntimeError("error: uncaught exception") from e
 
     def _launch(
         self, model: pym.Model, datamodule: data.PyroDataModule, mode: TrainerMode
