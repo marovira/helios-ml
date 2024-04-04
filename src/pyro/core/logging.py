@@ -55,7 +55,7 @@ class RootLogger:
             return
 
         mode = "a" if log_file.exists() else "w"
-        file_handler = logging.FileHandler(str(log_file), mode=mode)
+        file_handler = logging.FileHandler(str(log_file), mode=mode, encoding="utf-8")
         file_handler.setFormatter(logging.Formatter(self._format_str))
         file_handler.setLevel(logging.INFO)
         self._logger.addHandler(file_handler)
