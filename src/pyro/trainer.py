@@ -655,7 +655,10 @@ class Trainer:
                     state,
                     state.current_iteration % print_freq == 0,
                 )
-                pbar.update()
+                # Depending on how fast the iteration loop is, it is possible that the
+                # progress bar isn't refreshed every tick, so make sure it gets re-drawn.
+                if not pbar.update():
+                    pbar.refresh()
                 state.dataset_iter += 1
 
                 if state.current_iteration % val_freq == 0 and perform_validation:
@@ -749,7 +752,8 @@ class Trainer:
                         state.current_iteration % print_freq == 0,
                     )
                     state.dataset_iter += 1
-                    ite_pbar.update()
+                    if not ite_pbar.update():
+                        ite_pbar.refresh()
 
             state.dataset_iter = 0
             state.global_epoch += 1
@@ -804,7 +808,11 @@ class Trainer:
             self.model.on_validation_batch_start(idx)
             self.model.valid_step(batch, idx)
             self.model.on_validation_batch_end(idx)
-            pbar.update()
+
+            # Ensure the progress bar is updated in the event that the validation loop
+            # runs faster than the refresh rate of the progress bar.
+            if not pbar.update():
+                pbar.refresh()
 
         self.model.train()
         self.model.on_validation_end(val_cycle)
