@@ -75,7 +75,7 @@ class RootLogger:
         """
         return self._log_file
 
-    def info(self, msg: str) -> None:
+    def info(self, msg: str, **kwargs: typing.Any) -> None:
         """
         Log using the INFO tag.
 
@@ -83,31 +83,34 @@ class RootLogger:
 
         Args:
             msg (str): the message to log
+            kwargs (Any): keyword arguments to logging.info
         """
         if self._rank != 0:
             return
 
-        self._logger.info(msg)
+        self._logger.info(msg, **kwargs)
 
-    def warning(self, msg: str) -> None:
+    def warning(self, msg: str, **kwargs: typing.Any) -> None:
         """
         Log using the WARNING tag.
 
         Args:
             msg (str): the message to log
+            kwargs (Any): keyword arguments to logging.warning
         """
         self._logger.warning(msg)
 
-    def error(self, msg: str) -> None:
+    def error(self, msg: str, **kwargs: typing.Any) -> None:
         """
         Log using the ERROR tag.
 
         Args:
             msg (str): the message to log
+            kwargs (Any): keyword arguments to logging.error
         """
         self._logger.error(msg)
 
-    def exception(self, msg: str, **kwargs) -> None:
+    def exception(self, msg: str, **kwargs: typing.Any) -> None:
         """
         Log an exception.
 
