@@ -16,3 +16,4 @@ __pycache__/
 examples/**/runs
 examples/**/chkpt
 examples/**/logs
+examples/**/data

@@ -1,3 +1,4 @@
+import os
 import pathlib
 import typing
 
@@ -194,9 +195,9 @@ class ClassifierModel(pym.Model):
             loss_val = self._loss_items["loss"]
 
             root_logger.info(
-                f"[{state.global_epoch + 1}, {state.global_iteration + 1:5d}] "
+                f"[{state.global_epoch + 1}, {state.global_iteration:5d}] "
                 f"loss: {loss_val:.3f}, "
-                f"running loss: {loss_val / state.running_iter:.3f}"
+                f"running loss: {loss_val / state.running_iter:.3f} "
                 f"avg time: {state.average_iter_time:.2f}s"
             )
             tb_logger.add_scalar("train/loss", loss_val, state.global_iteration)
@@ -264,6 +265,9 @@ class ClassifierModel(pym.Model):
 
 
 if __name__ == "__main__":
+    # Set the CUBLAS workspace setting to allow determinism to be used in CUDA >= 10.2.
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+
     datamodule = CIFARDataModule(pathlib.Path.cwd())
     model = ClassifierModel()
 
@@ -279,7 +283,7 @@ if __name__ == "__main__":
         chkpt_root=pathlib.Path.cwd() / "chkpt",
         log_path=pathlib.Path.cwd() / "logs",
         run_path=pathlib.Path.cwd() / "runs",
-        run_name="functional_test",
+        run_name="cifar10",
     )
 
     trainer.fit(model, datamodule)
