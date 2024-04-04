@@ -30,6 +30,7 @@ class RootLogger:
 
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(logging.Formatter(self._format_str))
+        stream_handler.setLevel(logging.WARNING)
         self._logger.addHandler(stream_handler)
         self._logger.propagate = False
 
@@ -56,6 +57,7 @@ class RootLogger:
         mode = "a" if log_file.exists() else "w"
         file_handler = logging.FileHandler(str(log_file), mode=mode)
         file_handler.setFormatter(logging.Formatter(self._format_str))
+        file_handler.setLevel(logging.INFO)
         self._logger.addHandler(file_handler)
         self._log_file = log_file
 
