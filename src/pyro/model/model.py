@@ -242,7 +242,7 @@ class Model(abc.ABC):
         """
 
     def on_training_batch_end(
-        self, state: TrainingState, should_log: bool = False, avg_time: float = 0
+        self, state: TrainingState, should_log: bool = False
     ) -> None:
         """
         Perform any actions when a training batch ends.
@@ -254,7 +254,6 @@ class Model(abc.ABC):
         Args:
             state (TrainingState): the current training state.
             should_log (bool): if true, then logging should be performed.
-            avg_time (float): average time between batches. Useful for logging.
         """
         if self._is_distributed:
             for _, loss in self._loss_items.items():

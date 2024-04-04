@@ -72,6 +72,9 @@ class TrainingState:
         dataset_iter (int): the current batch index of the dataset. This is reset every
         epoch.
         early_stop_count (int): the current number of validation cycles for early stop.
+        average_iter_time (float): average time per iteration.
+        running_iter (int): iteration count in the current validation cycle. Useful for
+        computing running averages of loss functions.
     """
 
     current_iteration: int = 0
@@ -80,6 +83,8 @@ class TrainingState:
     validation_cycles: int = 0
     dataset_iter: int = 0
     early_stop_count: int = 0
+    average_iter_time: float = 0
+    running_iter: int = 0
 
     dict = dataclasses.asdict
 
@@ -620,6 +625,7 @@ class Trainer:
             for batch in dataloader:
                 if state.global_iteration % accumulation_steps == 0:
                     state.current_iteration += 1
+                    state.running_iter += 1
                     perform_validation = True
                 else:
                     perform_validation = False
@@ -632,10 +638,10 @@ class Trainer:
                 self.model.on_training_batch_start(state)
                 self.model.train_step(batch, state)
                 iter_timer.record()
+                state.average_iter_time = iter_timer.get_average_time()
                 self.model.on_training_batch_end(
                     state,
                     state.current_iteration % print_freq == 0,
-                    iter_timer.get_average_time(),
                 )
                 pbar.update()
                 state.dataset_iter += 1
@@ -643,10 +649,12 @@ class Trainer:
                 if state.current_iteration % val_freq == 0 and perform_validation:
                     self._validate(state.validation_cycles)
                     state.validation_cycles += 1
+                    state.running_iter = 0
                     if not self.model.have_metrics_improved():
                         state.early_stop_count += 1
                     else:
                         state.early_stop_count = 0
+
                 if state.current_iteration % save_freq == 0 and self.rank == 0:
                     self._save_checkpoint(state)
 
@@ -718,14 +726,15 @@ class Trainer:
                 for batch in dataloader:
                     state.global_iteration += 1
                     state.current_iteration += 1
+                    state.running_iter += 1
 
                     self.model.on_training_batch_start(state)
                     self.model.train_step(batch, state)
                     iter_timer.record()
+                    state.average_iter_time = iter_timer.get_average_time()
                     self.model.on_training_batch_end(
                         state,
                         state.current_iteration % print_freq == 0,
-                        iter_timer.get_average_time(),
                     )
                     state.dataset_iter += 1
                     ite_pbar.update()
@@ -735,6 +744,7 @@ class Trainer:
 
             if state.global_epoch % val_freq == 0:
                 self._validate(state.validation_cycles)
+                state.running_iter = 0
                 if not self.model.have_metrics_improved():
                     state.early_stop_count += 1
                 else:
