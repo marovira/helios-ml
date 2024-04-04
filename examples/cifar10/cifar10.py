@@ -272,7 +272,8 @@ if __name__ == "__main__":
     model = ClassifierModel()
 
     trainer = pyt.Trainer(
-        pyt.TrainingUnit.EPOCH,
+        run_name="cifar10",
+        train_unit=pyt.TrainingUnit.EPOCH,
         total_steps=2,
         valid_frequency=1,
         chkpt_frequency=1,
@@ -283,7 +284,6 @@ if __name__ == "__main__":
         chkpt_root=pathlib.Path.cwd() / "chkpt",
         log_path=pathlib.Path.cwd() / "logs",
         run_path=pathlib.Path.cwd() / "runs",
-        run_name="cifar10",
     )
 
     trainer.fit(model, datamodule)

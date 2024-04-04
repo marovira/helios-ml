@@ -154,6 +154,7 @@ class Trainer:
     any clean up afterwards.
 
     Args:
+        run_name (str): name of the current run.
         train_unit (TrainingUnit): the unit used for training.
         total_steps (int | float): the total number of steps to train for.
         valid_frequency (int): frequency with which to perform validation.
@@ -172,16 +173,16 @@ class Trainer:
         chkpt_root (pathlib.Path): root folder in which checkpoints will be placed.
         log_path (pathlib.Path): root folder in which logs will be saved.
         run_path (pathlib.Path): root folder in which Tensorboard runs will be saved.
-        run_name (str): name of the current run.
     """
 
     def __init__(
         self,
-        train_unit: TrainingUnit = TrainingUnit.ITERATION,
+        run_name: str = "",
+        train_unit: TrainingUnit = TrainingUnit.EPOCH,
         total_steps: int | float = 0,
-        valid_frequency: int = 0,
-        chkpt_frequency: int = 0,
-        print_frequency: int = 0,
+        valid_frequency: int | None = None,
+        chkpt_frequency: int | None = None,
+        print_frequency: int | None = None,
         accumulation_steps: int = 1,
         enable_cudnn_benchmark: bool = False,
         enable_deterministic: bool = False,
@@ -195,7 +196,6 @@ class Trainer:
         chkpt_root: pathlib.Path | None = None,
         log_path: pathlib.Path | None = None,
         run_path: pathlib.Path | None = None,
-        run_name: str = "",
     ):
         """Create the trainer."""
         self._model: pym.Model | None = None
@@ -477,8 +477,14 @@ class Trainer:
                 f"received {self._total_steps}"
             )
 
-        if self._chkpt_frequency == 0:
-            self._chkpt_frequency = self._valid_frequency
+        if self._chkpt_frequency is not None and self._chkpt_frequency == 0:
+            raise ValueError("error: checkpoint frequency must be greater than 0 or None")
+
+        if self._print_frequency is not None and self._print_frequency == 0:
+            raise ValueError("error: print frequency must be greater than 0 or None")
+
+        if self._valid_frequency is not None and self._valid_frequency == 0:
+            raise ValueError("error: valid frequency must be greater than 0 or None")
 
         if self._enable_deterministic and self._enable_cudnn_benchmark:
             raise ValueError(
@@ -653,7 +659,9 @@ class Trainer:
                 state.average_iter_time = iter_timer.get_average_time()
                 self.model.on_training_batch_end(
                     state,
-                    state.current_iteration % print_freq == 0,
+                    should_log=False
+                    if print_freq is None
+                    else state.current_iteration % print_freq == 0,
                 )
                 # Depending on how fast the iteration loop is, it is possible that the
                 # progress bar isn't refreshed every tick, so make sure it gets re-drawn.
@@ -661,7 +669,11 @@ class Trainer:
                     pbar.refresh()
                 state.dataset_iter += 1
 
-                if state.current_iteration % val_freq == 0 and perform_validation:
+                if (
+                    val_freq is not None
+                    and state.current_iteration % val_freq == 0
+                    and perform_validation
+                ):
                     self._validate(state.validation_cycles)
                     state.validation_cycles += 1
                     state.running_iter = 0
@@ -670,7 +682,11 @@ class Trainer:
                     else:
                         state.early_stop_count = 0
 
-                if state.current_iteration % save_freq == 0 and self.rank == 0:
+                if (
+                    save_freq is not None
+                    and state.current_iteration % save_freq == 0
+                    and self.rank == 0
+                ):
                     self._save_checkpoint(state)
 
             state.dataset_iter = 0
@@ -749,7 +765,9 @@ class Trainer:
                     state.average_iter_time = iter_timer.get_average_time()
                     self.model.on_training_batch_end(
                         state,
-                        state.current_iteration % print_freq == 0,
+                        should_log=False
+                        if print_freq is None
+                        else state.current_iteration % print_freq == 0,
                     )
                     state.dataset_iter += 1
                     if not ite_pbar.update():
@@ -758,7 +776,7 @@ class Trainer:
             state.dataset_iter = 0
             state.global_epoch += 1
 
-            if state.global_epoch % val_freq == 0:
+            if val_freq is not None and state.global_epoch % val_freq == 0:
                 self._validate(state.validation_cycles)
                 state.running_iter = 0
                 if not self.model.have_metrics_improved():
@@ -766,7 +784,11 @@ class Trainer:
                 else:
                     state.early_stop_count = 0
                 state.validation_cycles += 1
-            if state.global_epoch % save_freq == 0 and self.rank == 0:
+            if (
+                save_freq is not None
+                and state.global_epoch % save_freq == 0
+                and self.rank == 0
+            ):
                 self._save_checkpoint(state)
 
             root_logger.info(
