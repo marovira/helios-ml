@@ -343,6 +343,9 @@ class TensorboardWriter:
         if self._writer is None:
             return
 
+        if run_name is None:
+            run_name = "."
+
         self._writer.add_hparams(
             hparam_dict, metric_dict, hparam_domain_discrete, run_name, global_step
         )
