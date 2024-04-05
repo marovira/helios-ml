@@ -471,6 +471,11 @@ def get_root_logger() -> RootLogger:
     return typing.cast(RootLogger, ACTIVE_LOGGERS["root"])
 
 
+def is_root_logger_active() -> bool:
+    """Check if the root logger has been created."""
+    return "root" in ACTIVE_LOGGERS
+
+
 def get_tensorboard_writer() -> TensorboardWriter | None:
     """
     Return the Tensorboard writter.
