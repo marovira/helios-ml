@@ -197,7 +197,7 @@ class Trainer:
         random_seed: int | None = None,
         enable_tensorboard: bool = False,
         enable_file_logging: bool = False,
-        enable_progress_bar: bool = True,
+        enable_progress_bar: bool = False,
         chkpt_root: pathlib.Path | None = None,
         log_path: pathlib.Path | None = None,
         run_path: pathlib.Path | None = None,
@@ -378,8 +378,10 @@ class Trainer:
         self._setup_model()
         self._prepare_roots(mkdir=False)
 
-        chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
-        self._load_checkpoint(chkpt_path, skip_rng=True, model_fast_init=True)
+        chkpt_path: pathlib.Path | None = None
+        if self._chkpt_root is not None:
+            chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
+            self._load_checkpoint(chkpt_path, skip_rng=True, model_fast_init=True)
 
         self._print_header(chkpt_path, for_training=False)
 
@@ -441,13 +443,13 @@ class Trainer:
         self.model.setup()
 
     def _prepare_roots(self, mkdir=True) -> None:
-        if self._chkpt_root is None:
-            self._chkpt_root = pathlib.Path.cwd() / "chkpt"
-
         name = self.model.save_name
-        self._chkpt_root = self._chkpt_root / name
+        self._chkpt_root = (
+            self._chkpt_root / name if self._chkpt_root is not None else None
+        )
         if mkdir:
-            self._chkpt_root.mkdir(parents=True, exist_ok=True)
+            if self._chkpt_root is not None:
+                self._chkpt_root.mkdir(parents=True, exist_ok=True)
 
             if self._log_path is not None:
                 self._log_path.mkdir(parents=True, exist_ok=True)
