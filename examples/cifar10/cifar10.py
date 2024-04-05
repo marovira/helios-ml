@@ -149,6 +149,13 @@ class ClassifierModel(pym.Model):
         # If we had more networks, we would shift them to training mode here.
         self._net.train()
 
+    def on_training_start(self) -> None:
+        """Perform steps before training starts."""
+        tb_logger = pyc.get_from_optional(logging.get_tensorboard_writer())
+
+        x = torch.randn((1, 3, 32, 32)).to(self.device)
+        tb_logger.add_graph(self._net, x)
+
     def train_step(self, batch: typing.Any, state: pyt.TrainingState) -> None:
         """Forward and backward training passes."""
         # Due to the simplicity of the code, we do both the forward and backward passes in
