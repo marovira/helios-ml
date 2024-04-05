@@ -406,11 +406,12 @@ class Trainer:
 
         self.model.eval()
         self.model.on_testing_start()
-        for idx, batch in enumerate(dataloader):
-            self.model.on_testing_batch_start(idx)
-            self.model.test_step(batch, idx)
-            self.model.on_testing_batch_end(idx)
-            pbar.update()
+        with torch.no_grad():
+            for idx, batch in enumerate(dataloader):
+                self.model.on_testing_batch_start(idx)
+                self.model.test_step(batch, idx)
+                self.model.on_testing_batch_end(idx)
+                pbar.update()
 
         self.model.on_testing_end()
 
@@ -679,7 +680,7 @@ class Trainer:
                 )
                 # Depending on how fast the iteration loop is, it is possible that the
                 # progress bar isn't refreshed every tick, so make sure it gets re-drawn.
-                if not pbar.update():
+                if state.global_iteration % accumulation_steps == 0 and not pbar.update():
                     pbar.refresh()
                 state.dataset_iter += 1
 
@@ -784,7 +785,7 @@ class Trainer:
                         else state.current_iteration % print_freq == 0,
                     )
                     state.dataset_iter += 1
-                    if not ite_pbar.update():
+                    if ite_pbar.update():
                         ite_pbar.refresh()
 
             state.dataset_iter = 0
@@ -840,15 +841,16 @@ class Trainer:
 
         self.model.eval()
         self.model.on_validation_start(val_cycle)
-        for idx, batch in enumerate(dataloader):
-            self.model.on_validation_batch_start(idx)
-            self.model.valid_step(batch, idx)
-            self.model.on_validation_batch_end(idx)
+        with torch.no_grad():
+            for idx, batch in enumerate(dataloader):
+                self.model.on_validation_batch_start(idx)
+                self.model.valid_step(batch, idx)
+                self.model.on_validation_batch_end(idx)
 
-            # Ensure the progress bar is updated in the event that the validation loop
-            # runs faster than the refresh rate of the progress bar.
-            if not pbar.update():
-                pbar.refresh()
+                # Ensure the progress bar is updated in the event that the validation loop
+                # runs faster than the refresh rate of the progress bar.
+                if not pbar.update():
+                    pbar.refresh()
 
         self.model.train()
         self.model.on_validation_end(val_cycle)
