@@ -4,6 +4,7 @@ import dataclasses
 import enum
 import itertools
 import pathlib
+import re
 import time
 import typing
 
@@ -106,7 +107,11 @@ def find_last_checkpoint(root: pathlib.Path) -> pathlib.Path | None:
     epoch = 0
     ite = 0
     last_chkpt = None
+    regexp = re.compile(r"epoch_\d+_iter_\d+")
     for path in root.glob("*.pth"):
+        if not regexp.search(path.stem):
+            continue
+
         elems = str(path.stem).split("_")
 
         idx = elems.index("epoch") + 1
@@ -190,8 +195,8 @@ class Trainer:
         use_cpu: bool | None = None,
         gpus: list[int] | None = None,
         random_seed: int | None = None,
-        enable_tensorboard: bool = True,
-        enable_file_logging: bool = True,
+        enable_tensorboard: bool = False,
+        enable_file_logging: bool = False,
         enable_progress_bar: bool = True,
         chkpt_root: pathlib.Path | None = None,
         log_path: pathlib.Path | None = None,
@@ -259,7 +264,8 @@ class Trainer:
     @rank.setter
     def rank(self, r) -> None:
         self._rank = r
-        self._active_gpu = self._gpu_ids[r]
+        if not self._use_cpu:
+            self._active_gpu = self._gpu_ids[r]
 
     @property
     def gpu_ids(self) -> list[int]:
@@ -299,9 +305,10 @@ class Trainer:
         try:
             self._launch(model, datamodule, TrainerMode.TRAIN)
         except Exception as e:
-            root_logger = logging.get_root_logger()
-            root_logger.exception("error: uncaught exception")
-            logging.close_default_loggers()
+            if logging.is_root_logger_active():
+                root_logger = logging.get_root_logger()
+                root_logger.exception("error: uncaught exception")
+                logging.close_default_loggers()
             raise RuntimeError("error: uncaught exception") from e
 
     def test(self, model: pym.Model, datamodule: data.PyroDataModule) -> None:
@@ -315,9 +322,10 @@ class Trainer:
         try:
             self._launch(model, datamodule, TrainerMode.TEST)
         except Exception as e:
-            root_logger = logging.get_root_logger()
-            root_logger.exception("error: uncaught exception")
-            logging.close_default_loggers()
+            if logging.is_root_logger_active():
+                root_logger = logging.get_root_logger()
+                root_logger.exception("error: uncaught exception")
+                logging.close_default_loggers()
             raise RuntimeError("error: uncaught exception") from e
 
     def _launch(
@@ -553,9 +561,15 @@ class Trainer:
         if len(self._gpu_ids) == 0:
             self._gpu_ids = valid_ids
 
+        if len(self._gpu_ids) > len(valid_ids):
+            raise ValueError(
+                f"error: expected a maximum of {len(valid_ids)} GPU IDs but "
+                f"received {len(self._gpu_ids)}"
+            )
+
         for gpu_id in self._gpu_ids:
             if gpu_id not in valid_ids:
-                raise RuntimeError(f"error: {gpu_id} is not a valid GPU")
+                raise ValueError(f"error: {gpu_id} is not a valid GPU")
 
         self._is_distributed = len(self._gpu_ids) > 1
 
