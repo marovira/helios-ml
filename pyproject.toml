@@ -10,6 +10,7 @@ requires-python = ">= 3.11"
 dependencies = [
     "tqdm==4.66.2",
     "opencv-python==4.9.0.80",
+    "protobuf>=3.19.6, !=4.24.0, <5.0.0",
     "tensorboard==2.16.2",
     "torch==2.2.1",
     "torchvision==0.17.1",
