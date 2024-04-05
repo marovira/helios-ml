@@ -1,6 +1,8 @@
 import copy
 import pathlib
 
+import numpy as np
+import numpy.typing as npt
 import pytest
 import torch
 from torch.utils import data as tud
@@ -9,6 +11,7 @@ import pyro.trainer as pyt
 from pyro import data
 from pyro import model as pym
 from pyro.core import rng
+from pyro.data import functional as F
 
 # Ignore the use of private members so we can test them correctly.
 # ruff: noqa: SLF001
@@ -36,7 +39,7 @@ class RandomDatamodule(data.PyroDataModule):
         self._test_dataset = self._create_dataset(RandomDataset(), params)
 
 
-class Model(pym.Model):
+class CheckFunModel(pym.Model):
     def __init__(self) -> None:
         super().__init__("test-model")
         self.called_train_funs: dict[str, bool] = {
@@ -125,6 +128,24 @@ class Model(pym.Model):
         self.called_test_funs["on_testing_end"] = True
 
 
+class RestartModel(pym.Model):
+    def __init__(self, val_count: int = -1) -> None:
+        super().__init__("test-restart")
+        self.batches: list[npt.NDArray] = []
+        self.val_count = val_count
+
+    def setup(self, fast_init: bool = False) -> None:
+        pass
+
+    def on_training_batch_start(self, state: pyt.TrainingState) -> None:
+        if self.val_count == state.validation_cycles:
+            raise RuntimeError("stop")
+
+    def train_step(self, batch: torch.Tensor, state) -> None:
+        as_np = F.tensor_to_numpy(batch)
+        self.batches.append(as_np)
+
+
 class TestTrainingUnit:
     def test_from_str(self) -> None:
         assert pyt.TrainingUnit.from_str("epoch") == pyt.TrainingUnit.EPOCH
@@ -205,7 +226,7 @@ class TestTrainer:
         fit: bool = True,
     ) -> None:
         datamodule = RandomDatamodule()
-        model = Model()
+        model = CheckFunModel()
 
         called_funs: dict[str, bool]
         if fit:
@@ -245,7 +266,6 @@ class TestTrainer:
                 valid_frequency=1,
                 chkpt_frequency=1,
                 use_cpu=True,
-                enable_progress_bar=False,
                 chkpt_root=tmp_path / "chkpt",
             ),
             2,
@@ -254,3 +274,73 @@ class TestTrainer:
 
     def test_testing(self) -> None:
         self.check_training_loops(pyt.Trainer(), fit=False)
+
+    def get_restart_trainer(
+        self, unit: pyt.TrainingUnit, chkpt_root: pathlib.Path
+    ) -> pyt.Trainer:
+        if unit == pyt.TrainingUnit.ITERATION:
+            total_steps = DATASET_SIZE
+            valid_frequency = DATASET_SIZE // 2
+        else:
+            total_steps = 2
+            valid_frequency = 1
+
+        return pyt.Trainer(
+            train_unit=unit,
+            total_steps=total_steps,
+            valid_frequency=valid_frequency,
+            chkpt_frequency=valid_frequency,
+            use_cpu=True,
+            chkpt_root=chkpt_root,
+        )
+
+    def get_restart_model_and_datamodule(
+        self, val_count: int = -1
+    ) -> tuple[RandomDatamodule, RestartModel]:
+        return RandomDatamodule(), RestartModel(val_count)
+
+    def clear_chkpts(self, chkpt_root: pathlib.Path) -> None:
+        for chkpt in chkpt_root.glob("*.pth"):
+            chkpt.unlink()
+
+    def check_batches(
+        self, exp_batches: list[npt.NDArray], ret_batches: list[npt.NDArray]
+    ) -> None:
+        assert len(exp_batches) == len(ret_batches)
+        for exp, ret in zip(exp_batches, ret_batches, strict=True):
+            assert np.all(exp == ret)
+
+    def check_restart_trainer(
+        self, unit: pyt.TrainingUnit, tmp_path: pathlib.Path
+    ) -> None:
+        datamodule, model = self.get_restart_model_and_datamodule()
+        trainer = self.get_restart_trainer(unit, tmp_path)
+        chkpt_root = tmp_path / model.save_name
+
+        trainer.fit(model, datamodule)
+        batches = model.batches
+
+        self.clear_chkpts(chkpt_root)
+        del datamodule, model, trainer
+
+        datamodule, model = self.get_restart_model_and_datamodule(1)
+        trainer = self.get_restart_trainer(unit, tmp_path)
+        with pytest.raises(RuntimeError):
+            trainer.fit(model, datamodule)
+
+        # Clear out everything again and restart.
+        ret_batches = model.batches
+        del datamodule, trainer, model
+
+        datamodule, model = self.get_restart_model_and_datamodule()
+        trainer = self.get_restart_trainer(unit, tmp_path)
+        model.batches = ret_batches
+        trainer.fit(model, datamodule)
+
+        self.check_batches(batches, model.batches)
+
+    def test_restart_iter(self, tmp_path: pathlib.Path) -> None:
+        self.check_restart_trainer(pyt.TrainingUnit.ITERATION, tmp_path)
+
+    def test_restart_epoch(self, tmp_path: pathlib.Path) -> None:
+        self.check_restart_trainer(pyt.TrainingUnit.EPOCH, tmp_path)
