@@ -2,6 +2,7 @@ import dataclasses
 import math
 import pathlib
 import random
+import sys
 import time
 import typing
 
@@ -70,6 +71,19 @@ class TestUtils:
         assert len(typing.cast(typing.Sized, test_registry.keys())) == 1
         assert "sample_fun" in test_registry
         assert test_registry.get("sample_fun") == sample_fun
+
+    def test_update_registries(self) -> None:
+        root = pathlib.Path(__file__)
+        root = root.parent
+        # HACK: Ensure that the current path gets added to sys path, otherwise imports
+        # won't work.
+        sys.path.append(str(root))
+        core.update_all_registries(root / "registry_test", recurse=True)
+
+        import registry_test as rt  # type: ignore[import-not-found]
+
+        assert len(rt.FUNC_REGISTRY.keys()) == 2
+        assert all(var in rt.FUNC_REGISTRY for var in ("foo", "bar"))
 
 
 def sample_fun() -> int:
