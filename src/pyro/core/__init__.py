@@ -11,6 +11,7 @@ from .utils import (
     convert_to_list,
     get_env_info_str,
     get_from_optional,
+    update_all_registries,
 )
 
 __all__ = [
@@ -20,4 +21,5 @@ __all__ = [
     "get_from_optional",
     "get_env_info_str",
     "convert_to_list",
+    "update_all_registries",
 ]

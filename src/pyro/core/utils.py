@@ -1,6 +1,8 @@
+import importlib
 import os
 import pathlib
 import platform
+import re
 import sys
 import time
 import typing
@@ -323,3 +325,89 @@ class Registry:
             Iterable: an iterable of the registry keys.
         """
         return self._obj_map.keys()
+
+
+def update_all_registries(
+    root: pathlib.Path, recurse: bool = True, import_prefix: str = ""
+) -> None:
+    """
+    Ensure all registered types get added to their corresponding registries.
+
+    This function serves as a way of automatically registering all types into their
+    corresponding registries within a package. Normally, you'd have to manually include
+    each module that contains a registered type to ensure that it gets registered. This
+    can easily cascade if modules are nested inside packages, whereby the top-level module
+    has to (somehow) ensure that all child modules get imported to ensure everything works
+    correctly.
+
+    This function offers an alternative, whereby it will automatically scan all
+    modules and sub-packages within a given package and import only those files that
+    register a type. To do this, there are a few assumptions:
+        1. Each package MUST contain an __init__.py (namespace packages are not supported)
+        2. A module is included if and only if it contains at least one line with the
+        following pattern: @<any non-whitespace character(s)>.register
+
+    Example:
+        Suppose we have a project with the following structure:
+            main.py
+            my_package/
+            |---__init__.py
+            |---some_class.py <- This registers a type.
+            |---some_funcs.py <- Doesn't register anything.
+            |---sub_package/
+            |   |---__init__.py
+            |   |---another_type.py <- Registers
+            |   |---another_func.py <- Doesn't register.
+
+        We can then do the following inside `main.py`:
+            import pyro.core as pyc
+            ...
+            pyc.update_all_registries(Path.cwd() / "my_package", recurse=True)
+
+        The function will recursively walk through `my_package` and import the following:
+            * my_package.some_class
+            * my_package.sub_package.another_type
+        After the function returns, the corresponding registries will have been populated
+        with the types and they can be used elsewhere in the code.
+
+    Args:
+        root (pathlib.Path): the path to the root package.
+        recurse (bool): if True, recursively search through sub-packages.
+        import_prefix (str): prefix to be added when imported.
+    """
+    if not root.is_dir():
+        raise RuntimeError(f"error: expected {str(root)} to be a valid directory")
+
+    if import_prefix == "":
+        import_prefix = root.stem
+    else:
+        import_prefix += f".{root.stem}"
+
+    # Ensure the __init__.py exists
+    init_path = root / "__init__.py"
+    if not init_path.exists():
+        raise RuntimeError(f"error: {str(root)} is not a Python package")
+
+    modules: list[tuple[pathlib.Path, str]] = []
+    for path in root.iterdir():
+        stem = path.stem
+        if path.is_dir() and recurse:
+            if stem.startswith(("__", ".")):
+                continue
+            update_all_registries(path, True, import_prefix)
+
+        if path.is_file() and path.suffix == ".py" and stem != "__init__":
+            modules.append((path, import_prefix + f".{path.stem}"))
+
+    import_modules: list[str] = []
+    p = re.compile(r"@.+\.register\s")
+    for path, tag in modules:
+        with path.open("r", encoding="utf-8") as infile:
+            lines = infile.readlines()
+        for line in lines:
+            if p.match(line):
+                import_modules.append(tag)
+                break
+
+    for module in import_modules:
+        importlib.import_module(module)
