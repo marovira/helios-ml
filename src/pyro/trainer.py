@@ -439,6 +439,7 @@ class Trainer:
         self.model.map_loc = self._map_loc
         self.model.is_distributed = self._is_distributed
         self.model.device = core.get_from_optional(self._device)
+        self.model.rank = self._rank
         self.model.trainer = self
         self.model.setup()
 
@@ -676,9 +677,11 @@ class Trainer:
                 state.average_iter_time = iter_timer.get_average_time()
                 self.model.on_training_batch_end(
                     state,
-                    should_log=False
-                    if print_freq is None
-                    else state.current_iteration % print_freq == 0,
+                    should_log=(
+                        False
+                        if print_freq is None
+                        else state.current_iteration % print_freq == 0
+                    ),
                 )
                 # Depending on how fast the iteration loop is, it is possible that the
                 # progress bar isn't refreshed every tick, so make sure it gets re-drawn.
@@ -782,9 +785,11 @@ class Trainer:
                     state.average_iter_time = iter_timer.get_average_time()
                     self.model.on_training_batch_end(
                         state,
-                        should_log=False
-                        if print_freq is None
-                        else state.current_iteration % print_freq == 0,
+                        should_log=(
+                            False
+                            if print_freq is None
+                            else state.current_iteration % print_freq == 0
+                        ),
                     )
                     state.dataset_iter += 1
                     if ite_pbar.update():

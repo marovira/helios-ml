@@ -72,6 +72,7 @@ class Model(abc.ABC):
         self._is_distributed: bool = False
         self._map_loc: str | dict[str, str] = ""
         self._device: torch.device | None = None
+        self._rank: int = 0
 
         self._loss_items: dict[str, torch.Tensor] = {}
         self._val_scores: dict[str, float] = {}
@@ -108,6 +109,15 @@ class Model(abc.ABC):
     @device.setter
     def device(self, dev: torch.device) -> None:
         self._device = dev
+
+    @property
+    def rank(self) -> int:
+        """The rank (device id) that the model is running on."""
+        return self._rank
+
+    @rank.setter
+    def rank(self, r: int) -> None:
+        self._rank = r
 
     @property
     def trainer(self) -> Trainer:
