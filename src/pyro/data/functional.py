@@ -44,7 +44,7 @@ def tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> npt.NDArray:
         as_np = np.transpose(as_np, (1, 2, 0))
 
     if not as_float:
-        as_np = np.uint8((tens * 255.0).round())
+        as_np = np.uint8((as_np * 255.0).round())
 
     return as_np
 
