@@ -1,8 +1,10 @@
+import copy
 import logging
 import pathlib
 import typing
 from datetime import datetime
 
+import matplotlib.pyplot as plt
 import numpy.typing as npt
 import torch
 import torch.utils.tensorboard as tb
@@ -249,6 +251,27 @@ class TensorboardWriter:
 
         self._writer.add_images(tag, img_tensor, global_step, dataformats=dataformats)
 
+    def add_figure(
+        self,
+        tag: str,
+        figure: plt.Figure | list[plt.Figure],
+        global_step: int | None = None,
+        close: bool = True,
+    ) -> None:
+        """
+        Render matplotlib figure into an image and add it to a summary.
+
+        Args:
+            tag (str): data identifier.
+            figure (plt.Figure | list[plt.Figure]): figure or a list of figures.
+            global_step (int): global step value to record.
+            close (bool): flag to automatically close the figure.
+        """
+        if self._writer is None:
+            return
+
+        self._writer.add_figure(tag, figure, global_step, close)
+
     def add_text(self, tag: str, text_string: str, global_step: int | None = None):
         """
         Add text data to log.
@@ -273,6 +296,10 @@ class TensorboardWriter:
         """
         Add graph data to log.
 
+        PyTorch currently supports CPU tracing only, so the model and its input(s) will be
+        automatically moved to the CPU prior to logging. Note that the model will be
+        copied prior to moving to the CPU to ensure the input model is not affected.
+
         Args:
             model (torch.nn.Module): model to draw.
             input_to_model(Optional[torch.Tensor | list[torch.Tensor]]): a variable
@@ -284,7 +311,20 @@ class TensorboardWriter:
         if self._writer is None:
             return
 
-        self._writer.add_graph(model, input_to_model, verbose, use_strict_trace)
+        # Transfer graph + input to the CPU for tracing.
+        model_cpu = copy.deepcopy(model).cpu()
+
+        input_cpu: torch.Tensor | list[torch.Tensor] | None
+        if isinstance(input_to_model, torch.Tensor):
+            input_cpu = input_to_model.cpu()
+        elif isinstance(input_to_model, list):
+            input_cpu = []
+            for x in input_to_model:
+                input_cpu.append(x.cpu())
+        else:
+            input_cpu = None
+
+        self._writer.add_graph(model_cpu, input_cpu, verbose, use_strict_trace)
 
     def add_pr_curve(
         self,
