@@ -88,7 +88,7 @@ class EMA(nn.Module):
             net.state_dict().values(),
             strict=True,
         ):
-            if self.device:
+            if self._device:
                 net_v = net_v.to(device=self.device)
             ema_v.copy_(update_fn(ema_v, net_v))
 

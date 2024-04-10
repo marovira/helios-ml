@@ -295,6 +295,10 @@ class Registry:
                 raise KeyError(
                     f"No object called '{name}' found in the '{self._name}' registrar"
                 )
+        elif ret is None:
+            raise KeyError(
+                f"No object called '{name}' found in the '{self._name}' registrar"
+            )
         return ret
 
     def __contains__(self, name: str) -> bool:
