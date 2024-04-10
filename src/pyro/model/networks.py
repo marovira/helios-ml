@@ -94,7 +94,9 @@ class EMA(nn.Module):
 
     def update(self, net: nn.Module) -> None:
         """Update the weights using EMA from the given network."""
-        self._update(net, update_fn=lambda e, m: self.decay * e + (1.0 - self.decay) * m)
+        self._update(
+            net, update_fn=lambda e, m: self._decay * e + (1.0 - self._decay) * m
+        )
 
     def set(self, net: nn.Module) -> None:
         """Re-set the base weights."""
@@ -108,4 +110,4 @@ class EMA(nn.Module):
             args (Any): named parameters for your network's forward function.
             kwargs (Any): keyword arguments for your network's forward function.
         """
-        return self.module(*args, **kwargs)
+        return self._module(*args, **kwargs)
