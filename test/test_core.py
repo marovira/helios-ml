@@ -72,6 +72,9 @@ class TestUtils:
         assert "sample_fun" in test_registry
         assert test_registry.get("sample_fun") == sample_fun
 
+        with pytest.raises(KeyError):
+            test_registry.get("foo")
+
     def test_update_registries(self) -> None:
         root = pathlib.Path(__file__)
         root = root.parent

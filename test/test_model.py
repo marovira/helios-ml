@@ -182,6 +182,11 @@ class TestNewtorks:
     def test_create(self) -> None:
         check_create_function(networks.NETWORK_REGISTRY, networks.create_network)
 
+    def test_ema(self) -> None:
+        net = nn.Conv2d(1, 20, 5)
+        ema = networks.EMA(net)
+        ema.update(net)
+
 
 @pym.MODEL_REGISTRY.register
 class MockModel(pym.Model):
