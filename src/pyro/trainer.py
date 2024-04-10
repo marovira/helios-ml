@@ -160,7 +160,7 @@ class Trainer:
 
     Args:
         run_name (str): name of the current run.
-        train_unit (TrainingUnit): the unit used for training.
+        train_unit (TrainingUnit | str): the unit used for training.
         total_steps (int | float): the total number of steps to train for.
         valid_frequency (int): frequency with which to perform validation.
         chkpt_frequency (int): frequency with which to save checkpoints.
@@ -175,6 +175,7 @@ class Trainer:
         random_seed (int | None): the seed to use for RNGs.
         enable_tensorboard (bool): enable/disable Tensorboard logging.
         enable_file_logging (bool): enable/disable file logging.
+        enable_progress_bar (bool): enable/disable the progress bar(s).
         chkpt_root (pathlib.Path): root folder in which checkpoints will be placed.
         log_path (pathlib.Path): root folder in which logs will be saved.
         run_path (pathlib.Path): root folder in which Tensorboard runs will be saved.
@@ -183,7 +184,7 @@ class Trainer:
     def __init__(
         self,
         run_name: str = "",
-        train_unit: TrainingUnit = TrainingUnit.EPOCH,
+        train_unit: TrainingUnit | str = TrainingUnit.EPOCH,
         total_steps: int | float = 0,
         valid_frequency: int | None = None,
         chkpt_frequency: int | None = None,
@@ -214,6 +215,9 @@ class Trainer:
         self._gpu_ids: list[int] = [] if gpus is None else gpus
         self._active_gpu: int = 0
         self._is_distributed: bool = False
+
+        if isinstance(train_unit, str):
+            train_unit = TrainingUnit.from_str(train_unit)
 
         self._train_unit = train_unit
         self._total_steps = total_steps
