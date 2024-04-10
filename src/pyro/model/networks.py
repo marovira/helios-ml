@@ -89,7 +89,7 @@ class EMA(nn.Module):
             strict=True,
         ):
             if self._device:
-                net_v = net_v.to(device=self.device)
+                net_v = net_v.to(device=self._device)
             ema_v.copy_(update_fn(ema_v, net_v))
 
     def update(self, net: nn.Module) -> None:
