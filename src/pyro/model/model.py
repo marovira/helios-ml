@@ -145,6 +145,16 @@ class Model(abc.ABC):
             fast_init (bool): if True, only networks are loaded.
         """
 
+    def load_for_testing(self) -> None:
+        """
+        Load the network(s) used for testing.
+
+        When testing, the trainer will try to load the last checkpoint saved during
+        training. If it is unable to find one, it will call this function to ensure the
+        model loads the state of the network(s) for testing. If you wish to load your
+        network using separate logic, use this function.
+        """
+
     def load_state_dict(
         self, state_dict: dict[str, typing.Any], fast_init: bool = False
     ) -> None:

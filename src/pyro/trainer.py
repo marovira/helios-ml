@@ -424,9 +424,16 @@ class Trainer:
         self._prepare_roots(mkdir=False)
 
         chkpt_path: pathlib.Path | None = None
+        loaded: bool = False
         if self._chkpt_root is not None:
             chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
-            self._load_checkpoint(chkpt_path, skip_rng=True, model_fast_init=True)
+            _, loaded = self._load_checkpoint(
+                chkpt_path, skip_rng=True, model_fast_init=True
+            )
+
+        # We failed to load the last checkpoint, so tell the model to load its state.
+        if self._chkpt_root is None or not loaded:
+            self.model.load_for_testing()
 
         self._print_header(chkpt_path, for_training=False)
 
