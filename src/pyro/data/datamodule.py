@@ -25,7 +25,7 @@ from .samplers import (
 DATASET_REGISTRY = core.Registry("dataset")
 
 
-def create_dataset(type_name: str, **kwargs):
+def create_dataset(type_name: str, *args: typing.Any, **kwargs: typing.Any):
     """
     Create a dataset of the given type.
 
@@ -34,12 +34,13 @@ def create_dataset(type_name: str, **kwargs):
 
     Args:
         type_name (str): the type of the dataset to create.
-        kwargs: any arguments you wish to pass into the dataset.
+        args: positional arguments to pass into the dataset.
+        kwargs: keyword arguments to pass into the dataset.
 
     Returns:
         nn.Module: the constructed transform.
     """
-    return DATASET_REGISTRY.get(type_name)(**kwargs)
+    return DATASET_REGISTRY.get(type_name)(*args, **kwargs)
 
 
 class DatasetSplit(enum.Enum):
