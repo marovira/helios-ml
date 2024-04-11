@@ -60,6 +60,7 @@ class CheckFunModel(pym.Model):
         }
 
         self.called_test_funs: dict[str, bool] = {
+            "load_for_testing": False,
             "eval": False,
             "on_testing_start": False,
             "on_testing_batch_start": False,
@@ -70,6 +71,9 @@ class CheckFunModel(pym.Model):
 
     def setup(self, fast_init: bool = False) -> None:
         self.called_train_funs["setup"] = True
+
+    def load_for_testing(self) -> None:
+        self.called_test_funs["load_for_testing"] = True
 
     def train(self) -> None:
         self.called_train_funs["train"] = True
@@ -273,7 +277,7 @@ class TestTrainer:
         )
 
     def test_testing(self) -> None:
-        self.check_training_loops(pyt.Trainer(), fit=False)
+        self.check_training_loops(pyt.Trainer(use_cpu=True), fit=False)
 
     def get_restart_trainer(
         self, unit: pyt.TrainingUnit, chkpt_root: pathlib.Path
