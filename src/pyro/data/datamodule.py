@@ -91,11 +91,19 @@ def create_dataloader(
     drop_last: bool = False,
     debug_mode: bool = False,
     is_distributed: bool = False,
+    sampler: ResumableSamplerType | None = None,
 ) -> tuple[tud.DataLoader, ResumableSamplerType]:
     """
     Create the dataloader for the given dataset.
 
-    The sampler will only be returned if is_distributed is set to true.
+    If no sampler is provided, the choice of sampler will be determined based on the
+    values of is_distributed and shuffle. Specifically, the following logic is used:
+        * If is_distributed, then sampler is ResumableDistributedSampler.
+        * Otherwise, if shuffle then sampler is ResumableRandomSampler, else
+        ResumableSequentialSampler.
+
+    You may override this behaviour by providing your own sampler instance. Note that the
+    sampler MUST be derived from one of ResumableSampler or ResumableDistributedSampler.
 
     Args:
         dataset (Dataset): the dataset.
@@ -107,29 +115,36 @@ def create_dataloader(
         drop_last (bool): if true, remove the final batch.
         debug_mode (bool): if true, set number of workers to 0.
         is_distributed (bool): if true, create the distributed sampler.
+        sampler (ResumableSamplerType | None): (optional) sampler to use.
 
     Returns:
         tuple[Dataloader, Sampler]: the dataloader and sampler.
     """
     assert len(typing.cast(typing.Sized, dataset))
 
-    sampler: ResumableSamplerType
-    if is_distributed:
-        sampler = ResumableDistributedSampler(
-            dataset, shuffle=shuffle, drop_last=drop_last, seed=random_seed
-        )
-    else:
-        if shuffle:
-            sampler = ResumableRandomSampler(
-                dataset,  # type: ignore[arg-type]
-                seed=random_seed,
-                batch_size=batch_size,
+    if sampler is None:
+        if is_distributed:
+            sampler = ResumableDistributedSampler(
+                dataset, shuffle=shuffle, drop_last=drop_last, seed=random_seed
             )
         else:
-            sampler = ResumableSequentialSampler(
-                dataset,  # type: ignore[arg-type]
-                batch_size=batch_size,
-            )
+            if shuffle:
+                sampler = ResumableRandomSampler(
+                    dataset,  # type: ignore[arg-type]
+                    seed=random_seed,
+                    batch_size=batch_size,
+                )
+            else:
+                sampler = ResumableSequentialSampler(
+                    dataset,  # type: ignore[arg-type]
+                    batch_size=batch_size,
+                )
+
+    elif not isinstance(sampler, typing.get_args(ResumableSamplerType)):
+        raise TypeError(
+            "error: expected sampler to derive from one of ResumableSampler or "
+            f"ResumableDistributedSampler, but received {type(sampler)}"
+        )
 
     return (
         tud.DataLoader(
@@ -159,6 +174,7 @@ class DataLoaderParams:
         drop_last (bool): if true, remove the final batch.
         debug_mode (bool): if true, set number of workers to 0.
         is_distributed (bool): if true, create the distributed sampler.
+        sampler (ResumableSamplerType | None): (optional) sampler to use.
     """
 
     random_seed: int = rng.get_default_seed()
@@ -169,6 +185,7 @@ class DataLoaderParams:
     drop_last: bool = False
     debug_mode: bool = False
     is_distributed: bool | None = None
+    sampler: ResumableSamplerType | None = None
 
     def to_dict(self) -> dict[str, typing.Any]:
         """Convert the params object to a dictionary using shallow copies."""
@@ -182,8 +199,9 @@ class DataLoaderParams:
         params = cls()
         keys = [field.name for field in dataclasses.fields(params)]
 
+        # Skip the sampler key, since that one needs to be created differently.
         for key in keys:
-            if key in table:
+            if key in table and key != "sampler":
                 setattr(params, key, table[key])
 
         return params

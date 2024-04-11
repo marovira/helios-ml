@@ -1,8 +1,34 @@
+from __future__ import annotations
+
 import math
 import typing
 
 import torch
 import torch.utils.data as tud
+
+from pyro import core
+
+SAMPLER_REGISTRY = core.Registry("sampler")
+
+
+def create_sampler(
+    type_name: str, *args: typing.Any, **kwargs: typing.Any
+) -> ResumableSamplerType:
+    """
+    Create a sampler of the given type.
+
+    This uses the SAMPLER_REGISTRY to look-up sampler types, so ensure your samplers have
+    been registered before using this function.
+
+    Args:
+        type_name (str): the type of the transform to create.
+        args: positional arguments to pass into the sampler.
+        kwargs: keyword arguments to pass into the sampler.
+
+    Returns:
+        ResumableSamplerType: the constructed sampler.
+    """
+    return SAMPLER_REGISTRY.get(type_name)(*args, **kwargs)
 
 
 class ResumableSampler(tud.Sampler):
@@ -42,6 +68,7 @@ class ResumableSampler(tud.Sampler):
         self._epoch = epoch
 
 
+@SAMPLER_REGISTRY.register
 class ResumableRandomSampler(ResumableSampler):
     """
     Random sampler with resumable state.
@@ -82,6 +109,7 @@ class ResumableRandomSampler(ResumableSampler):
         return iter(indices)
 
 
+@SAMPLER_REGISTRY.register
 class ResumableSequentialSampler(ResumableSampler):
     """
     Sequential sampler with resumable state.
@@ -115,6 +143,7 @@ class ResumableSequentialSampler(ResumableSampler):
         return iter(indices)
 
 
+@SAMPLER_REGISTRY.register
 class ResumableDistributedSampler(tud.DistributedSampler):
     """
     Distributed sampler with resumable state.

@@ -1,3 +1,5 @@
+import typing
+
 import torch
 from torch.utils import data as tud
 
@@ -216,6 +218,18 @@ class TestDataModule:
             batches.append(batch)
 
         self.check_batches(exp_batches[half_step:], batches)
+
+    def test_sampler_registry(self) -> None:
+        registered_names = [
+            "ResumableRandomSampler",
+            "ResumableSequentialSampler",
+            "ResumableDistributedSampler",
+        ]
+        assert len(typing.cast(typing.Sized, pds.SAMPLER_REGISTRY.keys())) == len(
+            registered_names
+        )
+        for name in registered_names:
+            assert name in pds.SAMPLER_REGISTRY
 
 
 if __name__ == "__main__":
