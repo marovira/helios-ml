@@ -152,7 +152,7 @@ def spawn_handler(
         model (Model): the model to use.
         mode (_TrainerMode): determines which operation needs to be performed.
     """
-    dist.init_dist(rank, world_size)
+    dist.init_dist(rank=rank, world_size=world_size)
 
     trainer.model = model
     trainer.datamodule = datamodule
@@ -230,6 +230,7 @@ class Trainer:
         self._gpu_ids: list[int] = [] if gpus is None else gpus
         self._active_gpu: int = 0
         self._is_distributed: bool = False
+        self._is_torchrun: bool = dist.is_using_torchrun()
 
         if isinstance(train_unit, str):
             train_unit = TrainingUnit.from_str(train_unit)
@@ -363,7 +364,7 @@ class Trainer:
         """
         datamodule.prepare_data()
 
-        if self._is_distributed:
+        if self._is_distributed and not self._is_torchrun:
             world_size = len(self._gpu_ids)
             mp.spawn(
                 spawn_handler,
@@ -373,13 +374,19 @@ class Trainer:
             )
             return
 
+        if self._is_torchrun and self._is_distributed:
+            dist.init_dist()
+
         self.model = model
         self.datamodule = datamodule
-        self.rank = 0
+        self.rank = dist.get_rank()
         if mode == _TrainerMode.TRAIN:
             self._train()
         elif mode == _TrainerMode.TEST:
             self._test()
+
+        if self._is_torchrun and self._is_distributed:
+            dist.shutdown_dist()
 
     def _train(self) -> None:
         """
@@ -640,7 +647,11 @@ class Trainer:
             if gpu_id not in valid_ids:
                 raise ValueError(f"error: {gpu_id} is not a valid GPU")
 
-        self._is_distributed = len(self._gpu_ids) > 1
+        self._is_distributed = (
+            len(self._gpu_ids) > 1
+            if not self._is_torchrun
+            else dist.get_dist_info().world_size > 1
+        )
 
     def _save_checkpoint(self, state: TrainingState) -> None:
         """
