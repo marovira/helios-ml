@@ -51,8 +51,13 @@ class TrainingUnit(enum.Enum):
         )
 
 
-class TrainerMode(enum.Enum):
-    """Defines the types of actions that the trainer can do."""
+class _TrainerMode(enum.Enum):
+    """
+    Defines the types of actions that the trainer can do.
+
+    These values are used internally to figure out which function should be invoked from
+    the distributed handler.
+    """
 
     TRAIN = 0
     TEST = 1
@@ -134,17 +139,27 @@ def spawn_handler(
     trainer: Trainer,
     datamodule: data.PyroDataModule,
     model: pym.Model,
-    mode: TrainerMode,
+    mode: _TrainerMode,
 ) -> None:
-    """Spawn callback for distributed training."""
+    """
+    Spawn handler for distributed training.
+
+    Args:
+        rank (int): the rank id of the current process within the work group.
+        world_size (int): number of processes in the work group.
+        trainer (Trainer): the trainer to use.
+        datamodule (PyroDataModule): the datamodule to use.
+        model (Model): the model to use.
+        mode (_TrainerMode): determines which operation needs to be performed.
+    """
     dist.init_dist(rank, world_size)
 
     trainer.model = model
     trainer.datamodule = datamodule
     trainer.rank = rank
-    if mode == TrainerMode.TRAIN:
+    if mode == _TrainerMode.TRAIN:
         trainer._train()  # noqa: SLF001
-    elif mode == TrainerMode.TEST:
+    elif mode == _TrainerMode.TEST:
         trainer._test()  # noqa: SLF001
 
     dist.shutdown_dist()
@@ -307,7 +322,7 @@ class Trainer:
             datamodule (data.PyroDataModule): the datamodule to use.
         """
         try:
-            self._launch(model, datamodule, TrainerMode.TRAIN)
+            self._launch(model, datamodule, _TrainerMode.TRAIN)
         except Exception as e:
             if logging.is_root_logger_active():
                 root_logger = logging.get_root_logger()
@@ -324,7 +339,7 @@ class Trainer:
             datamodule (data.PyroDataModule): the datamodule to use.
         """
         try:
-            self._launch(model, datamodule, TrainerMode.TEST)
+            self._launch(model, datamodule, _TrainerMode.TEST)
         except Exception as e:
             if logging.is_root_logger_active():
                 root_logger = logging.get_root_logger()
@@ -333,8 +348,19 @@ class Trainer:
             raise RuntimeError("error: uncaught exception") from e
 
     def _launch(
-        self, model: pym.Model, datamodule: data.PyroDataModule, mode: TrainerMode
+        self, model: pym.Model, datamodule: data.PyroDataModule, mode: _TrainerMode
     ) -> None:
+        """
+        Launch the function corresponding to the given mode.
+
+        If distributed training is used, this will spawn the processes and call the
+        handler.
+
+        Args:
+            model (Model): the model to use.
+            datamodule (PyroDataModule): the datamodule to use.
+            mode: (_TrainerMode): the operation to perform.
+        """
         datamodule.prepare_data()
 
         if self._is_distributed:
@@ -350,12 +376,18 @@ class Trainer:
         self.model = model
         self.datamodule = datamodule
         self.rank = 0
-        if mode == TrainerMode.TRAIN:
+        if mode == _TrainerMode.TRAIN:
             self._train()
-        elif mode == TrainerMode.TEST:
+        elif mode == _TrainerMode.TEST:
             self._test()
 
     def _train(self) -> None:
+        """
+        Train the model.
+
+        This will ensure everything gets correctly initialised as well as select the
+        appropriate training loop for the given training unit.
+        """
         self._configure_env()
         self._setup_datamodule()
         self._setup_model()
@@ -377,9 +409,18 @@ class Trainer:
         logging.close_default_loggers()
 
     def _test(self) -> None:
+        """
+        Test the model.
+
+        This will ensure everything gets correctly initialised and run the testing loop on
+        the dataset.
+        It will automatically try to load the last saved checkpoint for testing provided
+        there is one. If no checkpoints are available, it is assumed the model is loading
+        the correct state internally.
+        """
         self._configure_env()
         self._setup_datamodule()
-        self._setup_model()
+        self._setup_model(fast_init=True)
         self._prepare_roots(mkdir=False)
 
         chkpt_path: pathlib.Path | None = None
@@ -422,7 +463,11 @@ class Trainer:
         self.model.on_testing_end()
 
     def _configure_env(self) -> None:
-        """Configure the training environment."""
+        """
+        Configure the training environment.
+
+        This will seed the RNGs as well as setup any CUDA state (if using).
+        """
         rng.seed_rngs(self._random_seed)
         torch.use_deterministic_algorithms(self._enable_deterministic)
 
@@ -435,19 +480,27 @@ class Trainer:
         logging.create_default_loggers(self._enable_tensorboard)
 
     def _setup_datamodule(self) -> None:
+        """Finish setting up the datamodule."""
         self.datamodule.is_distributed = self._is_distributed
         self.datamodule.trainer = self
         self.datamodule.setup()
 
-    def _setup_model(self) -> None:
+    def _setup_model(self, fast_init: bool = False) -> None:
+        """
+        Finish setting up the model.
+
+        Args:
+            fast_init (bool): whether the model should setup its full state or not.
+        """
         self.model.map_loc = self._map_loc
         self.model.is_distributed = self._is_distributed
         self.model.device = core.get_from_optional(self._device)
         self.model.rank = self._rank
         self.model.trainer = self
-        self.model.setup()
+        self.model.setup(fast_init)
 
     def _prepare_roots(self, mkdir=True) -> None:
+        """Prepare the training roots."""
         name = self.model.save_name
         self._chkpt_root = (
             self._chkpt_root / name if self._chkpt_root is not None else None
@@ -464,6 +517,7 @@ class Trainer:
     def _print_header(
         self, chkpt_path: pathlib.Path | None, for_training: bool = True
     ) -> None:
+        """Print the Pyro header with system info to the logs."""
         root_logger = logging.get_root_logger()
 
         print(core.get_env_info_str())
@@ -582,6 +636,15 @@ class Trainer:
         self._is_distributed = len(self._gpu_ids) > 1
 
     def _save_checkpoint(self, state: TrainingState) -> None:
+        """
+        Save the current training state to a checkpoint.
+
+        This will automatically save the training state, RNG state, as well as the model
+        state.
+
+        Args:
+            state (TrainingState): the current training state.
+        """
         chkpt_root = core.get_from_optional(self._chkpt_root)
 
         epoch = state.global_epoch
@@ -610,6 +673,19 @@ class Trainer:
         skip_rng: bool = False,
         model_fast_init: bool = False,
     ) -> tuple[TrainingState, bool]:
+        """
+        Load the given checkpoint.
+
+        Args:
+            chkpt_path (pathlib.Path): path to the checkpoint to load.
+            skip_rng (bool): if True, skip the loading of the RNG states.
+            model_fast_init (bool): whether the model should setup its full state or not.
+
+        Returns:
+            tuple[TrainingState, bool]: returns the loaded training state and True if the
+            checkpoint was loaded successfully. Otherwise it returns an empty training
+            state and False.
+        """
         if chkpt_path is None:
             logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
             return TrainingState(), False
@@ -624,6 +700,13 @@ class Trainer:
         return TrainingState(**state_dict["training_state"]), True
 
     def _train_on_iteration(self, state: TrainingState, resume_training: bool) -> None:
+        """
+        Run the main loop for iteration-based training.
+
+        Args:
+            state (TrainingState): the training state.
+            resume_training (bool): if True, then training is resumed from the state.
+        """
         total_steps = self._total_steps
         save_freq = self._chkpt_frequency
         val_freq = self._valid_frequency
@@ -726,6 +809,12 @@ class Trainer:
                 training_done = True
 
     def _train_on_epoch(self, state: TrainingState) -> None:
+        """
+        Run the main loop for epoch-based training.
+
+        Args:
+            state (TrainingState): the training state.
+        """
         total_steps = self._total_steps
         save_freq = self._chkpt_frequency
         val_freq = self._valid_frequency
@@ -828,6 +917,12 @@ class Trainer:
                 training_done = True
 
     def _validate(self, val_cycle: int) -> None:
+        """
+        Run the validation loop.
+
+        Args:
+            val_cycle (int): the current validation cycle number.
+        """
         if self.datamodule.valid_dataloader() is None:
             return
 
