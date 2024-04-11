@@ -287,6 +287,7 @@ if __name__ == "__main__":
         print_frequency=10,
         enable_tensorboard=True,
         enable_file_logging=True,
+        enable_progress_bar=True,
         enable_deterministic=True,
         chkpt_root=pathlib.Path.cwd() / "chkpt",
         log_path=pathlib.Path.cwd() / "logs",
