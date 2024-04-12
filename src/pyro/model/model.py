@@ -112,7 +112,7 @@ class Model(abc.ABC):
 
     @property
     def rank(self) -> int:
-        """The rank (device id) that the model is running on."""
+        """The local rank (device id) that the model is running on."""
         return self._rank
 
     @rank.setter

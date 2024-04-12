@@ -113,7 +113,7 @@ def get_dist_info() -> DistributedInfo:
     return info
 
 
-def get_rank() -> int:
+def get_local_rank() -> int:
     """
     Get the local rank of the device the process is running on.
 
@@ -123,6 +123,18 @@ def get_rank() -> int:
         int: the local rank of the current device.
     """
     return get_dist_info().local_rank
+
+
+def get_global_rank() -> int:
+    """
+    Get the global rank of the device the process is running on.
+
+    If distributed training is not used, 0 is returned.
+
+    Returns:
+        int: the global rank of the current device.
+    """
+    return get_dist_info().rank
 
 
 def gather_into_tensor(tensor: torch.Tensor, size: tuple[int]) -> torch.Tensor:
@@ -139,7 +151,7 @@ def gather_into_tensor(tensor: torch.Tensor, size: tuple[int]) -> torch.Tensor:
     if not dist.is_initialized():
         raise RuntimeError("error: default process group has not been initialized")
 
-    device = torch.device(f"cuda:{get_rank()}")
+    device = torch.device(f"cuda:{get_local_rank()}")
     out = torch.zeros(size, device=device, dtype=tensor.dtype)
     dist.all_gather_into_tensor(out, tensor)
     return out

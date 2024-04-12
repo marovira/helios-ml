@@ -157,6 +157,7 @@ def spawn_handler(
     trainer.model = model
     trainer.datamodule = datamodule
     trainer.rank = rank
+    trainer.local_rank = rank
     if mode == _TrainerMode.TRAIN:
         trainer._train()  # noqa: SLF001
     elif mode == _TrainerMode.TEST:
@@ -221,6 +222,7 @@ class Trainer:
         """Create the trainer."""
         self._model: pym.Model | None = None
         self._datamodule: data.PyroDataModule | None = None
+        self._local_rank: int = 0
         self._rank: int = 0
         self._callbacks: dict[str, typing.Callable] = {}
 
@@ -277,15 +279,24 @@ class Trainer:
         self._datamodule = datamodule
 
     @property
+    def local_rank(self) -> int:
+        """Return the local rank of the trainer."""
+        return self._local_rank
+
+    @local_rank.setter
+    def local_rank(self, r) -> None:
+        self._local_rank = r
+        if not self._use_cpu:
+            self._active_gpu = self._gpu_ids[r]
+
+    @property
     def rank(self) -> int:
-        """Return the rank of the trainer."""
+        """Return the global rank of the trainer."""
         return self._rank
 
     @rank.setter
     def rank(self, r) -> None:
         self._rank = r
-        if not self._use_cpu:
-            self._active_gpu = self._gpu_ids[r]
 
     @property
     def gpu_ids(self) -> list[int]:
@@ -379,7 +390,8 @@ class Trainer:
 
         self.model = model
         self.datamodule = datamodule
-        self.rank = dist.get_rank()
+        self.rank = dist.get_global_rank()
+        self.local_rank = dist.get_local_rank()
         if mode == _TrainerMode.TRAIN:
             self._train()
         elif mode == _TrainerMode.TEST:
@@ -509,7 +521,7 @@ class Trainer:
         self.model.map_loc = self._map_loc
         self.model.is_distributed = self._is_distributed
         self.model.device = core.get_from_optional(self._device)
-        self.model.rank = self._rank
+        self.model.rank = self.local_rank
         self.model.trainer = self
         self.model.setup(fast_init)
 

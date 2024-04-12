@@ -9,7 +9,7 @@ import numpy.typing as npt
 import torch
 import torch.utils.tensorboard as tb
 
-from .distributed import get_dist_info
+from .distributed import get_global_rank
 from .utils import get_from_optional
 
 
@@ -26,7 +26,7 @@ class RootLogger:
     def __init__(self: "RootLogger"):
         """Create the root logger with stream output as default."""
         self._logger = logging.getLogger("pyro")
-        self._rank = get_dist_info().rank
+        self._rank = get_global_rank()
         self._format_str = "[%(asctime)s] [%(levelname)s]: %(message)s"
         self._log_file: pathlib.Path | None = None
 
@@ -143,7 +143,7 @@ class TensorboardWriter:
 
     def __init__(self: "TensorboardWriter"):
         """Create the Tensorboard writer."""
-        self._rank = get_dist_info().rank
+        self._rank = get_global_rank()
         self._writer: tb.SummaryWriter | None = None
         self._run_path: pathlib.Path | None = None
 
