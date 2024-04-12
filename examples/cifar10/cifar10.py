@@ -8,15 +8,15 @@ import torchvision
 import torchvision.transforms.v2 as T
 from torch import nn
 
-import pyro.core as pyc
-import pyro.data as pyd
-import pyro.model as pym
-import pyro.trainer as pyt
-from pyro.core import logging
-from pyro.model import optimizers
+import helios.core as hlc
+import helios.data as hld
+import helios.model as hlm
+import helios.optim as hlo
+import helios.trainer as hlt
+from helios.core import logging
 
 
-class CIFARDataModule(pyd.PyroDataModule):
+class CIFARDataModule(hld.DataModule):
     """
     Example datamodule class built with CIFAR10.
 
@@ -44,9 +44,9 @@ class CIFARDataModule(pyd.PyroDataModule):
         # Use the ToTensor transform from Pyro to automate the conversion from images to
         # tensors.
         transforms = T.Compose(
-            [pyd.transforms.ToTensor(), T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+            [hld.transforms.ToTensor(), T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
         )
-        params = pyd.DataLoaderParams()
+        params = hld.DataLoaderParams()
         params.batch_size = 4
         params.shuffle = True
         params.num_workers = 2
@@ -100,7 +100,7 @@ class Net(nn.Module):
         return x
 
 
-class ClassifierModel(pym.Model):
+class ClassifierModel(hlm.Model):
     """
     Example model class for training the classifier.
 
@@ -122,7 +122,7 @@ class ClassifierModel(pym.Model):
 
         # Note that SGD is shipped as part of the default optimizers from Pyro, so we can
         # directly request it from create_optimizer instead of building it ourselves.
-        self._optimizer = optimizers.create_optimizer(
+        self._optimizer = hlo.create_optimizer(
             "SGD", self._net.parameters(), lr=0.001, momentum=0.9
         )
 
@@ -151,12 +151,12 @@ class ClassifierModel(pym.Model):
 
     def on_training_start(self) -> None:
         """Perform steps before training starts."""
-        tb_logger = pyc.get_from_optional(logging.get_tensorboard_writer())
+        tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
 
         x = torch.randn((1, 3, 32, 32)).to(self.device)
         tb_logger.add_graph(self._net, x)
 
-    def train_step(self, batch: typing.Any, state: pyt.TrainingState) -> None:
+    def train_step(self, batch: typing.Any, state: hlt.TrainingState) -> None:
         """Forward and backward training passes."""
         # Due to the simplicity of the code, we do both the forward and backward passes in
         # the training step, but you could also split it between the train_step and
@@ -179,7 +179,7 @@ class ClassifierModel(pym.Model):
 
     def on_training_batch_end(
         self,
-        state: pyt.TrainingState,
+        state: hlt.TrainingState,
         should_log: bool = False,
     ) -> None:
         """
@@ -197,7 +197,7 @@ class ClassifierModel(pym.Model):
         # logging frequency we set when creating the trainer.
         if should_log:
             root_logger = logging.get_root_logger()
-            tb_logger = pyc.get_from_optional(logging.get_tensorboard_writer())
+            tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
 
             loss_val = self._loss_items["loss"]
 
@@ -223,7 +223,7 @@ class ClassifierModel(pym.Model):
         total = self._val_scores["total"]
         correct = self._val_scores["correct"]
         accuracy = 100 * correct // total
-        writer = pyc.get_from_optional(logging.get_tensorboard_writer())
+        writer = hlc.get_from_optional(logging.get_tensorboard_writer())
         writer.add_hparams(
             {"lr": 0.001, "momentum": 0.9, "epochs": 2},
             {"hparam/accuracy": accuracy, "hparam/loss": self._loss_items["loss"].item()},
@@ -259,7 +259,7 @@ class ClassifierModel(pym.Model):
     def on_validation_end(self, validation_cycle: int) -> None:
         """Perform steps after validation ends."""
         root_logger = logging.get_root_logger()
-        tb_logger = pyc.get_from_optional(logging.get_tensorboard_writer())
+        tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
 
         # Grab the validation scores and compute the accuracy metric so we can log it. If
         # we were in distributed mode, you would need to gather the values here.
@@ -278,9 +278,9 @@ if __name__ == "__main__":
     datamodule = CIFARDataModule(pathlib.Path.cwd())
     model = ClassifierModel()
 
-    trainer = pyt.Trainer(
+    trainer = hlt.Trainer(
         run_name="cifar10",
-        train_unit=pyt.TrainingUnit.EPOCH,
+        train_unit=hlt.TrainingUnit.EPOCH,
         total_steps=2,
         valid_frequency=1,
         chkpt_frequency=1,
