@@ -3,6 +3,7 @@ venv/
 .venv/
 
 # Distribution/packaging
+dist/
 build/
 *.egg-info/
 
