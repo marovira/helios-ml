@@ -1,9 +1,9 @@
 <a id="top"></a>
-![PYRO logo](data/logo/logo-transparent.png)
+![HELIOS logo](data/logo/logo-transparent.png)
 
 [![Generic badge](https://img.shields.io/badge/License-BSD3-blue)](LICENSE)
 [![Static Badge](https://img.shields.io/badge/Python-3.11%2B-red?logoColor=red)](https://www.python.org/downloads/release/python-3110/)
-[![Tests](https://github.com/marovira/pyro-ml/actions/workflows/tests.yml/badge.svg)](https://github.com/marovira/pyro-ml/actions/workflows/tests.yml)
+[![Tests](https://github.com/marovira/helios-ml/actions/workflows/tests.yml/badge.svg)](https://github.com/marovira/helios-ml/actions/workflows/tests.yml)
 
 ## What is Helios?
 
