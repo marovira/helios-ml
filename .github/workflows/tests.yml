@@ -44,21 +44,22 @@ jobs:
           echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
           echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
 
-      - name: Install Pyro
+      - name: Install Helios
         shell: bash
         run: |
           pip install .
-          ruff check src/pyro
 
       - name: Ruff
         run: |
-          ruff check src/pyro
+          ruff check src/helios
           ruff check test
+          ruff check examples/cifar10
 
       - name: Mypy
         run: |
-          mypy src/pyro
+          mypy src/helios
           mypy test
+          mypy examples/cifar10
 
       - name: Pytest
         run: |
