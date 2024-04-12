@@ -3,10 +3,10 @@ import typing
 import torch
 from torch.utils import data as tud
 
-from pyro import core, data
-from pyro.core import rng
-from pyro.data import samplers as pds
-from pyro.data import transforms as pdt
+from helios import core, data
+from helios.core import rng
+from helios.data import samplers as hlds
+from helios.data import transforms as hldt
 
 DATASET_SIZE: int = 16
 
@@ -50,7 +50,7 @@ class SequentialDataset(tud.Dataset):
         return DATASET_SIZE
 
 
-class SampleDataModule(data.PyroDataModule):
+class SampleDataModule(data.DataModule):
     def setup(self) -> None:
         params = data.DataLoaderParams(
             batch_size=2, num_workers=2, random_seed=rng.get_default_seed()
@@ -68,13 +68,13 @@ class SampleDataModule(data.PyroDataModule):
 
 class TestTransforms:
     def test_to_tensor(self) -> None:
-        assert "ToTensor" in pdt.TRANSFORM_REGISTRY
+        assert "ToTensor" in hldt.TRANSFORM_REGISTRY
 
         rng.seed_rngs()
         gen = rng.get_default_numpy_rng().generator
         img = gen.random(size=(32, 32, 3))
 
-        to_tensor = pdt.create_transform("ToTensor")
+        to_tensor = hldt.create_transform("ToTensor")
         as_tens = to_tensor(img)
 
         assert isinstance(as_tens, torch.Tensor)
@@ -149,7 +149,7 @@ class TestDataModule:
 
     def test_resume_random(self) -> None:
         dataloader, sampler = self.prepare(data.DatasetSplit.VALID)
-        assert isinstance(sampler, pds.ResumableRandomSampler)
+        assert isinstance(sampler, hlds.ResumableRandomSampler)
 
         half_step = len(dataloader) // 2
         exp_batches = self.get_expected_valid_batches()
@@ -173,7 +173,7 @@ class TestDataModule:
         # Restore everything.
         rng.load_rng_state_dict(rng_state)
         dataloader, sampler = self.prepare(data.DatasetSplit.VALID, skip_seed=True)
-        assert isinstance(sampler, pds.ResumableRandomSampler)
+        assert isinstance(sampler, hlds.ResumableRandomSampler)
         sampler.set_epoch(0)
         sampler.start_iter = half_step
 
@@ -185,7 +185,7 @@ class TestDataModule:
 
     def test_resume_sequential(self) -> None:
         dataloader, sampler = self.prepare(data.DatasetSplit.TEST)
-        assert isinstance(sampler, pds.ResumableSequentialSampler)
+        assert isinstance(sampler, hlds.ResumableSequentialSampler)
 
         half_step = len(dataloader) // 2
         exp_batches = self.get_expected_test_batches()
@@ -209,7 +209,7 @@ class TestDataModule:
         # Restore everything.
         rng.load_rng_state_dict(rng_state)
         dataloader, sampler = self.prepare(data.DatasetSplit.TEST, skip_seed=True)
-        assert isinstance(sampler, pds.ResumableSequentialSampler)
+        assert isinstance(sampler, hlds.ResumableSequentialSampler)
         sampler.set_epoch(0)
         sampler.start_iter = half_step
 
@@ -225,11 +225,11 @@ class TestDataModule:
             "ResumableSequentialSampler",
             "ResumableDistributedSampler",
         ]
-        assert len(typing.cast(typing.Sized, pds.SAMPLER_REGISTRY.keys())) == len(
+        assert len(typing.cast(typing.Sized, hlds.SAMPLER_REGISTRY.keys())) == len(
             registered_names
         )
         for name in registered_names:
-            assert name in pds.SAMPLER_REGISTRY
+            assert name in hlds.SAMPLER_REGISTRY
 
 
 if __name__ == "__main__":

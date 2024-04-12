@@ -7,11 +7,11 @@ import pytest
 import torch
 from torch.utils import data as tud
 
-import pyro.trainer as pyt
-from pyro import data
-from pyro import model as pym
-from pyro.core import rng
-from pyro.data import functional as F
+import helios.trainer as hlt
+from helios import data
+from helios import model as hlm
+from helios.core import rng
+from helios.data import functional as F
 
 # Ignore the use of private members so we can test them correctly.
 # ruff: noqa: SLF001
@@ -28,7 +28,7 @@ class RandomDataset(tud.Dataset):
         return DATASET_SIZE
 
 
-class RandomDatamodule(data.PyroDataModule):
+class RandomDatamodule(data.DataModule):
     def setup(self) -> None:
         params = data.DataLoaderParams(
             batch_size=1, num_workers=0, random_seed=rng.get_default_seed()
@@ -39,7 +39,7 @@ class RandomDatamodule(data.PyroDataModule):
         self._test_dataset = self._create_dataset(RandomDataset(), params)
 
 
-class CheckFunModel(pym.Model):
+class CheckFunModel(hlm.Model):
     def __init__(self) -> None:
         super().__init__("test-model")
         self.called_train_funs: dict[str, bool] = {
@@ -132,7 +132,7 @@ class CheckFunModel(pym.Model):
         self.called_test_funs["on_testing_end"] = True
 
 
-class RestartModel(pym.Model):
+class RestartModel(hlm.Model):
     def __init__(self, val_count: int = -1) -> None:
         super().__init__("test-restart")
         self.batches: list[npt.NDArray] = []
@@ -141,7 +141,7 @@ class RestartModel(pym.Model):
     def setup(self, fast_init: bool = False) -> None:
         pass
 
-    def on_training_batch_start(self, state: pyt.TrainingState) -> None:
+    def on_training_batch_start(self, state: hlt.TrainingState) -> None:
         if self.val_count == state.validation_cycles:
             raise RuntimeError("stop")
 
@@ -152,11 +152,11 @@ class RestartModel(pym.Model):
 
 class TestTrainingUnit:
     def test_from_str(self) -> None:
-        assert pyt.TrainingUnit.from_str("epoch") == pyt.TrainingUnit.EPOCH
-        assert pyt.TrainingUnit.from_str("iteration") == pyt.TrainingUnit.ITERATION
+        assert hlt.TrainingUnit.from_str("epoch") == hlt.TrainingUnit.EPOCH
+        assert hlt.TrainingUnit.from_str("iteration") == hlt.TrainingUnit.ITERATION
 
         with pytest.raises(ValueError):
-            pyt.TrainingUnit.from_str("foo")
+            hlt.TrainingUnit.from_str("foo")
 
 
 class TestTrainer:
@@ -172,7 +172,7 @@ class TestTrainer:
         for case in test_cases:
             file, exp = case
             file.touch()
-            ret = pyt.find_last_checkpoint(tmp_path)
+            ret = hlt.find_last_checkpoint(tmp_path)
             if exp:
                 assert ret is not None
             else:
@@ -181,10 +181,10 @@ class TestTrainer:
 
     def check_trainer_flags(self, **kwargs) -> None:
         with pytest.raises(ValueError):
-            pyt.Trainer(**kwargs)
+            hlt.Trainer(**kwargs)
 
     def test_trainer_validate(self, tmp_path: pathlib.Path) -> None:
-        pyt.Trainer()
+        hlt.Trainer()
         invalid_root = tmp_path / "test.txt"
         invalid_root.touch()
 
@@ -200,7 +200,7 @@ class TestTrainer:
         self.check_trainer_flags(enable_file_logging=True, log_path=invalid_root)
 
     def test_trainer_device_flags(self) -> None:
-        t = pyt.Trainer(use_cpu=True)
+        t = hlt.Trainer(use_cpu=True)
         assert t._use_cpu
         assert t._device == torch.device("cpu")
         assert t._map_loc == {"cuda:0": "cpu"}
@@ -208,7 +208,7 @@ class TestTrainer:
         assert not t._is_distributed
 
         if torch.cuda.is_available():
-            t = pyt.Trainer()
+            t = hlt.Trainer()
             devices = list(range(torch.cuda.device_count()))
             assert not t._use_cpu
             assert t._gpu_ids == devices
@@ -217,14 +217,14 @@ class TestTrainer:
             with pytest.raises(ValueError):
                 devs = copy.deepcopy(devices)
                 devs.append(10)
-                pyt.Trainer(gpus=devs)
+                hlt.Trainer(gpus=devs)
 
             with pytest.raises(ValueError):
-                pyt.Trainer(gpus=[len(devices)])
+                hlt.Trainer(gpus=[len(devices)])
 
     def check_training_loops(
         self,
-        trainer: pyt.Trainer,
+        trainer: hlt.Trainer,
         num_chkpts: int = 0,
         chkpt_root: pathlib.Path | None = None,
         fit: bool = True,
@@ -249,8 +249,8 @@ class TestTrainer:
 
     def test_fit_iter(self, tmp_path: pathlib.Path) -> None:
         self.check_training_loops(
-            pyt.Trainer(
-                train_unit=pyt.TrainingUnit.ITERATION,
+            hlt.Trainer(
+                train_unit=hlt.TrainingUnit.ITERATION,
                 total_steps=10,
                 valid_frequency=5,
                 chkpt_frequency=5,
@@ -264,8 +264,8 @@ class TestTrainer:
 
     def test_fit_epoch(self, tmp_path: pathlib.Path) -> None:
         self.check_training_loops(
-            pyt.Trainer(
-                train_unit=pyt.TrainingUnit.EPOCH,
+            hlt.Trainer(
+                train_unit=hlt.TrainingUnit.EPOCH,
                 total_steps=2,
                 valid_frequency=1,
                 chkpt_frequency=1,
@@ -277,19 +277,19 @@ class TestTrainer:
         )
 
     def test_testing(self) -> None:
-        self.check_training_loops(pyt.Trainer(use_cpu=True), fit=False)
+        self.check_training_loops(hlt.Trainer(use_cpu=True), fit=False)
 
     def get_restart_trainer(
-        self, unit: pyt.TrainingUnit, chkpt_root: pathlib.Path
-    ) -> pyt.Trainer:
-        if unit == pyt.TrainingUnit.ITERATION:
+        self, unit: hlt.TrainingUnit, chkpt_root: pathlib.Path
+    ) -> hlt.Trainer:
+        if unit == hlt.TrainingUnit.ITERATION:
             total_steps = DATASET_SIZE
             valid_frequency = DATASET_SIZE // 2
         else:
             total_steps = 2
             valid_frequency = 1
 
-        return pyt.Trainer(
+        return hlt.Trainer(
             train_unit=unit,
             total_steps=total_steps,
             valid_frequency=valid_frequency,
@@ -315,7 +315,7 @@ class TestTrainer:
             assert np.all(exp == ret)
 
     def check_restart_trainer(
-        self, unit: pyt.TrainingUnit, tmp_path: pathlib.Path
+        self, unit: hlt.TrainingUnit, tmp_path: pathlib.Path
     ) -> None:
         datamodule, model = self.get_restart_model_and_datamodule()
         trainer = self.get_restart_trainer(unit, tmp_path)
@@ -344,7 +344,7 @@ class TestTrainer:
         self.check_batches(batches, model.batches)
 
     def test_restart_iter(self, tmp_path: pathlib.Path) -> None:
-        self.check_restart_trainer(pyt.TrainingUnit.ITERATION, tmp_path)
+        self.check_restart_trainer(hlt.TrainingUnit.ITERATION, tmp_path)
 
     def test_restart_epoch(self, tmp_path: pathlib.Path) -> None:
-        self.check_restart_trainer(pyt.TrainingUnit.EPOCH, tmp_path)
+        self.check_restart_trainer(hlt.TrainingUnit.EPOCH, tmp_path)

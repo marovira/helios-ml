@@ -3,7 +3,7 @@ import pathlib
 import torch
 from torch import nn
 
-from pyro import onnx
+from helios import onnx
 
 
 class MLPModel(nn.Module):

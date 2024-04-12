@@ -11,8 +11,8 @@ import numpy.typing as npt
 import pytest
 import torch
 
-from pyro import core
-from pyro.core import cuda, rng
+from helios import core
+from helios.core import cuda, rng
 
 
 class TestUtils:

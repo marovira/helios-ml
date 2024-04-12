@@ -1,6 +1,6 @@
-import pyro.core as pyc
+import helios.core as hlc
 
-FUNC_REGISTRY = pyc.Registry("func")
+FUNC_REGISTRY = hlc.Registry("func")
 
 
 def create_func(type_name: str):
