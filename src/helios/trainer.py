@@ -14,7 +14,7 @@ import torch.multiprocessing as mp
 import torch.utils.data as tud
 import tqdm
 
-import helios.model as pym
+import helios.model as hlm
 from helios import core, data
 from helios.core import distributed as dist
 from helios.core import logging, rng
@@ -138,7 +138,7 @@ def spawn_handler(
     world_size: int,
     trainer: Trainer,
     datamodule: data.DataModule,
-    model: pym.Model,
+    model: hlm.Model,
     mode: _TrainerMode,
 ) -> None:
     """
@@ -220,7 +220,7 @@ class Trainer:
         run_path: pathlib.Path | None = None,
     ):
         """Create the trainer."""
-        self._model: pym.Model | None = None
+        self._model: hlm.Model | None = None
         self._datamodule: data.DataModule | None = None
         self._local_rank: int = 0
         self._rank: int = 0
@@ -261,12 +261,12 @@ class Trainer:
         self._setup_device_flags(use_cpu)
 
     @property
-    def model(self) -> pym.Model:
+    def model(self) -> hlm.Model:
         """Return the model."""
         return core.get_from_optional(self._model)
 
     @model.setter
-    def model(self, model: pym.Model) -> None:
+    def model(self, model: hlm.Model) -> None:
         self._model = model
 
     @property
@@ -325,7 +325,7 @@ class Trainer:
 
         self._callbacks[name] = callback
 
-    def fit(self, model: pym.Model, datamodule: data.DataModule) -> None:
+    def fit(self, model: hlm.Model, datamodule: data.DataModule) -> None:
         """
         Run the full training routine.
 
@@ -342,7 +342,7 @@ class Trainer:
                 logging.close_default_loggers()
             raise RuntimeError("error: uncaught exception") from e
 
-    def test(self, model: pym.Model, datamodule: data.DataModule) -> None:
+    def test(self, model: hlm.Model, datamodule: data.DataModule) -> None:
         """
         Run the full testing routine.
 
@@ -360,7 +360,7 @@ class Trainer:
             raise RuntimeError("error: uncaught exception") from e
 
     def _launch(
-        self, model: pym.Model, datamodule: data.DataModule, mode: _TrainerMode
+        self, model: hlm.Model, datamodule: data.DataModule, mode: _TrainerMode
     ) -> None:
         """
         Launch the function corresponding to the given mode.
