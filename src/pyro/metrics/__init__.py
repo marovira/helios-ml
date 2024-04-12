@@ -1,7 +1,7 @@
 """
 Metrics package for pyro.
 
-Provides some basic metrics for training.
+This contains the classes, utilities, and registries related to metric functions.
 """
 
 from .metrics import (
