@@ -24,6 +24,25 @@ is focused on providing a simple and straight-forward interface that abstracts m
 common code patterns while retaining the ability to be easily overridden to suit the
 individual needs of each training scheme.
 
+## Main Features
+
+Pyro offers the following functionality out of the box:
+
+1. Resume training: Pyro has been built with the ability to resume training if it is
+   paused. Specifically, Pyro will ensure that the behaviour of the trained model is
+   *identical* to the one it would've had if it had been trained without pauses.
+2. Automatic detection of multi-GPU environments for distributed training. In addition,
+   Pyro also supports training using `torchrun` and will automatically handle the
+   initialisation and clean up of the distributed state. It will also correctly set the
+   devices and maps to ensure weights are mapped tot he correct location.
+3. Registries for creation of arbitrary types. These include: networks, loss functions,
+   optimizers, schedulers, etc.
+4. Correct handling of logging when doing distributed training (even over multiple nodes).
+
+## Documentation
+
+Documentation coming soon!
+
 ## Contributing
 
 There are three ways in which you can contribute to Pyro:
