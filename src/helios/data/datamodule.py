@@ -9,8 +9,8 @@ import typing
 import torch
 import torch.utils.data as tud
 
-from pyro import core
-from pyro.core import rng
+from helios import core
+from helios.core import rng
 
 if typing.TYPE_CHECKING:
     from ..trainer import Trainer
@@ -227,7 +227,7 @@ class Dataset:
         return res
 
 
-class PyroDataModule(abc.ABC):
+class DataModule(abc.ABC):
     """
     Base class that groups together the creation of the main training datasets.
 

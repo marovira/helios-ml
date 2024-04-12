@@ -5,8 +5,8 @@ import typing
 
 import torch
 
-from pyro import core
-from pyro.core import distributed as dist
+from helios import core
+from helios.core import distributed as dist
 
 if typing.TYPE_CHECKING:
     from ..trainer import Trainer, TrainingState

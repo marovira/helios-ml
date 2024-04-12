@@ -3,7 +3,7 @@ from __future__ import annotations
 import pathlib
 import typing
 
-from pyro import core
+from helios import core
 
 if typing.TYPE_CHECKING:
     from .model import Model

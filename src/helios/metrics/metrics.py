@@ -5,7 +5,7 @@ import numpy.typing as npt
 import torch
 from torch import nn
 
-from pyro import core
+from helios import core
 
 from .functional import (
     calculate_f1_torch,

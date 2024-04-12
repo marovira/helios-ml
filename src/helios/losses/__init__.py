@@ -1,5 +1,5 @@
 """
-Loss package for Pyro.
+Loss package for Helios.
 
 This contains the classes, utilities, and registries related to loss functions.
 """

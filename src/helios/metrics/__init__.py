@@ -1,5 +1,5 @@
 """
-Metrics package for pyro.
+Metrics package for Helios.
 
 This contains the classes, utilities, and registries related to metric functions.
 """

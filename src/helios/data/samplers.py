@@ -6,7 +6,7 @@ import typing
 import torch
 import torch.utils.data as tud
 
-from pyro import core
+from helios import core
 
 SAMPLER_REGISTRY = core.Registry("sampler")
 

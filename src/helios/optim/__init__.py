@@ -1,5 +1,5 @@
 """
-Optimizer package for Pyro.
+Optimizer package for Helios.
 
 This contains the classes, utilities, and registries related to optimizers.
 """

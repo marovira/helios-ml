@@ -10,7 +10,7 @@ import typing
 import torch
 import torchvision
 
-from ..version import __version__
+from .._version import __version__
 
 T = typing.TypeVar("T")
 T_Any = typing.TypeVar("T_Any", bound=typing.Any)

@@ -1,5 +1,5 @@
 """
-Model package for pyro.
+Model package for Helios.
 
 This contains all the classes, utilities, and registries related to models.
 """

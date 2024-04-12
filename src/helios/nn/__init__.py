@@ -1,5 +1,5 @@
 """
-Neural Network package for Pyro.
+Neural Network package for Helios.
 
 This contains the classes, utilities, and registries related to neural networks.
 """

@@ -2,7 +2,7 @@ import typing
 
 from torch import nn, optim
 
-from pyro import core
+from helios import core
 
 
 def _register_default_optimizers(registry: core.Registry) -> None:

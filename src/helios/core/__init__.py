@@ -1,5 +1,5 @@
 """
-Core package for Pyro.
+Core package for Helios.
 
 Holds all of the core functions and classes used throughout the package.
 """

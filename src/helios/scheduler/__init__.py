@@ -1,5 +1,5 @@
 """
-Scheduler package for Pyro.
+Scheduler package for Helios.
 
 This contains the classes, utilities, and registries related to schedulers.
 """

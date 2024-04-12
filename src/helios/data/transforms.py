@@ -5,7 +5,7 @@ import torch
 import torchvision.transforms.v2 as T
 from torch import nn
 
-from pyro import core
+from helios import core
 
 TRANSFORM_REGISTRY = core.Registry("transform")
 

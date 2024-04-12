@@ -5,7 +5,7 @@ from torch import nn
 from torch.nn import init
 from torch.nn.modules import batchnorm as bn
 
-from pyro import core
+from helios import core
 
 NETWORK_REGISTRY = core.Registry("network")
 

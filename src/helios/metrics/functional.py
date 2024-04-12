@@ -4,7 +4,7 @@ import numpy.typing as npt
 import torch
 import torch.nn.functional as F
 
-from pyro.data import functional as pdf
+from helios.data import functional
 
 
 def _ssim(img: npt.NDArray[np.float64], img2: npt.NDArray[np.float64]) -> float:
@@ -198,16 +198,16 @@ def calculate_psnr(
         img.shape == img2.shape
     ), f"Image shapes are different: {img.shape}, {img2.shape}."
 
-    img = pdf.convert_to_hwc(img, input_order=input_order)
-    img2 = pdf.convert_to_hwc(img2, input_order=input_order)
+    img = functional.convert_to_hwc(img, input_order=input_order)
+    img2 = functional.convert_to_hwc(img2, input_order=input_order)
 
     if crop_border != 0:
         img = img[crop_border:-crop_border, crop_border:-crop_border, ...]
         img2 = img2[crop_border:-crop_border, crop_border:-crop_border, ...]
 
     if test_y_channel:
-        img = pdf.to_y_channel(img)
-        img2 = pdf.to_y_channel(img2)
+        img = functional.to_y_channel(img)
+        img2 = functional.to_y_channel(img2)
 
     img = img.astype(np.float64)
     img2 = img2.astype(np.float64)
@@ -248,8 +248,8 @@ def calculate_psnr_torch(
         img2 = img2[:, :, crop_border:-crop_border, crop_border:-crop_border]
 
     if test_y_channel:
-        img = pdf.rgb2ycbcr_torch(img, only_y=True)
-        img2 = pdf.rgb2ycbcr_torch(img2, only_y=True)
+        img = functional.rgb2ycbcr_torch(img, only_y=True)
+        img2 = functional.rgb2ycbcr_torch(img2, only_y=True)
 
     img = img.to(torch.float64)
     img2 = img2.to(torch.float64)
@@ -289,16 +289,16 @@ def calculate_ssim(
         img.shape == img2.shape
     ), f"Image shapes are different: {img.shape}, {img2.shape}."
 
-    img = pdf.convert_to_hwc(img, input_order=input_order)
-    img2 = pdf.convert_to_hwc(img2, input_order=input_order)
+    img = functional.convert_to_hwc(img, input_order=input_order)
+    img2 = functional.convert_to_hwc(img2, input_order=input_order)
 
     if crop_border != 0:
         img = img[crop_border:-crop_border, crop_border:-crop_border, ...]
         img2 = img2[crop_border:-crop_border, crop_border:-crop_border, ...]
 
     if test_y_channel:
-        img = pdf.to_y_channel(img)
-        img2 = pdf.to_y_channel(img2)
+        img = functional.to_y_channel(img)
+        img2 = functional.to_y_channel(img2)
 
     img = img.astype(np.float64)
     img2 = img2.astype(np.float64)
@@ -343,8 +343,8 @@ def calculate_ssim_torch(
         img2 = img2[:, :, crop_border:-crop_border, crop_border:-crop_border]
 
     if test_y_channel:
-        img = pdf.rgb2ycbcr_torch(img, only_y=True)
-        img2 = pdf.rgb2ycbcr_torch(img2, only_y=True)
+        img = functional.rgb2ycbcr_torch(img, only_y=True)
+        img2 = functional.rgb2ycbcr_torch(img2, only_y=True)
 
     img = img.to(torch.float64)
     img2 = img2.to(torch.float64)

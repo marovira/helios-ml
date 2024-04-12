@@ -14,11 +14,11 @@ import torch.multiprocessing as mp
 import torch.utils.data as tud
 import tqdm
 
-import pyro.model as pym
-from pyro import core, data
-from pyro.core import distributed as dist
-from pyro.core import logging, rng
-from pyro.data.samplers import ResumableSamplerType
+import helios.model as pym
+from helios import core, data
+from helios.core import distributed as dist
+from helios.core import logging, rng
+from helios.data.samplers import ResumableSamplerType
 
 
 class TrainingUnit(enum.Enum):
@@ -137,7 +137,7 @@ def spawn_handler(
     rank: int,
     world_size: int,
     trainer: Trainer,
-    datamodule: data.PyroDataModule,
+    datamodule: data.DataModule,
     model: pym.Model,
     mode: _TrainerMode,
 ) -> None:
@@ -148,7 +148,7 @@ def spawn_handler(
         rank (int): the rank id of the current process within the work group.
         world_size (int): number of processes in the work group.
         trainer (Trainer): the trainer to use.
-        datamodule (PyroDataModule): the datamodule to use.
+        datamodule (DataModule): the datamodule to use.
         model (Model): the model to use.
         mode (_TrainerMode): determines which operation needs to be performed.
     """
@@ -221,7 +221,7 @@ class Trainer:
     ):
         """Create the trainer."""
         self._model: pym.Model | None = None
-        self._datamodule: data.PyroDataModule | None = None
+        self._datamodule: data.DataModule | None = None
         self._local_rank: int = 0
         self._rank: int = 0
         self._callbacks: dict[str, typing.Callable] = {}
@@ -270,12 +270,12 @@ class Trainer:
         self._model = model
 
     @property
-    def datamodule(self) -> data.PyroDataModule:
+    def datamodule(self) -> data.DataModule:
         """Return the datamodule."""
         return core.get_from_optional(self._datamodule)
 
     @datamodule.setter
-    def datamodule(self, datamodule: data.PyroDataModule) -> None:
+    def datamodule(self, datamodule: data.DataModule) -> None:
         self._datamodule = datamodule
 
     @property
@@ -325,13 +325,13 @@ class Trainer:
 
         self._callbacks[name] = callback
 
-    def fit(self, model: pym.Model, datamodule: data.PyroDataModule) -> None:
+    def fit(self, model: pym.Model, datamodule: data.DataModule) -> None:
         """
         Run the full training routine.
 
         Args:
             model (pym.Model): the model to run on.
-            datamodule (data.PyroDataModule): the datamodule to use.
+            datamodule (data.DataModule): the datamodule to use.
         """
         try:
             self._launch(model, datamodule, _TrainerMode.TRAIN)
@@ -342,13 +342,13 @@ class Trainer:
                 logging.close_default_loggers()
             raise RuntimeError("error: uncaught exception") from e
 
-    def test(self, model: pym.Model, datamodule: data.PyroDataModule) -> None:
+    def test(self, model: pym.Model, datamodule: data.DataModule) -> None:
         """
         Run the full testing routine.
 
         Args:
             model (pym.Model): the model to run on.
-            datamodule (data.PyroDataModule): the datamodule to use.
+            datamodule (data.DataModule): the datamodule to use.
         """
         try:
             self._launch(model, datamodule, _TrainerMode.TEST)
@@ -360,7 +360,7 @@ class Trainer:
             raise RuntimeError("error: uncaught exception") from e
 
     def _launch(
-        self, model: pym.Model, datamodule: data.PyroDataModule, mode: _TrainerMode
+        self, model: pym.Model, datamodule: data.DataModule, mode: _TrainerMode
     ) -> None:
         """
         Launch the function corresponding to the given mode.
@@ -370,7 +370,7 @@ class Trainer:
 
         Args:
             model (Model): the model to use.
-            datamodule (PyroDataModule): the datamodule to use.
+            datamodule (DataModule): the datamodule to use.
             mode: (_TrainerMode): the operation to perform.
         """
         datamodule.prepare_data()

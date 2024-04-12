@@ -2,7 +2,7 @@ import typing
 
 from torch import nn
 
-from pyro import core
+from helios import core
 
 LOSS_REGISTRY = core.Registry("loss")
 

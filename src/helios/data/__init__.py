@@ -1,5 +1,5 @@
 """
-Data package for pyro.
+Data package for Helios.
 
 Holds all functions and classes related to datasets, dataloaders, and data processing.
 """
@@ -7,8 +7,8 @@ Holds all functions and classes related to datasets, dataloaders, and data proce
 from .datamodule import (
     DATASET_REGISTRY,
     DataLoaderParams,
+    DataModule,
     DatasetSplit,
-    PyroDataModule,
     create_dataloader,
     create_dataset,
 )
@@ -18,7 +18,7 @@ __all__ = [
     "DATASET_REGISTRY",
     "DataLoaderParams",
     "DatasetSplit",
-    "PyroDataModule",
+    "DataModule",
     "create_dataloader",
     "create_dataset",
     "TRANSFORM_REGISTRY",

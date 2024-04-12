@@ -3,7 +3,7 @@ import typing
 from torch import nn
 from torch.optim import lr_scheduler
 
-from pyro import core
+from helios import core
 
 
 def _register_default_schedulers(registry: core.Registry):
