@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/project/helios-ml
+      url: https://pypi.org/project/helios-ml
     permissions:
       id-token: write
     steps:
@@ -44,5 +44,3 @@ jobs:
           python -m build
       - name: Publish Helios
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
