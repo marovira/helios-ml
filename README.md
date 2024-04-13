@@ -39,6 +39,14 @@ Helios offers the following functionality out of the box:
    optimizers, schedulers, etc.
 4. Correct handling of logging when doing distributed training (even over multiple nodes).
 
+## Installation
+
+You can install Helios using Pip as follows:
+
+```sh
+pip install helios-ml
+```
+
 ## Documentation
 
 Documentation coming soon!
