@@ -4,8 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "helios-ml"
-authors = [{name = "Mauricio A. Rovira Galvez"}]
-description = "A Torch-based package for training AI networks"
+authors = [{name = "Mauricio A. Rovira Galvez", email = "maroviragalvez@outlook.com"}]
+readme = "README.rst"
+license = {text = "BSD-3-Clause"}
+description = "A light-weight system for training AI networks using PyTorch"
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: BSD-3-Clause License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
 requires-python = ">= 3.11"
 dependencies = [
     "tqdm>=4.66.2",
@@ -19,7 +31,7 @@ dependencies = [
     "matplotlib>=3.8.4"
 ]
 
-dynamic = ["version", "readme"]
+dynamic = ["version"]
 
 [project.optional-dependencies]
 dev = [
@@ -42,20 +54,19 @@ ci = [
     "build>=1.2.1"
 ]
 
+[project.urls]
+homepage = "https://github.com/marovira/helios-ml"
+source = "https://github.com/marovira/helios-ml"
+issues = "https://github.com/marovira/helios-ml/issues"
+"release notes" = "https://github.com/marovira/helios-ml/releases"
+
 [tool.setuptools_scm]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.setuptools.dynamic]
-readme = {file = ["README.md"]}
-
 [tool.setuptools.package-data]
 pkgname = ["py.typed"]
-
-[project.urls]
-Homepage = "https://github.com/marovira/pyro-ml"
-Issues = "https://github.com/marovira/pyro-ml/issues"
 
 [tool.mypy]
 warn_unused_configs = true
