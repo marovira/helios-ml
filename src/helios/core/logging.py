@@ -25,7 +25,7 @@ class RootLogger:
 
     def __init__(self: "RootLogger"):
         """Create the root logger with stream output as default."""
-        self._logger = logging.getLogger("pyro")
+        self._logger = logging.getLogger("helios")
         self._rank = get_global_rank()
         self._format_str = "[%(asctime)s] [%(levelname)s]: %(message)s"
         self._log_file: pathlib.Path | None = None

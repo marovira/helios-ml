@@ -18,7 +18,7 @@ T_Any = typing.TypeVar("T_Any", bound=typing.Any)
 
 def get_env_info_str() -> str:
     """
-    Return a string with the pyro header and the environment information.
+    Return a string with the Helios header and the environment information.
 
     Returns:
         str: the message string.
@@ -36,7 +36,7 @@ def get_env_info_str() -> str:
     """
     msg += (
         "\nEnvironment info: "
-        f"\n\tPyro: {__version__}"
+        f"\n\tHelios: {__version__}"
         f"\n\tPyTorch: {torch.__version__}"
         f"\n\tTorchVision: {torchvision.__version__}"
         f"\n\tOS: {platform.platform()}"
@@ -368,9 +368,9 @@ def update_all_registries(
             |   |---another_func.py <- Doesn't register.
 
         We can then do the following inside `main.py`:
-            import pyro.core as pyc
+            import helios.core as hlc
             ...
-            pyc.update_all_registries(Path.cwd() / "my_package", recurse=True)
+            hlc.update_all_registries(Path.cwd() / "my_package", recurse=True)
 
         The function will recursively walk through `my_package` and import the following:
             * my_package.some_class

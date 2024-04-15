@@ -236,9 +236,9 @@ class DataModule(abc.ABC):
     Ex:
         ```py
         from torchvision.datasets import CIFAR10
-        from pyro import data
+        from helios import data
 
-        class MyDataModule(data.PyroDataModule):
+        class MyDataModule(data.DataModule):
             def prepare_data(self) -> None:
                 # Use this function to prepare the data for your datasets. This will be
                 # called before the distributed processes are created (if using) so you

@@ -41,7 +41,7 @@ class CIFARDataModule(hld.DataModule):
 
     def setup(self) -> None:
         """Create the datasets."""
-        # Use the ToTensor transform from Pyro to automate the conversion from images to
+        # Use the ToTensor transform from Helios to automate the conversion from images to
         # tensors.
         transforms = T.Compose(
             [hld.transforms.ToTensor(), T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
@@ -120,8 +120,8 @@ class ClassifierModel(hlm.Model):
         self._net = Net().to(self.device)
         self._criterion = nn.CrossEntropyLoss().to(self.device)
 
-        # Note that SGD is shipped as part of the default optimizers from Pyro, so we can
-        # directly request it from create_optimizer instead of building it ourselves.
+        # Note that SGD is shipped as part of the default optimizers from Helios, so we
+        # can directly request it from create_optimizer instead of building it ourselves.
         self._optimizer = hlo.create_optimizer(
             "SGD", self._net.parameters(), lr=0.001, momentum=0.9
         )

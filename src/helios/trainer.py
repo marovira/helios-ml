@@ -543,7 +543,7 @@ class Trainer:
     def _print_header(
         self, chkpt_path: pathlib.Path | None, for_training: bool = True
     ) -> None:
-        """Print the Pyro header with system info to the logs."""
+        """Print the Helios header with system info to the logs."""
         root_logger = logging.get_root_logger()
 
         print(core.get_env_info_str())

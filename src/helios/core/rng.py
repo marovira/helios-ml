@@ -11,7 +11,7 @@ _DEFAULT_RNG_SEED = 6691
 
 
 def get_default_seed() -> int:
-    """Return the default Pyro seed."""
+    """Return the default seed."""
     return _DEFAULT_RNG_SEED
 
 
@@ -93,9 +93,9 @@ def seed_rngs(seed: int | None = None, skip_torch: bool = False) -> None:
     """
     Seed the default RNGs with the given seed.
 
-    If no seed is given, then the default seed from Pyro will be used. The RNGs that will
-    be seeded are: PyTorch (+ CUDA if available), stdlib random, and the default Numpy
-    generator.
+    If no seed is given, then the default seed from Helios will be used. The RNGs that
+    will be seeded are: PyTorch (+ CUDA if available), stdlib random, and the default
+    Numpy generator.
     The skip_torch flag is intended to be used when seeding worker processes for
     dataloaders. In those cases, the RNGs for PyTorch have already been seeded, so we
     shouldn't be re-seeding them.
