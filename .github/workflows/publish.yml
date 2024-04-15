@@ -11,7 +11,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     environment:
-      name: testpypi
+      name: pypi
       url: https://pypi.org/project/helios-ml
     permissions:
       id-token: write
