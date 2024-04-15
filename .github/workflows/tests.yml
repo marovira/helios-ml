@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths-ignore:
       - 'README.md'
+      - 'README.rst'
       - '.pre-commit-config.yaml'
       - 'data/**'
       - "LICENSE"

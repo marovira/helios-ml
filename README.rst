@@ -48,10 +48,10 @@ code involved with training. Specifically, it wraps the following common pattern
 - Exporting to ONNX.
 
 It is important to note that Helios is **not** a fully fledged training environment similar
-to `Pytorch Lightning <https://github.com/Lightning-AI/pytorch-lightning>`. Instead, Helios
-is focused on providing a simple and straight-forward interface that abstracts most of the
-common code patterns while retaining the ability to be easily overridden to suit the
-individual needs of each training scheme.
+to `Pytorch Lightning <https://github.com/Lightning-AI/pytorch-lightning>`__. Instead,
+Helios is focused on providing a simple and straight-forward interface that abstracts most
+of the common code patterns while retaining the ability to be easily overridden to suit
+the individual needs of each training scheme.
 
 Main Features
 ~~~~~~~~~~~~~
@@ -132,4 +132,4 @@ License
 -------
 
 Helios is published under the BSD-3 license and can be viewed
-`here <https://raw.githubusercontent.com/marovira/helios-ml/master/LICENSE>`
+`here <https://raw.githubusercontent.com/marovira/helios-ml/master/LICENSE>`__.
