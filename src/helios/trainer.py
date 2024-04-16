@@ -680,7 +680,7 @@ class Trainer:
         epoch = state.global_epoch
         ite = state.global_iteration
         filename = f"{self.model.save_name}_epoch_{epoch}_iter_{ite}"
-        self.model.append_metadata_to_chkpt_name(filename)
+        filename = self.model.append_metadata_to_chkpt_name(filename)
         filename += ".pth"
 
         state_dict: dict[str, typing.Any] = {}
