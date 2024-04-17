@@ -49,12 +49,10 @@ class TestModel:
 
         assert model.save_name == "mock-model"
         assert model.state_dict() == {}
+        assert model.trained_state_dict() == {}
 
         chkpt_name = "chkpt"
         assert model.append_metadata_to_chkpt_name(chkpt_name) == chkpt_name
-
-        state_dict = {"a": 1, "b": 2}
-        assert model.strip_training_data(state_dict) == state_dict
 
         model.populate_loss()
         assert len(model.loss_items) != 0

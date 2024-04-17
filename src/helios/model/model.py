@@ -140,6 +140,25 @@ class Model(abc.ABC):
         """
         return {}
 
+    def trained_state_dict(
+        self, *args: typing.Any, **kwargs: typing.Any
+    ) -> dict[str, typing.Any]:
+        """
+        Get the state dictionary for the trained model.
+
+        Use this function to save the state required for the final trained model. The
+        returned dictionary should contain only the necessary information to re-create the
+        network(s) along with any additional data you require.
+
+        Args:
+            args: positional arguments.
+            kwargs: keyword arguments.
+
+        Returns:
+            dict[str, Any]: the state dictionary without any training data.
+        """
+        return {}
+
     def append_metadata_to_chkpt_name(self, chkpt_name: str) -> str:
         """
         Append additional data to the checkpoint filename.
@@ -156,26 +175,6 @@ class Model(abc.ABC):
             str: the name with any additional metadata.
         """
         return chkpt_name
-
-    def strip_training_data(
-        self, state_dict: dict[str, typing.Any]
-    ) -> dict[str, typing.Any]:
-        """
-        Remove any training data from the state dictionary.
-
-        Use this function to convert a checkpoint into a pre-trained network. Note that
-        the auxiliary training state (log information, training settings, etc.) will be
-        removed automatically before this function is called. The returned dictionary
-        should contain only the necessary information to re-create the network(s) along
-        with any additional data you require.
-
-        Args:
-            state_dict (dict[str, Any]): the state dictionary.
-
-        Returns:
-            dict[str, Any]: the state dictionary without any training data.
-        """
-        return state_dict
 
     def train(self) -> None:
         """Switch the model to training mode."""
