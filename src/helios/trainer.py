@@ -424,8 +424,13 @@ class Trainer:
             self._train_on_epoch(training_state)
 
         self.model.on_training_end()
+
         logging.flush_default_loggers()
         logging.close_default_loggers()
+
+        # If we're distributed, ensure that all processes are caught up before we exit.
+        if self._is_distributed:
+            td.barrier()
 
     def _test(self) -> None:
         """
@@ -487,6 +492,9 @@ class Trainer:
                 pbar.update()
 
         self.model.on_testing_end()
+
+        if self._is_distributed:
+            td.barrier()
 
     def _configure_env(self) -> None:
         """
