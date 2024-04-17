@@ -40,7 +40,7 @@ class WeightedLoss(nn.Module, metaclass=abc.ABCMeta):
             Any: the result of the loss function.
         """
 
-    def forward(self, *args, **kwargs) -> typing.Any:
+    def forward(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         """
         Forward wrapper function.
 
