@@ -685,8 +685,8 @@ class Trainer:
         """
         chkpt_root = core.get_from_optional(self._chkpt_root)
 
-        epoch = state.global_epoch
-        ite = state.global_iteration
+        epoch = state.global_epoch + 1
+        ite = state.current_iteration
         filename = f"{self.model.save_name}_epoch_{epoch}_iter_{ite}"
         filename = self.model.append_metadata_to_chkpt_name(filename)
         filename += ".pth"
