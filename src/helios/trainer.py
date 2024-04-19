@@ -766,6 +766,7 @@ class Trainer:
             desc="Training iterations",
             unit="it",
             disable=pbar_disabled,
+            initial=state.current_iteration,
         )
 
         dataloader: tud.DataLoader
@@ -923,7 +924,7 @@ class Trainer:
                         ),
                     )
                     state.dataset_iter += 1
-                    if ite_pbar.update():
+                    if not ite_pbar.update():
                         ite_pbar.refresh()
 
             state.dataset_iter = 0
