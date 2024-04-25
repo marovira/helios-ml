@@ -16,6 +16,10 @@ class MockModel(hlm.Model):
         return self._loss_items
 
     @property
+    def running_loss(self) -> dict[str, float]:
+        return self._running_losses
+
+    @property
     def val_scores(self) -> dict[str, float]:
         return self._val_scores
 
@@ -54,8 +58,12 @@ class TestModel:
         chkpt_name = "chkpt"
         assert model.append_metadata_to_chkpt_name(chkpt_name) == chkpt_name
 
+        model.on_training_batch_start(state)
+        assert len(model.loss_items) == 0
         model.populate_loss()
         assert len(model.loss_items) != 0
+        model.on_training_batch_end(state)
+        assert len(model.running_loss) != 0
         model.on_training_batch_start(state)
         assert len(model.loss_items) == 0
 
@@ -63,6 +71,8 @@ class TestModel:
         assert len(model.val_scores) != 0
         model.on_validation_start(0)
         assert len(model.loss_items) == 0
+        model.on_validation_end(0)
+        assert len(model.running_loss) == 0
 
         assert model.have_metrics_improved()
 

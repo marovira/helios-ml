@@ -31,6 +31,7 @@ class Model(abc.ABC):
         self._rank: int = 0
 
         self._loss_items: dict[str, torch.Tensor] = {}
+        self._running_losses: dict[str, float] = {}
         self._val_scores: dict[str, float] = {}
         self._test_scores: dict[str, float] = {}
 
@@ -223,8 +224,9 @@ class Model(abc.ABC):
         Perform any actions when a training batch ends.
 
         This function is called after train_step is called. By default, it will gather all
-        the losses (if using distributed training), but you may also use it to log your
-        losses or perform any additional tasks after the training step.
+        the losses stored in self._loss_items (if using distributed training) and will
+        update the running losses using those values. You may also use this function to
+        log your losses or perform any additional tasks after the training step.
 
         Args:
             state (TrainingState): the current training state.
@@ -233,6 +235,13 @@ class Model(abc.ABC):
         if self._is_distributed:
             for _, loss in self._loss_items.items():
                 dist.all_reduce_tensors(loss)
+
+        for key, loss in self._loss_items.items():
+            if loss is not None:
+                if key not in self._running_losses:
+                    self._running_losses[key] = loss.item()
+                else:
+                    self._running_losses[key] += loss.item()
 
     def on_training_end(self) -> None:
         """
@@ -296,12 +305,13 @@ class Model(abc.ABC):
         """
         Perform any necessary actions when validation ends.
 
-        You may use this function to compute any final validation metrics as well as log
-        them.
+        By default, this function will clear out the running loss table, but you may use
+        this function to compute any final validation metrics as well as log them.
 
         Args:
             validation_cycle (int): the validation cycle number.
         """
+        self._running_losses.clear()
 
     def have_metrics_improved(self) -> bool:
         """
