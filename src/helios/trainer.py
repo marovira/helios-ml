@@ -480,18 +480,17 @@ class Trainer:
             leave=False,
         )
 
-        torch.backends.cudnn.benchmark = False
+        with core.cuda.DisableCuDNNBenchmarkContext():
+            self.model.eval()
+            self.model.on_testing_start()
+            with torch.no_grad():
+                for idx, batch in enumerate(dataloader):
+                    self.model.on_testing_batch_start(idx)
+                    self.model.test_step(batch, idx)
+                    self.model.on_testing_batch_end(idx)
+                    pbar.update()
 
-        self.model.eval()
-        self.model.on_testing_start()
-        with torch.no_grad():
-            for idx, batch in enumerate(dataloader):
-                self.model.on_testing_batch_start(idx)
-                self.model.test_step(batch, idx)
-                self.model.on_testing_batch_end(idx)
-                pbar.update()
-
-        self.model.on_testing_end()
+            self.model.on_testing_end()
 
         if self._is_distributed:
             td.barrier()
@@ -981,27 +980,22 @@ class Trainer:
             leave=False,
         )
 
-        if self._enable_cudnn_benchmark:
-            torch.backends.cudnn.benchmark = False
+        with core.cuda.DisableCuDNNBenchmarkContext():
+            self.model.eval()
+            self.model.on_validation_start(val_cycle)
+            with torch.no_grad():
+                for idx, batch in enumerate(dataloader):
+                    self.model.on_validation_batch_start(idx)
+                    self.model.valid_step(batch, idx)
+                    self.model.on_validation_batch_end(idx)
 
-        self.model.eval()
-        self.model.on_validation_start(val_cycle)
-        with torch.no_grad():
-            for idx, batch in enumerate(dataloader):
-                self.model.on_validation_batch_start(idx)
-                self.model.valid_step(batch, idx)
-                self.model.on_validation_batch_end(idx)
+                    # Ensure the progress bar is updated in the event that the validation
+                    # loop runs faster than the refresh rate of the progress bar.
+                    if not pbar.update():
+                        pbar.refresh()
 
-                # Ensure the progress bar is updated in the event that the validation loop
-                # runs faster than the refresh rate of the progress bar.
-                if not pbar.update():
-                    pbar.refresh()
-
-        self.model.train()
-        self.model.on_validation_end(val_cycle)
-
-        if self._enable_cudnn_benchmark:
-            torch.backends.cudnn.benchmark = False
+            self.model.train()
+            self.model.on_validation_end(val_cycle)
 
         if self._is_distributed:
             td.barrier()
