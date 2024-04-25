@@ -101,6 +101,15 @@ class TestCUDA:
             with pytest.raises(RuntimeError):
                 cuda.requires_cuda_support()
 
+    def test_disable_cudnn_context(self) -> None:
+        if torch.cuda.is_available():
+            torch.backends.cudnn.benchmark = True
+
+            assert torch.backends.cudnn.benchmark
+            with cuda.DisableCuDNNBenchmarkContext():
+                assert not torch.backends.cudnn.benchmark
+            assert torch.backends.cudnn.benchmark
+
 
 @dataclasses.dataclass
 class ExpectedRNG:
