@@ -37,3 +37,5 @@ class TestNewtorks:
         net = nn.Conv2d(1, 20, 5)
         ema = hln.swa_utils.EMA(net)
         ema.update(net)
+        n = ema.module
+        assert net != n

@@ -29,6 +29,11 @@ class EMA(nn.Module):
         if self._device is not None:
             self._module.to(device=device)
 
+    @property
+    def module(self) -> nn.Module:
+        """Get the underlying network."""
+        return self._module
+
     @torch.no_grad()
     def _update(self, net: nn.Module, update_fn: typing.Callable) -> None:
         for ema_v, net_v in zip(
