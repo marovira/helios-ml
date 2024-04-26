@@ -567,14 +567,13 @@ class Trainer:
         """Print the Helios header with system info to the logs."""
         root_logger = logging.get_root_logger()
 
-        if self.rank == 0:
-            print(core.get_env_info_str())
+        self._print(core.get_env_info_str())
 
         if for_training:
             if chkpt_path is not None:
                 msg = f"Resuming training from checkpoint {str(chkpt_path)}"
                 root_logger.info(msg)
-                print(f"{msg}\n")
+                self._print(f"{msg}\n")
             else:
                 root_logger.info(core.get_env_info_str())
         else:
@@ -585,7 +584,7 @@ class Trainer:
                 else "Testing from loaded model"
             )
             root_logger.info(msg)
-            print(f"{msg}\n")
+            self._print(f"{msg}\n")
 
     def _validate_flags(self):
         """Ensure that all the settings and flags are valid."""
@@ -1019,3 +1018,18 @@ class Trainer:
 
         if self._is_distributed:
             td.barrier()
+
+    def _print(self, *args: typing.Any, **kwargs: typing.Any) -> None:
+        """
+        Wrap Python's print function for distributed training.
+
+        Specifically, this function will ensure that only rank 0 prints messages to the
+        screen. All other ranks will do nothing.
+
+        Args:
+            args: named arguments for print.
+            kwargs: keyword arguments for print.
+        """
+        if self.rank != 0:
+            return
+        print(*args, **kwargs)
