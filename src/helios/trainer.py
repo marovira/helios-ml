@@ -553,7 +553,8 @@ class Trainer:
         """Print the Helios header with system info to the logs."""
         root_logger = logging.get_root_logger()
 
-        print(core.get_env_info_str())
+        if self.rank == 0:
+            print(core.get_env_info_str())
 
         if for_training:
             if chkpt_path is not None:
