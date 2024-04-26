@@ -752,7 +752,7 @@ class Trainer:
         enable_progress_bar = self._enable_progress_bar
         early_stop_cycles = self._early_stop_cycles
 
-        perform_validation: bool = True
+        current_iteration_changed: bool = True
         training_done: bool = False
         root_logger = logging.get_root_logger()
         iter_timer = core.AverageTimer()
@@ -787,9 +787,9 @@ class Trainer:
                 if state.global_iteration % accumulation_steps == 0:
                     state.current_iteration += 1
                     state.running_iter += 1
-                    perform_validation = True
+                    current_iteration_changed = True
                 else:
-                    perform_validation = False
+                    current_iteration_changed = False
 
                 state.global_iteration += 1
                 if state.current_iteration > total_steps:
@@ -806,6 +806,7 @@ class Trainer:
                         False
                         if print_freq is None
                         else state.current_iteration % print_freq == 0
+                        and current_iteration_changed
                     ),
                 )
                 # Depending on how fast the iteration loop is, it is possible that the
@@ -817,7 +818,7 @@ class Trainer:
                 if (
                     val_freq is not None
                     and state.current_iteration % val_freq == 0
-                    and perform_validation
+                    and current_iteration_changed
                 ):
                     self._validate(state.validation_cycles)
                     state.validation_cycles += 1
@@ -831,6 +832,7 @@ class Trainer:
                     save_freq is not None
                     and state.current_iteration % save_freq == 0
                     and self.rank == 0
+                    and current_iteration_changed
                 ):
                     self._save_checkpoint(state)
 
