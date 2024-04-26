@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import enum
 import itertools
+import os
 import pathlib
 import re
 import time
@@ -686,7 +687,7 @@ class Trainer:
         self._is_distributed = (
             len(self._gpu_ids) > 1
             if not self._is_torchrun
-            else dist.get_dist_info().world_size > 1
+            else int(os.environ["WORLD_SIZE"]) > 1
         )
 
     def _save_checkpoint(self, state: TrainingState) -> None:
