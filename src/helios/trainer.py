@@ -822,7 +822,7 @@ class Trainer:
                     should_log=(
                         False
                         if print_freq is None
-                        else state.current_iteration % print_freq == 0
+                        else state.global_iteration % print_freq == 0
                         and current_iteration_changed
                     ),
                 )
