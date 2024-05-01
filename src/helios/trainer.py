@@ -853,17 +853,19 @@ class Trainer:
                 ):
                     self._save_checkpoint(state)
 
+                if (
+                    early_stop_cycles is not None
+                    and state.early_stop_count >= early_stop_cycles
+                ):
+                    training_done = True
+                    break
+
             state.dataset_iter = 0
             state.global_epoch += 1
 
             root_logger.info(
                 f"Epoch {epoch + 1} completed in {time.time() - epoch_start:.2f}s"
             )
-            if (
-                early_stop_cycles is not None
-                and state.early_stop_count >= early_stop_cycles
-            ):
-                training_done = True
 
     def _train_on_epoch(self, state: TrainingState) -> None:
         """
