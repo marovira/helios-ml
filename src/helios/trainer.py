@@ -10,7 +10,6 @@ import time
 import typing
 
 import torch
-import torch.distributed as td
 import torch.multiprocessing as mp
 import torch.utils.data as tud
 import tqdm
@@ -412,8 +411,7 @@ class Trainer:
         logging.close_default_loggers()
 
         # If we're distributed, ensure that all processes are caught up before we exit.
-        if self._is_distributed:
-            td.barrier()
+        dist.safe_barrier()
 
     def _test(self) -> None:
         """
@@ -475,8 +473,7 @@ class Trainer:
 
             self.model.on_testing_end()
 
-        if self._is_distributed:
-            td.barrier()
+        dist.safe_barrier()
 
     def _configure_env(self) -> None:
         """
@@ -544,13 +541,13 @@ class Trainer:
         """Print the Helios header with system info to the logs."""
         root_logger = logging.get_root_logger()
 
-        self._print(core.get_env_info_str())
+        dist.global_print(core.get_env_info_str())
 
         if for_training:
             if chkpt_path is not None:
                 msg = f"Resuming training from checkpoint {str(chkpt_path)}"
                 root_logger.info(msg)
-                self._print(f"{msg}\n")
+                dist.global_print(f"{msg}\n")
             else:
                 root_logger.info(core.get_env_info_str())
         else:
@@ -561,7 +558,7 @@ class Trainer:
                 else "Testing from loaded model"
             )
             root_logger.info(msg)
-            self._print(f"{msg}\n")
+            dist.global_print(f"{msg}\n")
 
     def _validate_flags(self):
         """Ensure that all the settings and flags are valid."""
@@ -995,20 +992,4 @@ class Trainer:
             self.model.train()
             self.model.on_validation_end(val_cycle)
 
-        if self._is_distributed:
-            td.barrier()
-
-    def _print(self, *args: typing.Any, **kwargs: typing.Any) -> None:
-        """
-        Wrap Python's print function for distributed training.
-
-        Specifically, this function will ensure that only rank 0 prints messages to the
-        screen. All other ranks will do nothing.
-
-        Args:
-            args: named arguments for print.
-            kwargs: keyword arguments for print.
-        """
-        if self.rank != 0:
-            return
-        print(*args, **kwargs)
+        dist.safe_barrier()

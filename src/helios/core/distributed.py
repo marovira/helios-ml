@@ -1,5 +1,6 @@
 import dataclasses
 import os
+import typing
 
 import torch
 import torch.distributed as dist
@@ -65,6 +66,11 @@ def init_dist(
 def shutdown_dist() -> None:
     """Shutdown the distributed process group."""
     dist.destroy_process_group()
+
+
+def is_dist_active() -> bool:
+    """Check if torch.distributed is active."""
+    return dist.is_available() and dist.is_initialized()
 
 
 @dataclasses.dataclass
@@ -177,3 +183,56 @@ def all_reduce_tensors(
     value_tensor = torch.tensor(tensor).cuda() if isinstance(tensor, list) else tensor
     dist.all_reduce(value_tensor, **kwargs)
     return value_tensor
+
+
+def _dist_print_wrapper(
+    *args: typing.Any, rank_check: typing.Callable[[], bool], **kwargs: typing.Any
+) -> None:
+    if not is_dist_active():
+        print(*args, **kwargs)
+        return
+    if rank_check():
+        print(*args, **kwargs)
+
+
+def global_print(*args: typing.Any, global_rank: int = 0, **kwargs: typing.Any) -> None:
+    """
+    Print wrapper that only prints on the specified global rank.
+
+    Args:
+        *args: positional arguments to pass in to Python's print.
+        global_rank (int): the global rank the print should happen on. Defaults to 0.
+        **kwargs: keyword arguments to pass in to Python's print.
+    """
+    _dist_print_wrapper(
+        *args, rank_check=lambda: get_global_rank() == global_rank, **kwargs
+    )
+
+
+def local_print(*args: typing.Any, local_rank: int = 0, **kwargs: typing.Any) -> None:
+    """
+    Print wrapper that only prints on the specified local rank.
+
+    Args:
+        *args: positional arguments to pass in to Python's print.
+        local_rank (int): the local rank the print should happen on. Defaults to 0.
+        **kwargs: keyword arguments to pass in to Python's print.
+    """
+    _dist_print_wrapper(
+        *args, rank_check=lambda: get_local_rank() == local_rank, **kwargs
+    )
+
+
+def safe_barrier(**kwargs: typing.Any) -> None:
+    """
+    Safe wrapper for torch.distributed.barrier.
+
+    The wrapper is "safe" in the sense that it is valid to call this function regardless
+    of whether the code is currently using distributed training or not.
+
+    Args:
+        **kwargs: keyword arguments to torch.distributed.barrier.
+    """
+    if not is_dist_active():
+        return
+    dist.barrier(**kwargs)
