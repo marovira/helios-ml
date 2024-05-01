@@ -775,6 +775,7 @@ class Trainer:
 
             iter_timer.start()
             for batch in dataloader:
+                state.global_iteration += 1
                 if state.global_iteration % accumulation_steps == 0:
                     state.current_iteration += 1
                     state.running_iter += 1
@@ -782,7 +783,6 @@ class Trainer:
                 else:
                     current_iteration_changed = False
 
-                state.global_iteration += 1
                 if state.current_iteration > total_steps:
                     training_done = True
                     break
