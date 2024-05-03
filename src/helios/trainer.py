@@ -95,7 +95,7 @@ class TrainingState:
     dict = dc.asdict
 
 
-def find_last_checkpoint(root: pathlib.Path) -> pathlib.Path | None:
+def find_last_checkpoint(root: pathlib.Path | None) -> pathlib.Path | None:
     """
     Find the last saved checkpoint (if available).
 
@@ -109,6 +109,9 @@ def find_last_checkpoint(root: pathlib.Path) -> pathlib.Path | None:
     Returns:
         pathlib.Path | None: the path to the last checkpoint (if any).
     """
+    if root is None:
+        return None
+
     epoch = 0
     ite = 0
     last_chkpt = None
@@ -394,14 +397,14 @@ class Trainer:
         self._setup_model()
         self._prepare_roots()
 
-        chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
-        training_state, resume_training = self._load_checkpoint(chkpt_path)
+        chkpt_path = find_last_checkpoint(self._chkpt_root)
+        training_state = self._load_checkpoint(chkpt_path)
 
         self._print_header(chkpt_path)
 
         self.model.on_training_start()
         if self._train_unit == TrainingUnit.ITERATION:
-            self._train_on_iteration(training_state, resume_training)
+            self._train_on_iteration(training_state)
         else:
             self._train_on_epoch(training_state)
 
@@ -432,8 +435,9 @@ class Trainer:
         loaded: bool = False
         if self._chkpt_root is not None:
             chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
-            _, loaded = self._load_checkpoint(
-                chkpt_path, skip_rng=True, model_fast_init=True
+            loaded = (
+                self._load_checkpoint(chkpt_path, skip_rng=True, model_fast_init=True)
+                != TrainingState()
             )
 
         # We failed to load the last checkpoint, so tell the model to load its state.
@@ -700,7 +704,7 @@ class Trainer:
         chkpt_path: pathlib.Path | None,
         skip_rng: bool = False,
         model_fast_init: bool = False,
-    ) -> tuple[TrainingState, bool]:
+    ) -> TrainingState:
         """
         Load the given checkpoint.
 
@@ -716,7 +720,7 @@ class Trainer:
         """
         if chkpt_path is None:
             logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
-            return TrainingState(), False
+            return TrainingState()
 
         state_dict = torch.load(chkpt_path, map_location=self._map_loc)
         logging.restore_default_loggers(
@@ -725,15 +729,14 @@ class Trainer:
         if not skip_rng:
             rng.load_rng_state_dict(state_dict["rng"])
         self.model.load_state_dict(state_dict["model"], fast_init=model_fast_init)
-        return TrainingState(**state_dict["training_state"]), True
+        return TrainingState(**state_dict["training_state"])
 
-    def _train_on_iteration(self, state: TrainingState, resume_training: bool) -> None:
+    def _train_on_iteration(self, state: TrainingState) -> None:
         """
         Run the main loop for iteration-based training.
 
         Args:
             state (TrainingState): the training state.
-            resume_training (bool): if True, then training is resumed from the state.
         """
         total_steps = self._total_steps
         save_freq = self._chkpt_frequency
