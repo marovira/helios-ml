@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import dataclasses
+import dataclasses as dc
 import enum
 import itertools
 import os
@@ -63,7 +63,7 @@ class _TrainerMode(enum.Enum):
     TEST = 1
 
 
-@dataclasses.dataclass
+@dc.dataclass
 class TrainingState:
     """
     The training state.
@@ -92,7 +92,7 @@ class TrainingState:
     average_iter_time: float = 0
     running_iter: int = 0
 
-    dict = dataclasses.asdict
+    dict = dc.asdict
 
 
 def find_last_checkpoint(root: pathlib.Path) -> pathlib.Path | None:

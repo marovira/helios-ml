@@ -1,4 +1,4 @@
-import dataclasses
+import dataclasses as dc
 import os
 import typing
 
@@ -73,7 +73,7 @@ def is_dist_active() -> bool:
     return dist.is_available() and dist.is_initialized()
 
 
-@dataclasses.dataclass
+@dc.dataclass
 class DistributedInfo:
     """
     Bundle information regarding distributed state.

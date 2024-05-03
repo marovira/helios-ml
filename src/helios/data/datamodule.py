@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import abc
 import copy
-import dataclasses
+import dataclasses as dc
 import enum
 import typing
 
@@ -160,7 +160,7 @@ def create_dataloader(
     )
 
 
-@dataclasses.dataclass
+@dc.dataclass
 class DataLoaderParams:
     """
     Params used to create the dataloader object.
@@ -189,15 +189,13 @@ class DataLoaderParams:
 
     def to_dict(self) -> dict[str, typing.Any]:
         """Convert the params object to a dictionary using shallow copies."""
-        return {
-            field.name: getattr(self, field.name) for field in dataclasses.fields(self)
-        }
+        return {field.name: getattr(self, field.name) for field in dc.fields(self)}
 
     @classmethod
     def from_dict(cls, table: dict[str, typing.Any]):
         """Create a new params object from the given table."""
         params = cls()
-        keys = [field.name for field in dataclasses.fields(params)]
+        keys = [field.name for field in dc.fields(params)]
 
         # Skip the sampler key, since that one needs to be created differently.
         for key in keys:
@@ -207,7 +205,7 @@ class DataLoaderParams:
         return params
 
 
-@dataclasses.dataclass
+@dc.dataclass
 class Dataset:
     """
     The dataset and corresponding data loader params.
