@@ -57,6 +57,7 @@ class CheckFunModel(hlm.Model):
             "on_validation_batch_end": False,
             "on_validation_end": False,
             "have_metrics_improved": False,
+            "should_training_stop": False,
         }
 
         self.called_test_funs: dict[str, bool] = {
@@ -116,6 +117,10 @@ class CheckFunModel(hlm.Model):
         self.called_train_funs["have_metrics_improved"] = True
         return True
 
+    def should_training_stop(self) -> bool:
+        self.called_train_funs["should_training_stop"] = True
+        return False
+
     def on_testing_start(self) -> None:
         self.called_test_funs["on_testing_start"] = True
 
@@ -148,6 +153,25 @@ class RestartModel(hlm.Model):
     def train_step(self, batch: torch.Tensor, state) -> None:
         as_np = F.tensor_to_numpy(batch)
         self.batches.append(as_np)
+
+
+class AccumulationModel(hlm.Model):
+    def __init__(self, accumulation_steps: int = 1) -> None:
+        super().__init__("test-accumulation")
+        self.accumulation_steps = accumulation_steps
+        self.global_steps: int = 0
+        self.accumulated_steps: int = 0
+
+    def setup(self, fast_init: bool = False) -> None:
+        pass
+
+    def train_step(self, batch: torch.Tensor, state: hlt.TrainingState) -> None:
+        self.global_steps += 1
+        if self.global_steps % self.accumulation_steps == 0:
+            self.accumulated_steps += 1
+
+        assert state.global_iteration == self.global_steps
+        assert state.current_iteration == self.accumulated_steps
 
 
 class TestTrainingUnit:
@@ -348,3 +372,22 @@ class TestTrainer:
 
     def test_restart_epoch(self, tmp_path: pathlib.Path) -> None:
         self.check_restart_trainer(hlt.TrainingUnit.EPOCH, tmp_path)
+
+    def check_accumulation(self, num_steps: int) -> None:
+        datamodule = RandomDatamodule()
+        model = AccumulationModel(num_steps)
+        trainer = hlt.Trainer(
+            train_unit=hlt.TrainingUnit.ITERATION,
+            total_steps=20,
+            use_cpu=True,
+            accumulation_steps=num_steps,
+        )
+
+        trainer.fit(model, datamodule)
+
+    def test_accumulation(self) -> None:
+        self.check_accumulation(1)
+        self.check_accumulation(2)
+        self.check_accumulation(4)
+        self.check_accumulation(5)
+        self.check_accumulation(10)
