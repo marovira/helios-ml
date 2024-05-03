@@ -318,12 +318,26 @@ class Model(abc.ABC):
         Determine whether the current validation results are an improvement or not.
 
         This is used when early stopping is enabled in the trainer to determine whether
-        the stop cycle count should increase or not.
+        the stop cycle count should increase or not. This is called immediately after the
+        validation cycle finishes.
 
         Returns:
             bool: false if no improvements were seen in the last validation cycle.
         """
         return True
+
+    def should_training_stop(self) -> bool:
+        """
+        Determine whether training should stop or continue.
+
+        This is used in the event that a validation metric crosses a certain threshold
+        after which training should stop. This is called after the validation cycle
+        finishes.
+
+        Returns:
+            bool: False if training should continue, true otherwise.
+        """
+        return False
 
     def on_testing_start(self) -> None:
         """

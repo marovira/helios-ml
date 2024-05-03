@@ -834,6 +834,10 @@ class Trainer:
                     training_done = True
                     break
 
+                if self.model.should_training_stop():
+                    training_done = True
+                    break
+
             state.dataset_iter = 0
             state.global_epoch += 1
 
@@ -947,6 +951,9 @@ class Trainer:
                 early_stop_cycles is not None
                 and state.early_stop_count >= early_stop_cycles
             ):
+                training_done = True
+
+            if self.model.should_training_stop():
                 training_done = True
 
     def _validate(self, val_cycle: int) -> None:
