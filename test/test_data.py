@@ -231,6 +231,18 @@ class TestDataModule:
         for name in registered_names:
             assert name in hlds.SAMPLER_REGISTRY
 
+    def test_dataset_getters(self) -> None:
+        datamodule = SampleDataModule()
+        datamodule.setup()
+
+        assert datamodule.train_dataset is not None
+        assert datamodule.valid_dataset is not None
+        assert datamodule.test_dataset is not None
+
+        assert isinstance(datamodule.train_dataset, RandomDataset)
+        assert isinstance(datamodule.valid_dataset, SequentialDataset)
+        assert isinstance(datamodule.test_dataset, SequentialDataset)
+
 
 if __name__ == "__main__":
     t = TestDataModule()
