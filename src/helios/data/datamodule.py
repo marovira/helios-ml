@@ -294,6 +294,27 @@ class DataModule(abc.ABC):
     def trainer(self, t) -> None:
         self._trainer = t
 
+    @property
+    def train_dataset(self) -> tud.Dataset | None:
+        """The training dataset (if available)."""
+        if self._train_dataset is not None:
+            return self._train_dataset.dataset
+        return None
+
+    @property
+    def valid_dataset(self) -> tud.Dataset | None:
+        """The validation dataset (if available)."""
+        if self._valid_dataset is not None:
+            return self._valid_dataset.dataset
+        return None
+
+    @property
+    def test_dataset(self) -> tud.Dataset | None:
+        """The testing dataset (if available)."""
+        if self._test_dataset is not None:
+            return self._test_dataset.dataset
+        return None
+
     def prepare_data(self) -> None:  # noqa: B027
         """
         Prepare data for training.
