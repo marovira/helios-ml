@@ -198,6 +198,7 @@ class Trainer:
         chkpt_root (pathlib.Path): root folder in which checkpoints will be placed.
         log_path (pathlib.Path): root folder in which logs will be saved.
         run_path (pathlib.Path): root folder in which Tensorboard runs will be saved.
+        print_banner (bool): if True, the Helios banner with system info will be printed.
     """
 
     def __init__(
@@ -223,6 +224,7 @@ class Trainer:
         run_path: pathlib.Path | None = None,
         src_root: pathlib.Path | None = None,
         import_prefix: str = "",
+        print_banner: bool = True,
     ):
         """Create the trainer."""
         self._model: hlm.Model | None = None
@@ -263,6 +265,7 @@ class Trainer:
         self._import_prefix = import_prefix
 
         self._run_name = run_name
+        self._print_banner = print_banner
 
         self._validate_flags()
         self._setup_device_flags(use_cpu)
@@ -545,7 +548,8 @@ class Trainer:
         """Print the Helios header with system info to the logs."""
         root_logger = logging.get_root_logger()
 
-        dist.global_print(core.get_env_info_str())
+        if self._print_banner:
+            dist.global_print(core.get_env_info_str())
 
         if for_training:
             if chkpt_path is not None:
