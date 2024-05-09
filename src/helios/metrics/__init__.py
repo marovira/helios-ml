@@ -6,10 +6,8 @@ This contains the classes, utilities, and registries related to metric functions
 
 from .metrics import (
     METRICS_REGISTRY,
-    CalculateF1,
     CalculateMAE,
     CalculateMAP,
-    CalculatePrecision,
     CalculatePSNR,
     CalculateSSIM,
     create_metric,
@@ -17,10 +15,8 @@ from .metrics import (
 
 __all__ = [
     "METRICS_REGISTRY",
-    "CalculateF1",
     "CalculateMAE",
     "CalculateMAP",
-    "CalculatePrecision",
     "CalculatePSNR",
     "CalculateSSIM",
     "create_metric",

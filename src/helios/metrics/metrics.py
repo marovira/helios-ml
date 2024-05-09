@@ -8,13 +8,11 @@ from torch import nn
 from helios import core
 
 from .functional import (
-    calculate_f1_torch,
+    calculate_mae,
     calculate_mae_torch,
     calculate_mAP,
-    calculate_precision_torch,
     calculate_psnr,
     calculate_psnr_torch,
-    calculate_recall_torch,
     calculate_ssim,
     calculate_ssim_torch,
 )
@@ -70,8 +68,8 @@ class CalculatePSNR(nn.Module):
         Calculate the PSNR metric.
 
         Args:
-            img (np.ndarray): Images with range [0, 255].
-            img2 (np.ndarray): Images with range [0, 255].
+            img (np.ndarray | torch.Tensor): Images with range [0, 255].
+            img2 (np.ndarray | torch.Tensor): Images with range [0, 255].
 
         Returns:
             float: PSNR value.
@@ -124,8 +122,8 @@ class CalculateSSIM(nn.Module):
         Calculate the SSIM metric.
 
         Args:
-            img (np.ndarray): Images with range [0, 255].
-            img2 (np.ndarray): Images with range [0, 255].
+            img (np.ndarray | torch.Tensor): Images with range [0, 255].
+            img2 (np.ndarray | torch.Tensor): Images with range [0, 255].
 
         Returns:
             float: PSNR value.
@@ -166,87 +164,38 @@ class CalculateMAP(nn.Module):
 @METRICS_REGISTRY.register
 class CalculateMAE(nn.Module):
     """
-    Calculate the mAP (Mean Average Precision).
+    Compute the MAE (Mean-Average Precision) score.
 
-    Implementation follows:
-    https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision
+    Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
+    The scale argument is used in the event that the input tensors are not in the range
+    [0, 1] but instead have been scaled to be in the range [0, N] where N is the factor.
+    For example, if the tensors are images in the range [0, 255], then the scaling factor
+    should be set to 255. If the tensors are already in the range [0, 1], then the scale
+    can be omitted.
+
+    Args:
+        scale (float): scaling factor that was used on the input tensors (if any)
     """
 
-    def forward(self, pred: torch.Tensor, gt: torch.Tensor) -> float:
+    def __init__(self, scale: float = 1):
+        """Construct the MAE metric."""
+        super().__init__()
+        self._scale = scale
+
+    def forward(
+        self, pred: npt.NDArray | torch.Tensor, gt: npt.NDArray | torch.Tensor
+    ) -> float:
         """
-        Calculate the mAP (Mean Average Precision).
+        Calculate the MAE metric.
 
         Args:
-            targs (np.ndarray): target (inferred) labels in range [0, 1].
-            preds (np.ndarray): predicate labels in range [0, 1].
+            pred (np.ndarray | torch.Tensor): predicate (inferred) data.
+            gt (np.ndarray | torch.Tensor): ground-truth data.
 
         Returns:
-            float: the mAP score
+            float: the MAE score
         """
-        return calculate_mae_torch(pred, gt)
-
-
-@METRICS_REGISTRY.register
-class CalculatePrecision(nn.Module):
-    """
-    Compute the Precision score.
-
-    Implementation follows:  https://en.wikipedia.org/wiki/Precision_and_recall
-    """
-
-    def forward(self, pred: torch.Tensor, gt: torch.Tensor) -> float:
-        """
-        Compute the Precision score.
-
-        Args:
-            pred (torch.Tensor): predicate (inferred) images in range [0, 255]
-            gt (torch.Tensor): ground-truth images in range [0, 255]
-
-        Returns:
-            float: the precision score.
-        """
-        return calculate_precision_torch(pred, gt)
-
-
-@METRICS_REGISTRY.register
-class CalculateRecall(nn.Module):
-    """
-    Compute the Recall score.
-
-    Implementation follows:  https://en.wikipedia.org/wiki/Precision_and_recall
-    """
-
-    def forward(self, pred: torch.Tensor, gt: torch.Tensor) -> float:
-        """
-        Compute the Recall score.
-
-        Args:
-            pred (torch.Tensor): predicate (inferred) images in range [0, 255]
-            gt (torch.Tensor): ground-truth images in range [0, 255]
-
-        Returns:
-            float: the recall score.
-        """
-        return calculate_recall_torch(pred, gt)
-
-
-@METRICS_REGISTRY.register
-class CalculateF1(nn.Module):
-    """
-    Compute the F1 score.
-
-    Implementation follows: https://en.wikipedia.org/wiki/F-score
-    """
-
-    def forward(self, pred: torch.Tensor, gt: torch.Tensor) -> float:
-        """
-        Compute the F1 score.
-
-        Args:
-            pred (torch.Tensor): predicate (inferred) images in range [0, 255]
-            gt (torch.Tensor): ground-truth images in range [0, 255]
-
-        Returns:
-            float: the F1 score.
-        """
-        return calculate_f1_torch(pred, gt)
+        if isinstance(pred, torch.Tensor) and isinstance(gt, torch.Tensor):
+            return calculate_mae_torch(pred, gt, self._scale)
+        assert isinstance(pred, np.ndarray) and isinstance(gt, np.ndarray)
+        return calculate_mae(pred, gt, self._scale)

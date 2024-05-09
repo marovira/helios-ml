@@ -113,62 +113,40 @@ def _average_precision(
     return precision_at_i
 
 
-def _mae_torch(pred: torch.Tensor, gt: torch.Tensor) -> float:
+def _mae(pred: npt.NDArray, gt: npt.NDArray, scale: float = 1.0) -> float:
     """
-    MAE Torch implementation. See calculate_mae_torch for details.
+    MAE implementation. See calculate_mae for details.
 
     Args:
-        pred (torch.Tensor): predicate (inferred) images in range [0, 255]
-        gt (torch.Tensor): ground-truth images in range [0, 255]
+        pred (torch.Tensor): predicate tensor.
+        gt (torch.Tensor): ground-truth tensor.
+        scale (float): the scaling factor used in the tensor data (if any).
 
     Returns:
         float: the MAE score.
     """
-    h, w = gt.shape[0:2]
-    sum_error = torch.sum(torch.absolute(torch.sub(pred.float(), gt.float())))
-    mae_error = torch.divide(sum_error, float(h) * float(w) * 2550 + 1e-4)
+    n = np.prod(gt.shape)
+    sum_error = np.sum(np.abs(np.subtract(np.float32(pred), np.float32(gt))))
+    mae_error = np.divide(sum_error, n * scale + 1e-4)
     return float(mae_error)
 
 
-def _f1_score_torch(
-    pd: torch.Tensor, gt: torch.Tensor
-) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+def _mae_torch(pred: torch.Tensor, gt: torch.Tensor, scale: float = 1.0) -> float:
     """
-    Calculate the following scores: precision, recall, and F1 for torch.
-
-    See calculate_precision/recall/f1_torch for details.
+    MAE Torch implementation. See calculate_mae_torch for details.
 
     Args:
-        pd (torch.Tensor): predicate tensor.
+        pred (torch.Tensor): predicate tensor.
         gt (torch.Tensor): ground-truth tensor.
+        scale (float): the scaling factor used in the tensor data (if any).
 
     Returns:
-        tuple[torch.Tensor, torch.Tensor, torch.Tensor]: the precision, recall, and F1
-        scores, respectively.
+        float: the MAE score.
     """
-    gt_num = torch.sum((gt > 128).float() * 1)
-
-    pp = pd[gt > 128]
-    nn = pd[gt <= 128]
-
-    pp_hist = torch.histc(pp, bins=255, min=0, max=255)
-    nn_hist = torch.histc(nn, bins=255, min=0, max=255)
-
-    pp_hist_flip = torch.flipud(pp_hist)
-    nn_hist_flip = torch.flipud(nn_hist)
-
-    pp_hist_flip_cum = torch.cumsum(pp_hist_flip, dim=0)
-    nn_hist_flip_cum = torch.cumsum(nn_hist_flip, dim=0)
-
-    precision = (pp_hist_flip_cum) / (pp_hist_flip_cum + nn_hist_flip_cum + 1e-4)
-    recall = (pp_hist_flip_cum) / (gt_num + 1e-4)
-    f1 = (1 + 0.3) * precision * recall / (0.3 * precision + recall + 1e-4)
-
-    return (
-        torch.reshape(precision, (1, precision.shape[0])),
-        torch.reshape(recall, (1, recall.shape[0])),
-        torch.reshape(f1, (1, f1.shape[0])),
-    )
+    n = torch.prod(torch.tensor(gt.shape))
+    sum_error = torch.sum(torch.absolute(torch.sub(pred.float(), gt.float())))
+    mae_error = torch.divide(sum_error, n * scale + 1e-4)
+    return float(mae_error)
 
 
 def calculate_psnr(
@@ -383,65 +361,47 @@ def calculate_mAP(targs: npt.NDArray, preds: npt.NDArray) -> float:
     return 100 * (mAP_sum / class_count)
 
 
-def calculate_mae_torch(pred: torch.Tensor, gt: torch.Tensor) -> float:
+def calculate_mae(pred: npt.NDArray, gt: npt.NDArray, scale: float = 1.0) -> float:
     """
     Compute the MAE (Mean-Average Precision) score.
 
     Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
+    The scale argument is used in the event that the input tensors are not in the range
+    [0, 1] but instead have been scaled to be in the range [0, N] where N is the factor.
+    For example, if the tensors are images in the range [0, 255], then the scaling factor
+    should be set to 255. If the tensors are already in the range [0, 1], then the scale
+    can be omitted.
 
     Args:
-        pred (torch.Tensor): predicate (inferred) images in range [0, 255]
-        gt (torch.Tensor): ground-truth images in range [0, 255]
+        pred (torch.Tensor): predicate (inferred) tensor
+        gt (torch.Tensor): ground-truth tensor
+        scale (float): scaling factor that was used on the input tensors (if any)
+
+    Returns:
+        float: the MAE score.
+    """
+    return _mae(pred, gt, scale)
+
+
+def calculate_mae_torch(
+    pred: torch.Tensor, gt: torch.Tensor, scale: float = 1.0
+) -> float:
+    """
+    Compute the MAE (Mean-Average Precision) score.
+
+    Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
+    The scale argument is used in the event that the input tensors are not in the range
+    [0, 1] but instead have been scaled to be in the range [0, N] where N is the factor.
+    For example, if the tensors are images in the range [0, 255], then the scaling factor
+    should be set to 255. If the tensors are already in the range [0, 1], then the scale
+    can be omitted.
+
+    Args:
+        pred (torch.Tensor): predicate (inferred) tensor
+        gt (torch.Tensor): ground-truth tensor
+        scale (float): scaling factor that was used on the input tensors (if any)
 
     Returns:
         float: the MAE score.
     """
     return _mae_torch(pred, gt)
-
-
-def calculate_precision_torch(pred: torch.Tensor, gt: torch.Tensor) -> float:
-    """
-    Compute the Precision score.
-
-    Implementation follows:  https://en.wikipedia.org/wiki/Precision_and_recall
-
-    Args:
-        pred (torch.Tensor): predicate (inferred) images in range [0, 255]
-        gt (torch.Tensor): ground-truth images in range [0, 255]
-
-    Returns:
-        float: the precision score.
-    """
-    return _f1_score_torch(pred, gt)[0].cpu().data.numpy()
-
-
-def calculate_recall_torch(pred: torch.Tensor, gt: torch.Tensor) -> float:
-    """
-    Compute the Recall score.
-
-    Implementation follows:  https://en.wikipedia.org/wiki/Precision_and_recall
-
-    Args:
-        pred (torch.Tensor): predicate (inferred) images in range [0, 255]
-        gt (torch.Tensor): ground-truth images in range [0, 255]
-
-    Returns:
-        float: the recall score.
-    """
-    return _f1_score_torch(pred, gt)[1].cpu().data.numpy()
-
-
-def calculate_f1_torch(pred: torch.Tensor, gt: torch.Tensor) -> float:
-    """
-    Compute the F1 score.
-
-    Implementation follows: https://en.wikipedia.org/wiki/F-score
-
-    Args:
-        pred (torch.Tensor): predicate (inferred) images in range [0, 255]
-        gt (torch.Tensor): ground-truth images in range [0, 255]
-
-    Returns:
-        float: the F1 score.
-    """
-    return _f1_score_torch(pred, gt)[2].cpu().data.numpy()
