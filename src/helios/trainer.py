@@ -683,7 +683,7 @@ class Trainer:
         """
         chkpt_root = core.get_from_optional(self._chkpt_root)
 
-        epoch = state.global_epoch + 1
+        epoch = state.global_epoch
         ite = state.current_iteration
         filename = f"{self.model.save_name}_epoch_{epoch}_iter_{ite}"
         filename = self.model.append_metadata_to_chkpt_name(filename)
@@ -776,6 +776,8 @@ class Trainer:
         for epoch in itertools.count(start=state.global_epoch):
             if training_done:
                 break
+
+            state.global_epoch += 1
             root_logger.info(f"Starting epoch {epoch + 1}")
             sampler.set_epoch(epoch)
             epoch_start = time.time()
@@ -846,7 +848,6 @@ class Trainer:
                     break
 
             state.dataset_iter = 0
-            state.global_epoch += 1
 
             root_logger.info(
                 f"Epoch {epoch + 1} completed in {time.time() - epoch_start:.2f}s"
@@ -896,6 +897,8 @@ class Trainer:
             if training_done:
                 break
 
+            state.global_epoch += 1
+
             if state.global_epoch > total_steps:
                 training_done = True
                 break
@@ -933,7 +936,6 @@ class Trainer:
                         ite_pbar.refresh()
 
             state.dataset_iter = 0
-            state.global_epoch += 1
 
             if val_freq is not None and state.global_epoch % val_freq == 0:
                 self._validate(state.validation_cycles)
