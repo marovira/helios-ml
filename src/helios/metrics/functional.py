@@ -366,16 +366,16 @@ def calculate_mae(pred: npt.NDArray, gt: npt.NDArray, scale: float = 1.0) -> flo
     Compute the MAE (Mean-Average Precision) score.
 
     Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
-    The scale argument is used in the event that the input tensors are not in the range
+    The scale argument is used in the event that the input arrays are not in the range
     [0, 1] but instead have been scaled to be in the range [0, N] where N is the factor.
-    For example, if the tensors are images in the range [0, 255], then the scaling factor
-    should be set to 255. If the tensors are already in the range [0, 1], then the scale
+    For example, if the arrays are images in the range [0, 255], then the scaling factor
+    should be set to 255. If the arrays are already in the range [0, 1], then the scale
     can be omitted.
 
     Args:
-        pred (torch.Tensor): predicate (inferred) tensor
-        gt (torch.Tensor): ground-truth tensor
-        scale (float): scaling factor that was used on the input tensors (if any)
+        pred (npt.NDArray): predicate (inferred) array
+        gt (npt.NDArray): ground-truth array
+        scale (float): scaling factor that was used on the input arrays (if any)
 
     Returns:
         float: the MAE score.
