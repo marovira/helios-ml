@@ -792,10 +792,6 @@ class Trainer:
                 else:
                     current_iteration_changed = False
 
-                if state.current_iteration > total_steps:
-                    training_done = True
-                    break
-
                 self.model.on_training_batch_start(state)
                 self.model.train_step(batch, state)
                 iter_timer.record()
@@ -844,6 +840,10 @@ class Trainer:
                     break
 
                 if self.model.should_training_stop():
+                    training_done = True
+                    break
+
+                if state.current_iteration >= total_steps:
                     training_done = True
                     break
 
