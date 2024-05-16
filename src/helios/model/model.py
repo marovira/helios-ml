@@ -187,6 +187,17 @@ class Model(abc.ABC):
         You may use this function to log the network architecture, hyper-params, etc.
         """
 
+    def on_training_epoch_start(self, current_epoch: int) -> None:
+        """
+        Perform any necessary actions when a training epoch is started.
+
+        This function is called whenever a new training epoch begins, at the top of the
+        training loop. You may use this function to set any necessary training state.
+
+        Args:
+            current_epoch (int): the epoch number that has just started.
+        """
+
     def on_training_batch_start(self, state: TrainingState) -> None:
         """
         Perform any actions when a training batch is started.
@@ -242,6 +253,17 @@ class Model(abc.ABC):
                     self._running_losses[key] = loss.item()
                 else:
                     self._running_losses[key] += loss.item()
+
+    def on_training_epoch_end(self, current_epoch: int) -> None:
+        """
+        Perform any necessary actions when a training epoch ends.
+
+        This function is called at the bottom of the epoch loop. You may use this
+        function to perform any training operations you require.
+
+        Args:
+            current_epoch (int): the epoch number that has just ended.
+        """
 
     def on_training_end(self) -> None:
         """

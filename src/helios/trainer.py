@@ -781,6 +781,7 @@ class Trainer:
             root_logger.info(f"Starting epoch {epoch + 1}")
             sampler.set_epoch(epoch)
             epoch_start = time.time()
+            self.model.on_training_epoch_start(state.global_epoch)
 
             iter_timer.start()
             for batch in dataloader:
@@ -848,6 +849,7 @@ class Trainer:
                     break
 
             state.dataset_iter = 0
+            self.model.on_training_epoch_end(state.global_epoch)
 
             root_logger.info(
                 f"Epoch {epoch + 1} completed in {time.time() - epoch_start:.2f}s"
@@ -906,6 +908,7 @@ class Trainer:
             root_logger.info(f"Starting epoch {epoch + 1}")
             sampler.set_epoch(epoch)
             epoch_start = time.time()
+            self.model.on_training_epoch_start(state.global_epoch)
             iter_timer.start()
             with tqdm.tqdm(
                 total=len(dataloader),
@@ -952,6 +955,7 @@ class Trainer:
             ):
                 self._save_checkpoint(state)
 
+            self.model.on_training_epoch_end(state.global_epoch)
             root_logger.info(
                 f"Epoch {epoch + 1} completed in {time.time() - epoch_start:.2f}s"
             )

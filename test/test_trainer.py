@@ -46,9 +46,11 @@ class CheckFunModel(hlm.Model):
             "setup": False,
             "train": False,
             "on_training_start": False,
+            "on_training_epoch_start": False,
             "on_training_batch_start": False,
             "train_step": False,
             "on_training_batch_end": False,
+            "on_training_epoch_end": False,
             "on_training_end": False,
             "eval": False,
             "on_validation_start": False,
@@ -82,6 +84,9 @@ class CheckFunModel(hlm.Model):
     def on_training_start(self) -> None:
         self.called_train_funs["on_training_start"] = True
 
+    def on_training_epoch_start(self, current_epoch) -> None:
+        self.called_train_funs["on_training_epoch_start"] = True
+
     def on_training_batch_start(self, state) -> None:
         self.called_train_funs["on_training_batch_start"] = True
 
@@ -90,6 +95,9 @@ class CheckFunModel(hlm.Model):
 
     def on_training_batch_end(self, state, should_log: bool = False) -> None:
         self.called_train_funs["on_training_batch_end"] = True
+
+    def on_training_epoch_end(self, current_epoch) -> None:
+        self.called_train_funs["on_training_epoch_end"] = True
 
     def on_training_end(self) -> None:
         self.called_train_funs["on_training_end"] = True
