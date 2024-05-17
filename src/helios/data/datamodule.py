@@ -92,6 +92,7 @@ def create_dataloader(
     debug_mode: bool = False,
     is_distributed: bool = False,
     sampler: ResumableSamplerType | None = None,
+    collate_fn: typing.Callable | None = None,
 ) -> tuple[tud.DataLoader, ResumableSamplerType]:
     """
     Create the dataloader for the given dataset.
@@ -116,6 +117,7 @@ def create_dataloader(
         debug_mode (bool): if true, set number of workers to 0.
         is_distributed (bool): if true, create the distributed sampler.
         sampler (ResumableSamplerType | None): (optional) sampler to use.
+        collate_fn (Callable | None): (optional) function to merge batches.
 
     Returns:
         tuple[Dataloader, Sampler]: the dataloader and sampler.
@@ -155,6 +157,7 @@ def create_dataloader(
             drop_last=drop_last,
             sampler=sampler,
             worker_init_fn=_seed_worker,
+            collate_fn=collate_fn,
         ),
         sampler,
     )
@@ -175,6 +178,7 @@ class DataLoaderParams:
         debug_mode (bool): if true, set number of workers to 0.
         is_distributed (bool): if true, create the distributed sampler.
         sampler (ResumableSamplerType | None): (optional) sampler to use.
+        collate_fn (Callable | None): (optional) function to merge batches.
     """
 
     random_seed: int = rng.get_default_seed()
@@ -186,6 +190,7 @@ class DataLoaderParams:
     debug_mode: bool = False
     is_distributed: bool | None = None
     sampler: ResumableSamplerType | None = None
+    collate_fn: typing.Callable | None = None
 
     def to_dict(self) -> dict[str, typing.Any]:
         """Convert the params object to a dictionary using shallow copies."""
