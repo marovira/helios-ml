@@ -211,7 +211,6 @@ class Model(abc.ABC):
         """
         self._loss_items.clear()
 
-    @abc.abstractmethod
     def train_step(self, batch: typing.Any, state: TrainingState) -> None:
         """
         Perform a single training step.
