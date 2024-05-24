@@ -456,6 +456,8 @@ class Trainer:
         sampler: ResumableSamplerType
         dataloader, sampler = core.get_from_optional(self.datamodule.test_dataloader())
 
+        self.model.on_testing_start()
+
         enable_progress_bar = self._enable_progress_bar
         pbar_disabled = (
             self._is_distributed and self.rank != 0
@@ -470,7 +472,6 @@ class Trainer:
 
         with core.cuda.DisableCuDNNBenchmarkContext():
             self.model.eval()
-            self.model.on_testing_start()
             with torch.no_grad():
                 for idx, batch in enumerate(dataloader):
                     self.model.on_testing_batch_start(idx)
