@@ -41,10 +41,13 @@ class CIFARDataModule(hld.DataModule):
 
     def setup(self) -> None:
         """Create the datasets."""
-        # Use the ToTensor transform from Helios to automate the conversion from images to
-        # tensors.
+        # Use the ToImageTensor transform from Helios to automate the conversion from
+        # images to tensors.
         transforms = T.Compose(
-            [hld.transforms.ToTensor(), T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+            [
+                hld.transforms.ToImageTensor(),
+                T.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+            ]
         )
         params = hld.DataLoaderParams()
         params.batch_size = 4

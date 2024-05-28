@@ -68,13 +68,13 @@ class SampleDataModule(data.DataModule):
 
 class TestTransforms:
     def test_to_tensor(self) -> None:
-        assert "ToTensor" in hldt.TRANSFORM_REGISTRY
+        assert "ToImageTensor" in hldt.TRANSFORM_REGISTRY
 
         rng.seed_rngs()
         gen = rng.get_default_numpy_rng().generator
         img = gen.random(size=(32, 32, 3))
 
-        to_tensor = hldt.create_transform("ToTensor")
+        to_tensor = hldt.create_transform("ToImageTensor")
         as_tens = to_tensor(img)
 
         assert isinstance(as_tens, torch.Tensor)

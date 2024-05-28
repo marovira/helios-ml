@@ -31,9 +31,12 @@ def create_transform(
 
 
 @TRANSFORM_REGISTRY.register
-class ToTensor(nn.Module):
+class ToImageTensor(nn.Module):
     """
     Convert an image (or list of images) to tensor(s).
+
+    An image is meant to be a tensor, ndarray, or PIL image. The shape expected to be
+    either [H, W, C] or [C, H, W].
 
     Args:
         dtype (torch.dtype): the output type of the tensors.
