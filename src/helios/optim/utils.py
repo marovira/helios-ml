@@ -7,13 +7,26 @@ from helios import core
 
 def _register_default_optimizers(registry: core.Registry) -> None:
     """
-    Register the default optimizers.
+    Register the Torch default optimizers.
+
+    List was obtained from
+    https://pytorch.org/docs/stable/optim.html#algorithms
 
     Args:
         registry (Registry): the optimizer registry.
     """
+    registry.register(optim.Adadelta)
+    registry.register(optim.Adagrad)
     registry.register(optim.Adam)
     registry.register(optim.AdamW)
+    registry.register(optim.SparseAdam)
+    registry.register(optim.Adamax)
+    registry.register(optim.ASGD)
+    registry.register(optim.LBFGS)
+    registry.register(optim.NAdam)
+    registry.register(optim.RAdam)
+    registry.register(optim.RMSprop)
+    registry.register(optim.Rprop)
     registry.register(optim.SGD)
 
 

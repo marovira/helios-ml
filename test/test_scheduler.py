@@ -6,10 +6,20 @@ class TestSchedulers:
         check_registry(
             scheduler.SCHEDULER_REGISTRY,
             [
+                "LambdaLR",
+                "MultiplicativeLR",
+                "StepLR",
                 "MultiStepLR",
+                "ConstantLR",
+                "LinearLR",
+                "ExponentialLR",
+                "PolynomialLR",
                 "CosineAnnealingLR",
-                "CosineAnnealingRestartLR",
-                "MultiStepRestartLR",
+                "SequentialLR",
+                "ReduceLROnPlateau",
+                "CyclicLR",
+                "OneCycleLR",
+                "CosineAnnealingWarmRestarts",
             ],
         )
 

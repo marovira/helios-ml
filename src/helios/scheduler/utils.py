@@ -8,13 +8,28 @@ from helios import core
 
 def _register_default_schedulers(registry: core.Registry):
     """
-    Register the default schedulers to the registry.
+    Register the default Torch schedulers to the registry.
+
+    List was obtained from
+    https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
 
     Args:
         registry (Registry): the scheduler registry.
     """
+    registry.register(lr_scheduler.LambdaLR)
+    registry.register(lr_scheduler.MultiplicativeLR)
+    registry.register(lr_scheduler.StepLR)
     registry.register(lr_scheduler.MultiStepLR)
+    registry.register(lr_scheduler.ConstantLR)
+    registry.register(lr_scheduler.LinearLR)
+    registry.register(lr_scheduler.ExponentialLR)
+    registry.register(lr_scheduler.PolynomialLR)
     registry.register(lr_scheduler.CosineAnnealingLR)
+    registry.register(lr_scheduler.SequentialLR)
+    registry.register(lr_scheduler.ReduceLROnPlateau)
+    registry.register(lr_scheduler.CyclicLR)
+    registry.register(lr_scheduler.OneCycleLR)
+    registry.register(lr_scheduler.CosineAnnealingWarmRestarts)
 
 
 SCHEDULER_REGISTRY = core.Registry("scheduler")
