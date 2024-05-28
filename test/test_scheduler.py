@@ -6,6 +6,7 @@ class TestSchedulers:
         check_registry(
             scheduler.SCHEDULER_REGISTRY,
             [
+                # Pytorch schedulers.
                 "LambdaLR",
                 "MultiplicativeLR",
                 "StepLR",
@@ -20,6 +21,9 @@ class TestSchedulers:
                 "CyclicLR",
                 "OneCycleLR",
                 "CosineAnnealingWarmRestarts",
+                # Custom schedulers.
+                "MultiStepRestartLR",
+                "CosineAnnealingRestartLR",
             ],
         )
 
