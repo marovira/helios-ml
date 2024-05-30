@@ -812,6 +812,9 @@ class Trainer:
                 if state.global_iteration % accumulation_steps == 0 and not pbar.update():
                     pbar.refresh()
                 state.dataset_iter += 1
+                if self.model.should_training_stop():
+                    training_done = True
+                    break
 
                 if (
                     val_freq is not None
@@ -938,6 +941,10 @@ class Trainer:
                     state.dataset_iter += 1
                     if not ite_pbar.update():
                         ite_pbar.refresh()
+
+                    if self.model.should_training_stop():
+                        training_done = True
+                        break
 
             state.dataset_iter = 0
 
