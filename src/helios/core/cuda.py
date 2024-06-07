@@ -3,7 +3,13 @@ from torch import cuda
 
 
 def requires_cuda_support() -> None:
-    """Ensure that CUDA support is found. If it isn't, an exception is raised."""
+    """
+    Ensure that CUDA support is found, or raise an exception otherwise.
+
+    Raises:
+        RuntimeError: if no CUDA support is found.
+
+    """
     if not cuda.is_available():
         raise RuntimeError("error: expected CUDA support but none was found")
 
@@ -16,16 +22,17 @@ class DisableCuDNNBenchmarkContext:
     (such as validation or testing) but then restoring it to its previous state upon
     leaving the scope. Note that if CUDA is not available, the scope does nothing.
 
-    Ex:
-        ```py
-        torch.backends.cudnn.benchmark = True # Enable CuDNN
-        ...
-        with DisableCuDNNBenchmarkContext():
-            # Benchmark is disabled.
-            print(torch.backends.cudnn.benchmark) # <- Prints False
-            ...
+    Example:
+        .. code-block:: python
 
-        print(torch.backends.cudnn.benchmark) # <- Prints true
+            torch.backends.cudnn.benchmark = True # Enable CuDNN
+            ...
+            with DisableCuDNNBenchmarkContext():
+                # Benchmark is disabled.
+                print(torch.backends.cudnn.benchmark) # <- Prints False
+                ...
+
+            print(torch.backends.cudnn.benchmark) # <- Prints true
     """
 
     def __init__(self) -> None:

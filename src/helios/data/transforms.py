@@ -8,6 +8,22 @@ from torch import nn
 from helios import core
 
 TRANSFORM_REGISTRY = core.Registry("transform")
+"""
+Global instance of the registry for transforms.
+
+Example:
+    .. code-block:: python
+
+        import helios.data.transforms as hldt
+
+        # This automatically registers your dataset.
+        @hldt.TRANSFORM_REGISTRY.register()
+        class MyTransform:
+            ...
+
+        # Alternatively you can manually register a dataset like this:
+        hldt.TRANSFORM_REGISTRY.register(MyTransform)
+"""
 
 
 def create_transform(
@@ -20,12 +36,12 @@ def create_transform(
     have been registered before using this function.
 
     Args:
-        type_name (str): the type of the transform to create.
+        type_name: the type of the transform to create.
         args: positional arguments to pass into the transform.
         kwargs: keyword arguments to pass into the transform.
 
     Returns:
-        nn.Module: the constructed transform.
+        The constructed transform.
     """
     return TRANSFORM_REGISTRY.get(type_name)(*args, **kwargs)
 
@@ -39,8 +55,8 @@ class ToImageTensor(nn.Module):
     either [H, W, C] or [C, H, W].
 
     Args:
-        dtype (torch.dtype): the output type of the tensors.
-        scale (bool): if True, scale the values to the valid range.
+        dtype: the output type of the tensors.
+        scale: if true, scale the values to the valid range. Defaults to true.
     """
 
     def __init__(self, dtype: torch.dtype = torch.float32, scale: bool = True):
@@ -61,12 +77,10 @@ class ToImageTensor(nn.Module):
         of images, the output will be a list or tuple of tensors.
 
         Args:
-            img (np.ndarray | list[np.ndarray] | tuple[np.ndarray, ...]): image(s) to
-            convert.
+            img: image(s) to convert.
 
         Returns:
-            torch.Tensor | list[torch.Tensor] | tuple[torch.Tensor, ...]: the converted
-            images.
+            The converted images.
         """
         out_tens: list[torch.Tensor] = []
         for elem in core.convert_to_list(img):

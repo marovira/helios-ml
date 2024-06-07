@@ -23,22 +23,38 @@ from .samplers import (
 )
 
 DATASET_REGISTRY = core.Registry("dataset")
+"""
+Global instance of the registry for datasets.
+
+Example:
+    .. code-block:: python
+
+        import helios.data as hld
+
+        # This automatically registers your dataset.
+        @hld.DATASET_REGISTRY.register
+        class MyDataset:
+            ...
+
+        # Alternatively you can manually register a dataset like this:
+        hld.DATASET_REGISTRY.register(MyDataset)
+"""
 
 
 def create_dataset(type_name: str, *args: typing.Any, **kwargs: typing.Any):
     """
     Create a dataset of the given type.
 
-    This uses DATASET_REGISTRY to look-up transform types, so ensure your datasets
+    This uses ``DATASET_REGISTRY`` to look-up dataset types, so ensure your datasets
     have been registered before using this function.
 
     Args:
-        type_name (str): the type of the dataset to create.
+        type_name: the type of the dataset to create.
         args: positional arguments to pass into the dataset.
         kwargs: keyword arguments to pass into the dataset.
 
     Returns:
-        nn.Module: the constructed transform.
+        The constructed dataset.
     """
     return DATASET_REGISTRY.get(type_name)(*args, **kwargs)
 
@@ -58,10 +74,13 @@ class DatasetSplit(enum.Enum):
         Must be one of "train", "test", or "valid"
 
         Args:
-            label (str): the label to convert.
+            label: the label to convert.
 
         Returns:
-            DatasetSplit: the corresponding value.
+            The corresponding enum value.
+
+        Raises:
+            ValueError: if the given value is not one of "train", "test", or "valid".
         """
         if label == "train":
             return DatasetSplit.TRAIN
@@ -99,28 +118,34 @@ def create_dataloader(
 
     If no sampler is provided, the choice of sampler will be determined based on the
     values of is_distributed and shuffle. Specifically, the following logic is used:
-        * If is_distributed, then sampler is ResumableDistributedSampler.
-        * Otherwise, if shuffle then sampler is ResumableRandomSampler, else
-        ResumableSequentialSampler.
+
+    * If is_distributed, then sampler is ``ResumableDistributedSampler``.
+    * Otherwise, if shuffle then sampler is ``ResumableRandomSampler``, else
+      ``ResumableSequentialSampler``.
 
     You may override this behaviour by providing your own sampler instance. Note that the
-    sampler MUST be derived from one of ResumableSampler or ResumableDistributedSampler.
+    sampler **must** be derived from one of ``ResumableSampler`` or
+    ``ResumableDistributedSampler``.
 
     Args:
-        dataset (Dataset): the dataset.
-        random_seed (int): value to use as seed for the worker processes.
-        batch_size (int): number of samplers per batch.
-        shuffle (bool): if true, samples are randomly shuffled.
-        num_workers (int): number of worker processes for loading data.
-        pin_memory (bool): if true, use page-locked device memory.
-        drop_last (bool): if true, remove the final batch.
-        debug_mode (bool): if true, set number of workers to 0.
-        is_distributed (bool): if true, create the distributed sampler.
-        sampler (ResumableSamplerType | None): (optional) sampler to use.
-        collate_fn (Callable | None): (optional) function to merge batches.
+        dataset: the dataset to use.
+        random_seed: value to use as seed for the worker processes. Defaults to 0.
+        batch_size: number of samplers per batch. Defaults to 1.
+        shuffle: if true, samples are randomly shuffled. Defaults to false.
+        num_workers: number of worker processes for loading data. Defaults to 0.
+        pin_memory: if true, use page-locked device memory. Defaults to true.
+        drop_last: if true, remove the final batch. Defaults to false.
+        debug_mode: if true, then ``num_workers`` will be set to 0. Defaults to false.
+        is_distributed: if true, create the distributed sampler. Defaults to false.
+        sampler: (optional) sampler to use.
+        collate_fn: (optional) function to merge batches.
 
     Returns:
-        tuple[Dataloader, Sampler]: the dataloader and sampler.
+        The dataloader and sampler.
+
+    Raises:
+        TypeError: if ``sampler`` is not ``None`` and not derived from one of
+            ``ResumableDistributedSampler`` or ``ResumableSampler``.
     """
     assert len(typing.cast(typing.Sized, dataset))
 
@@ -169,16 +194,16 @@ class DataLoaderParams:
     Params used to create the dataloader object.
 
     Args:
-        random_seed (int): value to use as seed for the worker processes.
-        batch_size (int): number of samplers per batch.
-        shuffle (bool): if true, samples are randomly shuffled.
-        num_workers (int): number of worker processes for loading data.
-        pin_memory (bool): if true, use page-locked device memory.
-        drop_last (bool): if true, remove the final batch.
-        debug_mode (bool): if true, set number of workers to 0.
-        is_distributed (bool): if true, create the distributed sampler.
-        sampler (ResumableSamplerType | None): (optional) sampler to use.
-        collate_fn (Callable | None): (optional) function to merge batches.
+        random_seed: value to use as seed for the worker processes.
+        batch_size: number of samplers per batch.
+        shuffle: if true, samples are randomly shuffled.
+        num_workers: number of worker processes for loading data.
+        pin_memory: if true, use page-locked device memory.
+        drop_last: if true, remove the final batch.
+        debug_mode: if true, set number of workers to 0.
+        is_distributed: if true, create the distributed sampler.
+        sampler: (optional) sampler to use.
+        collate_fn: (optional) function to merge batches.
     """
 
     random_seed: int = rng.get_default_seed()
@@ -216,8 +241,8 @@ class Dataset:
     The dataset and corresponding data loader params.
 
     Args:
-        dataset (torch.utils.data.Dataset): the dataset.
-        params (DataLoaderParams): the data loader params.
+        dataset: the dataset.
+        params: the data loader params.
     """
 
     dataset: tud.Dataset
@@ -236,39 +261,42 @@ class DataModule(abc.ABC):
 
     The use of this class is to standardize the way datasets and their respective
     dataloaders are created, thereby allowing consistent settings across models.
-    Ex:
-        ```py
-        from torchvision.datasets import CIFAR10
-        from helios import data
 
-        class MyDataModule(data.DataModule):
-            def prepare_data(self) -> None:
-                # Use this function to prepare the data for your datasets. This will be
-                # called before the distributed processes are created (if using) so you
-                # should not set any state here.
-                CIFAR10(download=True) # download the dataset only.
+    Example:
+        .. code-block:: python
 
-            def setup(self) -> None:
-                # Create the training dataset using a DataLoaderParams instance. Note that
-                # you MUST assign it to self._train_dataset.
-                self._train_dataset = self._create_dataset(CIFAR10(train=True),
-                                                           DataLoaderParams(...))
+            from torchvision.datasets import CIFAR10
+            from helios import data
 
-                # It is also possible to create a dataset using a table of key-value pairs
-                # that was loaded from a config file or manually created. Let's use one to
-                # create the validation split:
-                settings = {"batch_size": 1, ...}
+            class MyDataModule(data.DataModule):
+                def prepare_data(self) -> None:
+                    # Use this function to prepare the data for your datasets. This will
+                    # be called before the distributed processes are created (if using)
+                    # so you should not set any state here.
+                    CIFAR10(download=True) # download the dataset only.
 
-                # We can now use it to assign to self._valid_dataset like this:
-                self._valid_dataset = self._create_dataset(CIFAR10(train=False), settings)
+                def setup(self) -> None:
+                    # Create the training dataset using a DataLoaderParams instance. Note
+                    # that you MUST assign it to self._train_dataset.
+                    self._train_dataset = self._create_dataset(CIFAR10(train=True),
+                                                               DataLoaderParams(...))
 
-                # Finally, if you need a testing split, you can create it like this:
-                self._test_dataset = self._create_dataset(CIFAR10(train=False), settings)
+                    # It is also possible to create a dataset using a table of key-value
+                    # pairs that was loaded from a config file or manually created. Let's
+                    # use one to create the validation split:
+                    settings = {"batch_size": 1, ...}
 
-            def teardown(self) -> None:
-                # Use this function to clean up any state. It will be called after
-                # training is done.
-        ```
+                    # We can now use it to assign to self._valid_dataset like this:
+                    self._valid_dataset = self._create_dataset(
+                            CIFAR10(train=False), settings)
+
+                    # Finally, if you need a testing split, you can create it like this:
+                    self._test_dataset = self._create_dataset(
+                            CIFAR10(train=False), settings)
+
+                def teardown(self) -> None:
+                    # Use this function to clean up any state. It will be called after
+                    # training is done.
     """
 
     def __init__(self) -> None:
@@ -322,10 +350,10 @@ class DataModule(abc.ABC):
         """
         Prepare data for training.
 
-        This can include downloading datasets, or streaming them from external services.
-        This function will be called on the primary process when using distributed
-        training (will be called prior to initialization of the processes) so don't store
-        any state here.
+        This can include downloading datasets, preparing caches, or streaming them from
+        external services. This function will be called on the primary process when using
+        distributed training (will be called prior to initialization of the processes) so
+        don't store any state here.
         """
 
     @abc.abstractmethod
@@ -365,11 +393,11 @@ class DataModule(abc.ABC):
         used to populate the corresponding DataLoaderParams object.
 
         Args:
-            dataset (torch.utils.data.Dataset): the dataset.
-            params (DataLoaderParams | dict[str, Any]): either a params object or a dict.
+            dataset: the dataset.
+            params: either a params object or a dict.
 
         Returns:
-            Dataset: the new dataset object.
+            The new dataset object.
         """
         return Dataset(
             dataset,

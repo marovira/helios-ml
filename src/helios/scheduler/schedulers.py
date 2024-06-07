@@ -12,17 +12,17 @@ def _get_position_from_periods(iteration: int, cummulative_period: list[int]) ->
     Get position from a period list.
 
     Specifically, it returns the index of the right-closest number in the period list.
-    For example, suppose cummulative_period is [100, 200, 300, 400]. Then:
-        * If iteration == 50, return 0
-        * If iteration == 210, return 2
-        * If iteration == 300, return 2.
+    For example, suppose ``cummulative_period`` is ``[100, 200, 300, 400]``. Then:
+    * If ``iteration == 50``, return 0
+    * If ``iteration == 210``, return 2
+    * If ``iteration == 300``, return 2.
 
     Args:
-        iteration(int): current iteration.
-        cummulative_period (List[int]): cummulative period list.
+        iteration: current iteration.
+        cummulative_period: cummulative period list.
 
     Returns:
-        int: The position of the right-closest number in the period list
+        The position of the right-closest number in the period list
     """
     for i, period in enumerate(cummulative_period):
         if iteration <= period:
@@ -36,20 +36,24 @@ class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
     """
     A cosine annealing with restarts LR scheduler.
 
-    For example, given
-    periods = [10, 10, 10, 10]
-    restart_weights = [1, 0.5, 0.5, 0.5]
-    eta_min = 1e-7
+    Example:
+        Given
 
-    Then the scheduler will have 4 cycles of 10 iterations each. At the 10th, 20th, and
-    30th, the scheduler will restart with the weights in restart_weights.
+        .. code-block:: text
 
-    Inputs:
-        optimizer (optim.Optimizer): the optimizer.
-        periods (list[int]): period for each cosine annealing cycle.
-        restart_weights (list[int]): restarts weights at each restart iteration.
-        eta_min (float): The minimum lr.
-        last_epoch (int): Used in _LRScheduler.
+            periods = [10, 10, 10, 10]
+            restart_weights = [1, 0.5, 0.5, 0.5]
+            eta_min = 1e-7
+
+        Then the scheduler will have 4 cycles of 10 iterations each. At the 10th, 20th,
+        and 30th, the scheduler will restart with the weights in ``restart_weights``.
+
+    Args:
+        optimizer: the optimizer.
+        periods: period for each cosine annealing cycle.
+        restart_weights: (optional) restarts weights at each restart iteration.
+        eta_min: The minimum lr. Defaults to 0
+        last_epoch: Used in _LRScheduler. Defaults to -1.
     """
 
     def __init__(
@@ -103,12 +107,12 @@ class MultiStepRestartLR(lr_scheduler.LRScheduler):
     Multi-step with restarts LR scheduler.
 
     Args:
-        optimizer (optim.Optimizer): Torch optimizer.
-        milestones (List[int]): Iterations that will decrease learning rate.
-        gamma (float): Decrease ratio.
-        restarts (List[int]): Restart iterations.
-        restart_weights (List[int]): Restart weights at each restart iteration.
-        last_epoch (int): Used in _LRScheduler.
+        optimizer: torch optimizer.
+        milestones: iterations that will decrease learning rate.
+        gamma: decrease ratio. Defaults to 0.1.
+        restarts: (optional) restart iterations.
+        restart_weights: (optional) restart weights at each restart iteration.
+        last_epoch: used in _LRScheduler. Defaults to -1.
     """
 
     def __init__(

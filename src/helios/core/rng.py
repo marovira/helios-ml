@@ -24,7 +24,7 @@ class DefaultNumpyRNG:
     similar to the modules for PyTorch is provided for easy serialization and restoring.
 
     Args:
-        seed (int | list[int] | tuple[int] | None): the initial seed to use.
+        seed: (optional) the initial seed to use.
     """
 
     def __init__(self, seed: int | list[int] | tuple[int] | None = None):
@@ -41,7 +41,7 @@ class DefaultNumpyRNG:
         Create a dictionary containing the RNG state.
 
         Returns:
-            Mapping[str, Any]: the state of the RNG.
+            The state of the RNG.
         """
         return self._generator.bit_generator.state
 
@@ -50,7 +50,7 @@ class DefaultNumpyRNG:
         Restore the RNG from the given state dictionary.
 
         Args:
-            state_dict (Mapping[str, Any]): the state dictionary.
+            state_dict: the state dictionary.
         """
         self._generator.bit_generator.state = state_dict
 
@@ -73,7 +73,7 @@ def create_default_numpy_rng(seed: int | list[int] | tuple[int] | None = None):
     Initialize the default RNG with the given seed.
 
     Args:
-        seed (int | list[int] | tuple[int] | None): the seed to use (if any).
+        seed: (optional) the seed to use.
     """
     global _DEFAULT_RNG
     _DEFAULT_RNG = DefaultNumpyRNG(seed=seed)
@@ -84,7 +84,10 @@ def get_default_numpy_rng() -> DefaultNumpyRNG:
     Return the default RNG.
 
     Return:
-        np.random.Generator: the random generator.
+        The random generator.
+
+    Raises:
+        RuntimeError: if the default Numpy RNG hasn't been created.
     """
     return _get_safe_default_rng()
 
@@ -96,13 +99,13 @@ def seed_rngs(seed: int | None = None, skip_torch: bool = False) -> None:
     If no seed is given, then the default seed from Helios will be used. The RNGs that
     will be seeded are: PyTorch (+ CUDA if available), stdlib random, and the default
     Numpy generator.
-    The skip_torch flag is intended to be used when seeding worker processes for
+    The ``skip_torch`` flag is intended to be used when seeding worker processes for
     dataloaders. In those cases, the RNGs for PyTorch have already been seeded, so we
     shouldn't be re-seeding them.
 
     Args:
-        seed (int | None): optional value to seed the random generators with.
-        skip_torch (bool): if True, torch RNGs won't be seeded.
+        seed: optional value to seed the random generators with.
+        skip_torch: if True, torch RNGs won't be seeded.
     """
     seed = get_default_seed() if seed is None else seed
 
@@ -121,7 +124,7 @@ def get_rng_state_dict() -> dict[str, typing.Any]:
     Default RNGs are: PyTorch (+ CUDA if available) and Random.
 
     Returns:
-        RandomState: the state of all RNGs.
+        The state of all RNGs.
     """
     state = {
         "torch": torch.get_rng_state(),
@@ -139,10 +142,10 @@ def load_rng_state_dict(state_dict: dict[str, typing.Any]) -> None:
     """
     Restore the default RNGs from the given state dict.
 
-    See get_rng_state for the list of default RNGs.
+    See :py:func:`.get_rng_state_dict` for the list of default RNGs.
 
     Args:
-        state_dict (dict[str, typing.Any]): the state of the RNGs
+        state_dict: the state of the RNGs
     """
     torch.set_rng_state(state_dict["torch"])
     random.setstate(state_dict["rand"])

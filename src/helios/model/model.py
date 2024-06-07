@@ -18,7 +18,61 @@ if typing.TYPE_CHECKING:
 
 
 class Model(abc.ABC):
-    """Base class for training models."""
+    """
+    Base class that groups together the functionality needed to train networks.
+
+    The use of this class is to standardize the way networks are created and trained. This
+    allows the training code to be shared across multiple networks, reducing code
+    duplication.
+    The functions provided by the Model class can be overridden to satisfy the individual
+    needs of each of the network(s) that need to be trained.
+
+    Example:
+        Suppose the body of the training loop looks something like this:
+
+        .. code-block:: python
+
+            dataloader = ... # The dataloader for our dataset.
+            net = ... # The network we wish to train.
+            optimzer = ... # The optimizer
+            criterion = ... # The loss function
+            for batch in dataloder:
+                inputs, labels = batch
+
+                optimizer.zero_grad()
+                outs = net(inputs)
+                loss = criterion(outs, labels)
+                loss.backward()
+                optimizer.step()
+
+        Then the code would be placed into a Model as follows:
+
+        .. code-block:: python
+
+            import helios.model as hlm
+            import helios.trainer as hlt
+            class MyModel(hlm.Model):
+                def setup(self, fast_init: bool = False) -> None:
+                    self._net = ...
+                    self._optimizer = ...
+                    self._criterion = ...
+
+                def train_step(self, batch, state: hlt.TrainingState) -> None:
+                    inputs, labels = batch
+
+                    optimizer.zero_grad()
+                    outs = net(inputs)
+                    loss = criterion(outs, labels)
+                    loss.backward()
+                    optimizer.step()
+
+    The example shown here is the most basic version of the training code and can be
+    expanded in various ways by overriding the different available functions.
+
+    Args:
+        save_name: the name that will be used to identify the model when checkpoints are
+            saved.
+    """
 
     def __init__(self, save_name: str):
         """Create the model."""
@@ -94,12 +148,11 @@ class Model(abc.ABC):
         that you require for training. This will be called before training starts and
         after the distributed processes have been launched (if applicable).
 
-        The fast_init flag is used to indicate that the model is going to be used to strip
-        training data from any saved checkpoints or for testing. As such, you should
-        ONLY load the network(s) and nothing else.
+        The ``fast_init`` flag is used to indicate that the model should **not** load any
+        training state. This can be used for testing or for other purposes.
 
         Args:
-            fast_init (bool): if True, only networks are loaded.
+            fast_init: if True, only networks are loaded.
         """
 
     def load_for_testing(self) -> None:
@@ -121,13 +174,13 @@ class Model(abc.ABC):
         Use this function to restore any training state from a checkpoint. Note that any
         weights will have been automatically mapped to the correct device.
 
-        The fast_init flag is used to indicate that the model is going to be used to strip
-        training data from any saved checkpoints or for testing. As such, you should
-        ONLY load the network(s) and nothing else.
+        The ``fast_init`` flag is used to indicate that the model should **not** load any
+        training state. This can be used for testing or for other purposes. As such, you
+        should only load the state of your network(s) and nothing else.
 
         Args:
-            state_dict (dict[str, Any]): the state dictionary to load from.
-            fast_init (bool): if True, only networks need to be loaded.
+            state_dict: the state dictionary to load from.
+            fast_init: if True, only networks need to be loaded.
         """
 
     def state_dict(self) -> dict[str, typing.Any]:
@@ -137,7 +190,7 @@ class Model(abc.ABC):
         Use this function to save any state that you require for checkpoints.
 
         Returns:
-            dict[str, Any]: the state dictionary of the model.
+            The state dictionary of the model.
         """
         return {}
 
@@ -156,7 +209,7 @@ class Model(abc.ABC):
             kwargs: keyword arguments.
 
         Returns:
-            dict[str, Any]: the state dictionary without any training data.
+            The state dictionary without any training data.
         """
         return {}
 
@@ -170,10 +223,10 @@ class Model(abc.ABC):
         will also be added automatically.
 
         Args:
-            chkpt_name (str): the name of the checkpoint filename (without extension).
+            chkpt_name: the name of the checkpoint filename (without extension).
 
         Returns:
-            str: the name with any additional metadata.
+            The name with any additional metadata.
         """
         return chkpt_name
 
@@ -195,19 +248,19 @@ class Model(abc.ABC):
         training loop. You may use this function to set any necessary training state.
 
         Args:
-            current_epoch (int): the epoch number that has just started.
+            current_epoch: the epoch number that has just started.
         """
 
     def on_training_batch_start(self, state: TrainingState) -> None:
         """
         Perform any actions when a training batch is started.
 
-        This function is called before train_step is called. By default, it will clear out
-        the loss table, but you may also use it to do any additional tasks prior to the
-        training step itself.
+        This function is called before :py:meth:`train_step` is called. By default, it
+        will clear out the loss table, but you may also use it to do any additional tasks
+        prior to the training step itself.
 
         Args:
-            state (TrainingState): the current training state.
+            state: the current training state.
         """
         self._loss_items.clear()
 
@@ -219,12 +272,12 @@ class Model(abc.ABC):
         this function, you should perform the forward and backward passes for your
         network(s). If you use schedulers, they should be updated here as well. Note that
         you do not have to clear the losses or gather them. This will be handled
-        automatically for you. Also keep in mind that the contents of the batch have NOT
-        been moved to the current device. It is your responsibility to do so.
+        automatically for you. Also keep in mind that the contents of the batch have
+        **not** been moved to the current device. It is your responsibility to do so.
 
         Args:
-            batch (Any): the batch data returned from the dataset.
-            state (TrainingState): the current training state.
+            batch: the batch data returned from the dataset.
+            state: the current training state.
         """
 
     def on_training_batch_end(
@@ -239,8 +292,8 @@ class Model(abc.ABC):
         log your losses or perform any additional tasks after the training step.
 
         Args:
-            state (TrainingState): the current training state.
-            should_log (bool): if true, then logging should be performed.
+            state: the current training state.
+            should_log: if true, then logging should be performed. Defaults to false.
         """
         if self._is_distributed:
             for _, loss in self._loss_items.items():
@@ -261,7 +314,7 @@ class Model(abc.ABC):
         function to perform any training operations you require.
 
         Args:
-            current_epoch (int): the epoch number that has just ended.
+            current_epoch: the epoch number that has just ended.
         """
 
     def on_training_end(self) -> None:
@@ -283,7 +336,7 @@ class Model(abc.ABC):
         for any other tasks that should happen when validation begins.
 
         Args:
-            validation_cycle (int): the validation cycle number.
+            validation_cycle: the validation cycle number.
         """
         self._val_scores.clear()
 
@@ -291,11 +344,11 @@ class Model(abc.ABC):
         """
         Perform any actions when a validation batch is started.
 
-        This function is called before valid_step is called. No steps are performed by
-        default.
+        This function is called before :py:meth:`valid_step` is called. No steps are
+        performed by default.
 
         Args:
-            step (int): the current validation batch.
+            step: the current validation batch.
         """
 
     def valid_step(self, batch: typing.Any, step: int) -> None:
@@ -307,19 +360,19 @@ class Model(abc.ABC):
         metric(s) for your network(s).
 
         Args:
-            batch (Any): the batch data returned from the dataset.
-            step (int): the current validation batch.
+            batch: the batch data returned from the dataset.
+            step: the current validation batch.
         """
 
     def on_validation_batch_end(self, step: int) -> None:
         """
         Perform any actions when a validation batch ends.
 
-        This function is called after valid_step is called. No steps are performed by
-        default.
+        This function is called after :py:meth:`valid_step` is called. No steps are
+        performed by default.
 
         Args:
-            step (int): the current validation batch.
+            step: the current validation batch.
         """
 
     def on_validation_end(self, validation_cycle: int) -> None:
@@ -330,7 +383,7 @@ class Model(abc.ABC):
         this function to compute any final validation metrics as well as log them.
 
         Args:
-            validation_cycle (int): the validation cycle number.
+            validation_cycle: the validation cycle number.
         """
         self._running_losses.clear()
 
@@ -343,7 +396,7 @@ class Model(abc.ABC):
         validation cycle finishes.
 
         Returns:
-            bool: false if no improvements were seen in the last validation cycle.
+            False if no improvements were seen in the last validation cycle.
         """
         return True
 
@@ -351,12 +404,24 @@ class Model(abc.ABC):
         """
         Determine whether training should stop or continue.
 
-        This is used in the event that a validation metric crosses a certain threshold
-        after which training should stop. This is called after the validation cycle
-        finishes.
+        This is used in the event that training should stop when:
+
+        * A validation metric crosses a certain threshold,
+        * A loss value becomes invalid,
+        * Any other circumstance under which training should stop immediately.
+
+        This function is called by the :py:class:`Trainer` at the following times:
+
+        * After a full training step has finished. That is, after
+          :py:meth:`on_training_batch_start`, :py:meth:`train_step`, and
+          :py:meth:`on_training_batch_end` have been called.
+        * After a validation cycle has finished. That is, after *all* of the validation
+          callbacks have been called.
+        * After each epoch has concluded (if training by epoch). Note that this happens
+          *after* :py:meth:`on_training_epoch_end`.
 
         Returns:
-            bool: False if training should continue, true otherwise.
+            False if training should continue, true otherwise.
         """
         return False
 
@@ -377,7 +442,7 @@ class Model(abc.ABC):
         default.
 
         Args:
-            step (int): the current testing batch.
+            step: the current testing batch.
         """
 
     def test_step(self, batch: typing.Any, step: int) -> None:
@@ -389,8 +454,8 @@ class Model(abc.ABC):
         metric(s) for your network(s).
 
         Args:
-            batch (Any): the batch data returned from the dataset.
-            step (int): the current validation batch.
+            batch: the batch data returned from the dataset.
+            step: the current validation batch.
         """
 
     def on_testing_batch_end(self, step: int) -> None:
@@ -401,7 +466,7 @@ class Model(abc.ABC):
         default.
 
         Args:
-            step (int): the current testing batch.
+            step: the current testing batch.
         """
 
     def on_testing_end(self) -> None:

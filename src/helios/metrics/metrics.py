@@ -18,6 +18,22 @@ from .functional import (
 )
 
 METRICS_REGISTRY = core.Registry("metrics")
+"""
+Global instance of the registry for metric functions.
+
+Example:
+    .. code-block:: python
+
+        import helios.metrics as hlm
+
+        # This automatically registers your metric function.
+        @hlm.METRICS_REGISTRY.register
+        class MyMetric:
+            ...
+
+        # Alternatively you can manually register a metric function like this:
+        hlm.METRICS_REGISTRY.register(MyMetric)
+"""
 
 
 def create_metric(type_name: str, *args: typing.Any, **kwargs: typing.Any) -> nn.Module:
@@ -25,12 +41,12 @@ def create_metric(type_name: str, *args: typing.Any, **kwargs: typing.Any) -> nn
     Create the metric function for the given type.
 
     Args:
-        type_name (str): the type of the loss to create.
+        type_name: the type of the loss to create.
         args: positional arguments to pass into the metric.
         kwargs: keyword arguments to pass into the metric.
 
     Returns:
-        Callable: the metric function
+        The metric function
     """
     return METRICS_REGISTRY.get(type_name)(*args, **kwargs)
 
@@ -45,10 +61,10 @@ class CalculatePSNR(nn.Module):
     be left as default otherwise.
 
     Args:
-        crop_border (int): Cropped pixels in each edge of an image. These pixels are not
-        involved in the calculation.
-        input_order (str): Whether the input order is 'HWC' or 'CHW'.
-        test_y_channel (bool): Test on Y channel of YCbCr. Default:
+        crop_border: Cropped pixels in each edge of an image. These pixels are not
+            involved in the calculation.
+        input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
+        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
     """
 
     def __init__(
@@ -68,11 +84,11 @@ class CalculatePSNR(nn.Module):
         Calculate the PSNR metric.
 
         Args:
-            img (np.ndarray | torch.Tensor): Images with range [0, 255].
-            img2 (np.ndarray | torch.Tensor): Images with range [0, 255].
+            img: Images with range :math:`[0, 255]`.
+            img2: Images with range :math:`[0, 255]`.
 
         Returns:
-            float: PSNR value.
+            PSNR value.
         """
         if isinstance(img, torch.Tensor) and isinstance(img2, torch.Tensor):
             return calculate_psnr_torch(
@@ -96,13 +112,10 @@ class CalculateSSIM(nn.Module):
     averaged.
 
     Args:
-        crop_border (int): Cropped pixels in each edge of an image. These pixels are not
-        involved in the calculation.
-        input_order (str): Whether the input order is 'HWC' or 'CHW'.
-        test_y_channel (bool): Test on Y channel of YCbCr.
-
-    Returns:
-        float: SSIM.
+        crop_border: Cropped pixels in each edge of an image. These pixels are not
+            involved in the calculation.
+        input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
+        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
     """
 
     def __init__(
@@ -122,11 +135,11 @@ class CalculateSSIM(nn.Module):
         Calculate the SSIM metric.
 
         Args:
-            img (np.ndarray | torch.Tensor): Images with range [0, 255].
-            img2 (np.ndarray | torch.Tensor): Images with range [0, 255].
+            img: Images with range :math:`[0, 255]`.
+            img2: Images with range :math:`[0, 255]`.
 
         Returns:
-            float: PSNR value.
+            PSNR value.
         """
         if isinstance(img, torch.Tensor) and isinstance(img2, torch.Tensor):
             return calculate_ssim_torch(
@@ -152,11 +165,11 @@ class CalculateMAP(nn.Module):
         Calculate the mAP (Mean Average Precision).
 
         Args:
-            targs (np.ndarray): target (inferred) labels in range [0, 1].
-            preds (np.ndarray): predicate labels in range [0, 1].
+            targs: target (inferred) labels in range :math:`[0, 1]`.
+            preds: predicate labels in range :math:`[0, 1]`.
 
         Returns:
-            float: the mAP score
+            The mAP score
         """
         return calculate_mAP(targs, preds)
 
@@ -167,14 +180,14 @@ class CalculateMAE(nn.Module):
     Compute the MAE (Mean-Average Precision) score.
 
     Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
-    The scale argument is used in the event that the input tensors are not in the range
-    [0, 1] but instead have been scaled to be in the range [0, N] where N is the factor.
-    For example, if the tensors are images in the range [0, 255], then the scaling factor
-    should be set to 255. If the tensors are already in the range [0, 1], then the scale
-    can be omitted.
+    The scale argument is used in the event that the input arrays are not in the range
+    :math:`[0, 1]` but instead have been scaled to be in the range :math:`[0, N]` where
+    :math:`N` is the factor. For example, if the arrays are images in the range
+    :math:`[0, 255]`, then the scaling factor should be set to 255. If the arrays are
+    already in the range :math:`[0, 1]`, then the scale can be omitted.
 
     Args:
-        scale (float): scaling factor that was used on the input tensors (if any)
+        scale: scaling factor that was used on the input tensors. Defaults to 1.
     """
 
     def __init__(self, scale: float = 1):
@@ -189,11 +202,11 @@ class CalculateMAE(nn.Module):
         Calculate the MAE metric.
 
         Args:
-            pred (np.ndarray | torch.Tensor): predicate (inferred) data.
-            gt (np.ndarray | torch.Tensor): ground-truth data.
+            pred: predicate (inferred) data.
+            gt: ground-truth data.
 
         Returns:
-            float: the MAE score
+            The MAE score
         """
         if isinstance(pred, torch.Tensor) and isinstance(gt, torch.Tensor):
             return calculate_mae_torch(pred, gt, self._scale)

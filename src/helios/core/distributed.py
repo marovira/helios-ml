@@ -8,14 +8,16 @@ import torch.distributed as dist
 
 def is_using_torchrun() -> bool:
     """
-    Check if the current process was launched from torchrun.
+    Check if the current process was launched from ``torchrun``.
 
-    This will check to see if the environment variables that are set by torchrun exist.
-    The list of variables is taken directly from the documentation and can be seen here:
-    https://pytorch.org/docs/stable/elastic/run.html#environment-variables
+    This will check to see if the environment variables that are set by ``torchrun``
+    exist. The list of variables is taken directly from the documentation and can be seen
+    `here`_.
+
+    .. _here: https://pytorch.org/docs/stable/elastic/run.html#environment-variables
 
     Returns:
-        bool: True if the run was started from torchrun, false otherwise.
+        True if the run was started from ``torchrun``, false otherwise.
     """
     return all(
         key in os.environ
@@ -41,10 +43,17 @@ def init_dist(
     """
     Initialize the distributed process group.
 
+    The optional values for ``rank`` and ``world_size`` **must** be omitted if
+    distributed training is handled through ``torchrun``. If distributed training is
+    started manually, then both arguments **must** be provided.
+
     Args:
-        backend (str): the backend to use.
-        rank (int): the rank of the current GPU
-        world_size (int): the number of GPUs in the system
+        backend: the backend to use. Defaults to "nccl".
+        rank: the (optional) rank of the current GPU.
+        world_size: the (optional) number of GPUs in the system.
+
+    Raises:
+        ValueError: if either of ``rank`` or ``world_size`` are ``None`` (but not both).
     """
     if rank is None and world_size is None:
         dist.init_process_group(backend)
@@ -81,16 +90,17 @@ class DistributedInfo:
     To understand what these mean, consider a run being performed over two nodes, each
     with 2 GPUs. Suppose we have a single process per GPU. Then the following values are
     assigned:
-        * local_rank: 0 or 1 for both nodes. 0 for the first GPU, 1 for the second.
-        * rank: 0, 1, 2, 3 for each of the GPUs over the two nodes.
-        * local_world_size: 2 for both nodes.
-        * world_size: 4 (2 nodes with 2 workers per node).
+
+    * ``local_rank``: 0 or 1 for both nodes. 0 for the first GPU, 1 for the second.
+    * ``rank``: 0, 1, 2, 3 for each of the GPUs over the two nodes.
+    * ``local_world_size``: 2 for both nodes.
+    * ``world_size``: 4 (2 nodes with 2 workers per node).
 
     Args:
-        local_rank (int): the local rank.
-        rank (int): the global rank.
-        local_world_size (int): the local world size.
-        world_size (int): the global world size.
+        local_rank: the local rank.
+        rank: the global rank.
+        local_world_size: the local world size.
+        world_size: the global world size.
     """
 
     local_rank: int = 0
@@ -107,7 +117,7 @@ def get_dist_info() -> DistributedInfo:
     are set to 1.
 
     Returns:
-        DistributedInfo: the information of the current distributed run.
+        The information of the current distributed run.
     """
     info = DistributedInfo()
     if dist.is_available() and dist.is_initialized():
@@ -126,7 +136,7 @@ def get_local_rank() -> int:
     If distributed training is not used, 0 is returned.
 
     Returns:
-        int: the local rank of the current device.
+        The local rank of the current device.
     """
     return get_dist_info().local_rank
 
@@ -138,7 +148,7 @@ def get_global_rank() -> int:
     If distributed training is not used, 0 is returned.
 
     Returns:
-        int: the global rank of the current device.
+        The global rank of the current device.
     """
     return get_dist_info().rank
 
@@ -148,11 +158,14 @@ def gather_into_tensor(tensor: torch.Tensor, size: tuple[int]) -> torch.Tensor:
     Gathers the tensors across all processes and merges them into a single tensor.
 
     Args:
-        tensor (torch.Tensor): the tensor to merge
-        size (tuple[int]): the dimensions of the output tensor.
+        tensor: the tensor to merge
+        size: the dimensions of the output tensor.
 
     Returns:
-        torch.Tensor: the resulting tensor containing all gathered tensors.
+        The resulting tensor containing all gathered tensors.
+
+    Raises:
+        RuntimeError: if distributed training hasn't been initialised.
     """
     if not dist.is_initialized():
         raise RuntimeError("error: default process group has not been initialized")
@@ -170,12 +183,15 @@ def all_reduce_tensors(
     Reduces tensors across all processes so all have the same value.
 
     Args:
-        tensor (torch.Tensor | list[torch.Tensor]): the input tensor(s) to reduce.
-        If the input is a list of tensors, they will be concatenated into a single tensor
-        kwargs (dict): additional options for torch.distributed.all_reduce
+        tensor: the input tensor(s) to reduce. If the input is a list of tensors, they
+            will be concatenated into a single tensor.
+        kwargs: additional options for torch.distributed.all_reduce
 
     Returns:
-        torch.Tensor: the reduced tensor
+        The reduced tensor.
+
+    Raises:
+        RuntimeError: if distributed training has not been initialised.
     """
     if not dist.is_initialized():
         raise RuntimeError("error: default process group has not been initialized")
@@ -201,7 +217,7 @@ def global_print(*args: typing.Any, global_rank: int = 0, **kwargs: typing.Any) 
 
     Args:
         *args: positional arguments to pass in to Python's print.
-        global_rank (int): the global rank the print should happen on. Defaults to 0.
+        global_rank: the global rank the print should happen on. Defaults to 0.
         **kwargs: keyword arguments to pass in to Python's print.
     """
     _dist_print_wrapper(
@@ -215,7 +231,7 @@ def local_print(*args: typing.Any, local_rank: int = 0, **kwargs: typing.Any) ->
 
     Args:
         *args: positional arguments to pass in to Python's print.
-        local_rank (int): the local rank the print should happen on. Defaults to 0.
+        local_rank: the local rank the print should happen on. Defaults to 0.
         **kwargs: keyword arguments to pass in to Python's print.
     """
     _dist_print_wrapper(

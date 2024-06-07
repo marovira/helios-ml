@@ -9,6 +9,22 @@ import torch.utils.data as tud
 from helios import core
 
 SAMPLER_REGISTRY = core.Registry("sampler")
+"""
+Global instance of the registry for samplers.
+
+Example:
+    .. code-block:: python
+
+        import helios.data.samplers as hlds
+
+        # This automatically registers your sampler.
+        @hlds.SAMPLER_REGISTRY.register
+        class MySampler:
+            ...
+
+        # Alternatively you can manually register a sampler like this:
+        hlds.SAMPLER_REGISTRY.register(MySampler)
+"""
 
 
 def create_sampler(
@@ -21,23 +37,33 @@ def create_sampler(
     been registered before using this function.
 
     Args:
-        type_name (str): the type of the transform to create.
+        type_name: the type of the transform to create.
         args: positional arguments to pass into the sampler.
         kwargs: keyword arguments to pass into the sampler.
 
     Returns:
-        ResumableSamplerType: the constructed sampler.
+        The constructed sampler.
     """
     return SAMPLER_REGISTRY.get(type_name)(*args, **kwargs)
 
 
 class ResumableSampler(tud.Sampler):
-    """
+    r"""
     Base class for samplers that are resumable.
 
-    In this context, a resumable sampler is defined as a sampler that, when training stops
-    and is later resumed, guarantees that the order in which the batches are returned is
-    always the same and that they will continue from where the previous run left off.
+    Let :math:`b_i` be the ith batch for a given epoch :math:`e`. Let the sequence of
+    batches that follow be :math:`b_{i + 1}, b_{i + 2}, \ldots`. Suppose that on iteration
+    :math:`i`, batch :math:`b_i` is loaded, and training is stopped immediately after. A
+    sampler is defined to be resumable if and only if:
+
+    #. Upon re-starting training on epoch :math:`e`, the next batch the sampler loads is
+       :math:`b_{i + 1}`.
+    #. The order of the subsequent batches :math:`b_{i + 2}, \ldots` must be *identical*
+       to the order that the sampler would've produced for the epoch :math:`e` had
+       training not stopped.
+
+    Args:
+        batch_size: the number of samples per batch.
     """
 
     def __init__(self, batch_size: int) -> None:
@@ -75,12 +101,12 @@ class ResumableRandomSampler(ResumableSampler):
 
     This allows training to stop and resume while guaranteeing that the order in which the
     batches will be returned stays consistent. It is effectively a replacement to the
-    default RandomSampler from PyTorch.
+    default ``RandomSampler`` from PyTorch.
 
     Args:
-        data_source (Sized): the dataset to sample from.
-        seed (int): the seed to use for setting up the random generator.
-        batch_size (int): the number of samples per batch.
+        data_source: the dataset to sample from.
+        seed: the seed to use for setting up the random generator.
+        batch_size: the number of samples per batch.
     """
 
     def __init__(
@@ -116,11 +142,11 @@ class ResumableSequentialSampler(ResumableSampler):
 
     This allows training to stop and resume while guaranteeing that the order in which the
     batches will be returned stays consistent. It is effectively a replacement to the
-    default SequentialSampler from PyTorch.
+    default ``SequentialSampler`` from PyTorch.
 
     Args:
-        data_source (Sized): the dataset to sample from.
-        batch_size (int): the number of samples per batch.
+        data_source: the dataset to sample from.
+        batch_size: the number of samples per batch.
     """
 
     def __init__(self, data_source: typing.Sized, batch_size: int = 1):
@@ -150,17 +176,17 @@ class ResumableDistributedSampler(tud.DistributedSampler):
 
     This allows training to stop and resume while guaranteeing that the order in which the
     batches will be returned stays consistent. It is effectively a replacement to the
-    default DistributedSampler from PyTorch.
+    default ``DistributedSampler`` from PyTorch.
 
     Args:
-        dataset (torch.utils.data.Dataset): the dataset to sample from.
-        num_replicas (int | None): number of processes for distributed training.
-        rank (int | None): rank of the current process.
-        shuffle (bool): if True, shuffle the indices.
-        seed (int): random seed used to shuffle the sampler.
-        drop_last (bool): If true, then drop the final sample to make it even across
-        replicas.
-        batch_size (int): the number of samples per batch.
+        dataset: the dataset to sample from.
+        num_replicas: number of processes for distributed training.
+        rank: (optional) rank of the current process.
+        shuffle: if true, shuffle the indices. Defaults to true.
+        seed: random seed used to shuffle the sampler. Defaults to 0.
+        drop_last: if true, then drop the final sample to make it even across replicas.
+            Defaults to false.
+        batch_size: the number of samples per batch. Defaults to 1.
     """
 
     def __init__(
@@ -227,3 +253,9 @@ class ResumableDistributedSampler(tud.DistributedSampler):
 
 
 ResumableSamplerType = ResumableSampler | ResumableDistributedSampler
+"""
+Defines the resumable sampler type.
+
+A resumable sampler **must** be derived from either ``ResumableSampler`` or
+``ResumableDistributedSampler``
+"""

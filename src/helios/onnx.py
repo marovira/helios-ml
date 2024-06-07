@@ -22,16 +22,17 @@ def export_to_onnx(
 
     By default, the resulting onnx network will be validated through ONNX to ensure it's
     valid. If you wish to validate the traced outputs to ensure they're the same, set
-    validate_output to True and change rtol/atol as needed.
+    ``validate_output`` to true and change ``rtol``/``atol`` as needed.
 
     Args:
-        net (nn.Module): the network to convert.
-        net_args (torch.Tensor): the input tensor for tracing.
-        out_path (pathlib.Path): the path to save the exported network to.
-        validate_output (bool): if True, validation is performed to ensure correctness.
-        rtol (float): relative tolerance threshold.
-        atol (float): absolute tolerance threshold.
-        kwargs (dict): additional keyword arguments to torch.onnx.export.
+        net: the network to convert.
+        net_args: the input tensor for tracing.
+        out_path: the path to save the exported network to.
+        validate_output: if true, validation is performed to ensure correctness. Defaults
+            to false.
+        rtol: relative tolerance threshold. Defaults to ``1e-3``.
+        atol: absolute tolerance threshold. Defaults to ``1e-5``.
+        kwargs: additional keyword arguments to ``torch.onnx.export``.
     """
     net.eval()
     with torch.no_grad():

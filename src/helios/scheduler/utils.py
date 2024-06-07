@@ -6,7 +6,7 @@ from torch.optim import lr_scheduler
 from helios import core
 
 
-def _register_default_schedulers(registry: core.Registry):
+def _register_default_schedulers(registry: core.Registry) -> None:
     """
     Register the default Torch schedulers to the registry.
 
@@ -14,7 +14,7 @@ def _register_default_schedulers(registry: core.Registry):
     https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
 
     Args:
-        registry (Registry): the scheduler registry.
+        registry: the scheduler registry.
     """
     registry.register(lr_scheduler.LambdaLR)
     registry.register(lr_scheduler.MultiplicativeLR)
@@ -33,6 +33,63 @@ def _register_default_schedulers(registry: core.Registry):
 
 
 SCHEDULER_REGISTRY = core.Registry("scheduler")
+"""
+Global instance of the registry for schedulers.
+
+By default, the registry contains the following schedulers:
+
+.. list-table:: Schedulers
+    :header-rows: 1
+
+    * - Optimizer
+      - Name
+    * - torch.optim.lr_scheduler.LambdaLR
+      - LambdaLR
+    * - torch.optim.lr_scheduler.MultiplicativeLR
+      - MultiplicativeLR
+    * - torch.optim.lr_scheduler.StepLR
+      - StepLR
+    * - torch.optim.lr_scheduler.MultiStepLR
+      - MultiStepLR
+    * - torch.optim.lr_scheduler.ConstantLR
+      - ConstantLR
+    * - torch.optim.lr_scheduler.LinearLR
+      - LinearLR
+    * - torch.optim.lr_scheduler.ExponentialLR
+      - ExponentialLR
+    * - torch.optim.lr_scheduler.PolynomialLR
+      - PolynomialLR
+    * - torch.optim.lr_scheduler.CosineAnnealingLR
+      - CosineAnnealingLR
+    * - torch.optim.lr_scheduler.SequentialLR
+      - SequentialLR
+    * - torch.optim.lr_scheduler.ReduceLROnPlateau
+      - ReduceLROnPlateau
+    * - torch.optim.lr_scheduler.CyclicLR
+      - CyclicLR
+    * - torch.optim.lr_scheduler.OneCycleLR
+      - OneCycleLR
+    * - torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+      - CosineAnnealingWarmRestarts
+    * - helios.scheduler.CosineAnnealingRestartLR
+      - CosineAnnealingRestartLR
+    * - helios.scheduler.MultiStepRestartLR
+      - MultiStepRestartLR
+
+Example:
+    .. code-block:: python
+
+        import helios.optim as hlo
+        import helios.scheduler as hls
+
+        # This automatically registers your optimizer.
+        @hls.SCHEDULER_REGISTRY.register
+        class MyScheduler:
+            ...
+
+        # Alternatively you can manually register a scheduler. like this:
+        hls.SCHEDULER_REGISTRY.register(MyScheduler)
+"""
 _register_default_schedulers(SCHEDULER_REGISTRY)
 
 
@@ -43,11 +100,11 @@ def create_scheduler(
     Create the scheduler for the given type.
 
     Args:
-        type_name (str): the type of the scheduler to create.
+        type_name: the type of the scheduler to create.
         args: positional arguments to pass into the scheduler.
         kwargs: keyword arguments to pass into the scheduler.
 
     Returns:
-        nn.Module: the scheduler.
+        The scheduler.
     """
     return SCHEDULER_REGISTRY.get(type_name)(*args, **kwargs)

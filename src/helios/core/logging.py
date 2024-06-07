@@ -20,7 +20,7 @@ class RootLogger:
     The log file will be placed in the logs folder as determined by the given path.
 
     Args:
-        log_file (pathlib.Path): path to the log file.
+        log_file: path to the log file.
     """
 
     def __init__(self: "RootLogger"):
@@ -46,12 +46,12 @@ class RootLogger:
         Finish configuring the root logger.
 
         In particular, this function will create the file logger provided that the input
-        path is not None. If the path points to a file that already exists, then the
+        path is not ``None``. If the path points to a file that already exists, then the
         logger will automatically append to the file, otherwise a new file will be
         created.
 
         Args:
-            log_file (pathlib.Path | None): the path to the log file (if using).
+            log_file: the (optional) path to the log file.
         """
         if log_file is None:
             return
@@ -73,19 +73,20 @@ class RootLogger:
         """
         Return the path to the current log file.
 
-        If the path for the log file was originally None, this will return None as well.
+        If the path for the log file was originally ``None``, this will return ``None``
+        as well.
         """
         return self._log_file
 
     def info(self, msg: str, **kwargs: typing.Any) -> None:
         """
-        Log using the INFO tag.
+        Log using the ``INFO`` tag.
 
         Only available for the main process in distributed training.
 
         Args:
-            msg (str): the message to log
-            kwargs (Any): keyword arguments to logging.info
+            msg: the message to log
+            kwargs: keyword arguments to logging.info
         """
         if self._rank != 0:
             return
@@ -94,17 +95,17 @@ class RootLogger:
 
     def warning(self, msg: str, **kwargs: typing.Any) -> None:
         """
-        Log using the WARNING tag.
+        Log using the ``WARNING`` tag.
 
         Args:
-            msg (str): the message to log
-            kwargs (Any): keyword arguments to logging.warning
+            msg: the message to log
+            kwargs: keyword arguments to logging.warning
         """
         self._logger.warning(msg)
 
     def error(self, msg: str, **kwargs: typing.Any) -> None:
         """
-        Log using the ERROR tag.
+        Log using the ``ERROR`` tag.
 
         Args:
             msg (str): the message to log
@@ -117,8 +118,8 @@ class RootLogger:
         Log an exception.
 
         Args:
-            msg (str): the message to log
-            kwargs (Any): keyword arguments to logging.exception
+            msg: the message to log
+            kwargs: keyword arguments to ``logging.exception``
         """
         self._logger.exception(msg, **kwargs)
 
@@ -135,21 +136,21 @@ class RootLogger:
 
 class TensorboardWriter:
     """
-    Wrapper for the Tensorboard writer.
+    Wrapper for the ``Tensorboard`` writer.
 
     Args:
-        run_path (Path): path to the directory for the run.
+        run_path: path to the directory for the run.
     """
 
     def __init__(self: "TensorboardWriter"):
-        """Create the Tensorboard writer."""
+        """Create the ``Tensorboard`` writer."""
         self._rank = get_global_rank()
         self._writer: tb.SummaryWriter | None = None
         self._run_path: pathlib.Path | None = None
 
     def setup(self, run_path: pathlib.Path) -> None:
         """
-        Finish configuring the TensorboardWriter.
+        Finish configuring the ``TensorboardWriter``.
 
         In particular, this function will create the writer instance and assign it to the
         given path. If the path already exists, Tensorboard will automatically append to
@@ -157,7 +158,7 @@ class TensorboardWriter:
         0.
 
         Args:
-            run_path: (pathlib.Path): the path to the run folder.
+            run_path:: the path to the run folder.
         """
         if self._rank == 0:
             self._writer = tb.SummaryWriter(log_dir=str(run_path), flush_secs=20)
@@ -178,9 +179,9 @@ class TensorboardWriter:
         Add scalar data to the log.
 
         Args:
-            tag (str): name of the scalar to plot.
-            scalar_value (float | str | torch.Tensor): the scalar to plot.
-            global_step (int | None): the step for the given scalar.
+            tag: name of the scalar to plot.
+            scalar_value: the scalar to plot.
+            global_step: the (optional) step for the given scalar.
         """
         if self._writer is None:
             return
@@ -197,10 +198,9 @@ class TensorboardWriter:
         Add multiple scalars to the log.
 
         Args:
-            main_tag (str): the parent name for the tags
-            tag_scalar_dict (dict[str, float | torch.Tensor]): key-value pair storing tag
-            and corresponding values.
-            global_step (int | None): global step value to record.
+            main_tag: the parent name for the tags
+            tag_scalar_dict: key-value pair storing tag and corresponding values.
+            global_step: (optional) global step value to record.
         """
         if self._writer is None:
             return
@@ -218,11 +218,11 @@ class TensorboardWriter:
         Add image data to log.
 
         Args:
-            tag (str): data identifier.
-            img_tensor (torch.Tensor | np.ndarray): image data.
-            global_step (int): global step value to record
-            dataformats (str): image data format specification in the form CHW, HWC, HW,
-            WH, etc.
+            tag: data identifier.
+            img_tensor: image data.
+            global_step: (optional) global step value to record
+            dataformats: image data format specification in the form CHW, HWC, HW, WH,
+                etc.
         """
         if self._writer is None:
             return
@@ -240,11 +240,11 @@ class TensorboardWriter:
         Add batched image data to log.
 
         Args:
-            tag (str): data identifier.
-            img_tensor (torch.Tensor | np.ndarray): image data.
-            global_step (int): global step value to record.
-            dataformats (str): image data format specification in the form NCHW, NHWC,
-            CHW, HWC, HW, WH, etc.
+            tag: data identifier.
+            img_tensor: image data.
+            global_step: (optional) global step value to record.
+            dataformats: image data format specification in the form NCHW, NHWC, CHW,
+                HWC, HW, WH, etc.
         """
         if self._writer is None:
             return
@@ -262,10 +262,10 @@ class TensorboardWriter:
         Render matplotlib figure into an image and add it to a summary.
 
         Args:
-            tag (str): data identifier.
-            figure (plt.Figure | list[plt.Figure]): figure or a list of figures.
-            global_step (int): global step value to record.
-            close (bool): flag to automatically close the figure.
+            tag: data identifier.
+            figure: figure or a list of figures.
+            global_step: (optional) global step value to record.
+            close: flag to automatically close the figure.
         """
         if self._writer is None:
             return
@@ -277,9 +277,9 @@ class TensorboardWriter:
         Add text data to log.
 
         Args:
-            tag (str): data identifier.
-            text_string (str): string to save.
-            global_step (int): global step value to record.
+            tag: data identifier.
+            text_string: string to save.
+            global_step: (optional) global step value to record.
         """
         if self._writer is None:
             return
@@ -301,12 +301,10 @@ class TensorboardWriter:
         copied prior to moving to the CPU to ensure the input model is not affected.
 
         Args:
-            model (torch.nn.Module): model to draw.
-            input_to_model(Optional[torch.Tensor | list[torch.Tensor]]): a variable
-            or tuple of variables to be fed.
-            verbose (bool): whether to print graph structure in console.
-            use_strict_trace (bool): whether to pass keyword argument strict to
-            torch.jit.trace.
+            model: model to draw.
+            input_to_mode: a variable or tuple of variables to be fed.
+            verbose: whether to print graph structure in console.
+            use_strict_trace: whether to pass keyword argument strict to torch.jit.trace.
         """
         if self._writer is None:
             return
@@ -339,18 +337,17 @@ class TensorboardWriter:
 
         Plotting a precision-recall curve lets you understand your model's performance
         under different threshold settings. With this function, you provide the ground
-        truth labeling (T/F) and prediction confidence (usually the output of your model)
+        truth labelling (T/F) and prediction confidence (usually the output of your model)
         for each target. The TensorBoard UI will let you choose the threshold
         interactively.
 
         Args:
-            tag (str): data identifier.
-            labels (torch.Tensor | np.ndarray): ground truth data. Binary label for
-            each element.
-            predictions (torch.Tensor | np.ndarray): the probability that an element
-            be classified as true. Value should be in [0, 1].
-            global_step (Optional[int]): global step value to record.
-            num_thresholds (int): number of thresholds used to draw the curve.
+            tag: data identifier.
+            labels: ground truth data. Binary label for each element.
+            predictions: the probability that an element be classified as true. Value
+                should be in [0, 1].
+            global_step: (optional) global step value to record.
+            num_thresholds: number of thresholds used to draw the curve. Defaults to 127.
         """
         if self._writer is None:
             return
@@ -369,16 +366,16 @@ class TensorboardWriter:
         Add a set of hyper-parameters to be compared in the log.
 
         Args:
-            hparam_dict (dict[str, Any]): each key-value pair in the dictionary is the
-            name of the hyper-parameter and it's corresponding value. The type of the
-            value can be one of bool, string, float, int, or None.
-            metric_dict (dict[str, Any]): each key-value pair in the dictionary is the
-            name of the metric and it's corresponding value. Note that the key used here
-            should be unique in the Tensorboard record.
-            hparam_domain_discrete: (Optional[dict[str, list[Any]]]): a dictionary that
-            contains names of hyper-parameters and all the discrete values they can hold.
-            run_name (str): name of the run, to be included as part of the logdir.
-            global_step (Optional[int]): global step value to record.
+            hparam_dict: each key-value pair in the dictionary is the name of the
+                hyper-parameter and it's corresponding value. The type of the value can
+                be one of ``bool``, ``string``, ``float``, ``int``, or ``None``.
+            metric_dict: each key-value pair in the dictionary is the name of the metric
+                and it's corresponding value. Note that the key used here should be
+                unique in the Tensorboard record.
+            hparam_domain_discrete:: a dictionary that contains names of hyper-parameters
+                and all the discrete values they can hold.
+            run_name: name of the run, to be included as part of the logdir.
+            global_step: (optional) global step value to record.
         """
         if self._writer is None:
             return
@@ -405,7 +402,7 @@ class TensorboardWriter:
         self._writer.close()
 
 
-ACTIVE_LOGGERS: dict[str, RootLogger | TensorboardWriter] = {}
+_ACTIVE_LOGGERS: dict[str, RootLogger | TensorboardWriter] = {}
 
 
 def get_default_log_name(run_name: str) -> str:
@@ -413,9 +410,10 @@ def get_default_log_name(run_name: str) -> str:
     Generate the default name used for log files or Tensorboard runs.
 
     Args:
-        run_name (str): the name of the run.
+        run_name: the name of the run.
+
     Returns:
-        str: the string with the default name.
+        The string with the default name.
     """
     current_time = datetime.now().strftime("%b%d_%H-%M-%S")
 
@@ -424,17 +422,20 @@ def get_default_log_name(run_name: str) -> str:
 
 def create_default_loggers(enable_tensorboard: bool = True) -> None:
     """
-    Construct the RootLogger and TensorboardWriter instances.
+    Construct the ``RootLogger`` and ``TensorboardWriter`` instances.
 
     In distributed training, this function should be called AFTER the processes have been
     created to ensure each process gets a copy of the loggers.
+
+    Args:
+        enable_tensorboard: (optional) enables the tensorboard writer. Defaults to true.
     """
     # Root logger is always created.
-    if "root" not in ACTIVE_LOGGERS:
-        ACTIVE_LOGGERS["root"] = RootLogger()
+    if "root" not in _ACTIVE_LOGGERS:
+        _ACTIVE_LOGGERS["root"] = RootLogger()
 
-    if enable_tensorboard and "tensorboard" not in ACTIVE_LOGGERS:
-        ACTIVE_LOGGERS["tensorboard"] = TensorboardWriter()
+    if enable_tensorboard and "tensorboard" not in _ACTIVE_LOGGERS:
+        _ACTIVE_LOGGERS["tensorboard"] = TensorboardWriter()
 
 
 def restore_default_loggers(
@@ -447,20 +448,23 @@ def restore_default_loggers(
     same file/folder as a previous run.
 
     Args:
-        log_path (pathlib.Path | None): path to the log file (if using).
-        run_path (pathlib.Path | None): path to the Tensorboard run folder (if using).
+        log_path: (optional) path to the log file.
+        run_path: (optional) path to the Tensorboard run folder.
+
+    Raises:
+        RuntimeError: if the root logger hasn't been created.
     """
-    if "root" not in ACTIVE_LOGGERS:
+    if "root" not in _ACTIVE_LOGGERS:
         raise RuntimeError(
             "error: root logger hasn't been created. Did you forget to call "
             "create_default_loggers?"
         )
 
     if log_path is not None:
-        ACTIVE_LOGGERS["root"].setup(log_path)
+        _ACTIVE_LOGGERS["root"].setup(log_path)
 
-    if "tensorboard" in ACTIVE_LOGGERS and run_path is not None:
-        ACTIVE_LOGGERS["tensorboard"].setup(run_path)
+    if "tensorboard" in _ACTIVE_LOGGERS and run_path is not None:
+        _ACTIVE_LOGGERS["tensorboard"].setup(run_path)
 
 
 def setup_default_loggers(
@@ -475,9 +479,9 @@ def setup_default_loggers(
     run. If you need that, call restore_default_loggers instead.
 
     Args:
-        run_name (str): the name of the current run.
-        log_root (pathlib.Path | None): path to the logs folder (if using).
-        runs_root (pathlib.Path | None): path to the Tensorboard runs folder (if using).
+        run_name: the name of the current run.
+        log_root: (optional) path to the logs folder.
+        runs_root: (optional) path to the Tensorboard runs folder.
     """
     base_name = get_default_log_name(run_name)
     run_path = None if runs_root is None else runs_root / base_name
@@ -487,16 +491,16 @@ def setup_default_loggers(
 
 def flush_default_loggers() -> None:
     """Flushes the default loggers."""
-    for _, logger in ACTIVE_LOGGERS.items():
+    for _, logger in _ACTIVE_LOGGERS.items():
         logger.flush()
 
 
 def close_default_loggers() -> None:
     """Close the default loggers and clears them."""
-    for _, logger in ACTIVE_LOGGERS.items():
+    for _, logger in _ACTIVE_LOGGERS.items():
         logger.close()
 
-    ACTIVE_LOGGERS.clear()
+    _ACTIVE_LOGGERS.clear()
 
 
 def get_root_logger() -> RootLogger:
@@ -504,30 +508,30 @@ def get_root_logger() -> RootLogger:
     Get the root logger instance.
 
     Return:
-        FileLogger: the root logger.
+        The root logger.
     """
-    if "root" not in ACTIVE_LOGGERS:
+    if "root" not in _ACTIVE_LOGGERS:
         raise KeyError(
             "error: root logger has not been created. Did you forget to call "
             "create_base_loggers?"
         )
-    return typing.cast(RootLogger, ACTIVE_LOGGERS["root"])
+    return typing.cast(RootLogger, _ACTIVE_LOGGERS["root"])
 
 
 def is_root_logger_active() -> bool:
     """Check if the root logger has been created."""
-    return "root" in ACTIVE_LOGGERS
+    return "root" in _ACTIVE_LOGGERS
 
 
 def get_tensorboard_writer() -> TensorboardWriter | None:
     """
     Return the Tensorboard writter.
 
-    If Tensorboard is disabled, this function will return None
+    If Tensorboard is disabled, this function will return ``None``
 
     Return:
-        TensorboardWriter: the Tensorboard logger.
+        The Tensorboard logger or ``None`` if it doesn't exist.
     """
-    if "tensorboard" not in ACTIVE_LOGGERS:
+    if "tensorboard" not in _ACTIVE_LOGGERS:
         return None
-    return typing.cast(TensorboardWriter, ACTIVE_LOGGERS["tensorboard"])
+    return typing.cast(TensorboardWriter, _ACTIVE_LOGGERS["tensorboard"])

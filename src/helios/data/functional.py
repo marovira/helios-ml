@@ -11,16 +11,16 @@ def load_image(path: pathlib.Path, out_fmt: str = "") -> npt.NDArray:
     """
     Load the given image and convert it to a numpy array.
 
-    out_fmt is a format string that can be passed in to PIL.Image.convert. Please see the
-    documentation for accepted strings. If no string is passed, the image will be
+    ``out_fmt`` is a format string that can be passed in to PIL.Image.convert. Please
+    see the documentation for accepted strings. If no string is passed, the image will be
     converted to RGB format.
 
     Args:
-        path (pathlib.Path): the path to the image to load.
-        out_fmt (str): the format to convert the loaded image to.
+        path: the path to the image to load.
+        out_fmt: the format to convert the loaded image to. Defaults to empty.
 
     Returns:
-        np.ndarray: the loaded image.
+        The loaded image.
     """
     with path.open(mode="rb") as infile:
         img = PIL.Image.open(infile)
@@ -33,11 +33,11 @@ def tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> npt.NDArray:
     Convert the given tensor to a numpy array.
 
     Args:
-        tens (torch.Tensor): the tensor to convert in the range [0, 1]
-        as_float (bool): whether to leave the output as float or convert to int.
+        tens: the tensor to convert in the range :math:`[0, 1]`
+        as_float: whether to leave the output as float or convert to int.
 
     Returns:
-        np.ndarray: the converted array.
+        The converted array.
     """
     as_np = tens.squeeze().float().clamp_(0, 1).cpu().detach().numpy()
     if as_np.ndim == 3:
@@ -54,8 +54,8 @@ def show_tensor(tens: torch.Tensor, title: str = "debug window") -> None:
     Display the image held by the tensor. Useful for debugging purposes.
 
     Args:
-        tens (torch.Tensor): the image tensor to display in range [0, 1].
-        title (str): the title of the displayed window.
+        tens: the image tensor to display in range :math:`[0, 1]`.
+        title: the title of the displayed window. Defaults to "debug window".
     """
     img = tensor_to_numpy(tens)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
@@ -68,7 +68,7 @@ def show_tensors(tens: torch.Tensor) -> None:
     Show batches of tensors.
 
     Args:
-        tens (torch.Tensor): the batch of tensors to display in range [0, 1].
+        tens: the batch of tensors to display in range :math:`[0, 1]`.
     """
     if len(tens.shape) == 3:
         show_tensor(tens)
@@ -85,12 +85,12 @@ def convert_to_hwc(img: npt.NDArray, input_order: str = "HWC") -> npt.NDArray:
     If the input image is a single-channel image, then the return is (h, w, 1).
 
     Args:
-        img (np.ndarray): input image.
-        input_order (str): the order of the channels of the input image. Must be one of
-        'HWC' or 'CHW'
+        img: input image.
+        input_order: the order of the channels of the input image. Must be one of 'HWC'
+            or 'CHW'.
 
     Returns:
-        np.ndarray: the shuffled image.
+        The shuffled image.
     """
     assert input_order in ("HWC", "CHW")
 
@@ -106,10 +106,10 @@ def to_y_channel(img: npt.NDArray) -> npt.NDArray:
     Return the Y (luma) channel of a YCbCr image.
 
     Args:
-        img (np.ndarray): input image in YCbCr format. Range must be [0, 255]
+        img: input image in YCbCr format. Must be in the range :math:`[0, 255]`.
 
     Returns:
-        np.ndarray: the luma channel of the input image.
+        The luma channel of the input image.
     """
     img = img.astype(np.float32) / 255.0
     if img.ndim == 3 and img.shape[2] == 3:
@@ -122,14 +122,14 @@ def bgr2ycbcr(img: npt.NDArray, only_y: bool = False) -> npt.NDArray:
     """
     Convert the given numpy image array from BGR to YCBCR.
 
-    If only the Y channel is required, set only_y to true.
+    If only the Y channel is required, set ``only_y`` to true.
 
     Args:
-        img (np.ndarray): the BGR image to convert.
-        only_y (bool): if true, only the luma (Y) channel will be returned.
+        img: the BGR image to convert.
+        only_y: if true, only the luma (Y) channel will be returned.
 
     Returns:
-        np.ndarray: The converted image.
+        The converted image.
     """
     intype = img.dtype
     img.astype(np.float32)
@@ -159,14 +159,14 @@ def rgb2ycbcr_torch(img: torch.Tensor, only_y: bool = False) -> torch.Tensor:
     """
     Convert the given torch Tensor image array from RGB to YCBCR.
 
-    If only the Y channel is required, set only_y to true.
+    If only the Y channel is required, set ``only_y`` to true.
 
     Args:
-        img (torch.Tensor): the BGR image to convert.
-        only_y (bool): if true, only the luma (Y) channel will be returned.
+        img: the BGR image to convert.
+        only_y: if true, only the luma (Y) channel will be returned.
 
     Returns:
-        torch.Tensor: The converted image.
+        The converted image.
     """
     if only_y:
         weight = torch.tensor([[65.481], [128.553], [24.966]]).to(img)

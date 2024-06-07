@@ -35,10 +35,13 @@ class TrainingUnit(enum.Enum):
         Must be one of "iteration" or "epoch".
 
         Args:
-            label (str): the label to convert.
+            label: the label to convert.
 
         Returns:
-            TrainingUnit: the corresponding value.
+            The corresponding value.
+
+        Raises:
+            ValueError: if the given value is not one of "iteration" or "epoch".
         """
         if label == "iteration":
             return cls.ITERATION
@@ -69,18 +72,17 @@ class TrainingState:
     The training state.
 
     Args:
-        current_iteration (int): the current iteration number. Note that this refers to
-        the iteration in which gradients are updated. This may or may not be equal to the
-        global_iteration count (see below).
-        global_iteration (int): the total iteration count.
-        global_epoch (int): the total epoch count.
-        validation_cycles (int): the number of validation cycles.
-        dataset_iter (int): the current batch index of the dataset. This is reset every
-        epoch.
-        early_stop_count (int): the current number of validation cycles for early stop.
-        average_iter_time (float): average time per iteration.
-        running_iter (int): iteration count in the current validation cycle. Useful for
-        computing running averages of loss functions.
+        current_iteration: the current iteration number. Note that this refers to
+            the iteration in which gradients are updated. This may or may not be equal to
+            the :py:attr:`global_iteration` count.
+        global_iteration: the total iteration count.
+        global_epoch: the total epoch count.
+        validation_cycles: the number of validation cycles.
+        dataset_iter: the current batch index of the dataset. This is reset every epoch.
+        early_stop_count: the current number of validation cycles for early stop.
+        average_iter_time: average time per iteration.
+        running_iter: iteration count in the current validation cycle. Useful for
+            computing running averages of loss functions.
     """
 
     current_iteration: int = 0
@@ -99,15 +101,15 @@ def find_last_checkpoint(root: pathlib.Path | None) -> pathlib.Path | None:
     """
     Find the last saved checkpoint (if available).
 
-    The function assumes that checkpoint names contain 'epoch_<epoch>' and 'iter_<iter>'
-    in the name, in which case it will return the path to the checkpoint with the highest
-    epoch and/or iteration count.
+    The function assumes that checkpoint names contain ``epoch_<epoch>`` and
+    ``iter_<iter>`` in the name, in which case it will return the path to the checkpoint
+    with the highest epoch and/or iteration count.
 
     Args:
-        root (pathlib.Path): the path where the checkpoints are stored.
+        root: the path where the checkpoints are stored.
 
     Returns:
-        pathlib.Path | None: the path to the last checkpoint (if any).
+        The path to the last checkpoint (if any).
     """
     if root is None:
         return None
@@ -136,7 +138,7 @@ def find_last_checkpoint(root: pathlib.Path | None) -> pathlib.Path | None:
     return last_chkpt
 
 
-def spawn_handler(
+def _spawn_handler(
     rank: int,
     world_size: int,
     trainer: Trainer,
@@ -148,12 +150,12 @@ def spawn_handler(
     Spawn handler for distributed training.
 
     Args:
-        rank (int): the rank id of the current process within the work group.
-        world_size (int): number of processes in the work group.
-        trainer (Trainer): the trainer to use.
-        datamodule (DataModule): the datamodule to use.
-        model (Model): the model to use.
-        mode (_TrainerMode): determines which operation needs to be performed.
+        rank: the rank id of the current process within the work group.
+        world_size: number of processes in the work group.
+        trainer: the trainer to use.
+        datamodule: the datamodule to use.
+        model: the model to use.
+        mode: determines which operation needs to be performed.
     """
     dist.init_dist(rank=rank, world_size=world_size)
 
@@ -178,27 +180,34 @@ class Trainer:
     any clean up afterwards.
 
     Args:
-        run_name (str): name of the current run.
-        train_unit (TrainingUnit | str): the unit used for training.
-        total_steps (int | float): the total number of steps to train for.
-        valid_frequency (int): frequency with which to perform validation.
-        chkpt_frequency (int): frequency with which to save checkpoints.
-        print_frequency (int): frequency with which to log.
-        accumulation_steps (int): number of steps for gradient accumulation.
-        enable_cudnn_benchmark (bool): enable/disable CuDNN benchmark.
-        enable_deterministic (bool): enable/disable PyTorch deterministic.
-        early_stop_cycles (int): number of cycles after which training will stop if no
-        improvement is seen during validation.
-        use_cpu: (bool | None): if True, CPU will be used.
-        gpus (list[int] | None): IDs of GPUs to use.
-        random_seed (int | None): the seed to use for RNGs.
-        enable_tensorboard (bool): enable/disable Tensorboard logging.
-        enable_file_logging (bool): enable/disable file logging.
-        enable_progress_bar (bool): enable/disable the progress bar(s).
-        chkpt_root (pathlib.Path): root folder in which checkpoints will be placed.
-        log_path (pathlib.Path): root folder in which logs will be saved.
-        run_path (pathlib.Path): root folder in which Tensorboard runs will be saved.
-        print_banner (bool): if True, the Helios banner with system info will be printed.
+        run_name: name of the current run. Defaults to empty.
+        train_unit: the unit used for training. Defaults to
+            :py:attr:`TrainingUnit.ITERATION`.
+        total_steps: the total number of steps to train for. Defaults to 0.
+        valid_frequency: (optional) frequency with which to perform validation.
+        chkpt_frequency: (optional) frequency with which to save checkpoints.
+        print_frequency: (optional) frequency with which to log.
+        accumulation_steps: number of steps for gradient accumulation. Defaults to 1.
+        enable_cudnn_benchmark: enable/disable CuDNN benchmark. Defaults to false.
+        enable_deterministic: enable/disable PyTorch deterministic. Defaults to false.
+        early_stop_cycles: (optional) number of cycles after which training will stop if
+            no improvement is seen during validation.
+        use_cpu: (optional) if true, CPU will be used.
+        gpus: (optional) IDs of GPUs to use.
+        random_seed: (optional) the seed to use for RNGs.
+        enable_tensorboard: enable/disable Tensorboard logging. Defaults to false.
+        enable_file_logging: enable/disable file logging. Defaults to false.
+        enable_progress_bar: enable/disable the progress bar(s). Defaults to false.
+        chkpt_root: (optional) root folder in which checkpoints will be placed.
+        log_path: (optional) root folder in which logs will be saved.
+        run_path: (optional) root folder in which Tensorboard runs will be saved.
+        src_root: (optional) root folder where the code is located. This is used to
+            automatically populate the registries using
+            :py:func:`~helios.core.utils.update_all_registries`.
+        import_prefix: prefix to use when importing modules. See
+            :py:func:`~helios.core.utils.update_all_registries` for details.
+        print_banner: if true, the Helios banner with system info will be printed.
+            Defaults to true.
     """
 
     def __init__(
@@ -318,8 +327,8 @@ class Trainer:
         Run the full training routine.
 
         Args:
-            model (pym.Model): the model to run on.
-            datamodule (data.DataModule): the datamodule to use.
+            model: the model to run on.
+            datamodule: the datamodule to use.
         """
         try:
             self._launch(model, datamodule, _TrainerMode.TRAIN)
@@ -335,8 +344,8 @@ class Trainer:
         Run the full testing routine.
 
         Args:
-            model (pym.Model): the model to run on.
-            datamodule (data.DataModule): the datamodule to use.
+            model: the model to run on.
+            datamodule: the datamodule to use.
         """
         try:
             self._launch(model, datamodule, _TrainerMode.TEST)
@@ -357,16 +366,16 @@ class Trainer:
         handler.
 
         Args:
-            model (Model): the model to use.
-            datamodule (DataModule): the datamodule to use.
-            mode: (_TrainerMode): the operation to perform.
+            model: the model to use.
+            datamodule: the datamodule to use.
+            mode:: the operation to perform.
         """
         datamodule.prepare_data()
 
         if self._is_distributed and not self._is_torchrun:
             world_size = len(self._gpu_ids)
             mp.spawn(
-                spawn_handler,
+                _spawn_handler,
                 args=(world_size, self, datamodule, model, mode),
                 nprocs=world_size,
                 join=True,
@@ -490,7 +499,7 @@ class Trainer:
         This will seed the RNGs as well as setup any CUDA state (if using). It will also
         set all of the registries provided the source root is not None. This is to prevent
         the registries from being empty if distributed training is launched through spawn
-        (note that torchrun doesn't have this problem).
+        (note that ``torchrun`` doesn't have this problem).
         """
         rng.seed_rngs(self._random_seed)
         torch.use_deterministic_algorithms(self._enable_deterministic)
@@ -519,7 +528,7 @@ class Trainer:
         Finish setting up the model.
 
         Args:
-            fast_init (bool): whether the model should setup its full state or not.
+            fast_init: whether the model should setup its full state or not.
         """
         self.model.map_loc = self._map_loc
         self.model.is_distributed = self._is_distributed
@@ -625,11 +634,12 @@ class Trainer:
         If the CPU is being used, this will automatically set the correct settings. If the
         GPU will be used, then it will only verify that the GPU IDs are correct. The
         remaining state will be set afterwards.
-        The use_cpu flag is used to determine whether the CPU will be used for training.
-        If it is None, then the value is determined by whether CUDA is available.
+        The ``use_cpu`` flag is used to determine whether the CPU will be used for
+        training. If it is ``None``, then the value is determined by whether CUDA is
+        available.
 
         Args:
-            use_cpu (bool | None): whether to use the CPU or not.
+            use_cpu: whether to use the CPU or not.
         """
         if use_cpu is None:
             use_cpu = not torch.cuda.is_available()
@@ -680,7 +690,7 @@ class Trainer:
         state.
 
         Args:
-            state (TrainingState): the current training state.
+            state: the current training state.
         """
         chkpt_root = core.get_from_optional(self._chkpt_root)
 
@@ -714,14 +724,14 @@ class Trainer:
         Load the given checkpoint.
 
         Args:
-            chkpt_path (pathlib.Path): path to the checkpoint to load.
-            skip_rng (bool): if True, skip the loading of the RNG states.
-            model_fast_init (bool): whether the model should setup its full state or not.
+            chkpt_path: path to the checkpoint to load.
+            skip_rng: if True, skip the loading of the RNG states.
+            model_fast_init: whether the model should setup its full state or not.
 
         Returns:
-            tuple[TrainingState, bool]: returns the loaded training state and True if the
-            checkpoint was loaded successfully. Otherwise it returns an empty training
-            state and False.
+            Returns the loaded training state and ``True`` if the checkpoint was
+                loaded successfully. Otherwise it returns an empty training state and
+                ``False``.
         """
         if chkpt_path is None:
             logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
@@ -741,7 +751,7 @@ class Trainer:
         Run the main loop for iteration-based training.
 
         Args:
-            state (TrainingState): the training state.
+            state: the training state.
         """
         total_steps = self._total_steps
         save_freq = self._chkpt_frequency
@@ -864,7 +874,7 @@ class Trainer:
         Run the main loop for epoch-based training.
 
         Args:
-            state (TrainingState): the training state.
+            state: the training state.
         """
         total_steps = self._total_steps
         save_freq = self._chkpt_frequency
@@ -982,7 +992,7 @@ class Trainer:
         Run the validation loop.
 
         Args:
-            val_cycle (int): the current validation cycle number.
+            val_cycle: the current validation cycle number.
         """
         if self.datamodule.valid_dataloader() is None:
             return

@@ -12,11 +12,11 @@ def _ssim(img: npt.NDArray[np.float64], img2: npt.NDArray[np.float64]) -> float:
     SSIM implementation function. See calculate_ssim for details.
 
     Args:
-        img (np.ndarray): Images with range [0, 1] (float64).
-        img2 (np.ndarray): Images with range [0, 1] (float64).
+        img: Images of type ``np.float64`` with range  :math:`[0, 1]`.
+        img2: Images of type ``np.float64`` with range :math:`[0, 1]`.
 
     Returns:
-        float: SSIM.
+        SSIM value.
     """
     c1 = (0.01 * 255) ** 2
     c2 = (0.03 * 255) ** 2
@@ -41,11 +41,11 @@ def _ssim(img: npt.NDArray[np.float64], img2: npt.NDArray[np.float64]) -> float:
 
 def _ssim_torch(img: torch.Tensor, img2: torch.Tensor) -> float:
     """
-    SSIM Torch implementation function. See calculate_ssim_torch for details.
+    SSIM Torch implementation function. See :py:func:`.calculate_ssim_torch` for details.
 
     Args:
-        img (torch.Tensor): Images with range [0, 1] (float64).
-        img2 (torch.Tensor): Images with range [0, 1] (float64).
+        img: Images of type ``torch.float64`` with range  :math:`[0, 1]`.
+        img2: Images of type ``torch.float64`` with range :math:`[0, 1]`.
 
     Returns:
         float: SSIM.
@@ -87,14 +87,16 @@ def _average_precision(
     output: npt.NDArray[np.float64], target: npt.NDArray[np.float64]
 ) -> float:
     """
-    Calculate the average precision of the given inputs. See calculate_map for details.
+    Calculate the average precision of the given inputs.
+
+    See :py:func:`.calculate_map` for details.
 
     Args:
-        output (np.ndarray): predicate labels in range [0, 1].
-        target (np.ndarray): target (inferred) labels in range [0, 1].
+        output: predicate labels in range :math:`[0, 1]`.
+        target: target (inferred) labels in range :math:`[0, 1]`.
 
     Returns:
-        float: the average precision.
+        The average precision.
     """
     epsilon = 1e-8
 
@@ -115,15 +117,15 @@ def _average_precision(
 
 def _mae(pred: npt.NDArray, gt: npt.NDArray, scale: float = 1.0) -> float:
     """
-    MAE implementation. See calculate_mae for details.
+    MAE implementation. See :py:func:`.calculate_mae` for details.
 
     Args:
-        pred (torch.Tensor): predicate tensor.
-        gt (torch.Tensor): ground-truth tensor.
-        scale (float): the scaling factor used in the tensor data (if any).
+        pred: predicate tensor.
+        gt: ground-truth tensor.
+        scale: the scaling factor used in the tensor data (if any). Defaults to 1.
 
     Returns:
-        float: the MAE score.
+        The MAE score.
     """
     n = np.prod(gt.shape)
     sum_error = np.sum(np.abs(np.subtract(np.float32(pred), np.float32(gt))))
@@ -133,15 +135,15 @@ def _mae(pred: npt.NDArray, gt: npt.NDArray, scale: float = 1.0) -> float:
 
 def _mae_torch(pred: torch.Tensor, gt: torch.Tensor, scale: float = 1.0) -> float:
     """
-    MAE Torch implementation. See calculate_mae_torch for details.
+    MAE Torch implementation. See :py:func:`.calculate_mae_torch` for details.
 
     Args:
-        pred (torch.Tensor): predicate tensor.
-        gt (torch.Tensor): ground-truth tensor.
-        scale (float): the scaling factor used in the tensor data (if any).
+        pred: predicate tensor.
+        gt: ground-truth tensor.
+        scale: the scaling factor used in the tensor data (if any). Defaults to 1.
 
     Returns:
-        float: the MAE score.
+        The MAE score.
     """
     n = torch.prod(torch.tensor(gt.shape))
     sum_error = torch.sum(torch.absolute(torch.sub(pred.float(), gt.float())))
@@ -162,15 +164,15 @@ def calculate_psnr(
     Implementation follows: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
 
     Args:
-        img (np.ndarray): Images with range [0, 255].
-        img2 (np.ndarray): Images with range [0, 255].
-        crop_border (int): Cropped pixels in each edge of an image. These pixels are not
-        involved in the calculation.
-        input_order (str): Whether the input order is 'HWC' or 'CHW'.
-        test_y_channel (bool): Test on Y channel of YCbCr. Default:
+        img: Images with range :math:`[0, 255]`.
+        img2: Images with range :math:`[0, 255]`.
+        crop_border: Cropped pixels in each edge of an image. These pixels are not
+            involved in the calculation.
+        input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
+        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
 
     Returns:
-        float: PSNR value.
+        PSNR value.
     """
     assert (
         img.shape == img2.shape
@@ -208,14 +210,14 @@ def calculate_psnr_torch(
     Implementation follows: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
 
     Args:
-        img (torch.Tensor): Images with range [0, 255].
-        img2 (torch.Tensor): Images with range [0, 255].
-        crop_border (int): Cropped pixels in each edge of an image. These pixels are not
-        involved in the calculation.
-        test_y_channel (bool): Test on Y channel of YCbCr. Default:
+        img: Images with range :math:`[0, 255]`.
+        img2: Images with range :math:`[0, 255]`.
+        crop_border: Cropped pixels in each edge of an image. These pixels are not
+            involved in the calculation.
+        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
 
     Returns:
-        float: PSNR value.
+        PSNR value.
     """
     assert (
         img.shape == img2.shape
@@ -253,15 +255,15 @@ def calculate_ssim(
     averaged.
 
     Args:
-        img (np.ndarray): Images with range [0, 255].
-        img2 (np.ndarray): Images with range [0, 255].
-        crop_border (int): Cropped pixels in each edge of an image. These pixels are not
-        involved in the calculation.
-        input_order (str): Whether the input order is 'HWC' or 'CHW'.
-        test_y_channel (bool): Test on Y channel of YCbCr.
+        img: Images with range :math:`[0, 255]`.
+        img2: Images with range :math:`[0, 255]`.
+        crop_border: Cropped pixels in each edge of an image. These pixels are not
+            involved in the calculation.
+        input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC"
+        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
 
     Returns:
-        float: SSIM.
+        SSIM.
     """
     assert (
         img.shape == img2.shape
@@ -303,14 +305,14 @@ def calculate_ssim_torch(
     averaged.
 
     Args:
-        img (torch.Tensor): Images with range [0, 255].
-        img2 (torch.Tensor): Images with range [0, 255].
-        crop_border (int): Cropped pixels in each edge of an image. These pixels are not
-        involved in the calculation.
-        test_y_channel (bool): Test on Y channel of YCbCr.
+        img: Images with range :math:`[0, 255]`.
+        img2: Images with range :math:`[0, 255]`.
+        crop_border: Cropped pixels in each edge of an image. These pixels are not
+            involved in the calculation.
+        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
 
     Returns:
-        float: the SSIM value.
+        SSIM.
     """
     assert (
         img.shape == img2.shape
@@ -339,11 +341,11 @@ def calculate_mAP(targs: npt.NDArray, preds: npt.NDArray) -> float:
     https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision
 
     Args:
-        targs (np.ndarray): target (inferred) labels in range [0, 1].
-        preds (np.ndarray): predicate labels in range [0, 1].
+        targs: target (inferred) labels in range :math:`[0, 1]`.
+        preds: predicate labels in range :math:`[0, 1]`.
 
     Returns:
-        float: the mAP score
+        The mAP score
     """
     if np.size(preds) == 0:
         return 0
@@ -367,18 +369,18 @@ def calculate_mae(pred: npt.NDArray, gt: npt.NDArray, scale: float = 1.0) -> flo
 
     Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
     The scale argument is used in the event that the input arrays are not in the range
-    [0, 1] but instead have been scaled to be in the range [0, N] where N is the factor.
-    For example, if the arrays are images in the range [0, 255], then the scaling factor
-    should be set to 255. If the arrays are already in the range [0, 1], then the scale
-    can be omitted.
+    :math:`[0, 1]` but instead have been scaled to be in the range :math:`[0, N]` where
+    :math:`N` is the factor. For example, if the arrays are images in the range
+    :math:`[0, 255]`, then the scaling factor should be set to 255. If the arrays are
+    already in the range :math:`[0, 1]`, then the scale can be omitted.
 
     Args:
-        pred (npt.NDArray): predicate (inferred) array
-        gt (npt.NDArray): ground-truth array
-        scale (float): scaling factor that was used on the input arrays (if any)
+        pred: predicate (inferred) array
+        gt: ground-truth array
+        scale: scaling factor that was used on the input arrays. Defaults to 1.
 
     Returns:
-        float: the MAE score.
+        The MAE score.
     """
     return _mae(pred, gt, scale)
 
@@ -390,18 +392,18 @@ def calculate_mae_torch(
     Compute the MAE (Mean-Average Precision) score.
 
     Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
-    The scale argument is used in the event that the input tensors are not in the range
-    [0, 1] but instead have been scaled to be in the range [0, N] where N is the factor.
-    For example, if the tensors are images in the range [0, 255], then the scaling factor
-    should be set to 255. If the tensors are already in the range [0, 1], then the scale
-    can be omitted.
+    The scale argument is used in the event that the input arrays are not in the range
+    :math:`[0, 1]` but instead have been scaled to be in the range :math:`[0, N]` where
+    :math:`N` is the factor. For example, if the arrays are images in the range
+    :math:`[0, 255]`, then the scaling factor should be set to 255. If the arrays are
+    already in the range :math:`[0, 1]`, then the scale can be omitted.
 
     Args:
-        pred (torch.Tensor): predicate (inferred) tensor
-        gt (torch.Tensor): ground-truth tensor
-        scale (float): scaling factor that was used on the input tensors (if any)
+        pred: predicate (inferred) tensor
+        gt: ground-truth tensor
+        scale: scaling factor that was used on the input tensors. Defaults to 1.
 
     Returns:
-        float: the MAE score.
+        The MAE score.
     """
     return _mae_torch(pred, gt)

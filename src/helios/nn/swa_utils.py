@@ -10,9 +10,9 @@ class EMA(nn.Module):
     Implements Exponential Moving Average (EMA).
 
     Args:
-        net (nn.Module): the bare network on which EMA will be performed.
-        decay (float): decay rate.
-        device (torch.device | None): the device to be used.
+        net: the bare network on which EMA will be performed.
+        decay: decay rate. Defaults to 0.9997.
+        device: (optional) the device to be used.
     """
 
     def __init__(
@@ -60,7 +60,7 @@ class EMA(nn.Module):
         Evaluate the EMA wrapper on the network inputs.
 
         Args:
-            args (Any): named parameters for your network's forward function.
-            kwargs (Any): keyword arguments for your network's forward function.
+            args: named parameters for your network's forward function.
+            kwargs: keyword arguments for your network's forward function.
         """
         return self._module(*args, **kwargs)

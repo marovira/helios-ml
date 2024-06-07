@@ -31,6 +31,56 @@ def _register_default_optimizers(registry: core.Registry) -> None:
 
 
 OPTIMIZER_REGISTRY = core.Registry("optimizer")
+"""
+Global instance of the registry for optimizers.
+
+By default, the registry contains the following optimizers:
+
+.. list-table:: Optimizers
+    :header-rows: 1
+
+    * - Optimizer
+      - Name
+    * - torch.optim.Adadelta
+      - Adadelta
+    * - torch.optim.Adagrad
+      - Adagrad
+    * - torch.optim.Adam
+      - Adam
+    * - torch.optim.AdamW
+      - AdamW
+    * - torch.optim.SparseAdam
+      - SparseAdam
+    * - torch.optim.Adamax
+      - Adamax
+    * - torch.optim.ASGD
+      - ASGD
+    * - torch.optim.LBFGS
+      - LBFGS
+    * - torch.optim.NAdam
+      - NAdam
+    * - torch.optim.RAdam
+      - RAdam
+    * - torch.optim.RMSprop
+      - RMSprop
+    * - torch.optim.Rprop
+      - Rprop
+    * - torch.optim.SGD
+      - SGD
+
+Example:
+    .. code-block:: python
+
+        import helios.optim as hlo
+
+        # This automatically registers your optimizer.
+        @hlo.OPTIMIZER_REGISTRY.register
+        class MyOptimizer:
+            ...
+
+        # Alternatively you can manually register a optimizer like this:
+        hlo.OPTIMIZER_REGISTRY.register(MyOptimizer)
+"""
 _register_default_optimizers(OPTIMIZER_REGISTRY)
 
 
@@ -41,10 +91,10 @@ def create_optimizer(
     Create the optimizer for the given type.
 
     Args:
-        type_name (str): the type of the optimizer to create.
+        type_name: the type of the optimizer to create.
         args: positional arguments to pass into the optimizer.
         kwargs: keyword arguments to pass into the optimizer.
     Returns:
-        nn.Module: the optimizer.
+        The optimizer.
     """
     return OPTIMIZER_REGISTRY.get(type_name)(*args, **kwargs)
