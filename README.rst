@@ -33,6 +33,7 @@
 .. |ORTMinVersion| replace:: 1.17.1
 .. |PLTMinVersion| replace:: 3.8.4
 
+.. what_is_helios
 What is Helios?
 ---------------
 
@@ -53,8 +54,9 @@ Helios is focused on providing a simple and straight-forward interface that abst
 of the common code patterns while retaining the ability to be easily overridden to suit
 the individual needs of each training scheme.
 
+.. main_features
 Main Features
-~~~~~~~~~~~~~
+-------------
 
 Helios offers the following functionality out of the box:
 
@@ -69,6 +71,7 @@ Helios offers the following functionality out of the box:
    optimizers, schedulers, etc.
 4. Correct handling of logging when doing distributed training (even over multiple nodes).
 
+.. installation
 Installation
 ------------
 
