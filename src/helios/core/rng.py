@@ -29,7 +29,7 @@ class DefaultNumpyRNG:
 
     def __init__(self, seed: int | list[int] | tuple[int] | None = None):
         """Create the default RNG."""
-        self._generator = npr.Generator(npr.PCG64(seed))
+        self._generator = npr.default_rng(seed)
 
     @property
     def generator(self) -> npr.Generator:
