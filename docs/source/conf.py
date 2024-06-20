@@ -13,14 +13,14 @@ author = "Mauricio A. Rovira Galvez"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions: list[str] = [
+extensions = [
     "sphinx.ext.napoleon",
     "autoapi.extension",
     "sphinx.ext.mathjax",
 ]
 autosummary_generate = True
 templates_path = ["_templates"]
-exclude_patterns: list[str] = []
+exclude_patterns = []  # type: ignore[var-annotated]
 
 autoapi_dirs = ["../../src"]
 autoapi_options = [
