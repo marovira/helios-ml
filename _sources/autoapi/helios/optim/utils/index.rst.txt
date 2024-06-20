@@ -1,0 +1,88 @@
+helios.optim.utils
+==================
+
+.. py:module:: helios.optim.utils
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   helios.optim.utils.OPTIMIZER_REGISTRY
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.optim.utils.create_optimizer
+
+
+Module Contents
+---------------
+
+.. py:data:: OPTIMIZER_REGISTRY
+
+   Global instance of the registry for optimizers.
+
+   By default, the registry contains the following optimizers:
+
+   .. list-table:: Optimizers
+       :header-rows: 1
+
+       * - Optimizer
+         - Name
+       * - torch.optim.Adadelta
+         - Adadelta
+       * - torch.optim.Adagrad
+         - Adagrad
+       * - torch.optim.Adam
+         - Adam
+       * - torch.optim.AdamW
+         - AdamW
+       * - torch.optim.SparseAdam
+         - SparseAdam
+       * - torch.optim.Adamax
+         - Adamax
+       * - torch.optim.ASGD
+         - ASGD
+       * - torch.optim.LBFGS
+         - LBFGS
+       * - torch.optim.NAdam
+         - NAdam
+       * - torch.optim.RAdam
+         - RAdam
+       * - torch.optim.RMSprop
+         - RMSprop
+       * - torch.optim.Rprop
+         - Rprop
+       * - torch.optim.SGD
+         - SGD
+
+   .. rubric:: Example
+
+   .. code-block:: python
+
+       import helios.optim as hlo
+
+       # This automatically registers your optimizer.
+       @hlo.OPTIMIZER_REGISTRY.register
+       class MyOptimizer:
+           ...
+
+       # Alternatively you can manually register a optimizer like this:
+       hlo.OPTIMIZER_REGISTRY.register(MyOptimizer)
+
+.. py:function:: create_optimizer(type_name: str, *args: Any, **kwargs: Any) -> torch.nn.Module
+
+   Create the optimizer for the given type.
+
+   :param type_name: the type of the optimizer to create.
+   :param args: positional arguments to pass into the optimizer.
+   :param kwargs: keyword arguments to pass into the optimizer.
+
+   :returns: The optimizer.
+
+

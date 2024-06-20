@@ -1,0 +1,905 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="helios.model.utils" href="../utils/index.html" /><link rel="prev" title="helios.model" href="../index.html" />
+
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+        <title>helios.model.model - Helios documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">Helios  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../../_static/logo-transparent.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Training a Classifier with Helios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">helios</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../core/cuda/index.html">helios.core.cuda</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../core/distributed/index.html">helios.core.distributed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../core/logging/index.html">helios.core.logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../core/rng/index.html">helios.core.rng</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../core/utils/index.html">helios.core.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../data/index.html">helios.data</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of helios.data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../data/datamodule/index.html">helios.data.datamodule</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../data/functional/index.html">helios.data.functional</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../data/samplers/index.html">helios.data.samplers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../data/transforms/index.html">helios.data.transforms</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../losses/index.html">helios.losses</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of helios.losses</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../losses/utils/index.html">helios.losses.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../losses/weighted_loss/index.html">helios.losses.weighted_loss</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../metrics/index.html">helios.metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of helios.metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../metrics/functional/index.html">helios.metrics.functional</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../metrics/metrics/index.html">helios.metrics.metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">helios.model</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of helios.model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">helios.model.model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">helios.model.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../nn/index.html">helios.nn</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of helios.nn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../nn/swa_utils/index.html">helios.nn.swa_utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../nn/utils/index.html">helios.nn.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../optim/index.html">helios.optim</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of helios.optim</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../optim/utils/index.html">helios.optim.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../scheduler/utils/index.html">helios.scheduler.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../onnx/index.html">helios.onnx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../trainer/index.html">helios.trainer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../../../../_sources/autoapi/helios/model/model/index.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-helios.model.model">
+<span id="helios-model-model"></span><h1>helios.model.model<a class="headerlink" href="#module-helios.model.model" title="Link to this heading">¶</a></h1>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Model</span></code></a></p></td>
+<td><p>Base class that groups together the functionality needed to train networks.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="helios.model.model.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.model.model.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helios.model.model.Model" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Base class that groups together the functionality needed to train networks.</p>
+<p>The use of this class is to standardize the way networks are created and trained. This
+allows the training code to be shared across multiple networks, reducing code
+duplication.
+The functions provided by the Model class can be overridden to satisfy the individual
+needs of each of the network(s) that need to be trained.</p>
+<p class="rubric">Example</p>
+<p>Suppose the body of the training loop looks something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataloader</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># The dataloader for our dataset.</span>
+<span class="n">net</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># The network we wish to train.</span>
+<span class="n">optimzer</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># The optimizer</span>
+<span class="n">criterion</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># The loss function</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataloder</span><span class="p">:</span>
+    <span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>
+
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then the code would be placed into a Model as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.model</span> <span class="k">as</span> <span class="nn">hlm</span>
+<span class="kn">import</span> <span class="nn">helios.trainer</span> <span class="k">as</span> <span class="nn">hlt</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_net</span> <span class="o">=</span> <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span> <span class="o">=</span> <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">hlt</span><span class="o">.</span><span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>
+
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">outs</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The example shown here is the most basic version of the training code and can be
+expanded in various ways by overriding the different available functions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_name</strong> – the name that will be used to identify the model when checkpoints are
+saved.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="helios.model.model.Model.save_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">save_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#helios.model.model.Model.save_name" title="Link to this definition">¶</a></dt>
+<dd><p>The name of the model used for saving checkpoints and final networks.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="helios.model.model.Model.is_distributed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_distributed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#helios.model.model.Model.is_distributed" title="Link to this definition">¶</a></dt>
+<dd><p>Flag controlling whether distributed training is being used or not.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="helios.model.model.Model.map_loc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">map_loc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#helios.model.model.Model.map_loc" title="Link to this definition">¶</a></dt>
+<dd><p>The location to map loaded weights from a checkpoint or pre-trained file.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="helios.model.model.Model.device">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">torch.device</span></em><a class="headerlink" href="#helios.model.model.Model.device" title="Link to this definition">¶</a></dt>
+<dd><p>The device on which the tensors of the model are mapped to.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="helios.model.model.Model.rank">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rank</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#helios.model.model.Model.rank" title="Link to this definition">¶</a></dt>
+<dd><p>The local rank (device id) that the model is running on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="helios.model.model.Model.trainer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trainer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><span class="pre">helios.trainer.Trainer</span></a></em><a class="headerlink" href="#helios.model.model.Model.trainer" title="Link to this definition">¶</a></dt>
+<dd><p>Reference to the trainer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.setup">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fast_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.setup" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize all the state necessary for training.</p>
+<p>Use this function to load all the networks, schedulers, optimizers, losses, etc.
+that you require for training. This will be called before training starts and
+after the distributed processes have been launched (if applicable).</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">fast_init</span></code> flag is used to indicate that the model should <strong>not</strong> load any
+training state. This can be used for testing or for other purposes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fast_init</strong> – if True, only networks are loaded.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.load_for_testing">
+<span class="sig-name descname"><span class="pre">load_for_testing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.load_for_testing" title="Link to this definition">¶</a></dt>
+<dd><p>Load the network(s) used for testing.</p>
+<p>When testing, the trainer will try to load the last checkpoint saved during
+training. If it is unable to find one, it will call this function to ensure the
+model loads the state of the network(s) for testing. If you wish to load your
+network using separate logic, use this function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.load_state_dict">
+<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.load_state_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Load the model state from the given state dictionary.</p>
+<p>Use this function to restore any training state from a checkpoint. Note that any
+weights will have been automatically mapped to the correct device.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">fast_init</span></code> flag is used to indicate that the model should <strong>not</strong> load any
+training state. This can be used for testing or for other purposes. As such, you
+should only load the state of your network(s) and nothing else.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_dict</strong> – the state dictionary to load from.</p></li>
+<li><p><strong>fast_init</strong> – if True, only networks need to be loaded.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.state_dict">
+<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helios.model.model.Model.state_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Get the state dictionary of the model.</p>
+<p>Use this function to save any state that you require for checkpoints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The state dictionary of the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.trained_state_dict">
+<span class="sig-name descname"><span class="pre">trained_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helios.model.model.Model.trained_state_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Get the state dictionary for the trained model.</p>
+<p>Use this function to save the state required for the final trained model. The
+returned dictionary should contain only the necessary information to re-create the
+network(s) along with any additional data you require.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> – positional arguments.</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The state dictionary without any training data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.append_metadata_to_chkpt_name">
+<span class="sig-name descname"><span class="pre">append_metadata_to_chkpt_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chkpt_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#helios.model.model.Model.append_metadata_to_chkpt_name" title="Link to this definition">¶</a></dt>
+<dd><p>Append additional data to the checkpoint filename.</p>
+<p>Use this function to append the value of the loss function(s), validation
+metric(s), or any extra metadata you wish to add to the name of the checkpoint.
+Note that the epoch and iteration numbers are added automatically. The extension
+will also be added automatically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chkpt_name</strong> – the name of the checkpoint filename (without extension).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The name with any additional metadata.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.train">
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.train" title="Link to this definition">¶</a></dt>
+<dd><p>Switch the model to training mode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_training_start">
+<span class="sig-name descname"><span class="pre">on_training_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_training_start" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any necessary actions when training starts.</p>
+<p>You may use this function to log the network architecture, hyper-params, etc.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_training_epoch_start">
+<span class="sig-name descname"><span class="pre">on_training_epoch_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_training_epoch_start" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any necessary actions when a training epoch is started.</p>
+<p>This function is called whenever a new training epoch begins, at the top of the
+training loop. You may use this function to set any necessary training state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>current_epoch</strong> – the epoch number that has just started.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_training_batch_start">
+<span class="sig-name descname"><span class="pre">on_training_batch_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../trainer/index.html#helios.trainer.TrainingState" title="helios.trainer.TrainingState"><span class="pre">helios.trainer.TrainingState</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_training_batch_start" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any actions when a training batch is started.</p>
+<p>This function is called before <a class="reference internal" href="#helios.model.model.Model.train_step" title="helios.model.model.Model.train_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train_step()</span></code></a> is called. By default, it
+will clear out the loss table, but you may also use it to do any additional tasks
+prior to the training step itself.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state</strong> – the current training state.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.train_step">
+<span class="sig-name descname"><span class="pre">train_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../trainer/index.html#helios.trainer.TrainingState" title="helios.trainer.TrainingState"><span class="pre">helios.trainer.TrainingState</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.train_step" title="Link to this definition">¶</a></dt>
+<dd><p>Perform a single training step.</p>
+<p>The input is the returned value from the datasets you supplied to the trainer. In
+this function, you should perform the forward and backward passes for your
+network(s). If you use schedulers, they should be updated here as well. Note that
+you do not have to clear the losses or gather them. This will be handled
+automatically for you. Also keep in mind that the contents of the batch have
+<strong>not</strong> been moved to the current device. It is your responsibility to do so.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> – the batch data returned from the dataset.</p></li>
+<li><p><strong>state</strong> – the current training state.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_training_batch_end">
+<span class="sig-name descname"><span class="pre">on_training_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../trainer/index.html#helios.trainer.TrainingState" title="helios.trainer.TrainingState"><span class="pre">helios.trainer.TrainingState</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">should_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_training_batch_end" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any actions when a training batch ends.</p>
+<p>This function is called after train_step is called. By default, it will gather all
+the losses stored in self._loss_items (if using distributed training) and will
+update the running losses using those values. You may also use this function to
+log your losses or perform any additional tasks after the training step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> – the current training state.</p></li>
+<li><p><strong>should_log</strong> – if true, then logging should be performed. Defaults to false.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_training_epoch_end">
+<span class="sig-name descname"><span class="pre">on_training_epoch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_training_epoch_end" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any necessary actions when a training epoch ends.</p>
+<p>This function is called at the bottom of the epoch loop. You may use this
+function to perform any training operations you require.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>current_epoch</strong> – the epoch number that has just ended.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_training_end">
+<span class="sig-name descname"><span class="pre">on_training_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_training_end" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any necessary actions when training ends.</p>
+<p>You may use this function to update any weight averaging networks, or any other
+tasks that should only happen at the end of training.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.eval">
+<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.eval" title="Link to this definition">¶</a></dt>
+<dd><p>Switch the model to evaluation mode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_validation_start">
+<span class="sig-name descname"><span class="pre">on_validation_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validation_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_validation_start" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any necessary actions when validation starts.</p>
+<p>By default, this will clear out the table of validation values, but you may use it
+for any other tasks that should happen when validation begins.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>validation_cycle</strong> – the validation cycle number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_validation_batch_start">
+<span class="sig-name descname"><span class="pre">on_validation_batch_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_validation_batch_start" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any actions when a validation batch is started.</p>
+<p>This function is called before <a class="reference internal" href="#helios.model.model.Model.valid_step" title="helios.model.model.Model.valid_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">valid_step()</span></code></a> is called. No steps are
+performed by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>step</strong> – the current validation batch.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.valid_step">
+<span class="sig-name descname"><span class="pre">valid_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.valid_step" title="Link to this definition">¶</a></dt>
+<dd><p>Perform a single validation step.</p>
+<p>The input is the returned value from the datasets you supplied to the trainer. In
+this function, you should perform any steps necessary to compute the validation
+metric(s) for your network(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> – the batch data returned from the dataset.</p></li>
+<li><p><strong>step</strong> – the current validation batch.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_validation_batch_end">
+<span class="sig-name descname"><span class="pre">on_validation_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_validation_batch_end" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any actions when a validation batch ends.</p>
+<p>This function is called after <a class="reference internal" href="#helios.model.model.Model.valid_step" title="helios.model.model.Model.valid_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">valid_step()</span></code></a> is called. No steps are
+performed by default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>step</strong> – the current validation batch.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_validation_end">
+<span class="sig-name descname"><span class="pre">on_validation_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validation_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_validation_end" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any necessary actions when validation ends.</p>
+<p>By default, this function will clear out the running loss table, but you may use
+this function to compute any final validation metrics as well as log them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>validation_cycle</strong> – the validation cycle number.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.have_metrics_improved">
+<span class="sig-name descname"><span class="pre">have_metrics_improved</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#helios.model.model.Model.have_metrics_improved" title="Link to this definition">¶</a></dt>
+<dd><p>Determine whether the current validation results are an improvement or not.</p>
+<p>This is used when early stopping is enabled in the trainer to determine whether
+the stop cycle count should increase or not. This is called immediately after the
+validation cycle finishes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>False if no improvements were seen in the last validation cycle.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.should_training_stop">
+<span class="sig-name descname"><span class="pre">should_training_stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#helios.model.model.Model.should_training_stop" title="Link to this definition">¶</a></dt>
+<dd><p>Determine whether training should stop or continue.</p>
+<p>This is used in the event that training should stop when:</p>
+<ul class="simple">
+<li><p>A validation metric crosses a certain threshold,</p></li>
+<li><p>A loss value becomes invalid,</p></li>
+<li><p>Any other circumstance under which training should stop immediately.</p></li>
+</ul>
+<p>This function is called by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code> at the following times:</p>
+<ul class="simple">
+<li><p>After a full training step has finished. That is, after
+<a class="reference internal" href="#helios.model.model.Model.on_training_batch_start" title="helios.model.model.Model.on_training_batch_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_batch_start()</span></code></a>, <a class="reference internal" href="#helios.model.model.Model.train_step" title="helios.model.model.Model.train_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train_step()</span></code></a>, and
+<a class="reference internal" href="#helios.model.model.Model.on_training_batch_end" title="helios.model.model.Model.on_training_batch_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_batch_end()</span></code></a> have been called.</p></li>
+<li><p>After a validation cycle has finished. That is, after <em>all</em> of the validation
+callbacks have been called.</p></li>
+<li><p>After each epoch has concluded (if training by epoch). Note that this happens
+<em>after</em> <a class="reference internal" href="#helios.model.model.Model.on_training_epoch_end" title="helios.model.model.Model.on_training_epoch_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_epoch_end()</span></code></a>.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>False if training should continue, true otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_testing_start">
+<span class="sig-name descname"><span class="pre">on_testing_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_testing_start" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any necessary actions when testing starts.</p>
+<p>By default, this will clear out the table of testing values, but you may use it
+for any other tasks that should happen when testing begins.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_testing_batch_start">
+<span class="sig-name descname"><span class="pre">on_testing_batch_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_testing_batch_start" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any actions when a testing batch is started.</p>
+<p>This function is called before test_step is called. No steps are performed by
+default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>step</strong> – the current testing batch.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.test_step">
+<span class="sig-name descname"><span class="pre">test_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.test_step" title="Link to this definition">¶</a></dt>
+<dd><p>Perform a single testing step.</p>
+<p>The input is the returned value from the datasets you supplied to the trainer. In
+this function, you should perform any steps necessary to compute the testing
+metric(s) for your network(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch</strong> – the batch data returned from the dataset.</p></li>
+<li><p><strong>step</strong> – the current validation batch.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_testing_batch_end">
+<span class="sig-name descname"><span class="pre">on_testing_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_testing_batch_end" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any actions when a testing batch ends.</p>
+<p>This function is called after test_step is called. No steps are performed by
+default.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>step</strong> – the current testing batch.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.on_testing_end">
+<span class="sig-name descname"><span class="pre">on_testing_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_testing_end" title="Link to this definition">¶</a></dt>
+<dd><p>Perform any necessary actions when testing ends.</p>
+<p>You may use this function to compute any final testing metrics as well as log
+them.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../utils/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">helios.model.utils</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../index.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">helios.model</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Mauricio A. Rovira Galvez
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">helios.model.model</a><ul>
+<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#helios.model.model.Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a><ul>
+<li><a class="reference internal" href="#helios.model.model.Model.save_name"><code class="docutils literal notranslate"><span class="pre">Model.save_name</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.is_distributed"><code class="docutils literal notranslate"><span class="pre">Model.is_distributed</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.map_loc"><code class="docutils literal notranslate"><span class="pre">Model.map_loc</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.device"><code class="docutils literal notranslate"><span class="pre">Model.device</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.rank"><code class="docutils literal notranslate"><span class="pre">Model.rank</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.trainer"><code class="docutils literal notranslate"><span class="pre">Model.trainer</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.setup"><code class="docutils literal notranslate"><span class="pre">Model.setup()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.load_for_testing"><code class="docutils literal notranslate"><span class="pre">Model.load_for_testing()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.load_state_dict"><code class="docutils literal notranslate"><span class="pre">Model.load_state_dict()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.state_dict"><code class="docutils literal notranslate"><span class="pre">Model.state_dict()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.trained_state_dict"><code class="docutils literal notranslate"><span class="pre">Model.trained_state_dict()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.append_metadata_to_chkpt_name"><code class="docutils literal notranslate"><span class="pre">Model.append_metadata_to_chkpt_name()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.train"><code class="docutils literal notranslate"><span class="pre">Model.train()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_training_start"><code class="docutils literal notranslate"><span class="pre">Model.on_training_start()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_training_epoch_start"><code class="docutils literal notranslate"><span class="pre">Model.on_training_epoch_start()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_training_batch_start"><code class="docutils literal notranslate"><span class="pre">Model.on_training_batch_start()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.train_step"><code class="docutils literal notranslate"><span class="pre">Model.train_step()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_training_batch_end"><code class="docutils literal notranslate"><span class="pre">Model.on_training_batch_end()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_training_epoch_end"><code class="docutils literal notranslate"><span class="pre">Model.on_training_epoch_end()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_training_end"><code class="docutils literal notranslate"><span class="pre">Model.on_training_end()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.eval"><code class="docutils literal notranslate"><span class="pre">Model.eval()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_validation_start"><code class="docutils literal notranslate"><span class="pre">Model.on_validation_start()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_validation_batch_start"><code class="docutils literal notranslate"><span class="pre">Model.on_validation_batch_start()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.valid_step"><code class="docutils literal notranslate"><span class="pre">Model.valid_step()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_validation_batch_end"><code class="docutils literal notranslate"><span class="pre">Model.on_validation_batch_end()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_validation_end"><code class="docutils literal notranslate"><span class="pre">Model.on_validation_end()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.have_metrics_improved"><code class="docutils literal notranslate"><span class="pre">Model.have_metrics_improved()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.should_training_stop"><code class="docutils literal notranslate"><span class="pre">Model.should_training_stop()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_testing_start"><code class="docutils literal notranslate"><span class="pre">Model.on_testing_start()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_testing_batch_start"><code class="docutils literal notranslate"><span class="pre">Model.on_testing_batch_start()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.test_step"><code class="docutils literal notranslate"><span class="pre">Model.test_step()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_testing_batch_end"><code class="docutils literal notranslate"><span class="pre">Model.on_testing_batch_end()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.on_testing_end"><code class="docutils literal notranslate"><span class="pre">Model.on_testing_end()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/scripts/furo.js?v=4e2eecee"></script>
+    </body>
+</html>

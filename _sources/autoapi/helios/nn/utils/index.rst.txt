@@ -1,0 +1,71 @@
+helios.nn.utils
+===============
+
+.. py:module:: helios.nn.utils
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   helios.nn.utils.NETWORK_REGISTRY
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.nn.utils.create_network
+   helios.nn.utils.default_init_weights
+
+
+Module Contents
+---------------
+
+.. py:data:: NETWORK_REGISTRY
+
+   Global instance of the registry for networks.
+
+   .. rubric:: Example
+
+   .. code-block:: python
+
+       import helios.nn as hln
+
+       # This automatically registers your network.
+       @hln.NETWORK_REGISTRY.register
+       class MyNetwork:
+           ...
+
+       # Alternatively you can manually register a network like this:
+       hln.NETWORK_REGISTRY.register(MyNetwork)
+
+.. py:function:: create_network(type_name: str, *args: Any, **kwargs: Any) -> torch.nn.Module
+
+   Create the network for the given type.
+
+   :param type_name: the type of the network to create.
+   :param args: positional arguments to pass into the network.
+   :param kwargs: keyword arguments to pass into the network.
+
+   :returns: The network.
+
+
+.. py:function:: default_init_weights(module_list: list[torch.nn.Module] | torch.nn.Module, scale: float = 1, bias_fill: float = 0, **kwargs: Any) -> None
+
+   Initialize network weights.
+
+   Specifically, this function will default initialize the following types of blocks:
+
+   * ``torch.nn.Conv2d``,
+   * ``torch.nn.Linear``,
+   * ``torch.nn.modules.batchnorm._BatchNorm``
+
+   :param module_list: the list of modules to initialize.
+   :param scale: scale initialized weights, especially for residual blocks. Defaults to 1.
+   :param bias_fill: bias fill value. Defaults to 0.
+   :param kwargs: keyword arguments for the ``torch.nn.init.kaiming_normal_`` function.
+
+

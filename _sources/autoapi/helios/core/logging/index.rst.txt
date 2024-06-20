@@ -1,0 +1,351 @@
+helios.core.logging
+===================
+
+.. py:module:: helios.core.logging
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.core.logging.RootLogger
+   helios.core.logging.TensorboardWriter
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.core.logging.get_default_log_name
+   helios.core.logging.create_default_loggers
+   helios.core.logging.restore_default_loggers
+   helios.core.logging.setup_default_loggers
+   helios.core.logging.flush_default_loggers
+   helios.core.logging.close_default_loggers
+   helios.core.logging.get_root_logger
+   helios.core.logging.is_root_logger_active
+   helios.core.logging.get_tensorboard_writer
+
+
+Module Contents
+---------------
+
+.. py:class:: RootLogger
+
+   Logger used to log while training to a file.
+
+   The log file will be placed in the logs folder as determined by the given path.
+
+   :param log_file: path to the log file.
+
+
+   .. py:method:: setup(log_file: pathlib.Path | None = None) -> None
+
+      Finish configuring the root logger.
+
+      In particular, this function will create the file logger provided that the input
+      path is not ``None``. If the path points to a file that already exists, then the
+      logger will automatically append to the file, otherwise a new file will be
+      created.
+
+      :param log_file: the (optional) path to the log file.
+
+
+
+   .. py:property:: logger
+      :type: logging.Logger
+
+      Return the logger instance.
+
+
+   .. py:property:: log_file
+      :type: pathlib.Path | None
+
+      Return the path to the current log file.
+
+      If the path for the log file was originally ``None``, this will return ``None``
+      as well.
+
+
+   .. py:method:: info(msg: str, **kwargs: Any) -> None
+
+      Log using the ``INFO`` tag.
+
+      Only available for the main process in distributed training.
+
+      :param msg: the message to log
+      :param kwargs: keyword arguments to logging.info
+
+
+
+   .. py:method:: warning(msg: str, **kwargs: Any) -> None
+
+      Log using the ``WARNING`` tag.
+
+      :param msg: the message to log
+      :param kwargs: keyword arguments to logging.warning
+
+
+
+   .. py:method:: error(msg: str, **kwargs: Any) -> None
+
+      Log using the ``ERROR`` tag.
+
+      :param msg: the message to log
+      :type msg: str
+      :param kwargs: keyword arguments to logging.error
+      :type kwargs: Any
+
+
+
+   .. py:method:: exception(msg: str, **kwargs: Any) -> None
+
+      Log an exception.
+
+      :param msg: the message to log
+      :param kwargs: keyword arguments to ``logging.exception``
+
+
+
+   .. py:method:: flush() -> None
+
+      Flush the log.
+
+
+
+   .. py:method:: close() -> None
+
+      Close the log.
+
+
+
+.. py:class:: TensorboardWriter
+
+   Wrapper for the ``Tensorboard`` writer.
+
+   :param run_path: path to the directory for the run.
+
+
+   .. py:method:: setup(run_path: pathlib.Path) -> None
+
+      Finish configuring the ``TensorboardWriter``.
+
+      In particular, this function will create the writer instance and assign it to the
+      given path. If the path already exists, Tensorboard will automatically append to
+      the previous run. In distributed training, the writer will only be created on rank
+      0.
+
+      :param run_path:: the path to the run folder.:
+
+
+
+   .. py:property:: run_path
+      :type: pathlib.Path
+
+      Return the path to the current run folder.
+
+
+   .. py:method:: add_scalar(tag: str, scalar_value: float | str | torch.Tensor, global_step: int | None = None) -> None
+
+      Add scalar data to the log.
+
+      :param tag: name of the scalar to plot.
+      :param scalar_value: the scalar to plot.
+      :param global_step: the (optional) step for the given scalar.
+
+
+
+   .. py:method:: add_scalars(main_tag: str, tag_scalar_dict: dict[str, float | torch.Tensor], global_step: int | None) -> None
+
+      Add multiple scalars to the log.
+
+      :param main_tag: the parent name for the tags
+      :param tag_scalar_dict: key-value pair storing tag and corresponding values.
+      :param global_step: (optional) global step value to record.
+
+
+
+   .. py:method:: add_image(tag: str, img_tensor: torch.Tensor | numpy.typing.NDArray, global_step: int | None = None, dataformats: str = 'CHW') -> None
+
+      Add image data to log.
+
+      :param tag: data identifier.
+      :param img_tensor: image data.
+      :param global_step: (optional) global step value to record
+      :param dataformats: image data format specification in the form CHW, HWC, HW, WH,
+                          etc.
+
+
+
+   .. py:method:: add_images(tag: str, img_tensor: torch.Tensor | numpy.typing.NDArray, global_step: int | None = None, dataformats: str = 'NCHW') -> None
+
+      Add batched image data to log.
+
+      :param tag: data identifier.
+      :param img_tensor: image data.
+      :param global_step: (optional) global step value to record.
+      :param dataformats: image data format specification in the form NCHW, NHWC, CHW,
+                          HWC, HW, WH, etc.
+
+
+
+   .. py:method:: add_figure(tag: str, figure: matplotlib.pyplot.Figure | list[matplotlib.pyplot.Figure], global_step: int | None = None, close: bool = True) -> None
+
+      Render matplotlib figure into an image and add it to a summary.
+
+      :param tag: data identifier.
+      :param figure: figure or a list of figures.
+      :param global_step: (optional) global step value to record.
+      :param close: flag to automatically close the figure.
+
+
+
+   .. py:method:: add_text(tag: str, text_string: str, global_step: int | None = None)
+
+      Add text data to log.
+
+      :param tag: data identifier.
+      :param text_string: string to save.
+      :param global_step: (optional) global step value to record.
+
+
+
+   .. py:method:: add_graph(model: torch.nn.Module, input_to_model: torch.Tensor | list[torch.Tensor] | None = None, verbose: bool = False, use_strict_trace: bool = True) -> None
+
+      Add graph data to log.
+
+      PyTorch currently supports CPU tracing only, so the model and its input(s) will be
+      automatically moved to the CPU prior to logging. Note that the model will be
+      copied prior to moving to the CPU to ensure the input model is not affected.
+
+      :param model: model to draw.
+      :param input_to_mode: a variable or tuple of variables to be fed.
+      :param verbose: whether to print graph structure in console.
+      :param use_strict_trace: whether to pass keyword argument strict to torch.jit.trace.
+
+
+
+   .. py:method:: add_pr_curve(tag: str, labels: torch.Tensor | numpy.typing.NDArray, predictions: torch.Tensor | numpy.typing.NDArray, global_step: int | None = None, num_thresholds: int = 127) -> None
+
+      Add a precision recall curve to the log.
+
+      Plotting a precision-recall curve lets you understand your model's performance
+      under different threshold settings. With this function, you provide the ground
+      truth labelling (T/F) and prediction confidence (usually the output of your model)
+      for each target. The TensorBoard UI will let you choose the threshold
+      interactively.
+
+      :param tag: data identifier.
+      :param labels: ground truth data. Binary label for each element.
+      :param predictions: the probability that an element be classified as true. Value
+                          should be in [0, 1].
+      :param global_step: (optional) global step value to record.
+      :param num_thresholds: number of thresholds used to draw the curve. Defaults to 127.
+
+
+
+   .. py:method:: add_hparams(hparam_dict: dict[str, Any], metric_dict: dict[str, Any], hparam_domain_discrete: dict[str, list[Any]] | None = None, run_name: str | None = None, global_step: int | None = None) -> None
+
+      Add a set of hyper-parameters to be compared in the log.
+
+      :param hparam_dict: each key-value pair in the dictionary is the name of the
+                          hyper-parameter and it's corresponding value. The type of the value can
+                          be one of ``bool``, ``string``, ``float``, ``int``, or ``None``.
+      :param metric_dict: each key-value pair in the dictionary is the name of the metric
+                          and it's corresponding value. Note that the key used here should be
+                          unique in the Tensorboard record.
+      :param hparam_domain_discrete:: a dictionary that contains names of hyper-parameters: and all the discrete values they can hold.
+      :param run_name: name of the run, to be included as part of the logdir.
+      :param global_step: (optional) global step value to record.
+
+
+
+   .. py:method:: flush() -> None
+
+      Flush any cached values to Tensorboard.
+
+
+
+   .. py:method:: close() -> None
+
+      Close the Tensorboard writer.
+
+
+
+.. py:function:: get_default_log_name(run_name: str) -> str
+
+   Generate the default name used for log files or Tensorboard runs.
+
+   :param run_name: the name of the run.
+
+   :returns: The string with the default name.
+
+
+.. py:function:: create_default_loggers(enable_tensorboard: bool = True) -> None
+
+   Construct the ``RootLogger`` and ``TensorboardWriter`` instances.
+
+   In distributed training, this function should be called AFTER the processes have been
+   created to ensure each process gets a copy of the loggers.
+
+   :param enable_tensorboard: (optional) enables the tensorboard writer. Defaults to true.
+
+
+.. py:function:: restore_default_loggers(log_path: pathlib.Path | None = None, run_path: pathlib.Path | None = None) -> None
+
+   Restore the default loggers from a previous run.
+
+   This function should be called whenever the loggers need to continue logging to the
+   same file/folder as a previous run.
+
+   :param log_path: (optional) path to the log file.
+   :param run_path: (optional) path to the Tensorboard run folder.
+
+   :raises RuntimeError: if the root logger hasn't been created.
+
+
+.. py:function:: setup_default_loggers(run_name: str, log_root: pathlib.Path | None = None, runs_root: pathlib.Path | None = None) -> None
+
+   Call the setup functions on the default loggers.
+
+   This function should be called when the loggers don't need to continue from a previous
+   run. If you need that, call restore_default_loggers instead.
+
+   :param run_name: the name of the current run.
+   :param log_root: (optional) path to the logs folder.
+   :param runs_root: (optional) path to the Tensorboard runs folder.
+
+
+.. py:function:: flush_default_loggers() -> None
+
+   Flushes the default loggers.
+
+
+.. py:function:: close_default_loggers() -> None
+
+   Close the default loggers and clears them.
+
+
+.. py:function:: get_root_logger() -> RootLogger
+
+   Get the root logger instance.
+
+   :returns: The root logger.
+
+
+.. py:function:: is_root_logger_active() -> bool
+
+   Check if the root logger has been created.
+
+
+.. py:function:: get_tensorboard_writer() -> TensorboardWriter | None
+
+   Return the Tensorboard writter.
+
+   If Tensorboard is disabled, this function will return ``None``
+
+   :returns: The Tensorboard logger or ``None`` if it doesn't exist.
+
+

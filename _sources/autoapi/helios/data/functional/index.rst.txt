@@ -1,0 +1,113 @@
+helios.data.functional
+======================
+
+.. py:module:: helios.data.functional
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.data.functional.load_image
+   helios.data.functional.tensor_to_numpy
+   helios.data.functional.show_tensor
+   helios.data.functional.show_tensors
+   helios.data.functional.convert_to_hwc
+   helios.data.functional.to_y_channel
+   helios.data.functional.bgr2ycbcr
+   helios.data.functional.rgb2ycbcr_torch
+
+
+Module Contents
+---------------
+
+.. py:function:: load_image(path: pathlib.Path, out_fmt: str = '', as_numpy: bool = True) -> numpy.typing.NDArray | PIL.Image.Image
+
+   Load the given image.
+
+   ``out_fmt`` is a format string that can be passed in to PIL.Image.convert. Please
+   see the documentation for accepted strings. If no string is passed, the image will be
+   converted to RGB format.
+   By default, the output is a NumPY array. If you need a PIL image instead, set
+   ``as_numpy`` to false.
+
+   :param path: the path to the image to load.
+   :param out_fmt: the format to convert the loaded image to. Defaults to empty.
+   :param as_numpy: if true, the loaded image will be returned as a NumPY array, otherwise
+                    it is returned as a PIL image. Defaults to true.
+
+   :returns: The loaded image.
+
+
+.. py:function:: tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> numpy.typing.NDArray
+
+   Convert the given tensor to a numpy array.
+
+   :param tens: the tensor to convert in the range :math:`[0, 1]`
+   :param as_float: whether to leave the output as float or convert to int.
+
+   :returns: The converted array.
+
+
+.. py:function:: show_tensor(tens: torch.Tensor, title: str = 'debug window') -> None
+
+   Display the image held by the tensor. Useful for debugging purposes.
+
+   :param tens: the image tensor to display in range :math:`[0, 1]`.
+   :param title: the title of the displayed window. Defaults to "debug window".
+
+
+.. py:function:: show_tensors(tens: torch.Tensor) -> None
+
+   Show batches of tensors.
+
+   :param tens: the batch of tensors to display in range :math:`[0, 1]`.
+
+
+.. py:function:: convert_to_hwc(img: numpy.typing.NDArray, input_order: str = 'HWC') -> numpy.typing.NDArray
+
+   Change the order of the input image channels so the result is in (h, w, c) order.
+
+   If the input image is a single-channel image, then the return is (h, w, 1).
+
+   :param img: input image.
+   :param input_order: the order of the channels of the input image. Must be one of 'HWC'
+                       or 'CHW'.
+
+   :returns: The shuffled image.
+
+
+.. py:function:: to_y_channel(img: numpy.typing.NDArray) -> numpy.typing.NDArray
+
+   Return the Y (luma) channel of a YCbCr image.
+
+   :param img: input image in YCbCr format. Must be in the range :math:`[0, 255]`.
+
+   :returns: The luma channel of the input image.
+
+
+.. py:function:: bgr2ycbcr(img: numpy.typing.NDArray, only_y: bool = False) -> numpy.typing.NDArray
+
+   Convert the given numpy image array from BGR to YCBCR.
+
+   If only the Y channel is required, set ``only_y`` to true.
+
+   :param img: the BGR image to convert.
+   :param only_y: if true, only the luma (Y) channel will be returned.
+
+   :returns: The converted image.
+
+
+.. py:function:: rgb2ycbcr_torch(img: torch.Tensor, only_y: bool = False) -> torch.Tensor
+
+   Convert the given torch Tensor image array from RGB to YCBCR.
+
+   If only the Y channel is required, set ``only_y`` to true.
+
+   :param img: the BGR image to convert.
+   :param only_y: if true, only the luma (Y) channel will be returned.
+
+   :returns: The converted image.
+
+

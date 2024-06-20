@@ -1,0 +1,55 @@
+helios.losses.weighted_loss
+===========================
+
+.. py:module:: helios.losses.weighted_loss
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.losses.weighted_loss.WeightedLoss
+
+
+Module Contents
+---------------
+
+.. py:class:: WeightedLoss(loss_weight: float = 1.0)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Defines a base class for weighted losses.
+
+   The value of the final loss is determined by the following formula:
+
+       .. math:: L_w = w * L
+
+   where :math:`w` is the weight and :math:`L` is the loss function.
+
+   .. rubric:: Example
+
+   .. code-block:: python
+
+       class MyLoss(WeightedLoss):
+           ...
+           def _eval(self, ...):
+               return my_loss_function(...)
+
+   :param loss_weight: the weight of the loss function. Defaults to 1.
+
+
+   .. py:method:: forward(*args: Any, **kwargs: Any) -> Any
+
+      Forward wrapper function.
+
+      The final loss value will be computed as described above.
+
+      :param \*args: arguments to the loss function.
+      :param \*\*kwargs: keyword arguments.
+
+      :returns: The weighted value of the loss function.
+
+
+

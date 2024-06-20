@@ -1,0 +1,66 @@
+helios.core.cuda
+================
+
+.. py:module:: helios.core.cuda
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.core.cuda.DisableCuDNNBenchmarkContext
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.core.cuda.requires_cuda_support
+
+
+Module Contents
+---------------
+
+.. py:function:: requires_cuda_support() -> None
+
+   Ensure that CUDA support is found, or raise an exception otherwise.
+
+   :raises RuntimeError: if no CUDA support is found.
+
+
+.. py:class:: DisableCuDNNBenchmarkContext
+
+   Allow disabling CuDNN benchmark within a scope.
+
+   The intention is to facilitate the disabling of CuDNN benchmark for specific purposes
+   (such as validation or testing) but then restoring it to its previous state upon
+   leaving the scope. Note that if CUDA is not available, the scope does nothing.
+
+   .. rubric:: Example
+
+   .. code-block:: python
+
+       torch.backends.cudnn.benchmark = True # Enable CuDNN
+       ...
+       with DisableCuDNNBenchmarkContext():
+           # Benchmark is disabled.
+           print(torch.backends.cudnn.benchmark) # <- Prints False
+           ...
+
+       print(torch.backends.cudnn.benchmark) # <- Prints true
+
+
+   .. py:method:: __enter__() -> None
+
+      Disable CuDNN benchmark.
+
+
+
+   .. py:method:: __exit__(exc_type, exc_value, exc_traceback) -> None
+
+      Restore CuDNN benchmark to its starting state.
+
+
+

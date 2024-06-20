@@ -1,0 +1,22 @@
+helios.optim
+============
+
+.. py:module:: helios.optim
+
+.. autoapi-nested-parse::
+
+   Optimizer package for Helios.
+
+   This contains the classes, utilities, and registries related to optimizers.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/helios/optim/utils/index
+
+

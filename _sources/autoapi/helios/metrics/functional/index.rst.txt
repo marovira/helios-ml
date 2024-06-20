@@ -1,0 +1,142 @@
+helios.metrics.functional
+=========================
+
+.. py:module:: helios.metrics.functional
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.metrics.functional.calculate_psnr
+   helios.metrics.functional.calculate_psnr_torch
+   helios.metrics.functional.calculate_ssim
+   helios.metrics.functional.calculate_ssim_torch
+   helios.metrics.functional.calculate_mAP
+   helios.metrics.functional.calculate_mae
+   helios.metrics.functional.calculate_mae_torch
+
+
+Module Contents
+---------------
+
+.. py:function:: calculate_psnr(img: numpy.typing.NDArray, img2: numpy.typing.NDArray, crop_border: int, input_order: str = 'HWC', test_y_channel: bool = False) -> float
+
+   Calculate PSNR (Peak Signal-to-Noise Ratio).
+
+   Implementation follows: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+
+   :param img: Images with range :math:`[0, 255]`.
+   :param img2: Images with range :math:`[0, 255]`.
+   :param crop_border: Cropped pixels in each edge of an image. These pixels are not
+                       involved in the calculation.
+   :param input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
+   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+
+   :returns: PSNR value.
+
+
+.. py:function:: calculate_psnr_torch(img: torch.Tensor, img2: torch.Tensor, crop_border: int, test_y_channel: bool = False) -> float
+
+   Calculate PSNR (Peak Signal-to-Noise Ratio).
+
+   Implementation follows: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+
+   :param img: Images with range :math:`[0, 255]`.
+   :param img2: Images with range :math:`[0, 255]`.
+   :param crop_border: Cropped pixels in each edge of an image. These pixels are not
+                       involved in the calculation.
+   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+
+   :returns: PSNR value.
+
+
+.. py:function:: calculate_ssim(img: numpy.typing.NDArray, img2: numpy.typing.NDArray, crop_border: int, input_order: str = 'HWC', test_y_channel: bool = False) -> float
+
+   Calculate SSIM (structural similarity).
+
+   Implementation follows: 'Image quality assesment: From error visibility to structural
+   similarity'. Results are identical to those of the official MATLAB code in
+   https://ece.uwaterloo.ca/~z70wang/research/ssim/.
+   For three-channel images, SSIM is calculated for each channel and then
+   averaged.
+
+   :param img: Images with range :math:`[0, 255]`.
+   :param img2: Images with range :math:`[0, 255]`.
+   :param crop_border: Cropped pixels in each edge of an image. These pixels are not
+                       involved in the calculation.
+   :param input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC"
+   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+
+   :returns: SSIM.
+
+
+.. py:function:: calculate_ssim_torch(img: torch.Tensor, img2: torch.Tensor, crop_border: int, test_y_channel: bool = False) -> float
+
+   Calculate SSIM (structural similarity).
+
+   Implementation follows: 'Image quality assesment: From error visibility to structural
+   similarity'. Results are identical to those of the official MATLAB code in
+   https://ece.uwaterloo.ca/~z70wang/research/ssim/.
+   For three-channel images, SSIM is calculated for each channel and then
+   averaged.
+
+   :param img: Images with range :math:`[0, 255]`.
+   :param img2: Images with range :math:`[0, 255]`.
+   :param crop_border: Cropped pixels in each edge of an image. These pixels are not
+                       involved in the calculation.
+   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+
+   :returns: SSIM.
+
+
+.. py:function:: calculate_mAP(targs: numpy.typing.NDArray, preds: numpy.typing.NDArray) -> float
+
+   Calculate the mAP (Mean Average Precision).
+
+   Implementation follows:
+   https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision
+
+   :param targs: target (inferred) labels in range :math:`[0, 1]`.
+   :param preds: predicate labels in range :math:`[0, 1]`.
+
+   :returns: The mAP score
+
+
+.. py:function:: calculate_mae(pred: numpy.typing.NDArray, gt: numpy.typing.NDArray, scale: float = 1.0) -> float
+
+   Compute the MAE (Mean-Average Precision) score.
+
+   Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
+   The scale argument is used in the event that the input arrays are not in the range
+   :math:`[0, 1]` but instead have been scaled to be in the range :math:`[0, N]` where
+   :math:`N` is the factor. For example, if the arrays are images in the range
+   :math:`[0, 255]`, then the scaling factor should be set to 255. If the arrays are
+   already in the range :math:`[0, 1]`, then the scale can be omitted.
+
+   :param pred: predicate (inferred) array
+   :param gt: ground-truth array
+   :param scale: scaling factor that was used on the input arrays. Defaults to 1.
+
+   :returns: The MAE score.
+
+
+.. py:function:: calculate_mae_torch(pred: torch.Tensor, gt: torch.Tensor, scale: float = 1.0) -> float
+
+   Compute the MAE (Mean-Average Precision) score.
+
+   Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
+   The scale argument is used in the event that the input arrays are not in the range
+   :math:`[0, 1]` but instead have been scaled to be in the range :math:`[0, N]` where
+   :math:`N` is the factor. For example, if the arrays are images in the range
+   :math:`[0, 255]`, then the scaling factor should be set to 255. If the arrays are
+   already in the range :math:`[0, 1]`, then the scale can be omitted.
+
+   :param pred: predicate (inferred) tensor
+   :param gt: ground-truth tensor
+   :param scale: scaling factor that was used on the input tensors. Defaults to 1.
+
+   :returns: The MAE score.
+
+

@@ -1,0 +1,23 @@
+helios.model
+============
+
+.. py:module:: helios.model
+
+.. autoapi-nested-parse::
+
+   Model package for Helios.
+
+   This contains all the classes, utilities, and registries related to models.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/helios/model/model/index
+   /autoapi/helios/model/utils/index
+
+

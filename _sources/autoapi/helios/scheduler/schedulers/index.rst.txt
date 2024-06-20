@@ -1,0 +1,72 @@
+helios.scheduler.schedulers
+===========================
+
+.. py:module:: helios.scheduler.schedulers
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.scheduler.schedulers.CosineAnnealingRestartLR
+   helios.scheduler.schedulers.MultiStepRestartLR
+
+
+Module Contents
+---------------
+
+.. py:class:: CosineAnnealingRestartLR(optimizer: torch.optim.Optimizer, periods: list[int], restart_weights: list[int] | None = None, eta_min: float = 0, last_epoch: int = -1)
+
+   Bases: :py:obj:`torch.optim.lr_scheduler.LRScheduler`
+
+
+   A cosine annealing with restarts LR scheduler.
+
+   .. rubric:: Example
+
+   Given
+
+   .. code-block:: text
+
+       periods = [10, 10, 10, 10]
+       restart_weights = [1, 0.5, 0.5, 0.5]
+       eta_min = 1e-7
+
+   Then the scheduler will have 4 cycles of 10 iterations each. At the 10th, 20th,
+   and 30th, the scheduler will restart with the weights in ``restart_weights``.
+
+   :param optimizer: the optimizer.
+   :param periods: period for each cosine annealing cycle.
+   :param restart_weights: (optional) restarts weights at each restart iteration.
+   :param eta_min: The minimum lr. Defaults to 0
+   :param last_epoch: Used in _LRScheduler. Defaults to -1.
+
+
+   .. py:method:: get_lr()
+
+      Return the current learning rate.
+
+
+
+.. py:class:: MultiStepRestartLR(optimizer: torch.optim.Optimizer, milestones: list[int], gamma: float = 0.1, restarts: list[int] | None = None, restart_weights: list[int] | None = None, last_epoch: int = -1)
+
+   Bases: :py:obj:`torch.optim.lr_scheduler.LRScheduler`
+
+
+   Multi-step with restarts LR scheduler.
+
+   :param optimizer: torch optimizer.
+   :param milestones: iterations that will decrease learning rate.
+   :param gamma: decrease ratio. Defaults to 0.1.
+   :param restarts: (optional) restart iterations.
+   :param restart_weights: (optional) restart weights at each restart iteration.
+   :param last_epoch: used in _LRScheduler. Defaults to -1.
+
+
+   .. py:method:: get_lr()
+
+      Return the current learning rate.
+
+
+

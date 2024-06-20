@@ -1,0 +1,26 @@
+helios.core
+===========
+
+.. py:module:: helios.core
+
+.. autoapi-nested-parse::
+
+   Core package for Helios.
+
+   Holds all of the core functions and classes used throughout the package.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/helios/core/cuda/index
+   /autoapi/helios/core/distributed/index
+   /autoapi/helios/core/logging/index
+   /autoapi/helios/core/rng/index
+   /autoapi/helios/core/utils/index
+
+

@@ -1,0 +1,93 @@
+helios.data.transforms
+======================
+
+.. py:module:: helios.data.transforms
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   helios.data.transforms.TRANSFORM_REGISTRY
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.data.transforms.ToImageTensor
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.data.transforms.create_transform
+
+
+Module Contents
+---------------
+
+.. py:data:: TRANSFORM_REGISTRY
+
+   Global instance of the registry for transforms.
+
+   .. rubric:: Example
+
+   .. code-block:: python
+
+       import helios.data.transforms as hldt
+
+       # This automatically registers your dataset.
+       @hldt.TRANSFORM_REGISTRY.register()
+       class MyTransform:
+           ...
+
+       # Alternatively you can manually register a dataset like this:
+       hldt.TRANSFORM_REGISTRY.register(MyTransform)
+
+.. py:function:: create_transform(type_name: str, *args: Any, **kwargs: Any) -> torch.nn.Module
+
+   Create a transform of the given type.
+
+   This uses TRANSFORM_REGISTRY to look-up transform types, so ensure your transforms
+   have been registered before using this function.
+
+   :param type_name: the type of the transform to create.
+   :param args: positional arguments to pass into the transform.
+   :param kwargs: keyword arguments to pass into the transform.
+
+   :returns: The constructed transform.
+
+
+.. py:class:: ToImageTensor(dtype: torch.dtype = torch.float32, scale: bool = True)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Convert an image (or list of images) to tensor(s).
+
+   An image is meant to be a tensor, ndarray, or PIL image. The shape expected to be
+   either [H, W, C] or [C, H, W].
+
+   :param dtype: the output type of the tensors.
+   :param scale: if true, scale the values to the valid range. Defaults to true.
+
+
+   .. py:method:: forward(img: numpy.typing.NDArray | list[numpy.typing.NDArray] | tuple[numpy.typing.NDArray, Ellipsis]) -> torch.Tensor | list[torch.Tensor] | tuple[torch.Tensor, Ellipsis]
+
+      Convert the input image(s) into tensor(s).
+
+      The return type will match the type of the input. So, if the input is a single
+      image, then the output will be a single tensor. If the input is a list or a tuple
+      of images, the output will be a list or tuple of tensors.
+
+      :param img: image(s) to convert.
+
+      :returns: The converted images.
+
+
+

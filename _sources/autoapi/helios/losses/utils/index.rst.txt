@@ -1,0 +1,54 @@
+helios.losses.utils
+===================
+
+.. py:module:: helios.losses.utils
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   helios.losses.utils.LOSS_REGISTRY
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.losses.utils.create_loss
+
+
+Module Contents
+---------------
+
+.. py:data:: LOSS_REGISTRY
+
+   Global instance of the registry for loss functions.
+
+   .. rubric:: Example
+
+   .. code-block:: python
+
+       import helios.losses as hll
+
+       # This automatically registers your loss function.
+       @hll.LOSS_REGISTRY.register
+       class MyLoss:
+           ...
+
+       # Alternatively you can manually register a loss function like this:
+       hll.LOSS_REGISTRY.register(MyLoss)
+
+.. py:function:: create_loss(type_name: str, *args: Any, **kwargs: Any) -> torch.nn.Module
+
+   Create the loss function for the given type.
+
+   :param type_name: the type of the loss to create.
+   :param args: positional arguments to pass into the loss.
+   :param kwargs: keyword arguments to pass into the loss.
+
+   :returns: The loss function.
+
+

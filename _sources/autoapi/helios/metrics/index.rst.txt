@@ -1,0 +1,23 @@
+helios.metrics
+==============
+
+.. py:module:: helios.metrics
+
+.. autoapi-nested-parse::
+
+   Metrics package for Helios.
+
+   This contains the classes, utilities, and registries related to metric functions.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/helios/metrics/functional/index
+   /autoapi/helios/metrics/metrics/index
+
+

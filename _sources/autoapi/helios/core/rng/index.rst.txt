@@ -1,0 +1,117 @@
+helios.core.rng
+===============
+
+.. py:module:: helios.core.rng
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.core.rng.DefaultNumpyRNG
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.core.rng.get_default_seed
+   helios.core.rng.create_default_numpy_rng
+   helios.core.rng.get_default_numpy_rng
+   helios.core.rng.seed_rngs
+   helios.core.rng.get_rng_state_dict
+   helios.core.rng.load_rng_state_dict
+
+
+Module Contents
+---------------
+
+.. py:function:: get_default_seed() -> int
+
+   Return the default seed.
+
+
+.. py:class:: DefaultNumpyRNG(seed: int | list[int] | tuple[int] | None = None)
+
+   Default RNG from Numpy.
+
+   This is intended to serve as a replacement for the legacy random API from Numpy. The
+   class wraps the new Generator instance, which is set to use PCG64. Functionality
+   similar to the modules for PyTorch is provided for easy serialization and restoring.
+
+   :param seed: (optional) the initial seed to use.
+
+
+   .. py:property:: generator
+      :type: numpy.random.Generator
+
+      Return the Numpy Generator instance.
+
+
+   .. py:method:: state_dict() -> collections.abc.Mapping[str, Any]
+
+      Create a dictionary containing the RNG state.
+
+      :returns: The state of the RNG.
+
+
+
+   .. py:method:: load_state_dict(state_dict: collections.abc.Mapping[str, Any]) -> None
+
+      Restore the RNG from the given state dictionary.
+
+      :param state_dict: the state dictionary.
+
+
+
+.. py:function:: create_default_numpy_rng(seed: int | list[int] | tuple[int] | None = None)
+
+   Initialize the default RNG with the given seed.
+
+   :param seed: (optional) the seed to use.
+
+
+.. py:function:: get_default_numpy_rng() -> DefaultNumpyRNG
+
+   Return the default RNG.
+
+   :returns: The random generator.
+
+   :raises RuntimeError: if the default Numpy RNG hasn't been created.
+
+
+.. py:function:: seed_rngs(seed: int | None = None, skip_torch: bool = False) -> None
+
+   Seed the default RNGs with the given seed.
+
+   If no seed is given, then the default seed from Helios will be used. The RNGs that
+   will be seeded are: PyTorch (+ CUDA if available), stdlib random, and the default
+   Numpy generator.
+   The ``skip_torch`` flag is intended to be used when seeding worker processes for
+   dataloaders. In those cases, the RNGs for PyTorch have already been seeded, so we
+   shouldn't be re-seeding them.
+
+   :param seed: optional value to seed the random generators with.
+   :param skip_torch: if True, torch RNGs won't be seeded.
+
+
+.. py:function:: get_rng_state_dict() -> dict[str, Any]
+
+   Get the state dict for the default RNGs.
+
+   Default RNGs are: PyTorch (+ CUDA if available) and Random.
+
+   :returns: The state of all RNGs.
+
+
+.. py:function:: load_rng_state_dict(state_dict: dict[str, Any]) -> None
+
+   Restore the default RNGs from the given state dict.
+
+   See :py:func:`.get_rng_state_dict` for the list of default RNGs.
+
+   :param state_dict: the state of the RNGs
+
+

@@ -1,0 +1,1066 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Quick Reference" href="quick-ref.html" /><link rel="prev" title="Getting Started" href="getting-started.html" />
+
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+        <title>Training a Classifier with Helios - Helios documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">Helios  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/logo-transparent.png" alt="Logo"/>
+  </div>
+  
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Training a Classifier with Helios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/helios/index.html">helios</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/cuda/index.html">helios.core.cuda</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/distributed/index.html">helios.core.distributed</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/logging/index.html">helios.core.logging</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/rng/index.html">helios.core.rng</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/utils/index.html">helios.core.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/data/index.html">helios.data</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of helios.data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/datamodule/index.html">helios.data.datamodule</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/functional/index.html">helios.data.functional</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/samplers/index.html">helios.data.samplers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/transforms/index.html">helios.data.transforms</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/losses/index.html">helios.losses</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of helios.losses</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/losses/utils/index.html">helios.losses.utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/losses/weighted_loss/index.html">helios.losses.weighted_loss</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/metrics/index.html">helios.metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of helios.metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/metrics/functional/index.html">helios.metrics.functional</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/metrics/metrics/index.html">helios.metrics.metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/model/index.html">helios.model</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of helios.model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/model/model/index.html">helios.model.model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/model/utils/index.html">helios.model.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/nn/index.html">helios.nn</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of helios.nn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/nn/swa_utils/index.html">helios.nn.swa_utils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/nn/utils/index.html">helios.nn.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/optim/index.html">helios.optim</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of helios.optim</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/optim/utils/index.html">helios.optim.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/helios/onnx/index.html">helios.onnx</a></li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/helios/trainer/index.html">helios.trainer</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/tutorial.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="training-a-classifier-with-helios">
+<h1>Training a Classifier with Helios<a class="headerlink" href="#training-a-classifier-with-helios" title="Link to this heading">¶</a></h1>
+<p>As a simple example, we’re going to implement the
+<a class="reference external" href="https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html">Training a Classifier</a>
+tutorial from PyTorch. For the sake of brevity, we will assume that the reader is familiar
+with the process of training networks using PyTorch and focus exclusively on the steps
+necessary to accomplish the same task using Helios.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The code for this tutorial is available
+<a class="reference external" href="https://github.com/marovira/helios-ml/blob/master/examples/cifar10/cifar10.py">here</a>.</p>
+</div>
+<section id="project-structure">
+<h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading">¶</a></h2>
+<p>The first thing we’re going to do is create a folder where our virtual environment and the
+code will live.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>classifier
+<span class="nb">cd</span><span class="w"> </span>classifier
+</pre></div>
+</div>
+<p>Next, let’s create a virtual environment and install Helios. All necessary dependencies
+will be installed automatically.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv<span class="w"> </span><span class="c1"># For Windows, replace with python</span>
+.<span class="w"> </span>.venv/bin/activate
+<span class="c1"># . .venv/Scripts/activate for Windows.</span>
+pip<span class="w"> </span>install<span class="w"> </span>helios
+touch<span class="w"> </span>cifar.py
+</pre></div>
+</div>
+<p>With that done, let’s begin by defining how our data will be managed.</p>
+</section>
+<section id="managing-datasets">
+<h2>Managing Datasets<a class="headerlink" href="#managing-datasets" title="Link to this heading">¶</a></h2>
+<p>We start by setting up our data. In the tutorial, the dataset is downloaded through the
+<cite>torchvision</cite>, so we have to make sure we download it as well. In Helios, datasets are
+managed through the <a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule" title="helios.data.datamodule.DataModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataModule</span></code></a>. Note that this shares
+some similarities with the corresponding class from PyTorch Lightning, so if you’re
+familiar with that it will be easier to follow along. First, let’s add our imports.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">torchvision</span>
+<span class="kn">import</span> <span class="nn">torchvision.transforms.v2</span> <span class="k">as</span> <span class="nn">T</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+
+<span class="kn">import</span> <span class="nn">helios.core</span> <span class="k">as</span> <span class="nn">hlc</span>
+<span class="kn">import</span> <span class="nn">helios.data</span> <span class="k">as</span> <span class="nn">hld</span>
+<span class="kn">import</span> <span class="nn">helios.model</span> <span class="k">as</span> <span class="nn">hlm</span>
+<span class="kn">import</span> <span class="nn">helios.optim</span> <span class="k">as</span> <span class="nn">hlo</span>
+<span class="kn">import</span> <span class="nn">helios.trainer</span> <span class="k">as</span> <span class="nn">hlt</span>
+<span class="kn">from</span> <span class="nn">helios.core</span> <span class="kn">import</span> <span class="n">logging</span>
+</pre></div>
+</div>
+<p>These will be all the imports we’ll need for this tutorial. Next, let’s create a new class
+for our data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CIFARDataModule</span><span class="p">(</span><span class="n">hld</span><span class="o">.</span><span class="n">DataModule</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
+</pre></div>
+</div>
+<p>The datamodule will take in as an argument the root where the datasets will be downloaded
+to. Next, let’s add the code to download the data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">prepare_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">torchvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">torchvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.prepare_data" title="helios.data.datamodule.DataModule.prepare_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_data()</span></code></a> function will be called
+automatically by the Trainer before training starts. If we were training with multiple
+GPUs, this would be called <em>prior</em> to the creation of the distributed context. Now let’s
+make the datasets themselves:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">transforms</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">hld</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToImageTensor</span><span class="p">(),</span>
+            <span class="n">T</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">hld</span><span class="o">.</span><span class="n">DataLoaderParams</span><span class="p">()</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">shuffle</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">num_workers</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">drop_last</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_train_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_dataset</span><span class="p">(</span>
+        <span class="n">torchvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span>
+            <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span>
+        <span class="p">),</span>
+        <span class="n">params</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">params</span><span class="o">.</span><span class="n">drop_last</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">params</span><span class="o">.</span><span class="n">shuffle</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_valid_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_dataset</span><span class="p">(</span>
+        <span class="n">torchvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span>
+            <span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span>
+        <span class="p">),</span>
+        <span class="n">params</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>There’s a few things to note here:</p>
+<ol class="arabic">
+<li><p>Helios ships with a transform that automatically converts images (or arrays of images)
+from their NumPY representation to tensors called
+<a class="reference internal" href="autoapi/helios/data/transforms/index.html#helios.data.transforms.ToImageTensor" title="helios.data.transforms.ToImageTensor"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToImageTensor</span></code></a>. The class is ultimately equivalent
+to the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torchvision.transforms.v2</span> <span class="k">as</span> <span class="nn">T</span>
+
+<span class="n">to_image_tensor</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span>
+  <span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">ToImage</span><span class="p">(),</span> <span class="n">T</span><span class="o">.</span><span class="n">ToDType</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">),</span> <span class="n">T</span><span class="o">.</span><span class="n">ToPureTensor</span><span class="p">()]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataLoaderParams" title="helios.data.datamodule.DataLoaderParams"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoaderParams</span></code></a> object wraps all of the
+settings used to create the dataloader and sampler pair. This is where you can set
+options like batch sizes, number of workers, whether the dataset should be shuffled,
+etc.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">params</span></code> object can be freely re-used without worrying about settings interfering
+with each other. As soon as <code class="docutils literal notranslate"><span class="pre">_create_dataset</span></code> is called, the <code class="docutils literal notranslate"><span class="pre">params</span></code> object is
+deep-copied to avoid conflicts.</p></li>
+</ol>
+</section>
+<section id="making-the-model">
+<h2>Making the Model<a class="headerlink" href="#making-the-model" title="Link to this heading">¶</a></h2>
+<section id="network">
+<h3>Network<a class="headerlink" href="#network" title="Link to this heading">¶</a></h3>
+<p>With the datasets ready, we can now turn our attention to the network. The code will be
+identical to the one from PyTorch so we won’t explain any details.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Example image classifier.</span>
+
+<span class="sd">    The code is taken from PyTorch&#39;s Training a Classifier tutorial:</span>
+<span class="sd">    https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the classifier.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">16</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="mi">84</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">84</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the label for the given image.&quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># flatten all dimensions except batch</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+<p>With the network ready, we can implement the other main class from Helios: the model. The
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> class serves as the main holder for the training
+code itself. The functionality is provided through different callback functions that are
+used by the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> at specific points in time. The first one
+is the <code class="xref py py-meth docutils literal notranslate"><span class="pre">setup()</span></code> function which we’ll use to initialize all the
+necessary members for training. In our case, we need:</p>
+<ul class="simple">
+<li><p>The network itself,</p></li>
+<li><p>The optimizer, and</p></li>
+<li><p>The loss function.</p></li>
+</ul>
+<p>Following the tutorial, we’ll use <code class="docutils literal notranslate"><span class="pre">SGD</span></code> for our optimizer and <code class="docutils literal notranslate"><span class="pre">CrossEntropyLoss</span></code> for
+our loss function. The could would be as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ClassifierModel</span><span class="p">(</span><span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Example model class for training the classifier.</span>
+
+<span class="sd">    Here you can see how to setup the model class and some of the basic functionality that</span>
+<span class="sd">    is available. The code is adapted from PyTorch&#39;s &quot;Training a Classifier&quot; tutorial:</span>
+<span class="sd">    https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the model.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;classifier&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the network, loss, and optimizer.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_net</span> <span class="o">=</span> <span class="n">Net</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">hlo</span><span class="o">.</span><span class="n">create_optimizer</span><span class="p">(</span>
+            <span class="s2">&quot;SGD&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>A few comments:</p>
+<ol class="arabic simple">
+<li><p>All classes that derive from <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> <em>must</em> provide a name to
+the base class. This is used to determine the name that will be given to the
+checkpoints when they are saved (more on this later).</p></li>
+<li><p>Upon training start, the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> will automatically set the
+correct <code class="docutils literal notranslate"><span class="pre">torch.device</span></code> into the model. This means that any classes that need to be
+moved to the device can do so through the <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.device" title="helios.model.model.Model.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">device</span></code></a>
+property.</p></li>
+</ol>
+</section>
+<section id="registries">
+<h3>Registries<a class="headerlink" href="#registries" title="Link to this heading">¶</a></h3>
+<p>One of the main features of Helios is the registry system that it ships with. The
+registries can be used to write <em>re-usable</em> training code for different networks. The idea
+is that a single model class can be written which can then create the necessary
+optimizers, loss functions, etc. based on settings which can be provided externally
+through a config file (for example). Helios ships with the following registries:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DATASET_REGISTRY" title="helios.data.datamodule.DATASET_REGISTRY"><code class="xref py py-data docutils literal notranslate"><span class="pre">DATASET_REGISTRY</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/data/samplers/index.html#helios.data.samplers.SAMPLER_REGISTRY" title="helios.data.samplers.SAMPLER_REGISTRY"><code class="xref py py-data docutils literal notranslate"><span class="pre">SAMPLER_REGISTRY</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/data/transforms/index.html#helios.data.transforms.TRANSFORM_REGISTRY" title="helios.data.transforms.TRANSFORM_REGISTRY"><code class="xref py py-data docutils literal notranslate"><span class="pre">TRANSFORM_REGISTRY</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/losses/utils/index.html#helios.losses.utils.LOSS_REGISTRY" title="helios.losses.utils.LOSS_REGISTRY"><code class="xref py py-data docutils literal notranslate"><span class="pre">LOSS_REGISTRY</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/metrics/metrics/index.html#helios.metrics.metrics.METRICS_REGISTRY" title="helios.metrics.metrics.METRICS_REGISTRY"><code class="xref py py-data docutils literal notranslate"><span class="pre">METRICS_REGISTRY</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/model/utils/index.html#helios.model.utils.MODEL_REGISTRY" title="helios.model.utils.MODEL_REGISTRY"><code class="xref py py-data docutils literal notranslate"><span class="pre">MODEL_REGISTRY</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/nn/utils/index.html#helios.nn.utils.NETWORK_REGISTRY" title="helios.nn.utils.NETWORK_REGISTRY"><code class="xref py py-data docutils literal notranslate"><span class="pre">NETWORK_REGISTRY</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/optim/utils/index.html#helios.optim.utils.OPTIMIZER_REGISTRY" title="helios.optim.utils.OPTIMIZER_REGISTRY"><code class="xref py py-data docutils literal notranslate"><span class="pre">OPTIMIZER_REGISTRY</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/scheduler/utils/index.html#helios.scheduler.utils.SCHEDULER_REGISTRY" title="helios.scheduler.utils.SCHEDULER_REGISTRY"><code class="xref py py-data docutils literal notranslate"><span class="pre">SCHEDULER_REGISTRY</span></code></a></p></li>
+</ul>
+<p>Each registry comes with an associated <code class="docutils literal notranslate"><span class="pre">create_</span></code> function that will create the
+corresponding type from the registry.</p>
+<p>By default, the optimizer and scheduler registries ship with the classes that PyTorch
+offers for each type. In our example, we could create the optimizer directly as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">SGD</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively, we can create it by directly through the registry as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">hlo</span><span class="o">.</span><span class="n">create_optimizer</span><span class="p">(</span>
+    <span class="s2">&quot;SGD&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">momentum</span><span class="o">=</span><span class="mf">0.9</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that here we’re manually specifying the arguments to the optimizer, but we could have
+just as easily stored the arguments in a dictionary (that were loaded from a file or
+passed in as a command-line argument) and then passed them in as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># These args are passed in externally.</span>
+<span class="n">args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s2">&quot;momentum&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">}</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">hlo</span><span class="o">.</span><span class="n">create_optimizer</span><span class="p">(</span><span class="s2">&quot;SGD&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This would allow us to re-use the same model with different combinations of networks and
+optimizers, reducing code duplication and allowing the code to be standardised across
+combinations of settings.</p>
+</section>
+<section id="checkpoints">
+<h3>Checkpoints<a class="headerlink" href="#checkpoints" title="Link to this heading">¶</a></h3>
+<p>Now that the loss and optimizer have been created, we turn our attention to checkpoints.
+The <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> is designed to automatically save checkpoints at
+predetermined intervals. The checkpoints store all the necessary state to ensure training
+can be resumed. As part of the state stored, the model is able to add it’s own state. In
+our case, we would like to save the state of the network, optimizer, and loss function. To
+do this, we need to override <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.load_state_dict" title="helios.model.model.Model.load_state_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">load_state_dict()</span></code></a> and
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.state_dict" title="helios.model.model.Model.state_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code></a>. The code is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Restore the model from a saved checkpoint.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;criterion&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;optimizer&quot;</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the state dict of the model.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+        <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+        <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+<p>Similarly to the device, the model <em>should not</em> remap any weights from the loaded
+checkpoint. Those will be automatically mapped by the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a>
+when the checkpoint is loaded.</p>
+</section>
+<section id="training">
+<h3>Training<a class="headerlink" href="#training" title="Link to this heading">¶</a></h3>
+<p>We can now focus on the training code itself. It is recommended that you read through the
+documentation for the <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> so you are aware of all the
+callbacks available for training, which can be identified by the prefix
+<code class="docutils literal notranslate"><span class="pre">on_training_...</span></code>. For our purposes, we’re going to need the following:</p>
+<ul class="simple">
+<li><p>We’re going to trace the network and log it to tensorboard.</p></li>
+<li><p>We need to perform the forward and backward passes.</p></li>
+<li><p>We need to log the value of our loss function on each iteration.</p></li>
+<li><p>When training is done, we also want to log the final validation score as well as the
+final value of the loss function.</p></li>
+</ul>
+<p>To start, let’s add the code to switch our network into training mode:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the model to train.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Next, lets add the code to trace. Since we only need to do this once when training begins,
+we’re going to use <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_start" title="helios.model.model.Model.on_training_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_start()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_training_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform steps before training starts.&quot;&quot;&quot;</span>
+    <span class="n">tb_logger</span> <span class="o">=</span> <span class="n">hlc</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">get_tensorboard_writer</span><span class="p">())</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">tb_logger</span><span class="o">.</span><span class="n">add_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Tensorboard writer is automatically created by the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a>
+if requested to do so. As a result, <a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.get_tensorboard_writer" title="helios.core.logging.get_tensorboard_writer"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tensorboard_writer()</span></code></a>
+can return <code class="docutils literal notranslate"><span class="pre">None</span></code>. We could ensure that it’s valid by doing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_tensorboard_writer</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+<span class="c1"># Or alternatively:</span>
+<span class="k">assert</span> <span class="n">logger</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>This is especially necessary when using linters like Mypy. Since this gets repetitive very
+quickly, we can instead use <a class="reference internal" href="autoapi/helios/core/utils/index.html#helios.core.utils.get_from_optional" title="helios.core.utils.get_from_optional"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_from_optional()</span></code></a>, which ensures
+that the provided value is not <code class="docutils literal notranslate"><span class="pre">None</span></code> and returns it in a way that Mypy correctly
+identifies. Now to add the forward and backward passes. These are going to be kept in
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.train_step" title="helios.model.model.Model.train_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train_step()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">hlt</span><span class="o">.</span><span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Forward and backward training passes.&quot;&quot;&quot;</span>
+    <span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+    <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_loss_items</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
+</pre></div>
+</div>
+<p>There’s a few things to unpack here, so let’s go one by one:</p>
+<ol class="arabic simple">
+<li><p>The type of the <code class="docutils literal notranslate"><span class="pre">batch</span></code> parameter is determined by our dataset. In the case of the
+CIFAR10 dataset, the batch is a tuple of tensors containing the inputs and labels. Note
+that the base model class imposes no restrictions on what the batch is.</p></li>
+<li><p>Since the base model class makes no assumptions on the type of the batch, we need to
+move the components of the batch to the target device ourselves. This gives maximum
+flexibility since you can choose what (if anything) gets moved. Note that similarly to
+the creation of the network itself, we use the
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.device" title="helios.model.model.Model.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">device</span></code></a> property.</p></li>
+<li><p>We’re going to store the returned loss into the <code class="docutils literal notranslate"><span class="pre">_loss_items</span></code> dictionary. This allows
+the model to automatically gather the tensors for us if we were doing distributed
+training.</p></li>
+</ol>
+<p>Now let’s look at the logging code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_training_batch_end</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">state</span><span class="p">:</span> <span class="n">hlt</span><span class="o">.</span><span class="n">TrainingState</span><span class="p">,</span>
+    <span class="n">should_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform steps after the training batch.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        state (pyt.TrainingState): the current training state.</span>
+<span class="sd">        should_log (bool): if true, then writing to the log should be performed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_training_batch_end</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">should_log</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">should_log</span><span class="p">:</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
+        <span class="n">tb_logger</span> <span class="o">=</span> <span class="n">hlc</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">get_tensorboard_writer</span><span class="p">())</span>
+
+        <span class="n">loss_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss_items</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span>
+
+        <span class="n">root_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">global_epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">global_iteration</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">] &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;loss: </span><span class="si">{</span><span class="n">loss_val</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;running loss: </span><span class="si">{</span><span class="n">loss_val</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">state</span><span class="o">.</span><span class="n">running_iter</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;avg time: </span><span class="si">{</span><span class="n">state</span><span class="o">.</span><span class="n">average_iter_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span>
+        <span class="p">)</span>
+        <span class="n">tb_logger</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s2">&quot;train/loss&quot;</span><span class="p">,</span> <span class="n">loss_val</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">global_iteration</span><span class="p">)</span>
+        <span class="n">tb_logger</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span>
+            <span class="s2">&quot;train/running loss&quot;</span><span class="p">,</span>
+            <span class="n">loss_val</span> <span class="o">/</span> <span class="n">state</span><span class="o">.</span><span class="n">running_iter</span><span class="p">,</span>
+            <span class="n">state</span><span class="o">.</span><span class="n">global_iteration</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s examine each part independently:</p>
+<ol class="arabic simple">
+<li><p>The call to <code class="docutils literal notranslate"><span class="pre">super().on_training_batch_end</span></code> will automatically gather any tensors
+stored so in the <code class="docutils literal notranslate"><span class="pre">_loss_items</span></code> dictionary if we’re in distributed mode, so we don’t
+have to manually do it ourselves.</p></li>
+<li><p>When the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> is created, we can specify the interval at
+which logging should occur. Since
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_batch_end" title="helios.model.model.Model.on_training_batch_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_batch_end()</span></code></a> is called on at the end of
+<em>every</em> batch, the <code class="docutils literal notranslate"><span class="pre">should_log</span></code> flag is used to indicate when logging should happen.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In our example, we’re performing both the forward and backward passes in
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.train_step" title="helios.model.model.Model.train_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train_step()</span></code></a>. That being said, it is possible to
+split the forward and backward passes and have them occur in
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.train_step" title="helios.model.model.Model.train_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train_step()</span></code></a> and
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_batch_end" title="helios.model.model.Model.on_training_batch_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_batch_end()</span></code></a> if it makes sense for your
+workflow.</p>
+</div>
+<p>The rest of the code is pretty self-explanatory, with us just grabbing the Tensorboard
+logger just like before. Note that we also call
+<a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.get_root_logger" title="helios.core.logging.get_root_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_root_logger()</span></code></a>, so let’s discuss how Helios manages
+logging.</p>
+</section>
+<section id="logging">
+<h3>Logging<a class="headerlink" href="#logging" title="Link to this heading">¶</a></h3>
+<p>By default, Helios provides two loggers:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.RootLogger" title="helios.core.logging.RootLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">RootLogger</span></code></a>: logs to a file and to stdout.</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.TensorboardWriter" title="helios.core.logging.TensorboardWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TensorboardWriter</span></code></a>: wraps the PyTorch Tensorboard writer
+class.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.RootLogger" title="helios.core.logging.RootLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">RootLogger</span></code></a> will <em>always</em> be created with stream
+output by default. This behaviour <em>cannot</em> be changed, as it is used to correctly
+forward error messages that may occur during training. The logging to a file can be
+toggled on/off based on the arguments provided to the
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> upon construction.</p>
+</div>
+<p>The creation of these is handled by the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a>, and will be
+performed before training starts. If training is distributed, both loggers are designed to
+only log on the process whose rank is 0. In the event that training occurs over multiple
+nodes, then logging is performed on the process whose <em>global</em> rank is 0. The loggers can
+be obtained through <a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.get_root_logger" title="helios.core.logging.get_root_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_root_logger()</span></code></a> and
+<a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.get_tensorboard_writer" title="helios.core.logging.get_tensorboard_writer"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tensorboard_writer()</span></code></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Only the <a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.RootLogger" title="helios.core.logging.RootLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">RootLogger</span></code></a> is guaranteed to exist. In the
+event that the trainer is created with Tensorboard logging disabled,
+<a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.get_tensorboard_writer" title="helios.core.logging.get_tensorboard_writer"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tensorboard_writer()</span></code></a> will return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
+<p>Now that we have logged the training losses, let’s add the code to log the final
+validation result as well as the final loss value.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_training_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform steps after training ends.&quot;&quot;&quot;</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span>
+    <span class="n">correct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;correct&quot;</span><span class="p">]</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">correct</span> <span class="o">//</span> <span class="n">total</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">hlc</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">get_tensorboard_writer</span><span class="p">())</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">add_hparams</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s2">&quot;momentum&quot;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> <span class="s2">&quot;epochs&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;hparam/accuracy&quot;</span><span class="p">:</span> <span class="n">accuracy</span><span class="p">,</span> <span class="s2">&quot;hparam/loss&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loss_items</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()},</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>We will explain how validation works in the next section. The code itself is
+self-explanatory: we compute the final accuracy and then log it to the Tensorboard writer.</p>
+</section>
+<section id="validation">
+<h3>Validation<a class="headerlink" href="#validation" title="Link to this heading">¶</a></h3>
+<p>Similarly to the suite of callbacks used for training, the
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> class has a set of functions for both validation and
+testing. In our example, we want to perform validation, so let’s first add a function to
+switch our network to evaluation mode:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the model to eval.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> contains a dictionary for validation scores
+similar to the one we used earlier for loss values. In our example, we need to keep track
+of the number of labels we have seen, and how many of those labels have been correct. To
+do this, we’re going to assign these fields before validation starts:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_validation_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform steps on validation start.&quot;&quot;&quot;</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_validation_start</span><span class="p">(</span><span class="n">validation_cycle</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;correct&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">on_validatioN_start</span></code> on the base class automatically clears out the
+<code class="docutils literal notranslate"><span class="pre">_val_scores</span></code> dictionary to ensure we don’t accidentally over-write or overlap values.
+After setting the fields we care about, let’s perform the validation step:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">valid_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform the validation step.&quot;&quot;&quot;</span>
+    <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">predicted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">labels</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;correct&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">predicted</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.valid_step" title="helios.model.model.Model.valid_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">valid_step()</span></code></a> function is analogous to
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.train_step" title="helios.model.model.Model.train_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train_step()</span></code></a>. Like before, we receive the batch from
+our dataset and we are responsible for moving the data into the appropriate device using
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.device" title="helios.model.model.Model.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">device</span></code></a>. The rest of the code is identical to the
+PyTorch tutorial, with the only difference that we assign the results to the fields we
+added before validation began.</p>
+<p>Finally, we need to compute the final accuracy score and log it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform steps after validation ends.&quot;&quot;&quot;</span>
+    <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
+    <span class="n">tb_logger</span> <span class="o">=</span> <span class="n">hlc</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">get_tensorboard_writer</span><span class="p">())</span>
+
+    <span class="n">total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span>
+    <span class="n">correct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;correct&quot;</span><span class="p">]</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">correct</span> <span class="o">//</span> <span class="n">total</span>
+
+    <span class="n">root_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Validation </span><span class="si">{</span><span class="n">validation_cycle</span><span class="si">}</span><span class="s2">] accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">tb_logger</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="creating-the-trainer">
+<h2>Creating the Trainer<a class="headerlink" href="#creating-the-trainer" title="Link to this heading">¶</a></h2>
+<p>Now that we have all of our training code ready, all that is left is to create the trainer
+and train our network. For the sake of simplicity, we’re going to be performing this in
+the main block of our script. The trainer requires two things to train:</p>
+<ol class="arabic simple">
+<li><p>The model we want to use.</p></li>
+<li><p>The datamodule with our datasets.</p></li>
+</ol>
+<p>Let’s make those first:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">datamodule</span> <span class="o">=</span> <span class="n">CIFARDataModule</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">())</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">ClassifierModel</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now let’s create the trainer itself:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span> <span class="o">=</span> <span class="n">hlt</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span>
+    <span class="n">run_name</span><span class="o">=</span><span class="s2">&quot;cifar10&quot;</span><span class="p">,</span>
+    <span class="n">train_unit</span><span class="o">=</span><span class="n">hlt</span><span class="o">.</span><span class="n">TrainingUnit</span><span class="o">.</span><span class="n">EPOCH</span><span class="p">,</span>
+    <span class="n">total_steps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">valid_frequency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">chkpt_frequency</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">print_frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">enable_tensorboard</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">enable_file_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">enable_progress_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">enable_deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">chkpt_root</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;chkpt&quot;</span><span class="p">,</span>
+    <span class="n">log_path</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+    <span class="n">run_path</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;runs&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> constructor takes a long list of arguments that
+provide control over various aspects of training. You’re encouraged to read through the
+list of parameters for more details. Let’s go over each of the arguments we set in our
+example, starting with the training unit.</p>
+<section id="training-units">
+<h3>Training Units<a class="headerlink" href="#training-units" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> provides two ways of training networks based on
+the <em>training unit</em>. These are:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingUnit.ITERATION" title="helios.trainer.TrainingUnit.ITERATION"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ITERATION</span></code></a>: used when the network needs to be
+trained for <span class="math notranslate nohighlight">\(N\)</span> iterations.</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingUnit.EPOCH" title="helios.trainer.TrainingUnit.EPOCH"><code class="xref py py-attr docutils literal notranslate"><span class="pre">EPOCH</span></code></a>: used when the network needs to be
+trained for <span class="math notranslate nohighlight">\(N\)</span> epochs.</p></li>
+</ol>
+<p>The choice of training unit determines the behaviour of certain portions of the training
+loop, which we will discuss next.</p>
+<section id="training-by-epoch">
+<h4>Training by Epoch<a class="headerlink" href="#training-by-epoch" title="Link to this heading">¶</a></h4>
+<p>This is the most common case for training. In this mode, the training loop will run until
+the number of epochs specified by <code class="docutils literal notranslate"><span class="pre">total_steps</span></code> has been reached and it has the
+following behaviour:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">valid_frequency</span></code> and <code class="docutils literal notranslate"><span class="pre">chkpt_frequency</span></code> occur on epochs. For example, say that we
+want to train for 10 epochs and we want to perform validation every second epoch. This
+means that validation will occur on epochs 2, 4, 5, 8, and 10. Likewise, if we want to
+save checkpoints every second epoch, then checkpoints will be saved on epochs 2, 4, 5,
+8, and 10.</p></li>
+<li><p>Early stopping is performed on epochs. See <a class="reference internal" href="quick-ref.html#stopping-training"><span class="std std-ref">Stopping Training</span></a>.</p></li>
+<li><p>Gradient accumulation has no effect on the number of epochs. See
+<a class="reference internal" href="quick-ref.html#gradient-accumulation"><span class="std std-ref">Gradient Accumulation</span></a>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">print_frequency</span></code> <strong>always</strong> refers to the number of iterations that logging should
+occur in. This is <em>independent</em> of the training unit.</p>
+</div>
+</section>
+<section id="training-by-iteration">
+<h4>Training by Iteration<a class="headerlink" href="#training-by-iteration" title="Link to this heading">¶</a></h4>
+<p>In this mode, the training loop will run until the number of iterations specified by
+<code class="docutils literal notranslate"><span class="pre">total_steps</span></code> has been reached <em>regardless</em> of how many epochs (complete or fractional)
+are performed. It has the following behaviour:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">valid_frequency</span></code> and <code class="docutils literal notranslate"><span class="pre">chkpt_frequency</span></code> occur on iterations. For example, say that
+we want to train for 10k iterations and we want to perform validation every 2k
+iterations. This means that validation will occur on iterations 2k, 4k, 6k, 8k, and 10k.
+Likewise, if we want to save checkpoints every 2k iterations, then checkpoints will be
+saved on iterations 2k, 4k, 6k, 8k, and 10k.</p></li>
+<li><p>Early stopping is performed on iterations. See <a class="reference internal" href="quick-ref.html#stopping-training"><span class="std std-ref">Stopping Training</span></a>.</p></li>
+<li><p>Gradient accumulation multiplies the total number of iterations. See
+<a class="reference internal" href="quick-ref.html#gradient-accumulation"><span class="std std-ref">Gradient Accumulation</span></a>.</p></li>
+</ul>
+</section>
+</section>
+<section id="enabling-logging-and-checkpoints">
+<h3>Enabling Logging and Checkpoints<a class="headerlink" href="#enabling-logging-and-checkpoints" title="Link to this heading">¶</a></h3>
+<p>The next 3 arguments of the trainer cover the various kinds of logging that are available.
+As mentioned previously, the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> will <em>always</em> create the
+<a class="reference internal" href="autoapi/helios/core/logging/index.html#helios.core.logging.RootLogger" title="helios.core.logging.RootLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">RootLogger</span></code></a> with output to stdout. That said, we can add
+logging to a file and to Tensorboard by setting the corresponding flags:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">enable_tensorboard</span></code>: enables the Tensorboard writer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enable_file_logging</span></code>: adds a file stream to the log.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If either of <code class="docutils literal notranslate"><span class="pre">enable_tensorboard</span></code> or <code class="docutils literal notranslate"><span class="pre">enable_file_logging</span></code> is set, then you
+<strong>must</strong> also set <code class="docutils literal notranslate"><span class="pre">run_path</span></code> or <code class="docutils literal notranslate"><span class="pre">log_path</span></code> respectively. These should be set to a
+directory where the logs will be saved. Note that if the directory doesn’t exist, it
+will be created automatically.</p>
+</div>
+<p>The final logging flag determines whether a progress bar is displayed while training is
+ongoing. See <a class="reference internal" href="quick-ref.html#logging"><span class="std std-ref">Logging</span></a> for more details.</p>
+<p>Finally, since we want to save checkpoints, then we also assign the path that the
+checkpoints are saved to using <code class="docutils literal notranslate"><span class="pre">chkpt_root</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">chkpt_frequency</span></code> is not 0, then you <strong>must</strong> set <code class="docutils literal notranslate"><span class="pre">chkpt_root</span></code> to the directory
+where checkpoints are saved. Note that if the directory doesn’t exist, it will be
+created automatically.</p>
+</div>
+<p>See <a class="reference internal" href="quick-ref.html#checkpoint-saving"><span class="std std-ref">Checkpoint Saving</span></a>.</p>
+<p>We also set <code class="docutils literal notranslate"><span class="pre">enable_deterministic</span></code> to indicate to PyTorch that we want to use
+deterministic operations while training. This belongs to a set of flags that configure the
+environment when the trainer is created. See .</p>
+</section>
+</section>
+<section id="launching-training">
+<h2>Launching Training<a class="headerlink" href="#launching-training" title="Link to this heading">¶</a></h2>
+<p>The final step is to start training. With the trainer created, all that we have to do is
+this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And that’s it! Helios will automatically configure the training environment and run the
+training loop for the specified number of epochs. Every epoch validation will be performed
+and a checkpoint will be saved.</p>
+<p>Helios provides more functionality than what is shown here, so you are encouraged to read
+through the quick reference guide for more details.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="quick-ref.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Quick Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="getting-started.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Getting Started</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Mauricio A. Rovira Galvez
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Training a Classifier with Helios</a><ul>
+<li><a class="reference internal" href="#project-structure">Project Structure</a></li>
+<li><a class="reference internal" href="#managing-datasets">Managing Datasets</a></li>
+<li><a class="reference internal" href="#making-the-model">Making the Model</a><ul>
+<li><a class="reference internal" href="#network">Network</a></li>
+<li><a class="reference internal" href="#registries">Registries</a></li>
+<li><a class="reference internal" href="#checkpoints">Checkpoints</a></li>
+<li><a class="reference internal" href="#training">Training</a></li>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#validation">Validation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#creating-the-trainer">Creating the Trainer</a><ul>
+<li><a class="reference internal" href="#training-units">Training Units</a><ul>
+<li><a class="reference internal" href="#training-by-epoch">Training by Epoch</a></li>
+<li><a class="reference internal" href="#training-by-iteration">Training by Iteration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#enabling-logging-and-checkpoints">Enabling Logging and Checkpoints</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#launching-training">Launching Training</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=4e2eecee"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

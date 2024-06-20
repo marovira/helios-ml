@@ -1,0 +1,436 @@
+helios.model.model
+==================
+
+.. py:module:: helios.model.model
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.model.model.Model
+
+
+Module Contents
+---------------
+
+.. py:class:: Model(save_name: str)
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Base class that groups together the functionality needed to train networks.
+
+   The use of this class is to standardize the way networks are created and trained. This
+   allows the training code to be shared across multiple networks, reducing code
+   duplication.
+   The functions provided by the Model class can be overridden to satisfy the individual
+   needs of each of the network(s) that need to be trained.
+
+   .. rubric:: Example
+
+   Suppose the body of the training loop looks something like this:
+
+   .. code-block:: python
+
+       dataloader = ... # The dataloader for our dataset.
+       net = ... # The network we wish to train.
+       optimzer = ... # The optimizer
+       criterion = ... # The loss function
+       for batch in dataloder:
+           inputs, labels = batch
+
+           optimizer.zero_grad()
+           outs = net(inputs)
+           loss = criterion(outs, labels)
+           loss.backward()
+           optimizer.step()
+
+   Then the code would be placed into a Model as follows:
+
+   .. code-block:: python
+
+       import helios.model as hlm
+       import helios.trainer as hlt
+       class MyModel(hlm.Model):
+           def setup(self, fast_init: bool = False) -> None:
+               self._net = ...
+               self._optimizer = ...
+               self._criterion = ...
+
+           def train_step(self, batch, state: hlt.TrainingState) -> None:
+               inputs, labels = batch
+
+               optimizer.zero_grad()
+               outs = net(inputs)
+               loss = criterion(outs, labels)
+               loss.backward()
+               optimizer.step()
+
+   The example shown here is the most basic version of the training code and can be
+   expanded in various ways by overriding the different available functions.
+
+   :param save_name: the name that will be used to identify the model when checkpoints are
+                     saved.
+
+
+   .. py:property:: save_name
+      :type: str
+
+      The name of the model used for saving checkpoints and final networks.
+
+
+   .. py:property:: is_distributed
+      :type: bool
+
+      Flag controlling whether distributed training is being used or not.
+
+
+   .. py:property:: map_loc
+      :type: str | dict[str, str]
+
+      The location to map loaded weights from a checkpoint or pre-trained file.
+
+
+   .. py:property:: device
+      :type: torch.device
+
+      The device on which the tensors of the model are mapped to.
+
+
+   .. py:property:: rank
+      :type: int
+
+      The local rank (device id) that the model is running on.
+
+
+   .. py:property:: trainer
+      :type: helios.trainer.Trainer
+
+      Reference to the trainer.
+
+
+   .. py:method:: setup(fast_init: bool = False) -> None
+      :abstractmethod:
+
+
+      Initialize all the state necessary for training.
+
+      Use this function to load all the networks, schedulers, optimizers, losses, etc.
+      that you require for training. This will be called before training starts and
+      after the distributed processes have been launched (if applicable).
+
+      The ``fast_init`` flag is used to indicate that the model should **not** load any
+      training state. This can be used for testing or for other purposes.
+
+      :param fast_init: if True, only networks are loaded.
+
+
+
+   .. py:method:: load_for_testing() -> None
+
+      Load the network(s) used for testing.
+
+      When testing, the trainer will try to load the last checkpoint saved during
+      training. If it is unable to find one, it will call this function to ensure the
+      model loads the state of the network(s) for testing. If you wish to load your
+      network using separate logic, use this function.
+
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any], fast_init: bool = False) -> None
+
+      Load the model state from the given state dictionary.
+
+      Use this function to restore any training state from a checkpoint. Note that any
+      weights will have been automatically mapped to the correct device.
+
+      The ``fast_init`` flag is used to indicate that the model should **not** load any
+      training state. This can be used for testing or for other purposes. As such, you
+      should only load the state of your network(s) and nothing else.
+
+      :param state_dict: the state dictionary to load from.
+      :param fast_init: if True, only networks need to be loaded.
+
+
+
+   .. py:method:: state_dict() -> dict[str, Any]
+
+      Get the state dictionary of the model.
+
+      Use this function to save any state that you require for checkpoints.
+
+      :returns: The state dictionary of the model.
+
+
+
+   .. py:method:: trained_state_dict(*args: Any, **kwargs: Any) -> dict[str, Any]
+
+      Get the state dictionary for the trained model.
+
+      Use this function to save the state required for the final trained model. The
+      returned dictionary should contain only the necessary information to re-create the
+      network(s) along with any additional data you require.
+
+      :param args: positional arguments.
+      :param kwargs: keyword arguments.
+
+      :returns: The state dictionary without any training data.
+
+
+
+   .. py:method:: append_metadata_to_chkpt_name(chkpt_name: str) -> str
+
+      Append additional data to the checkpoint filename.
+
+      Use this function to append the value of the loss function(s), validation
+      metric(s), or any extra metadata you wish to add to the name of the checkpoint.
+      Note that the epoch and iteration numbers are added automatically. The extension
+      will also be added automatically.
+
+      :param chkpt_name: the name of the checkpoint filename (without extension).
+
+      :returns: The name with any additional metadata.
+
+
+
+   .. py:method:: train() -> None
+
+      Switch the model to training mode.
+
+
+
+   .. py:method:: on_training_start() -> None
+
+      Perform any necessary actions when training starts.
+
+      You may use this function to log the network architecture, hyper-params, etc.
+
+
+
+   .. py:method:: on_training_epoch_start(current_epoch: int) -> None
+
+      Perform any necessary actions when a training epoch is started.
+
+      This function is called whenever a new training epoch begins, at the top of the
+      training loop. You may use this function to set any necessary training state.
+
+      :param current_epoch: the epoch number that has just started.
+
+
+
+   .. py:method:: on_training_batch_start(state: helios.trainer.TrainingState) -> None
+
+      Perform any actions when a training batch is started.
+
+      This function is called before :py:meth:`train_step` is called. By default, it
+      will clear out the loss table, but you may also use it to do any additional tasks
+      prior to the training step itself.
+
+      :param state: the current training state.
+
+
+
+   .. py:method:: train_step(batch: Any, state: helios.trainer.TrainingState) -> None
+
+      Perform a single training step.
+
+      The input is the returned value from the datasets you supplied to the trainer. In
+      this function, you should perform the forward and backward passes for your
+      network(s). If you use schedulers, they should be updated here as well. Note that
+      you do not have to clear the losses or gather them. This will be handled
+      automatically for you. Also keep in mind that the contents of the batch have
+      **not** been moved to the current device. It is your responsibility to do so.
+
+      :param batch: the batch data returned from the dataset.
+      :param state: the current training state.
+
+
+
+   .. py:method:: on_training_batch_end(state: helios.trainer.TrainingState, should_log: bool = False) -> None
+
+      Perform any actions when a training batch ends.
+
+      This function is called after train_step is called. By default, it will gather all
+      the losses stored in self._loss_items (if using distributed training) and will
+      update the running losses using those values. You may also use this function to
+      log your losses or perform any additional tasks after the training step.
+
+      :param state: the current training state.
+      :param should_log: if true, then logging should be performed. Defaults to false.
+
+
+
+   .. py:method:: on_training_epoch_end(current_epoch: int) -> None
+
+      Perform any necessary actions when a training epoch ends.
+
+      This function is called at the bottom of the epoch loop. You may use this
+      function to perform any training operations you require.
+
+      :param current_epoch: the epoch number that has just ended.
+
+
+
+   .. py:method:: on_training_end() -> None
+
+      Perform any necessary actions when training ends.
+
+      You may use this function to update any weight averaging networks, or any other
+      tasks that should only happen at the end of training.
+
+
+
+   .. py:method:: eval() -> None
+
+      Switch the model to evaluation mode.
+
+
+
+   .. py:method:: on_validation_start(validation_cycle: int) -> None
+
+      Perform any necessary actions when validation starts.
+
+      By default, this will clear out the table of validation values, but you may use it
+      for any other tasks that should happen when validation begins.
+
+      :param validation_cycle: the validation cycle number.
+
+
+
+   .. py:method:: on_validation_batch_start(step: int) -> None
+
+      Perform any actions when a validation batch is started.
+
+      This function is called before :py:meth:`valid_step` is called. No steps are
+      performed by default.
+
+      :param step: the current validation batch.
+
+
+
+   .. py:method:: valid_step(batch: Any, step: int) -> None
+
+      Perform a single validation step.
+
+      The input is the returned value from the datasets you supplied to the trainer. In
+      this function, you should perform any steps necessary to compute the validation
+      metric(s) for your network(s).
+
+      :param batch: the batch data returned from the dataset.
+      :param step: the current validation batch.
+
+
+
+   .. py:method:: on_validation_batch_end(step: int) -> None
+
+      Perform any actions when a validation batch ends.
+
+      This function is called after :py:meth:`valid_step` is called. No steps are
+      performed by default.
+
+      :param step: the current validation batch.
+
+
+
+   .. py:method:: on_validation_end(validation_cycle: int) -> None
+
+      Perform any necessary actions when validation ends.
+
+      By default, this function will clear out the running loss table, but you may use
+      this function to compute any final validation metrics as well as log them.
+
+      :param validation_cycle: the validation cycle number.
+
+
+
+   .. py:method:: have_metrics_improved() -> bool
+
+      Determine whether the current validation results are an improvement or not.
+
+      This is used when early stopping is enabled in the trainer to determine whether
+      the stop cycle count should increase or not. This is called immediately after the
+      validation cycle finishes.
+
+      :returns: False if no improvements were seen in the last validation cycle.
+
+
+
+   .. py:method:: should_training_stop() -> bool
+
+      Determine whether training should stop or continue.
+
+      This is used in the event that training should stop when:
+
+      * A validation metric crosses a certain threshold,
+      * A loss value becomes invalid,
+      * Any other circumstance under which training should stop immediately.
+
+      This function is called by the :py:class:`Trainer` at the following times:
+
+      * After a full training step has finished. That is, after
+        :py:meth:`on_training_batch_start`, :py:meth:`train_step`, and
+        :py:meth:`on_training_batch_end` have been called.
+      * After a validation cycle has finished. That is, after *all* of the validation
+        callbacks have been called.
+      * After each epoch has concluded (if training by epoch). Note that this happens
+        *after* :py:meth:`on_training_epoch_end`.
+
+      :returns: False if training should continue, true otherwise.
+
+
+
+   .. py:method:: on_testing_start() -> None
+
+      Perform any necessary actions when testing starts.
+
+      By default, this will clear out the table of testing values, but you may use it
+      for any other tasks that should happen when testing begins.
+
+
+
+   .. py:method:: on_testing_batch_start(step: int) -> None
+
+      Perform any actions when a testing batch is started.
+
+      This function is called before test_step is called. No steps are performed by
+      default.
+
+      :param step: the current testing batch.
+
+
+
+   .. py:method:: test_step(batch: Any, step: int) -> None
+
+      Perform a single testing step.
+
+      The input is the returned value from the datasets you supplied to the trainer. In
+      this function, you should perform any steps necessary to compute the testing
+      metric(s) for your network(s).
+
+      :param batch: the batch data returned from the dataset.
+      :param step: the current validation batch.
+
+
+
+   .. py:method:: on_testing_batch_end(step: int) -> None
+
+      Perform any actions when a testing batch ends.
+
+      This function is called after test_step is called. No steps are performed by
+      default.
+
+      :param step: the current testing batch.
+
+
+
+   .. py:method:: on_testing_end() -> None
+
+      Perform any necessary actions when testing ends.
+
+      You may use this function to compute any final testing metrics as well as log
+      them.
+
+
+
