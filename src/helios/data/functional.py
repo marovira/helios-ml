@@ -7,17 +7,23 @@ import PIL
 import torch
 
 
-def load_image(path: pathlib.Path, out_fmt: str = "") -> npt.NDArray:
+def load_image(
+    path: pathlib.Path, out_fmt: str = "", as_numpy: bool = True
+) -> npt.NDArray | PIL.Image.Image:
     """
-    Load the given image and convert it to a numpy array.
+    Load the given image.
 
     ``out_fmt`` is a format string that can be passed in to PIL.Image.convert. Please
     see the documentation for accepted strings. If no string is passed, the image will be
     converted to RGB format.
+    By default, the output is a NumPY array. If you need a PIL image instead, set
+    ``as_numpy`` to false.
 
     Args:
         path: the path to the image to load.
         out_fmt: the format to convert the loaded image to. Defaults to empty.
+        as_numpy: if true, the loaded image will be returned as a NumPY array, otherwise
+            it is returned as a PIL image. Defaults to true.
 
     Returns:
         The loaded image.
@@ -25,7 +31,9 @@ def load_image(path: pathlib.Path, out_fmt: str = "") -> npt.NDArray:
     with path.open(mode="rb") as infile:
         img = PIL.Image.open(infile)
         out = img.convert(out_fmt) if out_fmt != "" else img.convert("RGB")
-        return np.array(out)
+        if as_numpy:
+            return np.array(out)
+        return out
 
 
 def tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> npt.NDArray:

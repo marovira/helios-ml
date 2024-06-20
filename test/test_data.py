@@ -1,10 +1,15 @@
+import pathlib
 import typing
 
+import cv2
+import numpy as np
+import PIL
 import torch
 from torch.utils import data as tud
 
 from helios import core, data
 from helios.core import rng
+from helios.data import functional as hldf
 from helios.data import samplers as hlds
 from helios.data import transforms as hldt
 
@@ -79,6 +84,32 @@ class TestTransforms:
 
         assert isinstance(as_tens, torch.Tensor)
         assert as_tens.shape == (3, 32, 32)
+
+
+class TestFunctional:
+    def test_load_image(self, tmp_path: pathlib.Path):
+        rng.seed_rngs()
+        gen = rng.get_default_numpy_rng().generator
+        img = (gen.random(size=(32, 32, 3)) * 255).astype(np.uint8)
+        as_pil = PIL.Image.fromarray(img)
+
+        out_path = tmp_path / "tmp.png"
+        cv2.imwrite(str(out_path), cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+        ret = hldf.load_image(out_path)
+        assert isinstance(ret, np.ndarray)
+        assert np.array_equal(img, ret)
+
+        ret = hldf.load_image(out_path, as_numpy=False)
+        assert isinstance(ret, PIL.Image.Image)
+        diff = PIL.ImageChops.difference(as_pil, ret)  # type: ignore[attr-defined]
+        assert diff.getbbox() is None
+
+    def test_tensor_to_numpy(self):
+        tens = torch.randn((3, 32, 32))
+        ret = hldf.tensor_to_numpy(tens)
+        assert isinstance(ret, np.ndarray)
+        assert ret.shape == (32, 32, 3)
 
 
 class TestDataModule:
