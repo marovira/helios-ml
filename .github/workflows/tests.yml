@@ -53,7 +53,12 @@ jobs:
 
           python -m pip install numpy==1.26.4
           python -m pip install -r requirements/ci.txt
-          echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
+
+          if [[ "$RUNNER" == "windows-latest" ]]; then
+            eco "$VIRTUAL_ENV/Scripts" >> $GITHUB_PATH
+          else
+            echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
+          fi
           echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
 
       - name: Install Helios
@@ -62,17 +67,20 @@ jobs:
           pip install .
 
       - name: Ruff
+        shell: bash
         run: |
           ruff check src/helios
           ruff check test
           ruff check examples/cifar10
 
       - name: Mypy
+        shell: bash
         run: |
           mypy src/helios
           mypy test
           mypy examples/cifar10
 
       - name: Pytest
+        shell: bash
         run: |
           python -m pytest
