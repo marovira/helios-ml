@@ -55,7 +55,7 @@ jobs:
           python -m pip install -r requirements/ci.txt
 
           if [[ "$RUNNER" == "windows-latest" ]]; then
-            eco "$VIRTUAL_ENV/Scripts" >> $GITHUB_PATH
+            echo "$VIRTUAL_ENV/Scripts" >> $GITHUB_PATH
           else
             echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
           fi
