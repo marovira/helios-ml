@@ -279,6 +279,19 @@ class TestTrainer:
             assert chkpt_root is not None
             assert num_chkpts == len(list(chkpt_root.glob("*.pth")))
 
+            for chkpt_path in chkpt_root.glob("*.pth"):
+                state_dict = torch.load(chkpt_path)
+                assert trainer._validate_state_dict(state_dict)
+
+                # Add an extra key
+                state_dict["tmp"] = "foo"
+                assert trainer._validate_state_dict(state_dict)
+                state_dict.pop("tmp")
+
+                # Remove one of the valid keys
+                state_dict.pop("rng")
+                assert not trainer._validate_state_dict(state_dict)
+
     def test_fit_iter(self, tmp_path: pathlib.Path) -> None:
         self.check_training_loops(
             hlt.Trainer(

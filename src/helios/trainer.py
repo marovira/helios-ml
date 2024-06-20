@@ -700,10 +700,18 @@ class Trainer:
         Returns:
             True if the checkpoint is valid, false otherwise.
         """
-        if not all(
-            key in state_dict for key in ("version", "training_state", "model", "rng")
-        ):
+        is_pre_release = __version__.split(".")[0] == "0"
+        assert is_pre_release  # Reminder to clean this up once v1 is published.
+        required_keys = (
+            ("version", "training_state", "model", "rng")
+            if not is_pre_release
+            else ("training_state", "model", "rng")
+        )
+        if not all(key in state_dict for key in required_keys):
             return False
+
+        if is_pre_release:
+            return True
 
         # Now check the version to see if it's compatible with us.
         cur_ver = pv.Version(__version__)
