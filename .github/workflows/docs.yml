@@ -1,0 +1,51 @@
+name: "Render docs"
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        id: setup_python
+        with:
+          python-version: "3.11"
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          key: venv-${{ runner.os }}-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('requirements/ci.txt') }}
+          path: venv
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          python -m pip install -r requirements/ci.txt
+          echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
+          echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
+      - name: Build
+        uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/"
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-docs
+          path: docs/build/html
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == "refs/heads/main"
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build/html
