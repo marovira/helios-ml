@@ -44,3 +44,6 @@ jobs:
           python -m build
       - name: Publish Helios
         uses: pypa/gh-action-pypi-publish@release/v1
+  docs:
+    needs: publish
+    uses: ./.github/workflows/docs.yml

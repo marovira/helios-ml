@@ -1,15 +1,14 @@
 name: "Render docs"
 
 on:
-  release:
-    types: [published]
+  workflow_call:
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  publish:
+  sphinx:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
