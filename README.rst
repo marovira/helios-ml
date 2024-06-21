@@ -104,7 +104,7 @@ If you require a specific version of CUDA, you can install with::
 Documentation
 -------------
 
-Documentation available `here <https://marovira.github.io/helios-ml/>`_.
+Documentation available `here <https://marovira.github.io/helios-ml/>`__.
 
 Contributing
 ------------
