@@ -34,6 +34,7 @@
 .. |PLTMinVersion| replace:: 3.8.4
 
 .. what_is_helios
+
 What is Helios?
 ---------------
 
@@ -55,6 +56,7 @@ of the common code patterns while retaining the ability to be easily overridden 
 the individual needs of each training scheme.
 
 .. main_features
+
 Main Features
 -------------
 
@@ -72,6 +74,7 @@ Helios offers the following functionality out of the box:
 4. Correct handling of logging when doing distributed training (even over multiple nodes).
 
 .. installation
+
 Installation
 ------------
 
@@ -104,7 +107,7 @@ If you require a specific version of CUDA, you can install with::
 Documentation
 -------------
 
-Documentation available `here <https://marovira.github.io/helios-ml/>`__.
+Documentation available here.
 
 Contributing
 ------------
