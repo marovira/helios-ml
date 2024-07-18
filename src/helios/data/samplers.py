@@ -256,6 +256,7 @@ ResumableSamplerType = ResumableSampler | ResumableDistributedSampler
 """
 Defines the resumable sampler type.
 
-A resumable sampler **must** be derived from either ``ResumableSampler`` or
-``ResumableDistributedSampler``
+A resumable sampler **must** be derived from either
+:py:class:`~helios.data.samplers.ResumableSampler` or
+:py:class:`~helios.data.samplers.ResumableDistributedSampler`.
 """

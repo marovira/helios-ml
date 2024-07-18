@@ -161,7 +161,7 @@ def calculate_psnr(
     """
     Calculate PSNR (Peak Signal-to-Noise Ratio).
 
-    Implementation follows: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+    Implementation follows: `<https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio>`__
 
     Args:
         img: Images with range :math:`[0, 255]`.
@@ -207,7 +207,7 @@ def calculate_psnr_torch(
     """
     Calculate PSNR (Peak Signal-to-Noise Ratio).
 
-    Implementation follows: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+    Implementation follows: `<https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio>`__
 
     Args:
         img: Images with range :math:`[0, 255]`.
@@ -250,7 +250,7 @@ def calculate_ssim(
 
     Implementation follows: 'Image quality assesment: From error visibility to structural
     similarity'. Results are identical to those of the official MATLAB code in
-    https://ece.uwaterloo.ca/~z70wang/research/ssim/.
+    `<https://ece.uwaterloo.ca/~z70wang/research/ssim/>`__.
     For three-channel images, SSIM is calculated for each channel and then
     averaged.
 
@@ -300,7 +300,7 @@ def calculate_ssim_torch(
 
     Implementation follows: 'Image quality assesment: From error visibility to structural
     similarity'. Results are identical to those of the official MATLAB code in
-    https://ece.uwaterloo.ca/~z70wang/research/ssim/.
+    `<https://ece.uwaterloo.ca/~z70wang/research/ssim/>`__.
     For three-channel images, SSIM is calculated for each channel and then
     averaged.
 
@@ -338,7 +338,7 @@ def calculate_mAP(targs: npt.NDArray, preds: npt.NDArray) -> float:
     Calculate the mAP (Mean Average Precision).
 
     Implementation follows:
-    https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision
+    `<https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision>`__
 
     Args:
         targs: target (inferred) labels in range :math:`[0, 1]`.
@@ -367,7 +367,7 @@ def calculate_mae(pred: npt.NDArray, gt: npt.NDArray, scale: float = 1.0) -> flo
     """
     Compute the MAE (Mean-Average Precision) score.
 
-    Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
+    Implementation follows: `<https://en.wikipedia.org/wiki/Mean_absolute_error>`__.
     The scale argument is used in the event that the input arrays are not in the range
     :math:`[0, 1]` but instead have been scaled to be in the range :math:`[0, N]` where
     :math:`N` is the factor. For example, if the arrays are images in the range
@@ -391,7 +391,7 @@ def calculate_mae_torch(
     """
     Compute the MAE (Mean-Average Precision) score.
 
-    Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
+    Implementation follows: `<https://en.wikipedia.org/wiki/Mean_absolute_error>`__.
     The scale argument is used in the event that the input arrays are not in the range
     :math:`[0, 1]` but instead have been scaled to be in the range :math:`[0, N]` where
     :math:`N` is the factor. For example, if the arrays are images in the range

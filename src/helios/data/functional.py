@@ -14,8 +14,9 @@ def load_image(
     Load the given image.
 
     ``out_fmt`` is a format string that can be passed in to PIL.Image.convert. Please
-    see the documentation for accepted strings. If no string is passed, the image will be
-    converted to RGB format.
+    `here <https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.convert>`__
+    for the list of accepted strings.
+    If no string is passed, the image will be converted to RGB format.
     By default, the output is a NumPY array. If you need a PIL image instead, set
     ``as_numpy`` to false.
 

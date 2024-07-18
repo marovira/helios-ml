@@ -24,8 +24,9 @@ class Model(abc.ABC):
     The use of this class is to standardize the way networks are created and trained. This
     allows the training code to be shared across multiple networks, reducing code
     duplication.
-    The functions provided by the Model class can be overridden to satisfy the individual
-    needs of each of the network(s) that need to be trained.
+    The functions provided by the :py:class:`~helios.model.model.Model` class can be
+    overridden to satisfy the individual needs of each of the network(s) that need to be
+    trained.
 
     Example:
         Suppose the body of the training loop looks something like this:
@@ -219,8 +220,10 @@ class Model(abc.ABC):
 
         Use this function to append the value of the loss function(s), validation
         metric(s), or any extra metadata you wish to add to the name of the checkpoint.
-        Note that the epoch and iteration numbers are added automatically. The extension
-        will also be added automatically.
+
+        .. note::
+            The epoch and iteration numbers, alongside the file extension, are added
+            automatically.
 
         Args:
             chkpt_name: the name of the checkpoint filename (without extension).
@@ -285,8 +288,11 @@ class Model(abc.ABC):
         this function, you should perform the forward and backward passes for your
         network(s). If you use schedulers, they should be updated here as well. Note that
         you do not have to clear the losses or gather them. This will be handled
-        automatically for you. Also keep in mind that the contents of the batch have
-        **not** been moved to the current device. It is your responsibility to do so.
+        automatically for you.
+
+        .. warning::
+            The contents of the batch **are not** moved to any devices prior to this call.
+            It is your responsibility to move them (if necessary).
 
         Args:
             batch: the batch data returned from the dataset.
@@ -299,10 +305,11 @@ class Model(abc.ABC):
         """
         Perform any actions when a training batch ends.
 
-        This function is called after train_step is called. By default, it will gather all
-        the losses stored in self._loss_items (if using distributed training) and will
-        update the running losses using those values. You may also use this function to
-        log your losses or perform any additional tasks after the training step.
+        This function is called after :py:meth:`~helios.model.model.Model.train_step` is
+        called. By default, it will gather all the losses stored in ``self._loss_items``
+        (if using distributed training) and will update the running losses using those
+        values. You may also use this function to log your losses or perform any
+        additional tasks after the training step.
 
         Args:
             state: the current training state.
@@ -423,7 +430,8 @@ class Model(abc.ABC):
         * A loss value becomes invalid,
         * Any other circumstance under which training should stop immediately.
 
-        This function is called by the :py:class:`Trainer` at the following times:
+        This function is called by the :py:class:`~helios.trainer.Trainer` at the
+        following times:
 
         * After a full training step has finished. That is, after
           :py:meth:`on_training_batch_start`, :py:meth:`train_step`, and
@@ -451,8 +459,8 @@ class Model(abc.ABC):
         """
         Perform any actions when a testing batch is started.
 
-        This function is called before test_step is called. No steps are performed by
-        default.
+        This function is called before :py:meth:`~helios.model.model.Model.test_step` is
+        called. No steps are performed by default.
 
         Args:
             step: the current testing batch.
@@ -475,8 +483,8 @@ class Model(abc.ABC):
         """
         Perform any actions when a testing batch ends.
 
-        This function is called after test_step is called. No steps are performed by
-        default.
+        This function is called after :py:meth:`~helios.model.model.Model.test_step` is
+        called. No steps are performed by default.
 
         Args:
             step: the current testing batch.

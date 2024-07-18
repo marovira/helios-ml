@@ -102,7 +102,7 @@ def _seed_worker(worker_id: int) -> None:
 
 def create_dataloader(
     dataset: tud.Dataset,
-    random_seed: int = 0,
+    random_seed: int = rng.get_default_seed(),
     batch_size: int = 1,
     shuffle: bool = False,
     num_workers: int = 0,
@@ -119,17 +119,23 @@ def create_dataloader(
     If no sampler is provided, the choice of sampler will be determined based on the
     values of is_distributed and shuffle. Specifically, the following logic is used:
 
-    * If is_distributed, then sampler is ``ResumableDistributedSampler``.
-    * Otherwise, if shuffle then sampler is ``ResumableRandomSampler``, else
-      ``ResumableSequentialSampler``.
+    * If is_distributed, then sampler is
+      :py:class:`~helios.data.samplers.ResumableDistributedSampler`.
+    * Otherwise, if shuffle then sampler is
+      :py:class:`~helios.data.samplers.ResumableRandomSampler`, else
+      :py:class:`~helios.data.samplers.ResumableSequentialSampler`.
 
-    You may override this behaviour by providing your own sampler instance. Note that the
-    sampler **must** be derived from one of ``ResumableSampler`` or
-    ``ResumableDistributedSampler``.
+    You may override this behaviour by providing your own sampler instance.
+
+    .. warning::
+        If you provide a custom sampler, then it **must** be derived from one of
+        :py:class:`helios.data.samplers.ResumableSampler` or
+        :py:class:`helios.data.samplers.ResumableDistributedSampler`.
 
     Args:
         dataset: the dataset to use.
-        random_seed: value to use as seed for the worker processes. Defaults to 0.
+        random_seed: value to use as seed for the worker processes. Defaults to the value
+            returned by :py:func:`~helios.core.rng.get_default_seed`.
         batch_size: number of samplers per batch. Defaults to 1.
         shuffle: if true, samples are randomly shuffled. Defaults to false.
         num_workers: number of worker processes for loading data. Defaults to 0.
@@ -145,7 +151,8 @@ def create_dataloader(
 
     Raises:
         TypeError: if ``sampler`` is not ``None`` and not derived from one of
-            ``ResumableDistributedSampler`` or ``ResumableSampler``.
+            :py:class:`~helios.data.samplers.ResumableDistributedSampler` or
+            :py:class:`~helios.data.samplers.ResumableSampler`.
     """
     assert len(typing.cast(typing.Sized, dataset))
 
