@@ -437,8 +437,8 @@ Now let's look at the logging code:
 Let's examine each part independently:
 
 #. The call to ``super().on_training_batch_end`` will automatically gather any tensors
-   stored so in the ``_loss_items`` dictionary if we're in distributed mode, so we don't
-   have to manually do it ourselves.
+   stored in the ``_loss_items`` dictionary if we're in distributed mode, so we don't have
+   to manually do it ourselves.
 #. When the :py:class:`~helios.trainer.Trainer` is created, we can specify the interval at
    which logging should occur. Since
    :py:meth:`~helios.model.model.Model.on_training_batch_end` is called on at the end of
@@ -533,9 +533,10 @@ do this, we're going to assign these fields before validation starts:
         self._val_scores["total"] = 0
         self._val_scores["correct"] = 0
 
-Calling ``on_validatioN_start`` on the base class automatically clears out the
-``_val_scores`` dictionary to ensure we don't accidentally over-write or overlap values.
-After setting the fields we care about, let's perform the validation step:
+Calling :py:meth:`~helios.mode.model.Model.on_validation_start` on the base class
+automatically clears out the ``_val_scores`` dictionary to ensure we don't accidentally
+over-write or overlap values. After setting the fields we care about, let's perform the
+validation step:
 
 .. code-block:: python
 

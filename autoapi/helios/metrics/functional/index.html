@@ -265,6 +265,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../onnx/index.html">helios.onnx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../trainer/index.html">helios.trainer</a></li>
 </ul>
@@ -444,7 +445,7 @@ involved in the calculation.</p></li>
 <span class="sig-prename descclassname"><span class="pre">helios.metrics.functional.</span></span><span class="sig-name descname"><span class="pre">calculate_mAP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#helios.metrics.functional.calculate_mAP" title="Link to this definition">¶</a></dt>
 <dd><p>Calculate the mAP (Mean Average Precision).</p>
 <p>Implementation follows:
-<a class="reference external" href="https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval">https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval</a>)#Mean_average_precision</p>
+<a class="reference external" href="https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision">https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -462,7 +463,7 @@ involved in the calculation.</p></li>
 <dt class="sig sig-object py" id="helios.metrics.functional.calculate_mae">
 <span class="sig-prename descclassname"><span class="pre">helios.metrics.functional.</span></span><span class="sig-name descname"><span class="pre">calculate_mae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#helios.metrics.functional.calculate_mae" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the MAE (Mean-Average Precision) score.</p>
-<p>Implementation follows: <a class="reference external" href="https://en.wikipedia.org/wiki/Mean_absolute_error">https://en.wikipedia.org/wiki/Mean_absolute_error</a>
+<p>Implementation follows: <a class="reference external" href="https://en.wikipedia.org/wiki/Mean_absolute_error">https://en.wikipedia.org/wiki/Mean_absolute_error</a>.
 The scale argument is used in the event that the input arrays are not in the range
 <span class="math notranslate nohighlight">\([0, 1]\)</span> but instead have been scaled to be in the range <span class="math notranslate nohighlight">\([0, N]\)</span> where
 <span class="math notranslate nohighlight">\(N\)</span> is the factor. For example, if the arrays are images in the range
@@ -486,7 +487,7 @@ already in the range <span class="math notranslate nohighlight">\([0, 1]\)</span
 <dt class="sig sig-object py" id="helios.metrics.functional.calculate_mae_torch">
 <span class="sig-prename descclassname"><span class="pre">helios.metrics.functional.</span></span><span class="sig-name descname"><span class="pre">calculate_mae_torch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#helios.metrics.functional.calculate_mae_torch" title="Link to this definition">¶</a></dt>
 <dd><p>Compute the MAE (Mean-Average Precision) score.</p>
-<p>Implementation follows: <a class="reference external" href="https://en.wikipedia.org/wiki/Mean_absolute_error">https://en.wikipedia.org/wiki/Mean_absolute_error</a>
+<p>Implementation follows: <a class="reference external" href="https://en.wikipedia.org/wiki/Mean_absolute_error">https://en.wikipedia.org/wiki/Mean_absolute_error</a>.
 The scale argument is used in the event that the input arrays are not in the range
 <span class="math notranslate nohighlight">\([0, 1]\)</span> but instead have been scaled to be in the range <span class="math notranslate nohighlight">\([0, N]\)</span> where
 <span class="math notranslate nohighlight">\(N\)</span> is the factor. For example, if the arrays are images in the range

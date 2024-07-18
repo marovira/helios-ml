@@ -25,7 +25,7 @@ Module Contents
 
    Calculate PSNR (Peak Signal-to-Noise Ratio).
 
-   Implementation follows: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+   Implementation follows: `<https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio>`__
 
    :param img: Images with range :math:`[0, 255]`.
    :param img2: Images with range :math:`[0, 255]`.
@@ -41,7 +41,7 @@ Module Contents
 
    Calculate PSNR (Peak Signal-to-Noise Ratio).
 
-   Implementation follows: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+   Implementation follows: `<https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio>`__
 
    :param img: Images with range :math:`[0, 255]`.
    :param img2: Images with range :math:`[0, 255]`.
@@ -58,7 +58,7 @@ Module Contents
 
    Implementation follows: 'Image quality assesment: From error visibility to structural
    similarity'. Results are identical to those of the official MATLAB code in
-   https://ece.uwaterloo.ca/~z70wang/research/ssim/.
+   `<https://ece.uwaterloo.ca/~z70wang/research/ssim/>`__.
    For three-channel images, SSIM is calculated for each channel and then
    averaged.
 
@@ -78,7 +78,7 @@ Module Contents
 
    Implementation follows: 'Image quality assesment: From error visibility to structural
    similarity'. Results are identical to those of the official MATLAB code in
-   https://ece.uwaterloo.ca/~z70wang/research/ssim/.
+   `<https://ece.uwaterloo.ca/~z70wang/research/ssim/>`__.
    For three-channel images, SSIM is calculated for each channel and then
    averaged.
 
@@ -96,7 +96,7 @@ Module Contents
    Calculate the mAP (Mean Average Precision).
 
    Implementation follows:
-   https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision
+   `<https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision>`__
 
    :param targs: target (inferred) labels in range :math:`[0, 1]`.
    :param preds: predicate labels in range :math:`[0, 1]`.
@@ -108,7 +108,7 @@ Module Contents
 
    Compute the MAE (Mean-Average Precision) score.
 
-   Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
+   Implementation follows: `<https://en.wikipedia.org/wiki/Mean_absolute_error>`__.
    The scale argument is used in the event that the input arrays are not in the range
    :math:`[0, 1]` but instead have been scaled to be in the range :math:`[0, N]` where
    :math:`N` is the factor. For example, if the arrays are images in the range
@@ -126,7 +126,7 @@ Module Contents
 
    Compute the MAE (Mean-Average Precision) score.
 
-   Implementation follows: https://en.wikipedia.org/wiki/Mean_absolute_error
+   Implementation follows: `<https://en.wikipedia.org/wiki/Mean_absolute_error>`__.
    The scale argument is used in the event that the input arrays are not in the range
    :math:`[0, 1]` but instead have been scaled to be in the range :math:`[0, N]` where
    :math:`N` is the factor. For example, if the arrays are images in the range

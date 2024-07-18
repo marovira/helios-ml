@@ -265,6 +265,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../onnx/index.html">helios.onnx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../trainer/index.html">helios.trainer</a></li>
 </ul>
@@ -335,8 +336,9 @@
 <p>The use of this class is to standardize the way networks are created and trained. This
 allows the training code to be shared across multiple networks, reducing code
 duplication.
-The functions provided by the Model class can be overridden to satisfy the individual
-needs of each of the network(s) that need to be trained.</p>
+The functions provided by the <a class="reference internal" href="#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> class can be
+overridden to satisfy the individual needs of each of the network(s) that need to be
+trained.</p>
 <p class="rubric">Example</p>
 <p>Suppose the body of the training loop looks something like this:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataloader</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># The dataloader for our dataset.</span>
@@ -498,15 +500,32 @@ network(s) along with any additional data you require.</p>
 <span class="sig-name descname"><span class="pre">append_metadata_to_chkpt_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chkpt_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#helios.model.model.Model.append_metadata_to_chkpt_name" title="Link to this definition">¶</a></dt>
 <dd><p>Append additional data to the checkpoint filename.</p>
 <p>Use this function to append the value of the loss function(s), validation
-metric(s), or any extra metadata you wish to add to the name of the checkpoint.
-Note that the epoch and iteration numbers are added automatically. The extension
-will also be added automatically.</p>
+metric(s), or any extra metadata you wish to add to the name of the checkpoint.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The epoch and iteration numbers, alongside the file extension, are added
+automatically.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>chkpt_name</strong> – the name of the checkpoint filename (without extension).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The name with any additional metadata.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.append_to_banner">
+<span class="sig-name descname"><span class="pre">append_to_banner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">banner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#helios.model.model.Model.append_to_banner" title="Link to this definition">¶</a></dt>
+<dd><p>Append additional information to the main banner printed on start-up.</p>
+<p>Use this function to add any extra information you wish to the main banner shown
+at start-up. Note that if <code class="docutils literal notranslate"><span class="pre">print_banner</span></code> is set to false in the
+<a class="reference internal" href="../../trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a>, then this message is not shown.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The banner string with any additional information.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -559,8 +578,12 @@ prior to the training step itself.</p>
 this function, you should perform the forward and backward passes for your
 network(s). If you use schedulers, they should be updated here as well. Note that
 you do not have to clear the losses or gather them. This will be handled
-automatically for you. Also keep in mind that the contents of the batch have
-<strong>not</strong> been moved to the current device. It is your responsibility to do so.</p>
+automatically for you.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The contents of the batch <strong>are not</strong> moved to any devices prior to this call.
+It is your responsibility to move them (if necessary).</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -575,10 +598,11 @@ automatically for you. Also keep in mind that the contents of the batch have
 <dt class="sig sig-object py" id="helios.model.model.Model.on_training_batch_end">
 <span class="sig-name descname"><span class="pre">on_training_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../trainer/index.html#helios.trainer.TrainingState" title="helios.trainer.TrainingState"><span class="pre">helios.trainer.TrainingState</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">should_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_training_batch_end" title="Link to this definition">¶</a></dt>
 <dd><p>Perform any actions when a training batch ends.</p>
-<p>This function is called after train_step is called. By default, it will gather all
-the losses stored in self._loss_items (if using distributed training) and will
-update the running losses using those values. You may also use this function to
-log your losses or perform any additional tasks after the training step.</p>
+<p>This function is called after <a class="reference internal" href="#helios.model.model.Model.train_step" title="helios.model.model.Model.train_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train_step()</span></code></a> is
+called. By default, it will gather all the losses stored in <code class="docutils literal notranslate"><span class="pre">self._loss_items</span></code>
+(if using distributed training) and will update the running losses using those
+values. You may also use this function to log your losses or perform any
+additional tasks after the training step.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -709,7 +733,8 @@ validation cycle finishes.</p>
 <li><p>A loss value becomes invalid,</p></li>
 <li><p>Any other circumstance under which training should stop immediately.</p></li>
 </ul>
-<p>This function is called by the <code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code> at the following times:</p>
+<p>This function is called by the <a class="reference internal" href="../../trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> at the
+following times:</p>
 <ul class="simple">
 <li><p>After a full training step has finished. That is, after
 <a class="reference internal" href="#helios.model.model.Model.on_training_batch_start" title="helios.model.model.Model.on_training_batch_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_batch_start()</span></code></a>, <a class="reference internal" href="#helios.model.model.Model.train_step" title="helios.model.model.Model.train_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train_step()</span></code></a>, and
@@ -738,8 +763,8 @@ for any other tasks that should happen when testing begins.</p>
 <dt class="sig sig-object py" id="helios.model.model.Model.on_testing_batch_start">
 <span class="sig-name descname"><span class="pre">on_testing_batch_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_testing_batch_start" title="Link to this definition">¶</a></dt>
 <dd><p>Perform any actions when a testing batch is started.</p>
-<p>This function is called before test_step is called. No steps are performed by
-default.</p>
+<p>This function is called before <a class="reference internal" href="#helios.model.model.Model.test_step" title="helios.model.model.Model.test_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">test_step()</span></code></a> is
+called. No steps are performed by default.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>step</strong> – the current testing batch.</p>
@@ -768,8 +793,8 @@ metric(s) for your network(s).</p>
 <dt class="sig sig-object py" id="helios.model.model.Model.on_testing_batch_end">
 <span class="sig-name descname"><span class="pre">on_testing_batch_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.model.model.Model.on_testing_batch_end" title="Link to this definition">¶</a></dt>
 <dd><p>Perform any actions when a testing batch ends.</p>
-<p>This function is called after test_step is called. No steps are performed by
-default.</p>
+<p>This function is called after <a class="reference internal" href="#helios.model.model.Model.test_step" title="helios.model.model.Model.test_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">test_step()</span></code></a> is
+called. No steps are performed by default.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>step</strong> – the current testing batch.</p>
@@ -861,6 +886,7 @@ them.</p>
 <li><a class="reference internal" href="#helios.model.model.Model.state_dict"><code class="docutils literal notranslate"><span class="pre">Model.state_dict()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.trained_state_dict"><code class="docutils literal notranslate"><span class="pre">Model.trained_state_dict()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.append_metadata_to_chkpt_name"><code class="docutils literal notranslate"><span class="pre">Model.append_metadata_to_chkpt_name()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.append_to_banner"><code class="docutils literal notranslate"><span class="pre">Model.append_to_banner()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.train"><code class="docutils literal notranslate"><span class="pre">Model.train()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.on_training_start"><code class="docutils literal notranslate"><span class="pre">Model.on_training_start()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.on_training_epoch_start"><code class="docutils literal notranslate"><span class="pre">Model.on_training_epoch_start()</span></code></a></li>

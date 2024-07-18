@@ -265,6 +265,7 @@
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/helios/chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/helios/onnx/index.html">helios.onnx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/helios/trainer/index.html">helios.trainer</a></li>
 </ul>
@@ -405,7 +406,7 @@ function, though it may be considered for a future release.</p>
 <p>A critical component of ensuring reproducibility is to have a way for the order in which
 batches are retrieved from the dataset stays the same even if a training run is stopped.
 PyTorch does not provide a built-in system to allow this, so Helios implements this
-through the <code class="xref py py-class docutils literal notranslate"><span class="pre">ResumabeSampler</span></code> base class. The goal is to
+through the <a class="reference internal" href="autoapi/helios/data/samplers/index.html#helios.data.samplers.ResumableSampler" title="helios.data.samplers.ResumableSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResumableSampler</span></code></a> base class. The goal is to
 provide a way to do the following:</p>
 <ol class="arabic simple">
 <li><p>The sampler must have a way of setting the starting iteration. For example, suppose
@@ -528,8 +529,8 @@ been assigned when the trainer was created, then the following logic applies:</p
 <li><p>If the function returns true, then the early stop counter resets to 0 and training
 continues.</p></li>
 <li><p>If the function returns false, then the early stop counter increases by one. If the
-counter greater than or equal to the value given to <code class="docutils literal notranslate"><span class="pre">early_stop_cycles</span></code>, then training
-stops.</p></li>
+counter is greater than or equal to the value given to <code class="docutils literal notranslate"><span class="pre">early_stop_cycles</span></code>, then
+training stops.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -602,7 +603,7 @@ handling, which results in the following data being stored in the
 <ul class="simple">
 <li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState.current_iteration" title="helios.trainer.TrainingState.current_iteration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">current_iteration</span></code></a> and
 <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState.global_iteration" title="helios.trainer.TrainingState.global_iteration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">global_iteration</span></code></a> will both have the same value,
-which woill correspond to <span class="math notranslate nohighlight">\(n_e \cdot n_i\)</span> where <span class="math notranslate nohighlight">\(n_e\)</span> is the current epoch
+which will correspond to <span class="math notranslate nohighlight">\(n_e \cdot n_i\)</span> where <span class="math notranslate nohighlight">\(n_e\)</span> is the current epoch
 number and <span class="math notranslate nohighlight">\(n_i\)</span> is the batch number in the dataset.</p></li>
 <li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState.global_epoch" title="helios.trainer.TrainingState.global_epoch"><code class="xref py py-attr docutils literal notranslate"><span class="pre">global_epoch</span></code></a> will contain the current epoch
 number.</p></li>
@@ -683,6 +684,7 @@ object.</p></li>
 <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.state_dict" title="helios.model.model.Model.state_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code></a>. Note that by default this is an empty
 dictionary.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">rng</span></code>: contains the state of the supported RNGs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">version</span></code>: contains the version of Helios used to generate the checkpoint.</p></li>
 </ul>
 <p>The following keys may optionally appear in the dictionary:</p>
 <ul class="simple">
@@ -729,6 +731,20 @@ will be automatically handled by the trainer.</p>
 <p>If distributed training is used, then only the process with <em>global rank</em> 0 will save
 checkpoints.</p>
 </div>
+<section id="migrating-checkpoints">
+<h3>Migrating Checkpoints<a class="headerlink" href="#migrating-checkpoints" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">version</span></code> key stored in the checkpoints generated by Helios acts as a fail-safe to
+prevent future changes from breaking previously generated checkpoints. Helios <em>guarantees</em>
+compatibility between checkpoints generated within the same major revision. In other
+words, checkpoints generated by version 1.0 will be compatible with version 1.1.
+Compatibility between major versions is <strong>not</strong> guaranteed. Should you wish to migrate
+your checkpoints to a newer version of Helios, you may do so by either manually calling
+<a class="reference internal" href="autoapi/helios/chkpt_migrator/index.html#helios.chkpt_migrator.migrate_checkpoints_to_current_version" title="helios.chkpt_migrator.migrate_checkpoints_to_current_version"><code class="xref py py-func docutils literal notranslate"><span class="pre">migrate_checkpoints_to_current_version()</span></code></a> or by using the
+script directly from the command line as follows:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>helios.chkpt_migrator<span class="w"> </span>&lt;chkpt-root&gt;
+</pre></div>
+</div>
+</section>
 </section>
 <section id="logging">
 <span id="id4"></span><h2>Logging<a class="headerlink" href="#logging" title="Link to this heading">¶</a></h2>
@@ -964,7 +980,10 @@ following code:</p>
 <li><a class="reference internal" href="#training-by-iteration">Training by Iteration</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#checkpoint-saving">Checkpoint Saving</a></li>
+<li><a class="reference internal" href="#checkpoint-saving">Checkpoint Saving</a><ul>
+<li><a class="reference internal" href="#migrating-checkpoints">Migrating Checkpoints</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#logging">Logging</a></li>
 <li><a class="reference internal" href="#cuda">CUDA</a><ul>
 <li><a class="reference internal" href="#device-selection">Device Selection</a></li>

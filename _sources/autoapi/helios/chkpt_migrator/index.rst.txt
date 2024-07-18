@@ -1,0 +1,27 @@
+helios.chkpt_migrator
+=====================
+
+.. py:module:: helios.chkpt_migrator
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.chkpt_migrator.migrate_checkpoints_to_current_version
+
+
+Module Contents
+---------------
+
+.. py:function:: migrate_checkpoints_to_current_version(root: pathlib.Path) -> None
+
+   Migrate existing checkpoints from a previous version of Helios to the current version.
+
+   This function exists to provide backwards compatibility with checkpoints produced by
+   older versions of Helios.
+
+   :param root: the root where the checkpoints are stored.
+
+

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="helios.optim.utils" href="utils/index.html" /><link rel="prev" title="helios.nn.utils" href="../nn/utils/index.html" />
+<link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" /><link rel="next" title="helios.onnx" href="../onnx/index.html" /><link rel="prev" title="helios.scheduler.utils" href="../scheduler/utils/index.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>helios.optim - Helios documentation</title>
+        <title>helios.chkpt_migrator - Helios documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
@@ -256,8 +256,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../nn/utils/index.html">helios.nn.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">helios.optim</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of helios.optim</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="utils/index.html">helios.optim.utils</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../optim/index.html">helios.optim</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of helios.optim</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -265,7 +265,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">helios.chkpt_migrator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../onnx/index.html">helios.onnx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../trainer/index.html">helios.trainer</a></li>
 </ul>
@@ -292,7 +292,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../../_sources/autoapi/helios/optim/index.rst.txt" title="View this page">
+  <a class="muted-link" href="../../../_sources/autoapi/helios/chkpt_migrator/index.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -312,17 +312,35 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-helios.optim">
-<span id="helios-optim"></span><h1>helios.optim<a class="headerlink" href="#module-helios.optim" title="Link to this heading">¶</a></h1>
-<p>Optimizer package for Helios.</p>
-<p>This contains the classes, utilities, and registries related to optimizers.</p>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="utils/index.html">helios.optim.utils</a></li>
-</ul>
+          <section id="module-helios.chkpt_migrator">
+<span id="helios-chkpt-migrator"></span><h1>helios.chkpt_migrator<a class="headerlink" href="#module-helios.chkpt_migrator" title="Link to this heading">¶</a></h1>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.chkpt_migrator.migrate_checkpoints_to_current_version" title="helios.chkpt_migrator.migrate_checkpoints_to_current_version"><code class="xref py py-obj docutils literal notranslate"><span class="pre">migrate_checkpoints_to_current_version</span></code></a>(→ None)</p></td>
+<td><p>Migrate existing checkpoints from a previous version of Helios to the current version.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helios.chkpt_migrator.migrate_checkpoints_to_current_version">
+<span class="sig-prename descclassname"><span class="pre">helios.chkpt_migrator.</span></span><span class="sig-name descname"><span class="pre">migrate_checkpoints_to_current_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.chkpt_migrator.migrate_checkpoints_to_current_version" title="Link to this definition">¶</a></dt>
+<dd><p>Migrate existing checkpoints from a previous version of Helios to the current version.</p>
+<p>This function exists to provide backwards compatibility with checkpoints produced by
+older versions of Helios.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>root</strong> – the root where the checkpoints are stored.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -331,23 +349,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="utils/index.html">
+          <a class="next-page" href="../onnx/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">helios.optim.utils</div>
+                <div class="title">helios.onnx</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../nn/utils/index.html">
+          <a class="prev-page" href="../scheduler/utils/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">helios.nn.utils</div>
+                <div class="title">helios.scheduler.utils</div>
                 
               </div>
             </a>
@@ -381,8 +399,12 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">helios.optim</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#">helios.chkpt_migrator</a><ul>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#helios.chkpt_migrator.migrate_checkpoints_to_current_version"><code class="docutils literal notranslate"><span class="pre">migrate_checkpoints_to_current_version()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

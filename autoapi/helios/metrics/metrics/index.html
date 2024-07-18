@@ -265,6 +265,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../onnx/index.html">helios.onnx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../trainer/index.html">helios.trainer</a></li>
 </ul>
@@ -401,7 +402,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.metrics.metrics.</span></span><span class="sig-name descname"><span class="pre">CalculatePSNR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crop_border</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'HWC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_y_channel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helios.metrics.metrics.CalculatePSNR" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
 <p>Calculate PSNR (Peak Signal-to-Noise Ratio).</p>
-<p>Implementation follows: <a class="reference external" href="https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio">https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio</a>
+<p>Implementation follows: <a class="reference external" href="https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio">https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio</a>.
 Note that the input_order is only needed if you plan to evaluate Numpy images. It can
 be left as default otherwise.</p>
 <dl class="field-list simple">
@@ -478,7 +479,7 @@ involved in the calculation.</p></li>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
 <p>Calculate the mAP (Mean Average Precision).</p>
 <p>Implementation follows:
-<a class="reference external" href="https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval">https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval</a>)#Mean_average_precision</p>
+<a class="reference external" href="https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision">https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)#Mean_average_precision</a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="helios.metrics.metrics.CalculateMAP.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.typing.NDArray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#helios.metrics.metrics.CalculateMAP.forward" title="Link to this definition">¶</a></dt>
@@ -503,7 +504,7 @@ involved in the calculation.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.metrics.metrics.</span></span><span class="sig-name descname"><span class="pre">CalculateMAE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helios.metrics.metrics.CalculateMAE" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
 <p>Compute the MAE (Mean-Average Precision) score.</p>
-<p>Implementation follows: <a class="reference external" href="https://en.wikipedia.org/wiki/Mean_absolute_error">https://en.wikipedia.org/wiki/Mean_absolute_error</a>
+<p>Implementation follows: <a class="reference external" href="https://en.wikipedia.org/wiki/Mean_absolute_error">https://en.wikipedia.org/wiki/Mean_absolute_error</a>.
 The scale argument is used in the event that the input arrays are not in the range
 <span class="math notranslate nohighlight">\([0, 1]\)</span> but instead have been scaled to be in the range <span class="math notranslate nohighlight">\([0, N]\)</span> where
 <span class="math notranslate nohighlight">\(N\)</span> is the factor. For example, if the arrays are images in the range

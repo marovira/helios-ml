@@ -265,6 +265,7 @@
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="autoapi/helios/chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/helios/onnx/index.html">helios.onnx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/helios/trainer/index.html">helios.trainer</a></li>
 </ul>
@@ -707,8 +708,8 @@ training.</p></li>
 <p>Let’s examine each part independently:</p>
 <ol class="arabic simple">
 <li><p>The call to <code class="docutils literal notranslate"><span class="pre">super().on_training_batch_end</span></code> will automatically gather any tensors
-stored so in the <code class="docutils literal notranslate"><span class="pre">_loss_items</span></code> dictionary if we’re in distributed mode, so we don’t
-have to manually do it ourselves.</p></li>
+stored in the <code class="docutils literal notranslate"><span class="pre">_loss_items</span></code> dictionary if we’re in distributed mode, so we don’t have
+to manually do it ourselves.</p></li>
 <li><p>When the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> is created, we can specify the interval at
 which logging should occur. Since
 <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_batch_end" title="helios.model.model.Model.on_training_batch_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_batch_end()</span></code></a> is called on at the end of
@@ -796,9 +797,10 @@ do this, we’re going to assign these fields before validation starts:</p>
     <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;correct&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 </pre></div>
 </div>
-<p>Calling <code class="docutils literal notranslate"><span class="pre">on_validatioN_start</span></code> on the base class automatically clears out the
-<code class="docutils literal notranslate"><span class="pre">_val_scores</span></code> dictionary to ensure we don’t accidentally over-write or overlap values.
-After setting the fields we care about, let’s perform the validation step:</p>
+<p>Calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">on_validation_start()</span></code> on the base class
+automatically clears out the <code class="docutils literal notranslate"><span class="pre">_val_scores</span></code> dictionary to ensure we don’t accidentally
+over-write or overlap values. After setting the fields we care about, let’s perform the
+validation step:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">valid_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform the validation step.&quot;&quot;&quot;</span>
     <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>

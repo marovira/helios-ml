@@ -31,6 +31,7 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/helios/chkpt_migrator/index
    /autoapi/helios/onnx/index
    /autoapi/helios/trainer/index
 
