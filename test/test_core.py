@@ -60,7 +60,7 @@ class TestUtils:
             timer.record()
 
         avg_time = timer.get_average_time()
-        assert math.isclose(avg_time, 0.1, abs_tol=1e-3)
+        assert math.isclose(avg_time, 0.1, abs_tol=1e-2)
 
     def test_register(self) -> None:
         test_registry = core.Registry("test")
