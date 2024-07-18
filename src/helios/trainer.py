@@ -560,17 +560,19 @@ class Trainer:
     ) -> None:
         """Print the Helios header with system info to the logs."""
         root_logger = logging.get_root_logger()
+        model = core.get_from_optional(self._model)
+        banner = model.append_to_banner(core.get_env_info_str())
 
         if self._print_banner:
-            dist.global_print(core.get_env_info_str())
+            dist.global_print(banner)
 
         if for_training:
             if chkpt_path is not None:
                 msg = f"Resuming training from checkpoint {str(chkpt_path)}"
                 root_logger.info(msg)
                 dist.global_print(f"{msg}\n")
-            else:
-                root_logger.info(core.get_env_info_str())
+            elif self._print_banner:
+                root_logger.info(banner)
         else:
             root_logger.info(core.get_env_info_str())
             msg = (

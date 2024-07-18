@@ -230,6 +230,19 @@ class Model(abc.ABC):
         """
         return chkpt_name
 
+    def append_to_banner(self, banner: str) -> str:
+        """
+        Append additional information to the main banner printed on start-up.
+
+        Use this function to add any extra information you wish to the main banner shown
+        at start-up. Note that if ``print_banner`` is set to false in the
+        :py:class:`~helios.trainer.Trainer`, then this message is not shown.
+
+        Returns:
+            The banner string with any additional information.
+        """
+        return banner
+
     def train(self) -> None:
         """Switch the model to training mode."""
 
