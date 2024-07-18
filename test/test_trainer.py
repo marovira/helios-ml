@@ -1,10 +1,12 @@
 import copy
 import pathlib
+import typing
 
 import numpy as np
 import numpy.typing as npt
 import pytest
 import torch
+from torch import nn
 from torch.utils import data as tud
 
 import helios.trainer as hlt
@@ -17,6 +19,15 @@ from helios.data import functional as F
 # ruff: noqa: SLF001
 
 DATASET_SIZE = 10
+
+
+class SimpleNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 6, 5)
+
+    def forward(self, x):
+        return self.conv1(x)
 
 
 class RandomDataset(tud.Dataset):
@@ -253,6 +264,51 @@ class TestTrainer:
 
             with pytest.raises(ValueError):
                 hlt.Trainer(gpus=[len(devices)])
+
+    def check_map_location(
+        self,
+        out_path: pathlib.Path,
+        start_device: torch.device,
+        train_args: dict[str, typing.Any],
+    ) -> None:
+        net = SimpleNet().to(start_device)
+        torch.save(net.state_dict(), out_path)
+
+        t = hlt.Trainer(**train_args)
+        t._configure_env()
+        net = SimpleNet().to(t._device)
+        data = torch.load(out_path, map_location=t._map_loc)
+        net.load_state_dict(data)
+
+    def test_map_location(self, tmp_path: pathlib.Path) -> None:
+        self.check_map_location(
+            tmp_path / "cpu_to_cpu.pth", torch.device("cpu"), {"use_cpu": True}
+        )
+
+        if torch.cuda.is_available():
+            self.check_map_location(
+                tmp_path / "cpu_to_cuda.pth", torch.device("cpu"), {"gpus": [0]}
+            )
+            self.check_map_location(
+                tmp_path / "cuda_to_cpu.pth", torch.device("cuda:0"), {"use_cpu": True}
+            )
+
+            available_ids = list(range(torch.cuda.device_count()))
+            if len(available_ids) > 1:
+                self.check_map_location(
+                    tmp_path / "cpu_to_cuda1.pth", torch.device("cpu"), {"gpus": [1]}
+                )
+                self.check_map_location(
+                    tmp_path / "cuda1_to_cpu.pth",
+                    torch.device("cuda:1"),
+                    {"use_cpu": True},
+                )
+                self.check_map_location(
+                    tmp_path / "cuda0_to_cuda1.pth", torch.device("cuda:0"), {"gpus": [1]}
+                )
+                self.check_map_location(
+                    tmp_path / "cuda1_to_cuda0.pth", torch.device("cuda:1"), {"gpus": [0]}
+                )
 
     def check_training_loops(
         self,
