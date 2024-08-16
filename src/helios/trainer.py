@@ -279,7 +279,7 @@ class Trainer:
         self._run_name = run_name
         self._print_banner = print_banner
 
-        self._validate_flags()
+        self._validate_flags(use_cpu)
         self._setup_device_flags(use_cpu)
 
     @property
@@ -583,13 +583,16 @@ class Trainer:
             root_logger.info(msg)
             dist.global_print(f"{msg}\n")
 
-    def _validate_flags(self):
+    def _validate_flags(self, use_cpu: bool | None):
         """Ensure that all the settings and flags are valid."""
         if isinstance(self._total_steps, float) and self._total_steps != float("inf"):
             raise ValueError(
                 "error: expected 'total_steps' to be of type 'int' or 'infinity', but "
                 f"received {self._total_steps}"
             )
+
+        if use_cpu is not None and use_cpu and len(self._gpu_ids) > 0:
+            raise ValueError("error: cannot request CPU and GPU training")
 
         if self._chkpt_frequency is not None and self._chkpt_frequency == 0:
             raise ValueError("error: checkpoint frequency must be greater than 0 or None")

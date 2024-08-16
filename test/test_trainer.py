@@ -241,6 +241,7 @@ class TestTrainer:
         self.check_trainer_flags(enable_tensorboard=True, run_path=invalid_root)
         self.check_trainer_flags(enable_file_logging=True, log_path=None)
         self.check_trainer_flags(enable_file_logging=True, log_path=invalid_root)
+        self.check_trainer_flags(use_cpu=True, gpus=[1])
 
     def test_trainer_device_flags(self) -> None:
         t = hlt.Trainer(use_cpu=True)
