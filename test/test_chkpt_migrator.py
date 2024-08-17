@@ -35,5 +35,5 @@ class TestChkptMigrator:
         torch.save(state, tmp_path / "state.pth")
         migrate_checkpoints_to_current_version(tmp_path)
 
-        new_state = torch.load(tmp_path / "state.pth", weights_only=True)
+        new_state = torch.load(tmp_path / "state.pth")
         assert state == new_state
