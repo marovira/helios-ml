@@ -38,7 +38,7 @@ def export_to_onnx(
     with torch.no_grad():
         out = net(net_args)
 
-    torch.onnx.export(net, net_args, out_path, **kwargs)
+    torch.onnx.export(net, net_args, str(out_path), **kwargs)
 
     onnx_model = onnx.load(out_path)
     onnx.checker.check_model(onnx_model)

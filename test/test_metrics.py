@@ -34,8 +34,8 @@ class TestMetrics:
         self.check_almost_equal(module(img, img2), metric_fun_torch(img, img2, 1))
 
         # Convert to numpy
-        img = torch.squeeze(img).numpy()
-        img2 = torch.squeeze(img2).numpy()
+        img = torch.squeeze(img).numpy()  # type: ignore[assignment]
+        img2 = torch.squeeze(img2).numpy()  # type: ignore[assignment]
 
         self.check_almost_equal(module(img, img2), metric_fun(img, img2, 1, "CHW"))
 
@@ -71,6 +71,6 @@ class TestMetrics:
 
         self.check_almost_equal(mae(pred, gt), functional.calculate_mae_torch(pred, gt))
 
-        pred = pred.numpy()
-        gt = gt.numpy()
+        pred = pred.numpy()  # type: ignore[assignment]
+        gt = gt.numpy()  # type: ignore[assignment]
         self.check_almost_equal(mae(pred, gt), functional.calculate_mae(pred, gt))  # type: ignore[arg-type]
