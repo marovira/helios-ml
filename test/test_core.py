@@ -1,6 +1,7 @@
-import dataclasses
+import dataclasses as dc
 import math
 import pathlib
+import pickle
 import random
 import sys
 import time
@@ -8,11 +9,18 @@ import typing
 
 import numpy as np
 import numpy.typing as npt
+import packaging.version as pv
 import pytest
 import torch
 
 from helios import core
 from helios.core import cuda, rng
+
+
+@dc.dataclass
+class SafeType:
+    a: int
+    b: str
 
 
 class TestUtils:
@@ -88,6 +96,45 @@ class TestUtils:
         assert len(rt.FUNC_REGISTRY.keys()) == 2
         assert all(var in rt.FUNC_REGISTRY for var in ("foo", "bar"))
 
+    def test_enable_safe_torch_loading(self) -> None:
+        base_ver = pv.Version("2.4.0")
+        if pv.Version(torch.__version__) >= base_ver:
+            assert core.enable_safe_torch_loading()
+        else:
+            assert not core.enable_safe_torch_loading()
+
+    def test_add_safe_torch_serialization_globals(self) -> None:
+        if not core.enable_safe_torch_loading():
+            return
+
+        torch.serialization.clear_safe_globals()  # type: ignore[attr-defined]
+        core.add_safe_torch_serialization_globals([SafeType])
+        safe_globals = torch.serialization.get_safe_globals()  # type: ignore[attr-defined]
+        assert len(safe_globals) == 1
+        assert safe_globals[0] == SafeType
+        torch.serialization.clear_safe_globals()  # type: ignore[attr-defined]
+
+    def test_safe_torch_load(self, tmp_path: pathlib.Path) -> None:
+        out_file = tmp_path / "safe.pth"
+        base_dict = {"a": 1, "b": "foo", "c": SafeType(2, "bar")}
+        torch.save(base_dict, out_file)
+
+        if not core.enable_safe_torch_loading():
+            ret_dict = core.safe_torch_load(out_file)
+            assert base_dict == ret_dict
+            return
+
+        # Loading without registering the type should fail.
+        with pytest.raises(pickle.UnpicklingError):
+            core.safe_torch_load(out_file)
+
+        # Now register the type and loading should pass.
+        torch.serialization.clear_safe_globals()  # type: ignore[attr-defined]
+        core.add_safe_torch_serialization_globals([SafeType])
+        ret_dict = core.safe_torch_load(out_file)
+        assert base_dict == ret_dict
+        torch.serialization.clear_safe_globals()  # type: ignore[attr-defined]
+
 
 def sample_fun() -> int:
     return 1
@@ -115,7 +162,7 @@ class TestCUDA:
             self._check_cudnn(False)
 
 
-@dataclasses.dataclass
+@dc.dataclass
 class ExpectedRNG:
     torch_vals = torch.tensor([0, 1, 8, 6, 5, 7, 3, 9, 6, 9])
     rand_vals = [0, 9, 2, 3, 6, 6, 2, 6, 7, 4]
