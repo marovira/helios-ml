@@ -284,6 +284,9 @@ class Trainer:
         self._run_name = run_name
         self._print_banner = print_banner
 
+        self._train_exceptions: list[type[Exception]] = []
+        self._test_exceptions: list[type[Exception]] = []
+
         self._validate_flags(use_cpu)
         self._setup_device_flags(use_cpu)
 
@@ -330,6 +333,24 @@ class Trainer:
         """Return the list of GPU IDs to use for training."""
         return self._gpu_ids
 
+    @property
+    def train_exceptions(self) -> list[type[Exception]]:
+        """Return the list of valid exceptions for training."""
+        return self._train_exceptions
+
+    @train_exceptions.setter
+    def train_exceptions(self, exc: list[type[Exception]]) -> None:
+        self._train_exceptions = exc
+
+    @property
+    def test_exceptions(self) -> list[type[Exception]]:
+        """Return the list of valid exceptions for testing."""
+        return self._test_exceptions
+
+    @test_exceptions.setter
+    def test_exceptions(self, exc: list[type[Exception]]) -> None:
+        self._test_exceptions = exc
+
     def fit(self, model: hlm.Model, datamodule: data.DataModule) -> None:
         """
         Run the full training routine.
@@ -341,6 +362,9 @@ class Trainer:
         try:
             self._launch(model, datamodule, _TrainerMode.TRAIN)
         except Exception as e:
+            if any(isinstance(e, exc) for exc in self._train_exceptions):
+                raise
+
             if logging.is_root_logger_active():
                 root_logger = logging.get_root_logger()
                 root_logger.exception("error: uncaught exception")
@@ -358,6 +382,9 @@ class Trainer:
         try:
             self._launch(model, datamodule, _TrainerMode.TEST)
         except Exception as e:
+            if any(isinstance(e, exc) for exc in self._test_exceptions):
+                raise
+
             if logging.is_root_logger_active():
                 root_logger = logging.get_root_logger()
                 root_logger.exception("error: uncaught exception")

@@ -194,6 +194,21 @@ class AccumulationModel(hlm.Model):
         assert state.current_iteration == self.accumulated_steps
 
 
+class ExceptionModel(hlm.Model):
+    def __init__(self, exc_type: type[Exception]) -> None:
+        super().__init__("test-exception")
+        self._exc_type = exc_type
+
+    def setup(self, fast_init: bool = False) -> None:
+        pass
+
+    def on_training_start(self) -> None:
+        raise self._exc_type("error")
+
+    def on_testing_start(self) -> None:
+        raise self._exc_type("error")
+
+
 class TestTrainingUnit:
     def test_from_str(self) -> None:
         assert hlt.TrainingUnit.from_str("epoch") == hlt.TrainingUnit.EPOCH
@@ -470,3 +485,44 @@ class TestTrainer:
         self.check_accumulation(4)
         self.check_accumulation(5)
         self.check_accumulation(10)
+
+    def check_exception(
+        self,
+        exc_type: type[Exception],
+        trainer: hlt.Trainer,
+        fit: bool,
+        raised_as_runtime: bool = False,
+    ) -> None:
+        datamodule = RandomDatamodule()
+        model = ExceptionModel(exc_type)
+
+        if not raised_as_runtime:
+            with pytest.raises(exc_type):
+                if fit:
+                    trainer.fit(model, datamodule)
+                else:
+                    trainer.test(model, datamodule)
+        else:
+            with pytest.raises(RuntimeError):
+                if fit:
+                    trainer.fit(model, datamodule)
+                else:
+                    trainer.test(model, datamodule)
+
+    def test_trainer_exceptions(self) -> None:
+        exception_types = [ValueError, RuntimeError, KeyError]
+        trainer = hlt.Trainer()
+        trainer.train_exceptions = exception_types[:2]
+        for exc_type in trainer.train_exceptions:
+            self.check_exception(exc_type, trainer, fit=True)
+        self.check_exception(
+            exception_types[-1], trainer, fit=True, raised_as_runtime=True
+        )
+
+        trainer.train_exceptions = []
+        trainer.test_exceptions = exception_types[:2]
+        for exc_type in trainer.test_exceptions:
+            self.check_exception(exc_type, trainer, fit=False)
+        self.check_exception(
+            exception_types[-1], trainer, fit=False, raised_as_runtime=True
+        )
