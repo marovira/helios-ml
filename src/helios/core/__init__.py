@@ -9,9 +9,12 @@ from .utils import (
     AverageTimer,
     ChdirContext,
     Registry,
+    add_safe_torch_serialization_globals,
     convert_to_list,
+    enable_safe_torch_loading,
     get_env_info_str,
     get_from_optional,
+    safe_torch_load,
     update_all_registries,
 )
 
@@ -23,8 +26,11 @@ __all__ = [
     "AverageTimer",
     "ChdirContext",
     "Registry",
-    "get_from_optional",
-    "get_env_info_str",
+    "add_safe_torch_serialization_globals",
     "convert_to_list",
+    "enable_safe_torch_loading",
+    "get_env_info_str",
+    "get_from_optional",
+    "safe_torch_load",
     "update_all_registries",
 ]

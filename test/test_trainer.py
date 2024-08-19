@@ -9,6 +9,7 @@ import torch
 from torch import nn
 from torch.utils import data as tud
 
+import helios.core as hlc
 import helios.trainer as hlt
 from helios import data
 from helios import model as hlm
@@ -278,7 +279,7 @@ class TestTrainer:
         t = hlt.Trainer(**train_args)
         t._configure_env()
         net = SimpleNet().to(t._device)
-        data = torch.load(out_path, map_location=t._map_loc)
+        data = hlc.safe_torch_load(out_path, map_location=t._map_loc)
         net.load_state_dict(data)
 
     def test_map_location(self, tmp_path: pathlib.Path) -> None:
@@ -337,7 +338,7 @@ class TestTrainer:
             assert num_chkpts == len(list(chkpt_root.glob("*.pth")))
 
             for chkpt_path in chkpt_root.glob("*.pth"):
-                state_dict = torch.load(chkpt_path)
+                state_dict = hlc.safe_torch_load(chkpt_path)
                 assert trainer._validate_state_dict(state_dict)
 
                 # Add an extra key

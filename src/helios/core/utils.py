@@ -7,6 +7,7 @@ import sys
 import time
 import typing
 
+import packaging.version as pv
 import torch
 import torchvision
 
@@ -442,3 +443,63 @@ def update_all_registries(
 
     for module in import_modules:
         importlib.import_module(module)
+
+
+def enable_safe_torch_loading() -> bool:
+    """
+    Return whether safe loading should be enabled.
+
+    Starting with PyTorch 2.4.0, a warning is issued whenever :code:`torch.load` is used
+    without `weights_only` being set to true. The code necessary to resolve this warning
+    is not present in versions prior to 2.4.0, so this function is used to determine
+    whether we need to handle safe loading or not.
+
+    Returns:
+        True if safe loading needs to be managed, false otherwise.
+    """
+    ver = pv.Version("2.4.0")
+
+    return ver <= pv.Version(torch.__version__)
+
+
+def add_safe_torch_serialization_globals(safe_globals: list[typing.Any]) -> None:
+    """
+    Mark the given globals as safe for :code:`weights_only` to load.
+
+    For example, functions added to this list can be called during unpickling, classes
+    could be instantiated and have state set.
+
+    .. note::
+        This function will *only* register the given globals if the installed version of
+        PyTorch is 2.4.0 or greater. If the version is lower, no action is performed.
+
+    Args:
+        safe_globals: list of globals to mark as safe.
+
+    """
+    if enable_safe_torch_loading():
+        torch.serialization.add_safe_globals(safe_globals)  # type: ignore[attr-defined]
+
+
+def safe_torch_load(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+    """
+    Wrap :code:`torch.load` to handle safe loading.
+
+    This function will automatically set :code:`weights_only` to true if the PyTorch
+    version is at least 2.4.0. You are encouraged to use this function instead of the
+    plain :code:`torch.load` to ensure safe loading is maintained across PyTorch versions.
+
+    .. warning::
+        :code:`weights_only` is set automatically by this function. **Do not** set this
+        value yourself when using this function.
+
+    Args:
+        *args: positional arguments to pass to :code:`torch.load`.
+        **kwargs: keyword arguments to pass to :code:`torch.load`.
+
+    Returns:
+        The result of calling :code:`torch.load`.
+    """
+    if enable_safe_torch_loading():
+        return torch.load(*args, **kwargs, weights_only=True)
+    return torch.load(*args, **kwargs)

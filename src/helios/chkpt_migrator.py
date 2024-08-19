@@ -5,7 +5,10 @@ import platform
 import torch
 import tqdm
 
+from helios import core
+
 from ._version import __version__
+from .trainer import register_trainer_types_for_safe_load
 
 
 def migrate_checkpoints_to_current_version(root: pathlib.Path) -> None:
@@ -18,10 +21,12 @@ def migrate_checkpoints_to_current_version(root: pathlib.Path) -> None:
     Args:
         root: the root where the checkpoints are stored.
     """
+    register_trainer_types_for_safe_load()
+
     for chkpt_path in tqdm.tqdm(
         list(root.glob("*.pth")), desc="Migrating checkpoints", unit="chkpt"
     ):
-        state = torch.load(chkpt_path)
+        state = core.safe_torch_load(chkpt_path)
 
         # Pre-v1.0, checkpoints didn't have a version key.
         if "version" not in state:

@@ -3,6 +3,7 @@ import pathlib
 import torch
 
 import helios
+import helios.core as hlc
 import helios.trainer as hlt
 from helios.chkpt_migrator import migrate_checkpoints_to_current_version
 
@@ -18,7 +19,7 @@ class TestChkptMigrator:
         torch.save(state, tmp_path / "state.pth")
         migrate_checkpoints_to_current_version(tmp_path)
 
-        new_state = torch.load(tmp_path / "state.pth")
+        new_state = hlc.safe_torch_load(tmp_path / "state.pth")
         assert all(
             key in new_state for key in ("version", "training_state", "model", "rng")
         )
@@ -35,5 +36,5 @@ class TestChkptMigrator:
         torch.save(state, tmp_path / "state.pth")
         migrate_checkpoints_to_current_version(tmp_path)
 
-        new_state = torch.load(tmp_path / "state.pth")
+        new_state = hlc.safe_torch_load(tmp_path / "state.pth")
         assert state == new_state

@@ -100,6 +100,11 @@ class TrainingState:
     dict = dc.asdict
 
 
+def register_trainer_types_for_safe_load() -> None:
+    """Register trainer types for safe loading."""
+    core.add_safe_torch_serialization_globals([TrainingState])
+
+
 def find_last_checkpoint(root: pathlib.Path | None) -> pathlib.Path | None:
     """
     Find the last saved checkpoint (if available).
@@ -373,6 +378,7 @@ class Trainer:
             datamodule: the datamodule to use.
             mode:: the operation to perform.
         """
+        register_trainer_types_for_safe_load()
         datamodule.prepare_data()
 
         if self._is_distributed and not self._is_torchrun:
@@ -773,7 +779,7 @@ class Trainer:
             logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
             return TrainingState()
 
-        state_dict = torch.load(chkpt_path, map_location=self._map_loc)
+        state_dict = core.safe_torch_load(chkpt_path, map_location=self._map_loc)
         if not self._validate_state_dict(state_dict):
             raise RuntimeError(
                 f"error: the checkpoint found at {str(chkpt_path)} is not a "
