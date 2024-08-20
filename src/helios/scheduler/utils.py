@@ -41,7 +41,7 @@ By default, the registry contains the following schedulers:
 .. list-table:: Schedulers
     :header-rows: 1
 
-    * - Optimizer
+    * - Scheduler
       - Name
     * - torch.optim.lr_scheduler.LambdaLR
       - LambdaLR
