@@ -17,7 +17,7 @@ if typing.TYPE_CHECKING:
 @dc.dataclass
 class UniquePluginOverrides:
     """
-    Set of flags that determine the unique overrides a plugin can have.
+    Set of flags that determine the unique overrides a plug-in can have.
 
     In order to avoid conflicts, two plug-ins should *not* be able to perform the same
     action twice. For example, it shouldn't be possible to have two distinct plug-ins
@@ -37,64 +37,64 @@ class UniquePluginOverrides:
     testing_batch: bool = False
 
 
-PLUGIN_REGISTRY = core.Registry("plugin")
+PLUGIN_REGISTRY = core.Registry("plug-in")
 """
-Global instance of the registry for plugins.
+Global instance of the registry for plug-ins.
 
-By default, the registry contains the following plugins:
+By default, the registry contains the following plug-ins:
 
 .. list-table:: Schedulers
     :header-rows: 1
 
     * - Plugin
       - Name
-    * - helios.plugins.CUDAPlugin
+    * - helios.plug-ins.CUDAPlugin
       - CUDAPlugin
 
 Example:
     .. code-block:: python
 
-        import helios.plugins as hlp
+        import helios.plug-ins as hlp
 
-        # This automatically registers your plugin
+        # This automatically registers your plug-in
         @hlp.PLUGIN_REGISTRY
         class MyPlugin(hlp.Plugin):
             ...
 
-        # Alternatively, you can manually register a plugin like this:
+        # Alternatively, you can manually register a plug-in like this:
         hlp.PLUGIN_REGISTRY.register(MyPlugin)
 """
 
 
 def create_plugin(type_name: str, *args: typing.Any, **kwargs: typing.Any) -> Plugin:
     """
-    Create the plugin for the given type.
+    Create the plug-in for the given type.
 
     Args:
-        type_name: the type of the plugin to create.
-        args: positional arguments to pass into the plugin.
-        kwargs: keyword arguments to pass into the plugin.
+        type_name: the type of the plug-in to create.
+        args: positional arguments to pass into the plug-in.
+        kwargs: keyword arguments to pass into the plug-in.
 
     Returns:
-        The plugin.
+        The plug-in.
     """
     return PLUGIN_REGISTRY.get(type_name)(*args, **kwargs)
 
 
 class Plugin(abc.ABC):
     """
-    Base class for plugins that extend the functionality of the Helios trainer.
+    Base class for plug-ins that extend the functionality of the Helios trainer.
 
     You can use this class to customize the behaviour of training to achieve a variety of
     objectives.
-    The plugins have a similar API to the :py:class:`~helios.model.model.Model` class. The
-    only major difference is that the plugin functions are called *before* the
+    The plug-ins have a similar API to the :py:class:`~helios.model.model.Model` class.
+    The only major difference is that the plug-in functions are called *before* the
     corresponding model functions, providing the ability to override the model if
     necessary.
     """
 
     def __init__(self):
-        """Create the plugin."""
+        """Create the plug-in."""
         self._trainer: Trainer | None
 
         self._is_distributed: bool = False
@@ -105,7 +105,7 @@ class Plugin(abc.ABC):
 
     @property
     def unique_overrides(self) -> UniquePluginOverrides:
-        """The set of unique overrides the plugin uses."""
+        """The set of unique overrides the plug-in uses."""
         return self._overrides
 
     @property
@@ -128,7 +128,7 @@ class Plugin(abc.ABC):
 
     @property
     def device(self) -> torch.device:
-        """The device on which the plugin is running."""
+        """The device on which the plug-in is running."""
         return core.get_from_optional(self._device)
 
     @device.setter
@@ -137,7 +137,7 @@ class Plugin(abc.ABC):
 
     @property
     def rank(self) -> int:
-        """The local rank (device id) that the plugin is running on."""
+        """The local rank (device id) that the plug-in is running on."""
         return self._rank
 
     @rank.setter
@@ -155,7 +155,7 @@ class Plugin(abc.ABC):
 
     @abc.abstractmethod
     def setup(self) -> None:
-        """Construct all required state for the plugin."""
+        """Construct all required state for the plug-in."""
 
     def on_training_start(self) -> None:
         """Perform any necessary actions when training starts."""
@@ -233,13 +233,13 @@ class CUDAPlugin(Plugin):
     """
     Plugin to move elements of a training batch to a GPU.
 
-    This plugin can be used to move the elements of a training batch to the currently
+    This plug-in can be used to move the elements of a training batch to the currently
     selected device automatically *prior* to the call to
     :py:meth:`~helios.model.model.Model.train_step`. The device is automatically assigned
     by the :py:class:`helios.trainer.Trainer` when training or testing starts.
 
-    In order to cover the largest possible number of structures, the plugin can handle the
-    following containers:
+    In order to cover the largest possible number of structures, the plug-in can handle
+    the following containers:
         #. Singe tensors
         #. Lists. Note that the elements of the list need not all be tensors. If any
           tensors are present, they are automatically moved to the device.
@@ -247,23 +247,23 @@ class CUDAPlugin(Plugin):
           to be tensors. Any tensors are detected automatically.
 
     .. warning::
-        The plugin is **not** designed to work with nested structures. In other words, if
-        a list of dictionaries is passed in, the plugin **will not** recognise any tensors
-        contained inside the dictionary. Similarly, if a dictionary contains nested
-        dictionaries (or any other container), the plugin won't recognise them.
+        The plug-in is **not** designed to work with nested structures. In other words, if
+        a list of dictionaries is passed in, the plug-in **will not** recognise any
+        tensors contained inside the dictionary. Similarly, if a dictionary contains
+        nested dictionaries (or any other container), the plug-in won't recognise them.
 
     .. warning::
-        The use of this plugin **requires** CUDA being enabled. If CUDA is not present, an
-        exception is raised.
+        The use of this plug-in **requires** CUDA being enabled. If CUDA is not present,
+        an exception is raised.
 
     .. note::
         If you require custom handling for your specific data types, you can override the
-        behaviour of the plugin by deriving from it. See the example below for details.
+        behaviour of the plug-in by deriving from it. See the example below for details.
 
         Example:
             .. code-block:: python
 
-            import helios.plugins as hlp
+            import helios.plug-ins as hlp
 
             class MyCUDAPlugin(hlp.CUDAPlugin):
                 def _move_collection_to_device(self, batch: <your-type>):
@@ -273,7 +273,7 @@ class CUDAPlugin(Plugin):
     """
 
     def __init__(self):
-        """Create the plugin."""
+        """Create the plug-in."""
         super().__init__()
         core.cuda.requires_cuda_support()
 
