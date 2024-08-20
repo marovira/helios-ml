@@ -4,12 +4,11 @@ Plugin package for Helios.
 This contains the classes, utilities, and registries related to plugins.
 """
 
-from .plugin import CUDAPlugin, Plugin
-from .utils import PLUGIN_REGISTRY, create_plugin
+from .plugin import PLUGIN_REGISTRY, CUDAPlugin, Plugin, create_plugin
 
 __all__ = [
+    "PLUGIN_REGISTRY",
     "CUDAPlugin",
     "Plugin",
-    "PLUGIN_REGISTRY",
     "create_plugin",
 ]

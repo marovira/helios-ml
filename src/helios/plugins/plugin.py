@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import abc
+import dataclasses as dc
 import typing
 
 import torch
@@ -11,6 +12,30 @@ if typing.TYPE_CHECKING:
     from ..trainer import Trainer, TrainingState
 
 # ruff: noqa: B027
+
+
+@dc.dataclass
+class UniquePluginOverrides:
+    """
+    Set of flags that determine the unique overrides a plugin can have.
+
+    In order to avoid conflicts, two plug-ins should *not* be able to perform the same
+    action twice. For example, it shouldn't be possible to have two distinct plug-ins
+    perform processing on the training batch as that would cause undefined behaviour. This
+    structure therefore holds all the possible overrides a plug-in might have that
+    **must** remain unique.
+
+    Args:
+        training_batch: if true, the plug-in performs processing on the training batch.
+        validation_batch: if true, the plug-in performs processing on the validation
+            batch.
+        testing_batch: if true, the plug-in performs processing on the testing batch.
+    """
+
+    training_batch: bool = False
+    validation_batch: bool = False
+    testing_batch: bool = False
+
 
 PLUGIN_REGISTRY = core.Registry("plugin")
 """
@@ -76,6 +101,12 @@ class Plugin(abc.ABC):
         self._map_loc: str | dict[str, str] = ""
         self._device: torch.device | None = None
         self._rank: int = 0
+        self._overrides = UniquePluginOverrides()
+
+    @property
+    def unique_overrides(self) -> UniquePluginOverrides:
+        """The set of unique overrides the plugin uses."""
+        return self._overrides
 
     @property
     def is_distributed(self) -> bool:
@@ -122,16 +153,6 @@ class Plugin(abc.ABC):
     def trainer(self, t) -> None:
         self._trainer = t
 
-    def prepare(self) -> None:
-        """
-        Prepare the plugin for training.
-
-        This can include downloading auxiliary data, setting up additional state, etc.
-        This function will be called on the primary process when using distributed
-        training (will be called prior to initialization of the processes) so don't store
-        any state here.
-        """
-
     @abc.abstractmethod
     def setup(self) -> None:
         """Construct all required state for the plugin."""
@@ -139,39 +160,22 @@ class Plugin(abc.ABC):
     def on_training_start(self) -> None:
         """Perform any necessary actions when training starts."""
 
-    def on_training_epoch_start(self, current_epoch: int) -> None:
+    def process_training_batch(
+        self, batch: typing.Any, state: TrainingState
+    ) -> typing.Any:
         """
-        Perform any necessary actions when a training epoch is started.
+        Process the training batch.
 
-        Args:
-            current_epoch: the epoch number that has just started.
-        """
-
-    def on_training_batch_start(self, batch: typing.Any, state: TrainingState) -> None:
-        """
-        Perform any actions when a training batch is started.
-
-        Args:
-            batch: the batch data returned from the dataset.
-            state: the current training state.
-        """
-
-    def on_training_batch_end(self, batch: typing.Any, state: TrainingState) -> None:
-        """
-        Perform any actions when a training batch ends.
+        This function can be used to perform any processing on the training batch *prior*
+        to the call to :py:meth:`~helios.model.model.Model.train_step`. For example, this
+        can be used to filter out elements in a batch to reduce its size, or it can be
+        used to move all elements in the batch to a set device.
 
         Args:
             batch: the batch data returned from the dataset.
             state: the current training state.
         """
-
-    def on_training_epoch_end(self, current_epoch: int) -> None:
-        """
-        Perform any necessary actions when a training epoch ends.
-
-        Args:
-            current_epoch: the epoch number that has just started.
-        """
+        return batch
 
     def on_training_end(self) -> None:
         """Perform any necessary actions when training ends."""
@@ -179,23 +183,18 @@ class Plugin(abc.ABC):
     def on_validation_start(self, validation_cycle: int) -> None:
         """Perform any necessary actions when validation starts."""
 
-    def on_validation_batch_start(self, batch: typing.Any, state: TrainingState) -> None:
+    def process_validation_batch(
+        self, batch: typing.Any, state: TrainingState
+    ) -> typing.Any:
         """
-        Perform any necessary actions when a validation batch is started.
+        Process the validation batch.
 
-        Args:
-            batch: the batch data returned from the dataset.
-            state: the current training state.
+        This function can be used to perform any processing on the validation batch
+        *prior* to the call to :py:meth:`~helios.model.model.Model.valid_step`. For
+        example, this can be used to filter out elements in a batch to reduce its size,
+        or it can be used to move all elements in the batch to a set device.
         """
-
-    def on_validation_batch_end(self, batch: typing.Any, state: TrainingState) -> None:
-        """
-        Perform any necessary actions when a validation batch ends.
-
-        Args:
-            batch: the batch data returned from the dataset.
-            state: the current training state.
-        """
+        return batch
 
     def on_validation_end(self) -> None:
         """Perform any necessary actions when validation ends."""
@@ -212,23 +211,18 @@ class Plugin(abc.ABC):
     def on_testing_start(self) -> None:
         """Perform any actions when testing starts."""
 
-    def on_testing_batch_start(self, batch: typing.Any, state: TrainingState) -> None:
+    def process_testing_batch(
+        self, batch: typing.Any, state: TrainingState
+    ) -> typing.Any:
         """
-        Perform any necessary actions when a testing batch starts.
+        Process the testing batch.
 
-        Args:
-            batch: the batch data returned from the dataset.
-            state: the current training state.
+        This function can be used to perform any processing on the testing batch
+        *prior* to the call to :py:meth:`~helios.model.model.Model.test_step`. For
+        example, this can be used to filter out elements in a batch to reduce its size,
+        or it can be used to move all elements in the batch to a set device.
         """
-
-    def on_testing_batch_end(self, batch: typing.Any, state: TrainingState) -> None:
-        """
-        Perform any necessary actions when a testing batch ends.
-
-        Args:
-            batch: the batch data returned from the dataset.
-            state: the current training state.
-        """
+        return batch
 
     def on_testing_end(self) -> None:
         """Perform any necessary actions when testing ends."""
@@ -283,13 +277,30 @@ class CUDAPlugin(Plugin):
         super().__init__()
         core.cuda.requires_cuda_support()
 
-    def _move_collection_to_device(self, batch: torch.Tensor | list | dict):
+        # Ensure that no-one else can manipulate the batch.
+        self._overrides.training_batch = True
+        self._overrides.validation_batch = True
+        self._overrides.testing_batch = True
+
+    def setup(self) -> None:
+        """No-op setup function."""
+
+    def _move_collection_to_device(
+        self, batch: torch.Tensor | list | dict | tuple
+    ) -> torch.Tensor | list | dict | tuple:
         if isinstance(batch, torch.Tensor):
             batch = batch.to(self.device)
         elif isinstance(batch, list):
             for i in range(len(batch)):
                 if isinstance(batch[i], torch.Tensor):
                     batch[i] = batch[i].to(self.device)
+        elif isinstance(batch, tuple):
+            as_list = list(batch)
+            for i in range(len(as_list)):
+                if isinstance(as_list[i], torch.Tensor):
+                    as_list[i] = as_list[i].to(self.device)
+
+            batch = tuple(as_list)
         elif isinstance(batch, dict):
             for key in batch:
                 if isinstance(batch[key], torch.Tensor):
@@ -297,22 +308,40 @@ class CUDAPlugin(Plugin):
         else:
             raise RuntimeError(f"error: batch has unknown type {type(batch)}")
 
-    def on_training_batch_start(self, batch: typing.Any, state: TrainingState) -> None:
+        return batch
+
+    def process_training_batch(
+        self, batch: typing.Any, state: TrainingState
+    ) -> typing.Any:
         """
-        Move the batch to the GPU at the start of the training batch.
+        Move the training batch to the GPU.
 
         Args:
             batch: the batch returned by the training dataset.
             state: the current training state.
         """
-        self._move_collection_to_device(batch)
+        return self._move_collection_to_device(batch)
 
-    def on_validation_batch_start(self, batch: typing.Any, state: TrainingState) -> None:
+    def process_validation_batch(
+        self, batch: typing.Any, state: TrainingState
+    ) -> typing.Any:
         """
-        Move the batch to the GPU at the start of the validation batch.
+        Move the validation batch to the GPU.
 
         Args:
             batch: the batch returned by the training dataset.
             state: the current training state.
         """
-        self._move_collection_to_device(batch)
+        return self._move_collection_to_device(batch)
+
+    def process_testing_batch(
+        self, batch: typing.Any, state: TrainingState
+    ) -> typing.Any:
+        """
+        Move the testing batch to the GPU.
+
+        Args:
+            batch: the batch returned by the training dataset.
+            state: the current training state.
+        """
+        return self._move_collection_to_device(batch)
