@@ -182,10 +182,15 @@ class Plugin(abc.ABC):
     def on_training_end(self) -> None:
         """Perform any necessary actions when training ends."""
 
-    def on_validation_start(self) -> None:
-        """Perform any necessary actions when validation starts."""
+    def on_validation_start(self, validation_cycle: int) -> None:
+        """
+        Perform any necessary actions when validation starts.
 
-    def process_validation_batch(self, batch: typing.Any) -> typing.Any:
+        Args:
+            validation_cycle: the validation cycle number.
+        """
+
+    def process_validation_batch(self, batch: typing.Any, step: int) -> typing.Any:
         """
         Process the validation batch.
 
@@ -193,11 +198,20 @@ class Plugin(abc.ABC):
         *prior* to the call to :py:meth:`~helios.model.model.Model.valid_step`. For
         example, this can be used to filter out elements in a batch to reduce its size,
         or it can be used to move all elements in the batch to a set device.
+
+        Args:
+            batch: the batch data returned from the dataset.
+            step: the current validation batch.
         """
         return batch
 
-    def on_validation_end(self) -> None:
-        """Perform any necessary actions when validation ends."""
+    def on_validation_end(self, validation_cycle: int) -> None:
+        """
+        Perform any necessary actions when validation ends.
+
+        Args:
+            validation_cycle: the validation cycle number
+        """
 
     def should_training_stop(self) -> bool:
         """
@@ -211,7 +225,7 @@ class Plugin(abc.ABC):
     def on_testing_start(self) -> None:
         """Perform any actions when testing starts."""
 
-    def process_testing_batch(self, batch: typing.Any) -> typing.Any:
+    def process_testing_batch(self, batch: typing.Any, step: int) -> typing.Any:
         """
         Process the testing batch.
 
@@ -219,6 +233,10 @@ class Plugin(abc.ABC):
         *prior* to the call to :py:meth:`~helios.model.model.Model.test_step`. For
         example, this can be used to filter out elements in a batch to reduce its size,
         or it can be used to move all elements in the batch to a set device.
+
+        Args:
+            batch: the batch data returned from the dataset.
+            step: the current testing batch number.
         """
         return batch
 
@@ -320,7 +338,7 @@ class CUDAPlugin(Plugin):
         """
         return self._move_collection_to_device(batch)
 
-    def process_validation_batch(self, batch: typing.Any) -> typing.Any:
+    def process_validation_batch(self, batch: typing.Any, step: int) -> typing.Any:
         """
         Move the validation batch to the GPU.
 
@@ -330,7 +348,7 @@ class CUDAPlugin(Plugin):
         """
         return self._move_collection_to_device(batch)
 
-    def process_testing_batch(self, batch: typing.Any) -> typing.Any:
+    def process_testing_batch(self, batch: typing.Any, step: int) -> typing.Any:
         """
         Move the testing batch to the GPU.
 

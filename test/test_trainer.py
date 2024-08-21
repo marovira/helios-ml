@@ -291,14 +291,14 @@ class CheckFunPlugin(hlp.Plugin):
     def on_training_end(self) -> None:
         self.called_train_funs["on_training_end"] = True
 
-    def on_validation_start(self) -> None:
+    def on_validation_start(self, validation_cycle) -> None:
         self.called_train_funs["on_validation_start"] = True
 
-    def process_validation_batch(self, batch) -> typing.Any:
+    def process_validation_batch(self, batch, step) -> typing.Any:
         self.called_train_funs["process_validation_batch"] = True
         return batch
 
-    def on_validation_end(self) -> None:
+    def on_validation_end(self, validation_cycle) -> None:
         self.called_train_funs["on_validation_end"] = True
 
     def should_training_stop(self) -> bool:
@@ -308,7 +308,7 @@ class CheckFunPlugin(hlp.Plugin):
     def on_testing_start(self) -> None:
         self.called_test_funs["on_testing_start"] = True
 
-    def process_testing_batch(self, batch) -> typing.Any:
+    def process_testing_batch(self, batch, step) -> typing.Any:
         self.called_test_funs["process_testing_batch"] = True
         return batch
 

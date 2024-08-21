@@ -463,14 +463,14 @@ class Trainer:
 
         self._print_header(chkpt_path)
 
-        self._execute_plugins_without_args("on_training_start")
+        self._execute_plugins("on_training_start")
         self.model.on_training_start()
         if self._train_unit == TrainingUnit.ITERATION:
             self._train_on_iteration(training_state)
         else:
             self._train_on_epoch(training_state)
 
-        self._execute_plugins_without_args("on_training_end")
+        self._execute_plugins("on_training_end")
         self.model.on_training_end()
 
         logging.flush_default_loggers()
@@ -517,7 +517,7 @@ class Trainer:
         sampler: ResumableSamplerType
         dataloader, sampler = core.get_from_optional(self.datamodule.test_dataloader())
 
-        self._execute_plugins_without_args("on_testing_start")
+        self._execute_plugins("on_testing_start")
         self.model.on_testing_start()
 
         enable_progress_bar = self._enable_progress_bar
@@ -536,13 +536,13 @@ class Trainer:
             self.model.eval()
             with torch.no_grad():
                 for idx, batch in enumerate(dataloader):
-                    batch = self._plugins_process_batch("testing", batch)
+                    batch = self._plugins_process_batch("testing", batch, step=idx)
                     self.model.on_testing_batch_start(idx)
                     self.model.test_step(batch, idx)
                     self.model.on_testing_batch_end(idx)
                     pbar.update()
 
-            self._execute_plugins_without_args("on_testing_end")
+            self._execute_plugins("on_testing_end")
             self.model.on_testing_end()
 
         dist.safe_barrier()
@@ -1129,11 +1129,11 @@ class Trainer:
 
         with core.cuda.DisableCuDNNBenchmarkContext():
             self.model.eval()
-            self._execute_plugins_without_args("on_validation_start")
+            self._execute_plugins("on_validation_start", validation_cycle=val_cycle)
             self.model.on_validation_start(val_cycle)
             with torch.no_grad():
                 for idx, batch in enumerate(dataloader):
-                    batch = self._plugins_process_batch("validation", batch)
+                    batch = self._plugins_process_batch("validation", batch, step=idx)
                     self.model.on_validation_batch_start(idx)
                     self.model.valid_step(batch, idx)
                     self.model.on_validation_batch_end(idx)
@@ -1144,7 +1144,7 @@ class Trainer:
                         pbar.refresh()
 
             self.model.train()
-            self._execute_plugins_without_args("on_validation_end")
+            self._execute_plugins("on_validation_end", validation_cycle=val_cycle)
             self.model.on_validation_end(val_cycle)
 
         dist.safe_barrier()
@@ -1164,13 +1164,13 @@ class Trainer:
                             f"by {seen_overrides[name]}"
                         )
 
-    def _execute_plugins_without_args(self, func_name: str) -> None:
+    def _execute_plugins(self, func_name: str, **kwargs: typing.Any) -> None:
         for plugin in self._plugins:
             func = getattr(plugin, func_name)
-            func()
+            func(**kwargs)
 
     def _plugins_process_batch(
-        self, mode: str, batch: typing.Any, **kwargs
+        self, mode: str, batch: typing.Any, **kwargs: typing.Any
     ) -> typing.Any:
         func_name = f"process_{mode}_batch"
         override_name = f"{mode}_batch"
