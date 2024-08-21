@@ -10,6 +10,7 @@ from torch import nn
 from torch.utils import data as tud
 
 import helios.core as hlc
+import helios.plugins as hlp
 import helios.trainer as hlt
 from helios import data
 from helios import model as hlm
@@ -207,6 +208,147 @@ class ExceptionModel(hlm.Model):
 
     def on_testing_start(self) -> None:
         raise self._exc_type("error")
+
+
+class EmptyPlugin(hlp.Plugin):
+    def setup(self):
+        pass
+
+
+class OverrideFlagsPlugin(hlp.Plugin):
+    def __init__(
+        self,
+        training_batch: bool = False,
+        validation_batch: bool = False,
+        testing_batch: bool = False,
+        should_training_stop: bool = False,
+    ):
+        super().__init__()
+        self._overrides.training_batch = training_batch
+        self._overrides.validation_batch = validation_batch
+        self._overrides.testing_batch = testing_batch
+        self._overrides.should_training_stop = should_training_stop
+
+    def setup(self):
+        pass
+
+
+class CheckFunPlugin(hlp.Plugin):
+    def __init__(self):
+        super().__init__()
+        self._overrides.training_batch = True
+        self._overrides.validation_batch = True
+        self._overrides.testing_batch = True
+        self._overrides.should_training_stop = True
+
+        self.called_train_funs: dict[str, bool] = {
+            "setup": False,
+            "on_training_start": False,
+            "process_training_batch": False,
+            "on_training_end": False,
+            "on_validation_start": False,
+            "process_validation_batch": False,
+            "on_validation_end": False,
+            "should_training_stop": False,
+        }
+
+        self.called_test_funs: dict[str, bool] = {
+            "on_testing_start": False,
+            "process_testing_batch": False,
+            "on_testing_end": False,
+        }
+
+    def setup(self) -> None:
+        self.called_train_funs["setup"] = True
+
+    def on_training_start(self) -> None:
+        self.called_train_funs["on_training_start"] = True
+
+    def process_training_batch(self, batch, state) -> typing.Any:
+        self.called_train_funs["process_training_batch"] = True
+        return batch
+
+    def on_training_end(self) -> None:
+        self.called_train_funs["on_training_end"] = True
+
+    def on_validation_start(self) -> None:
+        self.called_train_funs["on_validation_start"] = True
+
+    def process_validation_batch(self, batch) -> typing.Any:
+        self.called_train_funs["process_validation_batch"] = True
+        return batch
+
+    def on_validation_end(self) -> None:
+        self.called_train_funs["on_validation_end"] = True
+
+    def should_training_stop(self) -> bool:
+        self.called_train_funs["should_training_stop"] = True
+        return False
+
+    def on_testing_start(self) -> None:
+        self.called_test_funs["on_testing_start"] = True
+
+    def process_testing_batch(self, batch) -> typing.Any:
+        self.called_test_funs["process_testing_batch"] = True
+        return batch
+
+    def on_testing_end(self) -> None:
+        self.called_test_funs["on_testing_end"] = True
+
+
+class CheckPluginModel(hlm.Model):
+    def __init__(self):
+        super().__init__("test-plugin")
+
+    def _get_plugin(self) -> CheckFunPlugin:
+        plugin = self.trainer.plugins[0]
+        assert isinstance(plugin, CheckFunPlugin)
+        return plugin
+
+    def setup(self, fast_init: bool = False) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_train_funs["setup"]
+
+    def on_training_start(self) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_train_funs["on_training_start"]
+
+    def train_step(self, batch, state) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_train_funs["process_training_batch"]
+
+    def on_training_end(self) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_train_funs["on_training_end"]
+
+    def on_validation_start(self, cycle) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_train_funs["on_validation_start"]
+
+    def valid_step(self, batch, step) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_train_funs["process_validation_batch"]
+
+    def on_validation_end(self, cycle) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_train_funs["on_validation_end"]
+
+    def should_training_stop(self) -> bool:
+        plugin = self._get_plugin()
+        assert plugin.called_train_funs["should_training_stop"]
+        return False
+
+    def on_testing_start(self) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_test_funs["on_testing_start"]
+
+    def test_step(self, batch, step) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_test_funs["process_testing_batch"]
+
+    def on_testing_end(self) -> None:
+        plugin = self._get_plugin()
+        assert plugin.called_test_funs["on_testing_end"]
 
 
 class TestTrainingUnit:
@@ -526,3 +668,64 @@ class TestTrainer:
         self.check_exception(
             exception_types[-1], trainer, fit=False, raised_as_runtime=True
         )
+
+    def test_append_plugins(self) -> None:
+        trainer = hlt.Trainer()
+
+        trainer.plugins.append(EmptyPlugin())
+        trainer._validate_plugins()
+
+        batch_flags = {
+            "training_batch": False,
+            "validation_batch": False,
+            "testing_batch": False,
+            "should_training_stop": False,
+        }
+
+        for flag_name in batch_flags:
+            batch_flags[flag_name] = True
+            trainer.plugins.append(OverrideFlagsPlugin(**batch_flags))
+
+            with pytest.raises(ValueError):
+                trainer.plugins.append(OverrideFlagsPlugin(**batch_flags))
+                trainer._validate_plugins()
+
+            batch_flags[flag_name] = False
+
+    def check_plugin_functions(self, trainer: hlt.Trainer, fit: bool = True) -> None:
+        datamodule = RandomDatamodule()
+        model = CheckPluginModel()
+
+        trainer.plugins.append(CheckFunPlugin())
+
+        called_funs: dict[str, bool]
+        if fit:
+            trainer.fit(model, datamodule)
+            called_funs = trainer.plugins[0].called_train_funs  # type: ignore[attr-defined]
+        else:
+            trainer.test(model, datamodule)
+            called_funs = trainer.plugins[0].called_test_funs  # type: ignore[attr-defined]
+
+        for _, seen in called_funs.items():
+            assert seen
+
+    def test_plugin_functions(self) -> None:
+        self.check_plugin_functions(
+            hlt.Trainer(
+                train_unit=hlt.TrainingUnit.ITERATION,
+                total_steps=10,
+                valid_frequency=10,
+                use_cpu=True,
+            )
+        )
+
+        self.check_plugin_functions(
+            hlt.Trainer(
+                train_unit=hlt.TrainingUnit.EPOCH,
+                total_steps=1,
+                valid_frequency=1,
+                use_cpu=True,
+            )
+        )
+
+        self.check_plugin_functions(hlt.Trainer(use_cpu=True), fit=False)

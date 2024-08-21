@@ -16,6 +16,7 @@ import torch.utils.data as tud
 import tqdm
 
 import helios.model as hlm
+import helios.plugins as hlp
 from helios import core, data
 from helios.core import distributed as dist
 from helios.core import logging, rng
@@ -287,6 +288,8 @@ class Trainer:
         self._train_exceptions: list[type[Exception]] = []
         self._test_exceptions: list[type[Exception]] = []
 
+        self._plugins: list[hlp.Plugin] = []
+
         self._validate_flags(use_cpu)
         self._setup_device_flags(use_cpu)
 
@@ -350,6 +353,15 @@ class Trainer:
     @test_exceptions.setter
     def test_exceptions(self, exc: list[type[Exception]]) -> None:
         self._test_exceptions = exc
+
+    @property
+    def plugins(self) -> list[hlp.Plugin]:
+        """Return the list of plug-ins."""
+        return self._plugins
+
+    @plugins.setter
+    def plugins(self, plugs: list[hlp.Plugin]) -> None:
+        self._plugins = plugs
 
     def fit(self, model: hlm.Model, datamodule: data.DataModule) -> None:
         """
@@ -441,6 +453,7 @@ class Trainer:
         appropriate training loop for the given training unit.
         """
         self._configure_env()
+        self._setup_plugins()
         self._setup_datamodule()
         self._setup_model()
         self._prepare_roots()
@@ -450,12 +463,14 @@ class Trainer:
 
         self._print_header(chkpt_path)
 
+        self._execute_plugins_without_args("on_training_start")
         self.model.on_training_start()
         if self._train_unit == TrainingUnit.ITERATION:
             self._train_on_iteration(training_state)
         else:
             self._train_on_epoch(training_state)
 
+        self._execute_plugins_without_args("on_training_end")
         self.model.on_training_end()
 
         logging.flush_default_loggers()
@@ -475,6 +490,7 @@ class Trainer:
         the correct state internally.
         """
         self._configure_env()
+        self._setup_plugins()
         self._setup_datamodule()
         self._setup_model(fast_init=True)
         self._prepare_roots(mkdir=False)
@@ -501,6 +517,7 @@ class Trainer:
         sampler: ResumableSamplerType
         dataloader, sampler = core.get_from_optional(self.datamodule.test_dataloader())
 
+        self._execute_plugins_without_args("on_testing_start")
         self.model.on_testing_start()
 
         enable_progress_bar = self._enable_progress_bar
@@ -519,11 +536,13 @@ class Trainer:
             self.model.eval()
             with torch.no_grad():
                 for idx, batch in enumerate(dataloader):
+                    batch = self._plugins_process_batch("testing", batch)
                     self.model.on_testing_batch_start(idx)
                     self.model.test_step(batch, idx)
                     self.model.on_testing_batch_end(idx)
                     pbar.update()
 
+            self._execute_plugins_without_args("on_testing_end")
             self.model.on_testing_end()
 
         dist.safe_barrier()
@@ -572,6 +591,16 @@ class Trainer:
         self.model.rank = self.local_rank
         self.model.trainer = self
         self.model.setup(fast_init)
+
+    def _setup_plugins(self) -> None:
+        """Finish setting up the plug-ins."""
+        for plugin in self._plugins:
+            plugin.is_distributed = self._is_distributed
+            plugin.map_loc = self._map_loc
+            plugin.device = core.get_from_optional(self._device)
+            plugin.rank = self.local_rank
+            plugin.trainer = self
+            plugin.setup()
 
     def _prepare_roots(self, mkdir=True) -> None:
         """Prepare the training roots."""
@@ -878,6 +907,7 @@ class Trainer:
                 else:
                     current_iteration_changed = False
 
+                batch = self._plugins_process_batch("training", batch, state=state)
                 self.model.on_training_batch_start(state)
                 self.model.train_step(batch, state)
                 iter_timer.record()
@@ -896,7 +926,10 @@ class Trainer:
                 if state.global_iteration % accumulation_steps == 0 and not pbar.update():
                     pbar.refresh()
                 state.dataset_iter += 1
-                if self.model.should_training_stop():
+                if (
+                    self._plugins_should_training_stop()
+                    or self.model.should_training_stop()
+                ):
                     training_done = True
                     break
 
@@ -928,7 +961,10 @@ class Trainer:
                     training_done = True
                     break
 
-                if self.model.should_training_stop():
+                if (
+                    self._plugins_should_training_stop()
+                    or self.model.should_training_stop()
+                ):
                     training_done = True
                     break
 
@@ -1010,6 +1046,7 @@ class Trainer:
                     state.current_iteration += 1
                     state.running_iter += 1
 
+                    batch = self._plugins_process_batch("training", batch, state=state)
                     self.model.on_training_batch_start(state)
                     self.model.train_step(batch, state)
                     iter_timer.record()
@@ -1026,7 +1063,10 @@ class Trainer:
                     if not ite_pbar.update():
                         ite_pbar.refresh()
 
-                    if self.model.should_training_stop():
+                    if (
+                        self._plugins_should_training_stop()
+                        or self.model.should_training_stop()
+                    ):
                         training_done = True
                         break
 
@@ -1058,7 +1098,7 @@ class Trainer:
             ):
                 training_done = True
 
-            if self.model.should_training_stop():
+            if self._plugins_should_training_stop() or self.model.should_training_stop():
                 training_done = True
 
     def _validate(self, val_cycle: int) -> None:
@@ -1089,9 +1129,11 @@ class Trainer:
 
         with core.cuda.DisableCuDNNBenchmarkContext():
             self.model.eval()
+            self._execute_plugins_without_args("on_validation_start")
             self.model.on_validation_start(val_cycle)
             with torch.no_grad():
                 for idx, batch in enumerate(dataloader):
+                    batch = self._plugins_process_batch("validation", batch)
                     self.model.on_validation_batch_start(idx)
                     self.model.valid_step(batch, idx)
                     self.model.on_validation_batch_end(idx)
@@ -1102,6 +1144,42 @@ class Trainer:
                         pbar.refresh()
 
             self.model.train()
+            self._execute_plugins_without_args("on_validation_end")
             self.model.on_validation_end(val_cycle)
 
         dist.safe_barrier()
+
+    def _validate_plugins(self) -> None:
+        seen_overrides: dict[str, str] = {}
+        fields = dc.fields(hlp.UniquePluginOverrides)
+        for plugin in self._plugins:
+            for field in fields:
+                name = field.name
+                if getattr(plugin.unique_overrides, name):
+                    if name not in seen_overrides:
+                        seen_overrides[name] = str(type(plugin))
+                    else:
+                        raise ValueError(
+                            f"error: override field {name} has already been overridden "
+                            f"by {seen_overrides[name]}"
+                        )
+
+    def _execute_plugins_without_args(self, func_name: str) -> None:
+        for plugin in self._plugins:
+            func = getattr(plugin, func_name)
+            func()
+
+    def _plugins_process_batch(
+        self, mode: str, batch: typing.Any, **kwargs
+    ) -> typing.Any:
+        func_name = f"process_{mode}_batch"
+        override_name = f"{mode}_batch"
+
+        for plugin in self._plugins:
+            if getattr(plugin.unique_overrides, override_name):
+                return getattr(plugin, func_name)(batch=batch, **kwargs)
+
+        return batch
+
+    def _plugins_should_training_stop(self) -> bool:
+        return any(plugin.should_training_stop() for plugin in self._plugins)
