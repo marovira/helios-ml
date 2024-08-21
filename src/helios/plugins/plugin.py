@@ -30,11 +30,13 @@ class UniquePluginOverrides:
         validation_batch: if true, the plug-in performs processing on the validation
             batch.
         testing_batch: if true, the plug-in performs processing on the testing batch.
+        should_training_stop: if true, the plug-in can arbitrarily stop training.
     """
 
     training_batch: bool = False
     validation_batch: bool = False
     testing_batch: bool = False
+    should_training_stop: bool = False
 
 
 PLUGIN_REGISTRY = core.Registry("plug-in")
@@ -180,12 +182,10 @@ class Plugin(abc.ABC):
     def on_training_end(self) -> None:
         """Perform any necessary actions when training ends."""
 
-    def on_validation_start(self, validation_cycle: int) -> None:
+    def on_validation_start(self) -> None:
         """Perform any necessary actions when validation starts."""
 
-    def process_validation_batch(
-        self, batch: typing.Any, state: TrainingState
-    ) -> typing.Any:
+    def process_validation_batch(self, batch: typing.Any) -> typing.Any:
         """
         Process the validation batch.
 
@@ -211,9 +211,7 @@ class Plugin(abc.ABC):
     def on_testing_start(self) -> None:
         """Perform any actions when testing starts."""
 
-    def process_testing_batch(
-        self, batch: typing.Any, state: TrainingState
-    ) -> typing.Any:
+    def process_testing_batch(self, batch: typing.Any) -> typing.Any:
         """
         Process the testing batch.
 
@@ -322,9 +320,7 @@ class CUDAPlugin(Plugin):
         """
         return self._move_collection_to_device(batch)
 
-    def process_validation_batch(
-        self, batch: typing.Any, state: TrainingState
-    ) -> typing.Any:
+    def process_validation_batch(self, batch: typing.Any) -> typing.Any:
         """
         Move the validation batch to the GPU.
 
@@ -334,9 +330,7 @@ class CUDAPlugin(Plugin):
         """
         return self._move_collection_to_device(batch)
 
-    def process_testing_batch(
-        self, batch: typing.Any, state: TrainingState
-    ) -> typing.Any:
+    def process_testing_batch(self, batch: typing.Any) -> typing.Any:
         """
         Move the testing batch to the GPU.
 
