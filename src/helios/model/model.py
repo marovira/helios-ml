@@ -140,6 +140,11 @@ class Model(abc.ABC):
     def trainer(self, t) -> None:
         self._trainer = t
 
+    @property
+    def metrics(self) -> dict[str, typing.Any]:
+        """The metric table for the model."""
+        return {}
+
     @abc.abstractmethod
     def setup(self, fast_init: bool = False) -> None:
         """
