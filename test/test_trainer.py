@@ -92,27 +92,35 @@ class CheckFunModel(hlm.Model):
         self.called_test_funs["load_for_testing"] = True
 
     def train(self) -> None:
+        assert self.called_train_funs["setup"]
         self.called_train_funs["train"] = True
 
     def on_training_start(self) -> None:
         self.called_train_funs["on_training_start"] = True
 
     def on_training_epoch_start(self, current_epoch) -> None:
+        assert self.called_train_funs["train"]
+        assert self.called_train_funs["on_training_start"]
         self.called_train_funs["on_training_epoch_start"] = True
 
     def on_training_batch_start(self, state) -> None:
+        assert self.called_train_funs["on_training_epoch_start"]
         self.called_train_funs["on_training_batch_start"] = True
 
     def train_step(self, batch, state) -> None:
+        assert self.called_train_funs["on_training_batch_start"]
         self.called_train_funs["train_step"] = True
 
     def on_training_batch_end(self, state, should_log: bool = False) -> None:
+        assert self.called_train_funs["train_step"]
         self.called_train_funs["on_training_batch_end"] = True
 
     def on_training_epoch_end(self, current_epoch) -> None:
+        assert self.called_train_funs["on_training_epoch_start"]
         self.called_train_funs["on_training_epoch_end"] = True
 
     def on_training_end(self) -> None:
+        assert self.called_train_funs["on_training_start"]
         self.called_train_funs["on_training_end"] = True
 
     def eval(self) -> None:
@@ -120,21 +128,28 @@ class CheckFunModel(hlm.Model):
         self.called_test_funs["eval"] = True
 
     def on_validation_start(self, validation_cycle) -> None:
+        assert self.called_train_funs["eval"]
         self.called_train_funs["on_validation_start"] = True
 
     def on_validation_batch_start(self, step) -> None:
+        assert self.called_train_funs["eval"]
+        assert self.called_train_funs["on_validation_start"]
         self.called_train_funs["on_validation_batch_start"] = True
 
     def valid_step(self, batch, step) -> None:
+        assert self.called_train_funs["on_validation_batch_start"]
         self.called_train_funs["valid_step"] = True
 
     def on_validation_batch_end(self, step) -> None:
+        assert self.called_train_funs["valid_step"]
         self.called_train_funs["on_validation_batch_end"] = True
 
     def on_validation_end(self, cycle) -> None:
+        assert self.called_train_funs["on_validation_start"]
         self.called_train_funs["on_validation_end"] = True
 
     def have_metrics_improved(self) -> bool:
+        assert self.called_train_funs["on_validation_end"]
         self.called_train_funs["have_metrics_improved"] = True
         return True
 
@@ -146,15 +161,20 @@ class CheckFunModel(hlm.Model):
         self.called_test_funs["on_testing_start"] = True
 
     def on_testing_batch_start(self, step) -> None:
+        assert self.called_test_funs["eval"]
+        assert self.called_test_funs["on_testing_start"]
         self.called_test_funs["on_testing_batch_start"] = True
 
     def test_step(self, batch, step) -> None:
+        assert self.called_test_funs["on_testing_batch_start"]
         self.called_test_funs["test_step"] = True
 
     def on_testing_batch_end(self, step) -> None:
+        assert self.called_test_funs["test_step"]
         self.called_test_funs["on_testing_batch_end"] = True
 
     def on_testing_end(self) -> None:
+        assert self.called_test_funs["on_testing_batch_end"]
         self.called_test_funs["on_testing_end"] = True
 
 
