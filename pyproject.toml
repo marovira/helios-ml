@@ -34,6 +34,10 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
+tune = [
+    "optuna>=3.6.1",
+]
+
 dev = [
     "mypy>=1.8.0",
     "ruff>=0.3.4",
@@ -46,6 +50,7 @@ dev = [
     "sphinx>=7.3.7",
     "furo>=2024.5.6",
     "sphinx-autoapi>=3.1.1",
+    "optuna>=3.6.1",
 ]
 
 ci = [
@@ -55,6 +60,7 @@ ci = [
     "types-Pillow>=10.2.0.20240311",
     "types-tqdm>=4.66.0.20240106",
     "build>=1.2.1",
+    "optuna>=3.6.1",
 ]
 
 [project.urls]
