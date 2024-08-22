@@ -445,6 +445,8 @@ class Trainer:
         datamodule.prepare_data()
 
         if self._is_distributed and not self._is_torchrun:
+            if mp.get_start_method(allow_none=True) is None:
+                mp.set_start_method("spawn")
             queue: mp.Queue = mp.Queue()
             world_size = len(self._gpu_ids)
             mp.spawn(
