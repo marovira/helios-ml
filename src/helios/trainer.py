@@ -154,6 +154,7 @@ def _spawn_handler(
     datamodule: data.DataModule,
     model: hlm.Model,
     mode: _TrainerMode,
+    queue: mp.Queue,
 ) -> None:
     """
     Spawn handler for distributed training.
@@ -172,6 +173,8 @@ def _spawn_handler(
     trainer.datamodule = datamodule
     trainer.rank = rank
     trainer.local_rank = rank
+    trainer.queue = queue
+
     if mode == _TrainerMode.TRAIN:
         trainer._train()  # noqa: SLF001
     elif mode == _TrainerMode.TEST:
@@ -290,6 +293,8 @@ class Trainer:
 
         self._plugins: list[hlp.Plugin] = []
 
+        self._queue: mp.Queue | None = None
+
         self._validate_flags(use_cpu)
         self._setup_device_flags(use_cpu)
 
@@ -363,6 +368,21 @@ class Trainer:
     def plugins(self, plugs: list[hlp.Plugin]) -> None:
         self._plugins = plugs
 
+    @property
+    def queue(self) -> mp.Queue | None:
+        """
+        Return the multi-processing queue instance.
+
+        .. note::
+            If training isn't distributed or if `torchrun`, then `None` is returned
+            instead.
+        """
+        return self._queue
+
+    @queue.setter
+    def queue(self, q: mp.Queue) -> None:
+        self._queue = q
+
     def fit(self, model: hlm.Model, datamodule: data.DataModule) -> None:
         """
         Run the full training routine.
@@ -421,13 +441,15 @@ class Trainer:
         datamodule.prepare_data()
 
         if self._is_distributed and not self._is_torchrun:
+            queue: mp.Queue = mp.Queue()
             world_size = len(self._gpu_ids)
             mp.spawn(
                 _spawn_handler,
-                args=(world_size, self, datamodule, model, mode),
+                args=(world_size, self, datamodule, model, mode, queue),
                 nprocs=world_size,
                 join=True,
             )
+            self.queue = queue
             return
 
         if self._is_torchrun and self._is_distributed:
