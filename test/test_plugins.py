@@ -26,10 +26,10 @@ class TestPlugins:
         ret = plugin.process_training_batch(x, trainer.TrainingState())
         self.check_batch_device(ret, device)
 
-        ret = plugin.process_validation_batch(x)
+        ret = plugin.process_validation_batch(x, 0)
         self.check_batch_device(ret, device)
 
-        ret = plugin.process_testing_batch(x)
+        ret = plugin.process_testing_batch(x, 0)
         self.check_batch_device(ret, device)
 
     def test_cuda_plugin(self) -> None:
