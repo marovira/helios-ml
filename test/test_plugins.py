@@ -5,12 +5,41 @@ import torch
 from helios import plugins, trainer
 
 
+class ExceptionPlugin(plugins.Plugin):
+    def __init__(self, exc_type: type[Exception] | list[type[Exception]]):
+        super().__init__()
+        self._exc_type = exc_type
+
+    def setup(self) -> None:
+        pass
+
+    def configure_trainer(self, t: trainer.Trainer) -> None:
+        self._append_train_exceptions(self._exc_type, t)
+        self._append_test_exceptions(self._exc_type, t)
+
+
 class TestPlugins:
     def test_registry(self, check_registry) -> None:
         check_registry(plugins.PLUGIN_REGISTRY, ["CUDAPlugin"])
 
     def test_create(self, check_create_function) -> None:
         check_create_function(plugins.PLUGIN_REGISTRY, plugins.create_plugin)
+
+    def test_append_exceptions(self) -> None:
+        t = trainer.Trainer()
+        plugin = ExceptionPlugin(RuntimeError)
+        exc_list: list[type[Exception]] = [RuntimeError]
+
+        plugin.configure_trainer(t)
+        assert t.train_exceptions == exc_list
+        assert t.test_exceptions == exc_list
+
+        exc_list.extend([ValueError, TypeError])
+        plugin = ExceptionPlugin([ValueError, TypeError])
+        plugin.configure_trainer(t)
+
+        assert t.train_exceptions == exc_list
+        assert t.test_exceptions == exc_list
 
     def check_batch_device(self, x: typing.Any, device: torch.device) -> None:
         if isinstance(x, torch.Tensor):

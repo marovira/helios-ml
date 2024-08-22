@@ -9,6 +9,7 @@ import torch
 from helios import core
 
 if typing.TYPE_CHECKING:
+    from ..model import Model
     from ..trainer import Trainer, TrainingState
 
 # ruff: noqa: B027
@@ -152,8 +153,27 @@ class Plugin(abc.ABC):
         return core.get_from_optional(self._trainer)
 
     @trainer.setter
-    def trainer(self, t) -> None:
+    def trainer(self, t: Trainer) -> None:
         self._trainer = t
+
+    def configure_trainer(self, trainer: Trainer) -> None:
+        """
+        Configure the trainer before training or testing.
+
+        This function can be used to set certain properties of the trainer. For example,
+        it can be used to assign valid exceptions that the plug-in requires.
+
+        Args:
+            trainer: the trainer instance.
+        """
+
+    def configure_model(self, model: Model) -> None:
+        """
+        Configure the model before training or testing.
+
+        This function can be used to set certain properties of the model. For example, it
+        can be used to override the save name of the model.
+        """
 
     @abc.abstractmethod
     def setup(self) -> None:
@@ -242,6 +262,32 @@ class Plugin(abc.ABC):
 
     def on_testing_end(self) -> None:
         """Perform any necessary actions when testing ends."""
+
+    def _append_train_exceptions(
+        self, exc: type[Exception] | list[type[Exception]], trainer: Trainer
+    ) -> None:
+        """
+        Append exception type(s) to the list of valid train exceptions.
+
+        Args:
+            exc: valid exception type or a list of valid exception types.
+            trainer: the trainer instance.
+        """
+        exc = core.convert_to_list(exc)  # type: ignore[arg-type]
+        trainer.train_exceptions.extend(exc)  # type: ignore[arg-type]
+
+    def _append_test_exceptions(
+        self, exc: type[Exception] | list[type[Exception]], trainer: Trainer
+    ) -> None:
+        """
+        Append exception type(s) to the list of valid test exceptions.
+
+        Args:
+            exc: valid exception type or a list of valid exception types.
+            trainer: the trainer instance.
+        """
+        exc = core.convert_to_list(exc)  # type: ignore[arg-type]
+        trainer.test_exceptions.extend(exc)  # type: ignore[arg-type]
 
 
 @PLUGIN_REGISTRY.register
