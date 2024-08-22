@@ -175,10 +175,14 @@ def _spawn_handler(
     trainer.local_rank = rank
     trainer.queue = queue
 
-    if mode == _TrainerMode.TRAIN:
-        trainer._train()  # noqa: SLF001
-    elif mode == _TrainerMode.TEST:
-        trainer._test()  # noqa: SLF001
+    try:
+        if mode == _TrainerMode.TRAIN:
+            trainer._train()  # noqa: SLF001
+        elif mode == _TrainerMode.TEST:
+            trainer._test()  # noqa: SLF001
+    except Exception:
+        dist.shutdown_dist()
+        raise
 
     dist.shutdown_dist()
 
