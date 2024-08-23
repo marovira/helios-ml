@@ -178,25 +178,45 @@ class OptunaPlugin(hlp.Plugin):
         """
         Clean-up on training end.
 
-        If the trial was pruned, then this function will also call
-        :py:meth:`~helios.model.model.Model.on_training_end` to ensure metrics are
-        correctly logged (if using).
+        If training is non-distributed and the trial was pruned, then this function will
+        do the following:
+        #. Call :py:meth:`~helios.model.model.Model.on_training_end` to ensure metrics are
+           correctly logged (if using).
+        #. Raise :py:exc:`optuna.TrialPruned` exception to signal the trial was pruned.
+
+        If training is distributed, this function does nothing.
+
+        Raises:
+            TrialPruned: if the trial was pruned.
         """
         if not self.is_distributed and self.trial.should_prune():
             self.trainer.model.on_training_end()
             raise optuna.TrialPruned(f"Pruned on validation cycle {self._last_cycle}")
-        elif not self.is_distributed and not self.trial.should_prune():
-            return
 
+    def check_pruned(self) -> None:
+        """
+        Ensure pruned distributed trials are correctly handled.
+
+        Due to the way distributed training works, we can't raise an exception within the
+        distributed processes, so we have to do it after we return to the main process.
+        If the trial was pruned, this function will raise :py:exc:`optuna.TrialPruned`. If
+        distributed training wasn't used, this function does nothing.
+
+        .. warning::
+            You *must* ensure this function is called after
+            :py:meth:`~helios.trainer.Trainer.fit` to ensure pruning works correctly.
+
+        Raises:
+            TrialPruned: if the trial was pruned.
+        """
         trial_id = self.trial._trial_id
         study = self.trial.study
         trial = study._storage._backend.get_trial(trial_id)  # type: ignore[attr-defined]
         is_pruned = trial.user_attrs.get(_PRUNED_KEY)
         val_cycle = trial.user_attrs.get(_CYCLE_KEY)
-        intermediate_values = trial.intermediate_values
-        for step, value in intermediate_values.items():
-            self.trial.report(value, step=step)
+
+        if is_pruned is None or val_cycle is None:
+            return
 
         if is_pruned:
-            self.trainer.model.on_training_end()
             raise optuna.TrialPruned(f"Pruned on validation cycle {val_cycle}")
