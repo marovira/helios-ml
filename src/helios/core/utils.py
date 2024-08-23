@@ -5,6 +5,7 @@ import platform
 import re
 import sys
 import time
+import types
 import typing
 
 import packaging.version as pv
@@ -165,7 +166,12 @@ class ChdirContext:
         os.chdir(self.target_path)
         return self.start_path
 
-    def __exit__(self, exc_type, exc_value, exc_traceback) -> None:
+    def __exit__(
+        self,
+        exc_type: type[Exception] | None,
+        exc_value: Exception | None,
+        exc_traceback: types.TracebackType | None,
+    ) -> None:
         """Restores the previous working directory."""
         os.chdir(self.start_path)
 

@@ -293,7 +293,7 @@ class Plugin(abc.ABC):
 @PLUGIN_REGISTRY.register
 class CUDAPlugin(Plugin):
     """
-    Plugin to move elements of a training batch to a GPU.
+    Plug-in to move elements of a training batch to a GPU.
 
     This plug-in can be used to move the elements of a training batch to the currently
     selected device automatically *prior* to the call to
