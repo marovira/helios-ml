@@ -51,8 +51,14 @@ By default, the registry contains the following plug-ins:
 
     * - Plugin
       - Name
-    * - helios.plug-ins.CUDAPlugin
+    * - helios.plugins.CUDAPlugin
       - CUDAPlugin
+    * - helios.plugins.optuna.OptunaPlugin
+      - OptunaPlugin
+
+.. note::
+    The :py:class:`~helios.plugins.optuna.OptunaPlugin` is only registered if the module
+    is imported somewhere in the code. Otherwise it won't be registered.
 
 Example:
     .. code-block:: python
@@ -161,7 +167,8 @@ class Plugin(abc.ABC):
         Configure the trainer before training or testing.
 
         This function can be used to set certain properties of the trainer. For example,
-        it can be used to assign valid exceptions that the plug-in requires.
+        it can be used to assign valid exceptions that the plug-in requires or to register
+        the plug-in itself in the trainer.
 
         Args:
             trainer: the trainer instance.
@@ -302,11 +309,12 @@ class CUDAPlugin(Plugin):
 
     In order to cover the largest possible number of structures, the plug-in can handle
     the following containers:
-        #. Singe tensors
-        #. Lists. Note that the elements of the list need not all be tensors. If any
-          tensors are present, they are automatically moved to the device.
-        #. Dictionaries. Similar to the list, not all the elements of the dictionary have
-          to be tensors. Any tensors are detected automatically.
+
+    #. Single tensors
+    #. Lists. Note that the elements of the list need not all be tensors. If any
+       tensors are present, they are automatically moved to the device.
+    #. Dictionaries. Similar to the list, not all the elements of the dictionary have
+       to be tensors. Any tensors are detected automatically.
 
     .. warning::
         The plug-in is **not** designed to work with nested structures. In other words, if
@@ -325,13 +333,13 @@ class CUDAPlugin(Plugin):
         Example:
             .. code-block:: python
 
-            import helios.plug-ins as hlp
+                import helios.plug-ins as hlp
 
-            class MyCUDAPlugin(hlp.CUDAPlugin):
-                def _move_collection_to_device(self, batch: <your-type>):
-                    # Suppose our batch is a list:
-                    for i in range(len(batch)):
-                        batch[i] = batch[i].to(self.device)
+                class MyCUDAPlugin(hlp.CUDAPlugin):
+                    def _move_collection_to_device(self, batch: <your-type>):
+                        # Suppose our batch is a list:
+                        for i in range(len(batch)):
+                            batch[i] = batch[i].to(self.device)
     """
 
     def __init__(self):

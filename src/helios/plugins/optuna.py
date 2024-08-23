@@ -24,37 +24,44 @@ class OptunaPlugin(hlp.Plugin):
     This plug-in integrates `Optuna <https://optuna.readthedocs.io/en/stable/>`__ into the
     training system in order to provide hyper-parameter tuning. The plug-in provides the
     following functionality:
+
     #. Automatic handling of trial pruning.
     #. Automatic reporting of metrics.
     #. Exception registration for trial pruning.
     #. Easy integration with Helios' checkpoint system to continue stopped trials.
 
+    .. warning::
+        This plug-in **requires** Optuna to be installed before being used. If it isn't,
+        then :py:exc:`ImportError` is raised.
+
     Example:
         .. code-block:: python
 
-        import helios.plugins as hlp
+            import helios.plugins as hlp
+            import optuna
 
-        def objective(trial: optuna.Trial) -> float:
-            datamodule = ...
-            model = ...
-            plugin = hlp.optuna.OptunaPlugin(trial, "accuracy")
+            def objective(trial: optuna.Trial) -> float:
+                datamodule = ...
+                model = ...
+                plugin = hlp.optuna.OptunaPlugin(trial, "accuracy")
 
-            trainer = ...
+                trainer = ...
 
-            # Automatically registers the plug-in with the trainer.
-            plugin.configure_trainer(trainer)
+                # Automatically registers the plug-in with the trainer.
+                plugin.configure_trainer(trainer)
 
-            # This can be skipped if you don't want the auto-resume functionality or if
-            # you wish to manage it yourself.
-            plugin.configure_model(model)
+                # This can be skipped if you don't want the auto-resume functionality or
+                # if you wish to manage it yourself.
+                plugin.configure_model(model)
 
-            trainer.fit(model, datamodule)
-            return model.metrics["accuracy"]
+                trainer.fit(model, datamodule)
+                plugin.check_pruned()
+                return model.metrics["accuracy"]
 
-        def main():
-            # Note that the plug-in requires the storage to be persistent.
-            study = optuna.create_study(storage="sqlite:///example.db", ...)
-            study.optimize(objective, ...)
+            def main():
+                # Note that the plug-in requires the storage to be persistent.
+                study = optuna.create_study(storage="sqlite:///example.db", ...)
+                study.optimize(objective, ...)
 
     Args:
         trial: the Optuna trial.
@@ -85,8 +92,9 @@ class OptunaPlugin(hlp.Plugin):
         Configure the trainer with the required settings.
 
         This will do two things:
-        #. It will register the plug-in itself with the trainer.
-        #. It will append the trial pruned exception to the trainer.
+
+        #. Register the plug-in itself with the trainer.
+        #. Append the trial pruned exception to the trainer.
 
         Args:
             trainer: the trainer instance.
@@ -123,7 +131,7 @@ class OptunaPlugin(hlp.Plugin):
         Configure the plug-in.
 
         Raises:
-            :py:exc:`ValueError` if the study wasn't created with persistent storage.
+            ValueError: if the study wasn't created with persistent storage.
         """
         if self.is_distributed and not (
             isinstance(self.trial.study._storage, optuna.storages._CachedStorage)
@@ -180,6 +188,7 @@ class OptunaPlugin(hlp.Plugin):
 
         If training is non-distributed and the trial was pruned, then this function will
         do the following:
+
         #. Call :py:meth:`~helios.model.model.Model.on_training_end` to ensure metrics are
            correctly logged (if using).
         #. Raise :py:exc:`optuna.TrialPruned` exception to signal the trial was pruned.
