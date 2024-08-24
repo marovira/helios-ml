@@ -1,3 +1,8 @@
+# Getting started tutorial code.
+#
+# The code is adapted from PyTorch's "Training a Classifier" tutorial:
+# https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
+
 import os
 import pathlib
 import typing
@@ -17,30 +22,15 @@ from helios.core import logging
 
 
 class CIFARDataModule(hld.DataModule):
-    """
-    Example datamodule class built with CIFAR10.
-
-    Here you can see how to setup a datamodule that requires data to be downloaded using
-    torchvision's CIFAR10 dataset. The code is adapted from PyTorch's "Training a
-    Classifier" tutorial:
-    https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
-
-    Args:
-        root (pathlib.Path): the root where the data will be downloaded to.
-    """
-
     def __init__(self, root: pathlib.Path) -> None:
-        """Construct the datamodule."""
         super().__init__()
         self._root = root / "data"
 
     def prepare_data(self) -> None:
-        """Download all necessary data."""
         torchvision.datasets.CIFAR10(root=self._root, train=True, download=True)
         torchvision.datasets.CIFAR10(root=self._root, train=False, download=True)
 
     def setup(self) -> None:
-        """Create the datasets."""
         # Use the ToImageTensor transform from Helios to automate the conversion from
         # images to tensors.
         transforms = T.Compose(
@@ -75,15 +65,7 @@ class CIFARDataModule(hld.DataModule):
 
 
 class Net(nn.Module):
-    """
-    Example image classifier.
-
-    The code is taken from PyTorch's Training a Classifier tutorial:
-    https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
-    """
-
     def __init__(self):
-        """Create the classifier."""
         super().__init__()
         self.conv1 = nn.Conv2d(3, 6, 5)
         self.pool = nn.MaxPool2d(2, 2)
@@ -93,7 +75,6 @@ class Net(nn.Module):
         self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """Compute the label for the given image."""
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = torch.flatten(x, 1)  # flatten all dimensions except batch
@@ -104,20 +85,10 @@ class Net(nn.Module):
 
 
 class ClassifierModel(hlm.Model):
-    """
-    Example model class for training the classifier.
-
-    Here you can see how to setup the model class and some of the basic functionality that
-    is available. The code is adapted from PyTorch's "Training a Classifier" tutorial:
-    https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
-    """
-
     def __init__(self) -> None:
-        """Create the model."""
         super().__init__("classifier")
 
     def setup(self, fast_init: bool = False) -> None:
-        """Create the network, loss, and optimizer."""
         # Note that when we create the network and loss function, we immediately move them
         # to the current device, which has been set by the trainer.
         self._net = Net().to(self.device)
@@ -132,7 +103,6 @@ class ClassifierModel(hlm.Model):
     def load_state_dict(
         self, state_dict: dict[str, typing.Any], fast_init: bool = False
     ) -> None:
-        """Restore the model from a saved checkpoint."""
         # Note that we don't have to re-map the weights ourselves. They have already been
         # re-mapped for us by the trainer when it loaded the checkpoint.
         self._net.load_state_dict(state_dict["net"])
@@ -140,7 +110,6 @@ class ClassifierModel(hlm.Model):
         self._optimizer.load_state_dict(state_dict["optimizer"])
 
     def state_dict(self) -> dict[str, typing.Any]:
-        """Return the state dict of the model."""
         return {
             "net": self._net.state_dict(),
             "criterion": self._criterion.state_dict(),
@@ -148,19 +117,16 @@ class ClassifierModel(hlm.Model):
         }
 
     def train(self) -> None:
-        """Set the model to train."""
         # If we had more networks, we would shift them to training mode here.
         self._net.train()
 
     def on_training_start(self) -> None:
-        """Perform steps before training starts."""
         tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
 
         x = torch.randn((1, 3, 32, 32)).to(self.device)
         tb_logger.add_graph(self._net, x)
 
     def train_step(self, batch: typing.Any, state: hlt.TrainingState) -> None:
-        """Forward and backward training passes."""
         # Due to the simplicity of the code, we do both the forward and backward passes in
         # the training step, but you could also split it between the train_step and
         # on_training_batch_end if your setup is more complex.
@@ -185,13 +151,6 @@ class ClassifierModel(hlm.Model):
         state: hlt.TrainingState,
         should_log: bool = False,
     ) -> None:
-        """
-        Perform steps after the training batch.
-
-        Args:
-            state (pyt.TrainingState): the current training state.
-            should_log (bool): if true, then writing to the log should be performed.
-        """
         # If we were training in distributed mode, calling the base Model's function will
         # automatically gather all loss values saved to self._loss_items.
         super().on_training_batch_end(state, should_log)
@@ -218,7 +177,6 @@ class ClassifierModel(hlm.Model):
             )
 
     def on_training_end(self) -> None:
-        """Perform steps after training ends."""
         # For our example, we're going to save the hyper-params to the tensorboard log so
         # we can compare with other runs.
         # Notice that self._val_scores is active because we validate every epoch. If your
@@ -233,11 +191,9 @@ class ClassifierModel(hlm.Model):
         )
 
     def eval(self) -> None:
-        """Set the model to eval."""
         self._net.eval()
 
     def on_validation_start(self, validation_cycle: int) -> None:
-        """Perform steps on validation start."""
         # The base function will automatically clear the validation scores for us.
         super().on_validation_start(validation_cycle)
 
@@ -248,7 +204,6 @@ class ClassifierModel(hlm.Model):
         self._val_scores["correct"] = 0
 
     def valid_step(self, batch: typing.Any, step: int) -> None:
-        """Perform the validation step."""
         images, labels = batch
         images = images.to(self.device)
         labels = labels.to(self.device)
@@ -260,7 +215,6 @@ class ClassifierModel(hlm.Model):
         self._val_scores["correct"] += (predicted == labels).sum().item()
 
     def on_validation_end(self, validation_cycle: int) -> None:
-        """Perform steps after validation ends."""
         root_logger = logging.get_root_logger()
         tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
 
