@@ -71,14 +71,14 @@ jobs:
         run: |
           ruff check src/helios
           ruff check test
-          ruff check examples/cifar10
+          ruff check examples
 
       - name: Mypy
         shell: bash
         run: |
           mypy src/helios
           mypy test
-          mypy examples/cifar10
+          mypy examples
 
       - name: Pytest
         shell: bash
