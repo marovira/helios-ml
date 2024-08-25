@@ -153,15 +153,7 @@ identical to the one from PyTorch so we won't explain any details.
 .. code-block:: python
 
     class Net(nn.Module):
-        """
-        Example image classifier.
-
-        The code is taken from PyTorch's Training a Classifier tutorial:
-        https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
-        """
-
         def __init__(self):
-            """Create the classifier."""
             super().__init__()
             self.conv1 = nn.Conv2d(3, 6, 5)
             self.pool = nn.MaxPool2d(2, 2)
@@ -171,7 +163,6 @@ identical to the one from PyTorch so we won't explain any details.
             self.fc3 = nn.Linear(84, 10)
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
-            """Compute the label for the given image."""
             x = self.pool(F.relu(self.conv1(x)))
             x = self.pool(F.relu(self.conv2(x)))
             x = torch.flatten(x, 1)  # flatten all dimensions except batch
@@ -197,20 +188,10 @@ our loss function. The could would be as follows:
 .. code-block:: python
 
     class ClassifierModel(hlm.Model):
-        """
-        Example model class for training the classifier.
-
-        Here you can see how to setup the model class and some of the basic functionality that
-        is available. The code is adapted from PyTorch's "Training a Classifier" tutorial:
-        https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
-        """
-
         def __init__(self) -> None:
-            """Create the model."""
             super().__init__("classifier")
 
         def setup(self, fast_init: bool = False) -> None:
-            """Create the network, loss, and optimizer."""
             self._net = Net().to(self.device)
             self._criterion = nn.CrossEntropyLoss().to(self.device)
 
@@ -297,13 +278,11 @@ do this, we need to override :py:meth:`~helios.model.model.Model.load_state_dict
     def load_state_dict(
         self, state_dict: dict[str, typing.Any], fast_init: bool = False
     ) -> None:
-        """Restore the model from a saved checkpoint."""
         self._net.load_state_dict(state_dict["net"])
         self._criterion.load_state_dict(state_dict["criterion"])
         self._optimizer.load_state_dict(state_dict["optimizer"])
 
     def state_dict(self) -> dict[str, typing.Any]:
-        """Return the state dict of the model."""
         return {
             "net": self._net.state_dict(),
             "criterion": self._criterion.state_dict(),
@@ -333,7 +312,6 @@ To start, let's add the code to switch our network into training mode:
 .. code-block:: python
 
     def train(self) -> None:
-        """Set the model to train."""
         self._net.train()
 
 Next, lets add the code to trace. Since we only need to do this once when training begins,
@@ -342,7 +320,6 @@ we're going to use :py:meth:`~helios.model.model.Model.on_training_start`:
 .. code-block:: python
 
     def on_training_start(self) -> None:
-        """Perform steps before training starts."""
         tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
 
         x = torch.randn((1, 3, 32, 32)).to(self.device)
@@ -369,7 +346,6 @@ identifies. Now to add the forward and backward passes. These are going to be ke
 .. code-block:: python
 
     def train_step(self, batch: typing.Any, state: hlt.TrainingState) -> None:
-        """Forward and backward training passes."""
         inputs, labels = batch
         inputs = inputs.to(self.device)
         labels = labels.to(self.device)
@@ -406,13 +382,6 @@ Now let's look at the logging code:
         state: hlt.TrainingState,
         should_log: bool = False,
     ) -> None:
-        """
-        Perform steps after the training batch.
-
-        Args:
-            state (pyt.TrainingState): the current training state.
-            should_log (bool): if true, then writing to the log should be performed.
-        """
         super().on_training_batch_end(state, should_log)
 
         if should_log:
@@ -492,7 +461,6 @@ validation result as well as the final loss value.
 .. code-block:: python
 
     def on_training_end(self) -> None:
-        """Perform steps after training ends."""
         total = self._val_scores["total"]
         correct = self._val_scores["correct"]
         accuracy = 100 * correct // total
@@ -516,7 +484,6 @@ switch our network to evaluation mode:
 .. code-block:: python
 
     def eval(self) -> None:
-        """Set the model to eval."""
         self._net.eval()
 
 The :py:class:`~helios.model.model.Model` contains a dictionary for validation scores
@@ -527,7 +494,6 @@ do this, we're going to assign these fields before validation starts:
 .. code-block:: python
 
     def on_validation_start(self, validation_cycle: int) -> None:
-        """Perform steps on validation start."""
         super().on_validation_start(validation_cycle)
 
         self._val_scores["total"] = 0
@@ -541,7 +507,6 @@ validation step:
 .. code-block:: python
 
     def valid_step(self, batch: typing.Any, step: int) -> None:
-        """Perform the validation step."""
         images, labels = batch
         images = images.to(self.device)
         labels = labels.to(self.device)
@@ -564,7 +529,6 @@ Finally, we need to compute the final accuracy score and log it:
 .. code-block:: python
 
     def on_validation_end(self, validation_cycle: int) -> None:
-        """Perform steps after validation ends."""
         root_logger = logging.get_root_logger()
         tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
 
