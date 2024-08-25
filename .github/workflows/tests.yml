@@ -23,7 +23,10 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "windows-latest"]
-        torch: ["==2.2.1", ""]
+        deps: [
+          {torch: "torch==2.2.1", torchvision: "torchvision==0.17.1"},
+          {torch: "torch", torchvision: "torchvision"}
+        ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,14 +40,15 @@ jobs:
       - name: Cache virtualenv
         uses: actions/cache@v4
         with:
-          key: venv_${{ matrix.os }}_torch${{ matrix.torch }}_${{ steps.setup_python.outputs.python-version}}_${{ hashFiles('requirements/ci.txt') }}
+          key: venv_${{ matrix.os }}_${{ matrix.deps.torch }}_${{ steps.setup_python.outputs.python-version}}_${{ hashFiles('requirements/ci.txt') }}
           path: venv
 
       - name: Install dependencies
         shell: bash
         env:
           RUNNER: ${{ matrix.os }}
-          TORCH_VER: ${{ matrix.torch }}
+          TORCH_VER: ${{ matrix.deps.torch }}
+          TORCHVISION_VER: ${{ matrix.deps.torchvision }}
         run: |
           python -m venv venv
           if [[ "$RUNNER" == "windows-latest" ]]; then
@@ -54,7 +58,8 @@ jobs:
           fi
 
           python -m pip install numpy==1.26.4
-          python -m pip install "torch$TORCH_VER"
+          python -m pip install "$TORCH_VER"
+          python -m pip install "$TORCHVISION_VER"
           python -m pip install -r requirements/ci.txt
 
           if [[ "$RUNNER" == "windows-latest" ]]; then
