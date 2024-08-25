@@ -28,7 +28,7 @@ jobs:
       - name: Cache virtualenv
         uses: actions/cache@v4
         with:
-          key: venv-ubuntu-latest-${{ steps.setup_python.outputs.python-version}}-${{ hashFiles('requirements/ci.txt') }}
+          key: venv_ubuntu-latest_${{ matrix.deps.torch }}_py-${{ steps.setup_python.outputs.python-version}}_${{ hashFiles('requirements/ci.txt') }}
           path: venv
 
       - name: Install dependencies
