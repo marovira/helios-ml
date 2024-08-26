@@ -123,7 +123,8 @@ class TestCUDAPlugin:
 )
 class TestOptunaPlugin:
     def test_plugin_id(self) -> None:
-        pass
+        assert hasattr(OptunaPlugin, "plugin_id")
+        assert OptunaPlugin.plugin_id == "optuna"
 
     def test_invalid_storage(self) -> None:
         def objective(trial: optuna.Trial) -> int:
