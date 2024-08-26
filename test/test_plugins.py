@@ -12,7 +12,7 @@ from helios.plugins.optuna import OptunaPlugin
 
 class ExceptionPlugin(hlp.Plugin):
     def __init__(self, exc_type: type[Exception] | list[type[Exception]]):
-        super().__init__()
+        super().__init__(f"exception_{str(exc_type)}")
         self._exc_type = exc_type
 
     def setup(self) -> None:
@@ -100,6 +100,17 @@ class TestCUDAPlugin:
         self.check_batch_processing(
             plugin, {"a": create_tensor(), "b": create_tensor()}, device
         )
+
+    def test_configure(self) -> None:
+        if not torch.cuda.is_available():
+            return
+
+        trainer = hlt.Trainer()
+        plugin = hlp.CUDAPlugin()
+        plugin.configure_trainer(trainer)
+
+        assert "cuda" in trainer.plugins
+        assert trainer.plugins["cuda"] == plugin
 
 
 # Ignore the warnings coming from optuna.

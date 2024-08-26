@@ -231,6 +231,9 @@ class ExceptionModel(hlm.Model):
 
 
 class EmptyPlugin(hlp.Plugin):
+    def __init__(self):
+        super().__init__("empty")
+
     def setup(self):
         pass
 
@@ -243,7 +246,7 @@ class OverrideFlagsPlugin(hlp.Plugin):
         testing_batch: bool = False,
         should_training_stop: bool = False,
     ):
-        super().__init__()
+        super().__init__("override")
         self._overrides.training_batch = training_batch
         self._overrides.validation_batch = validation_batch
         self._overrides.testing_batch = testing_batch
@@ -257,7 +260,7 @@ class CheckFunPlugin(hlp.Plugin):
     name: str = "check"
 
     def __init__(self):
-        super().__init__()
+        super().__init__(self.name)
         self._overrides.training_batch = True
         self._overrides.validation_batch = True
         self._overrides.testing_batch = True

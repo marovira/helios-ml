@@ -71,7 +71,7 @@ class OptunaPlugin(hlp.Plugin):
 
     def __init__(self, trial: optuna.Trial, metric_name: str) -> None:
         """Create the plug-in."""
-        super().__init__()
+        super().__init__("optuna")
         self._trial = trial
         self._metric_name = metric_name
         self._last_cycle: int = 0
@@ -99,7 +99,7 @@ class OptunaPlugin(hlp.Plugin):
         Args:
             trainer: the trainer instance.
         """
-        trainer.plugins["optuna"] = self
+        self._register_in_trainer(trainer)
         self._append_train_exceptions(optuna.TrialPruned, trainer)
 
     def configure_model(self, model: hlm.Model) -> None:

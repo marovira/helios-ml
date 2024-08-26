@@ -100,11 +100,16 @@ class Plugin(abc.ABC):
     The only major difference is that the plug-in functions are called *before* the
     corresponding model functions, providing the ability to override the model if
     necessary.
+
+    Args:
+        plug_id: the string with which the plug-in will be registered in the trainer
+            plug-in table.
     """
 
-    def __init__(self):
+    def __init__(self, plug_id: str):
         """Create the plug-in."""
         self._trainer: Trainer | None
+        self._plug_id = plug_id
 
         self._is_distributed: bool = False
         self._map_loc: str | dict[str, str] = ""
@@ -296,6 +301,26 @@ class Plugin(abc.ABC):
         exc = core.convert_to_list(exc)  # type: ignore[arg-type]
         trainer.test_exceptions.extend(exc)  # type: ignore[arg-type]
 
+    def _register_in_trainer(self, trainer: Trainer) -> None:
+        """
+        Register the plug-in instance in the trainer table.
+
+        The plug-in will be registered with the value provided to ``plug_id``. If another
+        plug-in is found with the same ID, an exception is raised.
+
+        Args:
+            trainer: the trainer instance.
+
+        Raises:
+            KeyError: if another plug-in with the same ID is found.
+        """
+        if self._plug_id in trainer.plugins:
+            raise KeyError(
+                f"error: a plug-in with id {self._plug_id} has already been registered"
+            )
+
+        trainer.plugins[self._plug_id] = self
+
 
 @PLUGIN_REGISTRY.register
 class CUDAPlugin(Plugin):
@@ -344,7 +369,7 @@ class CUDAPlugin(Plugin):
 
     def __init__(self):
         """Create the plug-in."""
-        super().__init__()
+        super().__init__("cuda")
         core.cuda.requires_cuda_support()
 
         # Ensure that no-one else can manipulate the batch.
@@ -354,6 +379,17 @@ class CUDAPlugin(Plugin):
 
     def setup(self) -> None:
         """No-op setup function."""
+
+    def configure_trainer(self, trainer: Trainer) -> None:
+        """
+        Register the plug-in instance into the trainer.
+
+        The plug-in will be registered under the name ``cuda``.
+
+        Args:
+            trainer: the trainer instance.
+        """
+        self._register_in_trainer(trainer)
 
     def _move_collection_to_device(
         self, batch: torch.Tensor | list | dict | tuple
