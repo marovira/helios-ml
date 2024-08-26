@@ -210,6 +210,12 @@ class ClassifierModel(hlm.Model):
             {"hparam/accuracy": accuracy, "hparam/loss": self._loss_items["loss"].item()},
         )
 
+        if self.is_distributed and self.rank == 0:
+            assert self.trainer.queue is not None
+            self.trainer.queue.put(
+                {"accuracy": accuracy, "loss": self._loss_items["loss"].item()}
+            )
+
     def eval(self) -> None:
         self._net.eval()
 
