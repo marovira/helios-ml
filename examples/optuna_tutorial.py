@@ -111,7 +111,7 @@ class ClassifierModel(hlm.Model):
         return {"accuracy": accuracy}
 
     def setup(self, fast_init: bool = False) -> None:
-        plugin = self.trainer.plugins[0]
+        plugin = self.trainer.plugins["optuna"]
         assert isinstance(plugin, OptunaPlugin)
 
         # Assign the tunable parameters so we can log them as hyper-parameters when
