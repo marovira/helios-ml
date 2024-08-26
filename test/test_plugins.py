@@ -76,7 +76,11 @@ class TestCUDAPlugin:
         ret = plugin.process_testing_batch(x, 0)
         self.check_batch_device(ret, device)
 
-    def test_cuda_plugin(self) -> None:
+    def test_plugin_id(self) -> None:
+        assert hasattr(hlp.CUDAPlugin, "plugin_id")
+        assert hlp.CUDAPlugin.plugin_id == "cuda"
+
+    def test_batch_processing(self) -> None:
         if not torch.cuda.is_available():
             return
 
@@ -118,6 +122,9 @@ class TestCUDAPlugin:
     ("ignore::optuna.exceptions.ExperimentalWarning"), ("ignore::FutureWarning")
 )
 class TestOptunaPlugin:
+    def test_plugin_id(self) -> None:
+        pass
+
     def test_invalid_storage(self) -> None:
         def objective(trial: optuna.Trial) -> int:
             plugin = OptunaPlugin(trial, "accuracy")

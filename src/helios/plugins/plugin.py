@@ -367,9 +367,11 @@ class CUDAPlugin(Plugin):
                             batch[i] = batch[i].to(self.device)
     """
 
+    plugin_id = "cuda"
+
     def __init__(self):
         """Create the plug-in."""
-        super().__init__("cuda")
+        super().__init__(self.plugin_id)
         core.cuda.requires_cuda_support()
 
         # Ensure that no-one else can manipulate the batch.

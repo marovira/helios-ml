@@ -69,9 +69,11 @@ class OptunaPlugin(hlp.Plugin):
             present in the :py:attr:`~helios.model.model.Model.metrics` table.
     """
 
+    plugin_id = "optuna"
+
     def __init__(self, trial: optuna.Trial, metric_name: str) -> None:
         """Create the plug-in."""
-        super().__init__("optuna")
+        super().__init__(self.plugin_id)
         self._trial = trial
         self._metric_name = metric_name
         self._last_cycle: int = 0
