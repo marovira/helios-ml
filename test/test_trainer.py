@@ -254,6 +254,8 @@ class OverrideFlagsPlugin(hlp.Plugin):
 
 
 class CheckFunPlugin(hlp.Plugin):
+    name: str = "check"
+
     def __init__(self):
         super().__init__()
         self._overrides.training_batch = True
@@ -321,7 +323,7 @@ class CheckPluginModel(hlm.Model):
         super().__init__("test-plugin")
 
     def _get_plugin(self) -> CheckFunPlugin:
-        plugin = self.trainer.plugins[0]
+        plugin = self.trainer.plugins[CheckFunPlugin.name]
         assert isinstance(plugin, CheckFunPlugin)
         return plugin
 
@@ -692,7 +694,7 @@ class TestTrainer:
     def test_append_plugins(self) -> None:
         trainer = hlt.Trainer()
 
-        trainer.plugins.append(EmptyPlugin())
+        trainer.plugins["empty"] = EmptyPlugin()
         trainer._validate_plugins()
 
         batch_flags = {
@@ -704,10 +706,14 @@ class TestTrainer:
 
         for flag_name in batch_flags:
             batch_flags[flag_name] = True
-            trainer.plugins.append(OverrideFlagsPlugin(**batch_flags))
+            trainer.plugins[f"override_base_{flag_name}"] = OverrideFlagsPlugin(
+                **batch_flags
+            )
 
             with pytest.raises(ValueError):
-                trainer.plugins.append(OverrideFlagsPlugin(**batch_flags))
+                trainer.plugins[f"override_dup_{flag_name}"] = OverrideFlagsPlugin(
+                    **batch_flags
+                )
                 trainer._validate_plugins()
 
             batch_flags[flag_name] = False
@@ -716,15 +722,16 @@ class TestTrainer:
         datamodule = RandomDatamodule()
         model = CheckPluginModel()
 
-        trainer.plugins.append(CheckFunPlugin())
+        name = CheckFunPlugin.name
+        trainer.plugins[name] = CheckFunPlugin()
 
         called_funs: dict[str, bool]
         if fit:
             trainer.fit(model, datamodule)
-            called_funs = trainer.plugins[0].called_train_funs  # type: ignore[attr-defined]
+            called_funs = trainer.plugins[name].called_train_funs  # type: ignore[attr-defined]
         else:
             trainer.test(model, datamodule)
-            called_funs = trainer.plugins[0].called_test_funs  # type: ignore[attr-defined]
+            called_funs = trainer.plugins[name].called_test_funs  # type: ignore[attr-defined]
 
         for _, seen in called_funs.items():
             assert seen

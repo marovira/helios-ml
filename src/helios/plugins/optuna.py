@@ -99,7 +99,7 @@ class OptunaPlugin(hlp.Plugin):
         Args:
             trainer: the trainer instance.
         """
-        trainer.plugins.append(self)
+        trainer.plugins["optuna"] = self
         self._append_train_exceptions(optuna.TrialPruned, trainer)
 
     def configure_model(self, model: hlm.Model) -> None:

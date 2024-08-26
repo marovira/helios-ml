@@ -295,7 +295,7 @@ class Trainer:
         self._train_exceptions: list[type[Exception]] = []
         self._test_exceptions: list[type[Exception]] = []
 
-        self._plugins: list[hlp.Plugin] = []
+        self._plugins: dict[str, hlp.Plugin] = {}
 
         self._queue: mp.Queue | None = None
 
@@ -364,12 +364,12 @@ class Trainer:
         self._test_exceptions = exc
 
     @property
-    def plugins(self) -> list[hlp.Plugin]:
+    def plugins(self) -> dict[str, hlp.Plugin]:
         """Return the list of plug-ins."""
         return self._plugins
 
     @plugins.setter
-    def plugins(self, plugs: list[hlp.Plugin]) -> None:
+    def plugins(self, plugs: dict[str, hlp.Plugin]) -> None:
         self._plugins = plugs
 
     @property
@@ -622,7 +622,7 @@ class Trainer:
 
     def _setup_plugins(self) -> None:
         """Finish setting up the plug-ins."""
-        for plugin in self._plugins:
+        for plugin in self._plugins.values():
             plugin.is_distributed = self._is_distributed
             plugin.map_loc = self._map_loc
             plugin.device = core.get_from_optional(self._device)
@@ -1180,7 +1180,7 @@ class Trainer:
     def _validate_plugins(self) -> None:
         seen_overrides: dict[str, str] = {}
         fields = dc.fields(hlp.UniquePluginOverrides)
-        for plugin in self._plugins:
+        for _, plugin in self._plugins.items():
             for field in fields:
                 name = field.name
                 if getattr(plugin.unique_overrides, name):
@@ -1193,7 +1193,7 @@ class Trainer:
                         )
 
     def _execute_plugins(self, func_name: str, **kwargs: typing.Any) -> None:
-        for plugin in self._plugins:
+        for plugin in self._plugins.values():
             func = getattr(plugin, func_name)
             func(**kwargs)
 
@@ -1203,11 +1203,11 @@ class Trainer:
         func_name = f"process_{mode}_batch"
         override_name = f"{mode}_batch"
 
-        for plugin in self._plugins:
+        for plugin in self._plugins.values():
             if getattr(plugin.unique_overrides, override_name):
                 return getattr(plugin, func_name)(batch=batch, **kwargs)
 
         return batch
 
     def _plugins_should_training_stop(self) -> bool:
-        return any(plugin.should_training_stop() for plugin in self._plugins)
+        return any(plugin.should_training_stop() for plugin in self._plugins.values())

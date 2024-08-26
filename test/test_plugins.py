@@ -126,7 +126,7 @@ class TestOptunaPlugin:
 
             plugin.configure_trainer(trainer)
             assert len(trainer.plugins) == 1
-            assert trainer.plugins[0] == plugin
+            assert trainer.plugins["optuna"] == plugin
             assert len(trainer.train_exceptions) == 1
             assert trainer.train_exceptions[0] == optuna.TrialPruned
 
