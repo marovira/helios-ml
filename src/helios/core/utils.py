@@ -487,7 +487,10 @@ def add_safe_torch_serialization_globals(safe_globals: list[typing.Any]) -> None
         torch.serialization.add_safe_globals(safe_globals)  # type: ignore[attr-defined]
 
 
-def safe_torch_load(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
+def safe_torch_load(
+    f: str | os.PathLike | typing.BinaryIO | typing.IO[bytes],
+    **kwargs: typing.Any,
+) -> typing.Any:
     """
     Wrap :code:`torch.load` to handle safe loading.
 
@@ -500,12 +503,14 @@ def safe_torch_load(*args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         value yourself when using this function.
 
     Args:
-        *args: positional arguments to pass to :code:`torch.load`.
+        f: a file-like object (has to implement ``read()``, ``readline()``, ``tell()``,
+            and ``seek()``), or a string or a ``os.PathLike`` object containing a file
+            name.
         **kwargs: keyword arguments to pass to :code:`torch.load`.
 
     Returns:
         The result of calling :code:`torch.load`.
     """
     if enable_safe_torch_loading():
-        return torch.load(*args, **kwargs, weights_only=True)
-    return torch.load(*args, **kwargs)
+        return torch.load(f, **kwargs, weights_only=True)
+    return torch.load(f, **kwargs)
