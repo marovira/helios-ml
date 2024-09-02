@@ -5,7 +5,6 @@ import enum
 import itertools
 import os
 import pathlib
-import platform
 import re
 import time
 import typing
