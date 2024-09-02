@@ -5,6 +5,7 @@ import enum
 import itertools
 import os
 import pathlib
+import platform
 import re
 import time
 import typing
@@ -101,9 +102,19 @@ class TrainingState:
     dict = dc.asdict
 
 
+def get_trainer_safe_types_for_load() -> list[type]:
+    """
+    Return the list of safe types for loading needed by the trainer.
+
+    Returns:
+        The list of types that need to be registered for safe loading.
+    """
+    return [TrainingState, pathlib.PosixPath, pathlib.WindowsPath]
+
+
 def register_trainer_types_for_safe_load() -> None:
     """Register trainer types for safe loading."""
-    torch.serialization.add_safe_globals([TrainingState, pathlib.Path])
+    torch.serialization.add_safe_globals(get_trainer_safe_types_for_load())
 
 
 def find_last_checkpoint(root: pathlib.Path | None) -> pathlib.Path | None:

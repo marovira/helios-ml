@@ -388,7 +388,7 @@ class TestTrainingUnit:
 
 class TestTrainer:
     def test_register_types(self, tmp_path: pathlib.Path) -> None:
-        test_dict = {"state": hlt.TrainingState(), "path": pathlib.Path}
+        test_dict = {"state": hlt.TrainingState(), "path": tmp_path}
         out_path = tmp_path / "register.pth"
         torch.save(test_dict, out_path)
 
@@ -398,7 +398,7 @@ class TestTrainer:
 
         hlt.register_trainer_types_for_safe_load()
         reg_types = torch.serialization.get_safe_globals()
-        exp_types = [hlt.TrainingState, pathlib.Path]
+        exp_types = hlt.get_trainer_safe_types_for_load()
         assert reg_types == exp_types
 
         ret_dict = hlc.safe_torch_load(out_path)
