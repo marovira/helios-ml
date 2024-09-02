@@ -9,7 +9,6 @@ import typing
 
 import numpy as np
 import numpy.typing as npt
-import packaging.version as pv
 import pytest
 import torch
 
@@ -96,44 +95,29 @@ class TestUtils:
         assert len(rt.FUNC_REGISTRY.keys()) == 2
         assert all(var in rt.FUNC_REGISTRY for var in ("foo", "bar"))
 
-    def test_enable_safe_torch_loading(self) -> None:
-        base_ver = pv.Version("2.4.0")
-        if pv.Version(torch.__version__) >= base_ver:
-            assert core.enable_safe_torch_loading()
-        else:
-            assert not core.enable_safe_torch_loading()
-
     def test_add_safe_torch_serialization_globals(self) -> None:
-        if not core.enable_safe_torch_loading():
-            return
-
-        torch.serialization.clear_safe_globals()  # type: ignore[attr-defined]
+        torch.serialization.clear_safe_globals()
         core.add_safe_torch_serialization_globals([SafeType])
-        safe_globals = torch.serialization.get_safe_globals()  # type: ignore[attr-defined]
+        safe_globals = torch.serialization.get_safe_globals()
         assert len(safe_globals) == 1
         assert safe_globals[0] == SafeType
-        torch.serialization.clear_safe_globals()  # type: ignore[attr-defined]
+        torch.serialization.clear_safe_globals()
 
     def test_safe_torch_load(self, tmp_path: pathlib.Path) -> None:
         out_file = tmp_path / "safe.pth"
         base_dict = {"a": 1, "b": "foo", "c": SafeType(2, "bar")}
         torch.save(base_dict, out_file)
 
-        if not core.enable_safe_torch_loading():
-            ret_dict = core.safe_torch_load(out_file)
-            assert base_dict == ret_dict
-            return
-
         # Loading without registering the type should fail.
         with pytest.raises(pickle.UnpicklingError):
             core.safe_torch_load(out_file)
 
         # Now register the type and loading should pass.
-        torch.serialization.clear_safe_globals()  # type: ignore[attr-defined]
+        torch.serialization.clear_safe_globals()
         core.add_safe_torch_serialization_globals([SafeType])
         ret_dict = core.safe_torch_load(out_file)
         assert base_dict == ret_dict
-        torch.serialization.clear_safe_globals()  # type: ignore[attr-defined]
+        torch.serialization.clear_safe_globals()
 
 
 def sample_fun() -> int:

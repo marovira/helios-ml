@@ -8,7 +8,6 @@ import time
 import types
 import typing
 
-import packaging.version as pv
 import torch
 import torchvision
 
@@ -451,23 +450,6 @@ def update_all_registries(
         importlib.import_module(module)
 
 
-def enable_safe_torch_loading() -> bool:
-    """
-    Return whether safe loading should be enabled.
-
-    Starting with PyTorch 2.4.0, a warning is issued whenever :code:`torch.load` is used
-    without `weights_only` being set to true. The code necessary to resolve this warning
-    is not present in versions prior to 2.4.0, so this function is used to determine
-    whether we need to handle safe loading or not.
-
-    Returns:
-        True if safe loading needs to be managed, false otherwise.
-    """
-    ver = pv.Version("2.4.0")
-
-    return ver <= pv.Version(torch.__version__)
-
-
 def add_safe_torch_serialization_globals(safe_globals: list[typing.Any]) -> None:
     """
     Mark the given globals as safe for :code:`weights_only` to load.
@@ -483,8 +465,7 @@ def add_safe_torch_serialization_globals(safe_globals: list[typing.Any]) -> None
         safe_globals: list of globals to mark as safe.
 
     """
-    if enable_safe_torch_loading():
-        torch.serialization.add_safe_globals(safe_globals)  # type: ignore[attr-defined]
+    torch.serialization.add_safe_globals(safe_globals)
 
 
 def safe_torch_load(
@@ -511,6 +492,4 @@ def safe_torch_load(
     Returns:
         The result of calling :code:`torch.load`.
     """
-    if enable_safe_torch_loading():
-        return torch.load(f, **kwargs, weights_only=True)
-    return torch.load(f, **kwargs)
+    return torch.load(f, **kwargs, weights_only=True)
