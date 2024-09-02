@@ -157,3 +157,41 @@ class TestOptunaPlugin:
 
         study = optuna.create_study()
         study.optimize(objective, n_trials=1)
+
+    def check_in_range(
+        self, val: typing.Any, t: type, low: typing.Any, high: typing.Any
+    ) -> None:
+        assert isinstance(val, t)
+        assert low <= val <= high
+
+    def check_in_sequence(self, val: typing.Any, t: type, seq: typing.Container) -> None:
+        assert isinstance(val, t)
+        assert val in seq
+
+    def test_suggest(self) -> None:
+        def objective(trial: optuna.Trial) -> int:
+            plugin = OptunaPlugin(trial, "accuracy")
+
+            with pytest.raises(KeyError):
+                plugin.suggest("foo", "bar")
+
+            seq = [1, 2, 3]
+            self.check_in_sequence(
+                plugin.suggest("categorical", "val1", choices=seq), int, seq
+            )
+
+            low = 0
+            high = 10
+            self.check_in_range(
+                plugin.suggest("int", "val2", low=low, high=high), int, low, high
+            )
+
+            high = 1
+            self.check_in_range(
+                plugin.suggest("float", "val3", low=low, high=high), float, low, high
+            )
+
+            return 0
+
+        study = optuna.create_study()
+        study.optimize(objective, n_trials=1)

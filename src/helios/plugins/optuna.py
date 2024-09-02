@@ -2,6 +2,8 @@ try:
     import optuna
 except ImportError as e:
     raise ImportError("error: OptunaPlugin requires Optuna to be installed") from e
+import typing
+
 import torch
 
 import helios.core.distributed as dist
@@ -127,6 +129,54 @@ class OptunaPlugin(hlp.Plugin):
         )
 
         model._save_name = model._save_name + trial_id
+
+    def suggest(self, type_name: str, name: str, **kwargs: typing.Any) -> typing.Any:
+        """
+        Generically Wrap the ``suggest_`` family of functions of the optuna trial.
+
+        This function can be used to easily invoke the corresponding ``suggest_`` function
+        from the Optuna trial held by the plug-in without having to manually type each
+        individual function. This lets you write generic code that can be controlled by an
+        external source (such as command line arguments or a config table). The function
+        wraps the following functions:
+
+        #. :py:meth:`optuna.Trial.suggest_categorical`,
+        #. :py:meth:`optuna.Trial.suggest_int`,
+        #. :py:meth:`optuna.Trial.suggest_float`.
+
+        .. warning::
+            Functions that are marked as deprecated by Optuna are *not* included in this
+            wrapper.
+
+        .. note::
+            You can find the exact arguments for each function `here
+            <https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html>`__.
+
+        Example:
+            .. code-block:: python
+
+                import helios.plugin as hlp
+                import optuna
+
+                def objective(trial: optuna.Trial) -> float:
+                    plugin = hlp.optuna.OptunaPlugin(trial, "accuracy")
+                    # ... configure model and trainer.
+
+                    val1 = plugin.suggest("categorical", "val1", choices=[1, 2, 3])
+                    val2 = plugin.suggest("int", "val2", low=0, high=10)
+                    val3 = plugin.suggest("float", "val3", low=0, high=1)
+
+        Args:
+            type_name: the name of the type to suggest from.
+            name: a parameter name
+            **kwargs: keyword arguments to the corresponding suggest function.
+
+        """
+        if type_name not in ("categorical", "float", "int"):
+            raise KeyError(f"error: {type_name} is not a valid suggestion type.")
+
+        fn = getattr(self._trial, f"suggest_{type_name}")
+        return fn(name, **kwargs)
 
     def setup(self) -> None:
         """
