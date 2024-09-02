@@ -25,13 +25,14 @@
 
 .. |PythonMinVersion| replace:: 3.11
 .. |TQDMMinVersion| replace:: 4.66.2
-.. |OpenCVMinVersion| replace:: 4.9.0.80
-.. |TensorboardMinVersion| replace:: 2.16.2
-.. |TorchMinVersion| replace:: 2.2.1
-.. |TorchvisionMinVersion| replace:: 0.17.1
-.. |ONNXMinVersion| replace:: 1.16.0
-.. |ORTMinVersion| replace:: 1.17.1
+.. |OpenCVMinVersion| replace:: 4.10.0.84
+.. |TensorboardMinVersion| replace:: 2.17.1
+.. |TorchMinVersion| replace:: 2.4.0
+.. |TorchvisionMinVersion| replace:: 0.19.0
+.. |ONNXMinVersion| replace:: 1.16.1
+.. |ORTMinVersion| replace:: 1.19.0
 .. |PLTMinVersion| replace:: 3.8.4
+.. |NumpyMinVersion| replace:: 2.0.0
 
 .. what_is_helios
 
@@ -92,6 +93,7 @@ Helios requires:
 - ONNX (>= |ONNXMinVersion|)
 - ONNXRuntime (>= |ORTMinVersion|)
 - Matplotlib (>= |PLTMinVersion|)
+- Numpy (>= |NumpyMinVersion|)
 
 User Installation
 ~~~~~~~~~~~~~~~~~
