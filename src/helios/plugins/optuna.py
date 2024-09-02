@@ -140,9 +140,17 @@ class OptunaPlugin(hlp.Plugin):
         external source (such as command line arguments or a config table). The function
         wraps the following functions:
 
-        #. :py:meth:`optuna.Trial.suggest_categorical`,
-        #. :py:meth:`optuna.Trial.suggest_int`,
-        #. :py:meth:`optuna.Trial.suggest_float`.
+        .. list-table:: Suggestion Functions
+            :header-rows: 1
+
+            * - Function
+              - Name
+            * - ``optuna.Trial.suggest_categorical``
+              - categorical
+            * - ``optuna.Trial.suggest_int``
+              - int
+            * - ``optuna.Trial.suggest_float``
+              - float
 
         .. warning::
             Functions that are marked as deprecated by Optuna are *not* included in this
@@ -171,6 +179,8 @@ class OptunaPlugin(hlp.Plugin):
             name: a parameter name
             **kwargs: keyword arguments to the corresponding suggest function.
 
+        Raises:
+            KeyError: if the value passed in to ``type_name`` is not recognised.
         """
         if type_name not in ("categorical", "float", "int"):
             raise KeyError(f"error: {type_name} is not a valid suggestion type.")

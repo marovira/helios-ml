@@ -378,3 +378,25 @@ the primary process. Once that's done, we just need to add the following to our
 
         metrics = trainer.queue.get()
         return metrics["accuracy"]
+
+Generic Suggestion of Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The plug-in comes equipped with a function that wraps the ``suggest_`` family of functions
+from the :py:class:`optuna.Trial` instance it holds. This function is designed to allow
+the suggestion of parameters to be controlled by an outside source (such as command line
+arguments or a config file). The goal is to allow code re-usability by not having the
+parameters be hard-coded. The function is called
+:py:meth:`~helios.plugins.optuna.OptunaPlugin.suggest` and can be used as follows:
+
+.. code-block:: python
+
+   def objective(trial: optuna.Trial) -> float:
+        val1 = plugin.suggest("categorical", "val1", choices=[1, 2, 3])
+        val2 = plugin.suggest("float", "val2", low=0, high=1, log=True)
+
+The exact arguments for each ``suggest_`` function can be found `here
+<https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html#optuna.trial.Trial.suggest_categorical>`__.
+
+.. warning::
+   The plug-in does *not* provide wrappers for any function that is marked as deprecated.
