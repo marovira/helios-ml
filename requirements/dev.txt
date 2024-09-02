@@ -4,9 +4,11 @@ build>=1.2.1
 furo>=2024.5.6
 matplotlib>=3.8.4
 mypy>=1.8.0
-onnx>=1.16.0
-onnxruntime>=1.17.1
-opencv-python>=4.9.0.80
+numpy
+numpy<2.0.0; sys_platform=='win32'
+onnx>=1.16.1
+onnxruntime>=1.19.0
+opencv-python>=4.10.0.84
 optuna>=3.6.1
 pre-commit>=3.6.2
 pytest>=8.1.1
@@ -14,8 +16,8 @@ ruff>=0.3.4
 sphinx-autoapi>=3.1.1
 sphinx>=7.3.7
 tensorboard>=2.17.1
-torch>=2.2.1
-torchvision>=0.17.1
+torch>=2.4.0
+torchvision>=0.19.0
 tqdm>=4.66.2
 twine>=5.0.0
 types-Pillow>=10.2.0.20240311
