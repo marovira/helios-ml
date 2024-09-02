@@ -103,7 +103,7 @@ class TrainingState:
 
 def register_trainer_types_for_safe_load() -> None:
     """Register trainer types for safe loading."""
-    core.add_safe_torch_serialization_globals([TrainingState])
+    torch.serialization.add_safe_globals([TrainingState, pathlib.Path])
 
 
 def find_last_checkpoint(root: pathlib.Path | None) -> pathlib.Path | None:
@@ -824,7 +824,7 @@ class Trainer:
 
         state_dict: dict[str, typing.Any] = {}
         state_dict["version"] = __version__
-        state_dict["training_state"] = state.dict()
+        state_dict["training_state"] = state
         state_dict["model"] = self.model.state_dict()
         state_dict["rng"] = rng.get_rng_state_dict()
 
@@ -875,7 +875,7 @@ class Trainer:
         if not skip_rng:
             rng.load_rng_state_dict(state_dict["rng"])
         self.model.load_state_dict(state_dict["model"], fast_init=model_fast_init)
-        return TrainingState(**state_dict["training_state"])
+        return state_dict["training_state"]
 
     def _train_on_iteration(self, state: TrainingState) -> None:
         """

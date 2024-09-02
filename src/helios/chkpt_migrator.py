@@ -8,7 +8,7 @@ import tqdm
 from helios import core
 
 from ._version import __version__
-from .trainer import register_trainer_types_for_safe_load
+from .trainer import TrainingState, register_trainer_types_for_safe_load
 
 
 def migrate_checkpoints_to_current_version(root: pathlib.Path) -> None:
@@ -31,6 +31,11 @@ def migrate_checkpoints_to_current_version(root: pathlib.Path) -> None:
         # Pre-v1.0, checkpoints didn't have a version key.
         if "version" not in state:
             state["version"] = __version__
+
+        # Pre-v1.1, the TrainingState struct is saved as a dictionary, not the object
+        # itself.
+        if isinstance(state["training_state"], dict):
+            state["training_state"] = TrainingState(**state["training_state"])
 
         torch.save(state, chkpt_path)
 

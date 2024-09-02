@@ -1,5 +1,6 @@
 import copy
 import pathlib
+import pickle
 import typing
 
 import numpy as np
@@ -386,6 +387,23 @@ class TestTrainingUnit:
 
 
 class TestTrainer:
+    def test_register_types(self, tmp_path: pathlib.Path) -> None:
+        test_dict = {"state": hlt.TrainingState(), "path": pathlib.Path}
+        out_path = tmp_path / "register.pth"
+        torch.save(test_dict, out_path)
+
+        torch.serialization.clear_safe_globals()
+        with pytest.raises(pickle.UnpicklingError):
+            hlc.safe_torch_load(out_path)
+
+        hlt.register_trainer_types_for_safe_load()
+        reg_types = torch.serialization.get_safe_globals()
+        exp_types = [hlt.TrainingState, pathlib.Path]
+        assert reg_types == exp_types
+
+        ret_dict = hlc.safe_torch_load(out_path)
+        assert test_dict == ret_dict
+
     def test_find_chkpt(self, tmp_path: pathlib.Path) -> None:
         test_cases = [
             (tmp_path / "test_epoch_1_iter_10.pth", True),
