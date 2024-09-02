@@ -95,14 +95,6 @@ class TestUtils:
         assert len(rt.FUNC_REGISTRY.keys()) == 2
         assert all(var in rt.FUNC_REGISTRY for var in ("foo", "bar"))
 
-    def test_add_safe_torch_serialization_globals(self) -> None:
-        torch.serialization.clear_safe_globals()
-        core.add_safe_torch_serialization_globals([SafeType])
-        safe_globals = torch.serialization.get_safe_globals()
-        assert len(safe_globals) == 1
-        assert safe_globals[0] == SafeType
-        torch.serialization.clear_safe_globals()
-
     def test_safe_torch_load(self, tmp_path: pathlib.Path) -> None:
         out_file = tmp_path / "safe.pth"
         base_dict = {"a": 1, "b": "foo", "c": SafeType(2, "bar")}
@@ -114,7 +106,7 @@ class TestUtils:
 
         # Now register the type and loading should pass.
         torch.serialization.clear_safe_globals()
-        core.add_safe_torch_serialization_globals([SafeType])
+        torch.serialization.add_safe_globals([SafeType])
         ret_dict = core.safe_torch_load(out_file)
         assert base_dict == ret_dict
         torch.serialization.clear_safe_globals()

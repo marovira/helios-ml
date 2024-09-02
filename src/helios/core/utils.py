@@ -450,24 +450,6 @@ def update_all_registries(
         importlib.import_module(module)
 
 
-def add_safe_torch_serialization_globals(safe_globals: list[typing.Any]) -> None:
-    """
-    Mark the given globals as safe for :code:`weights_only` to load.
-
-    For example, functions added to this list can be called during unpickling, classes
-    could be instantiated and have state set.
-
-    .. note::
-        This function will *only* register the given globals if the installed version of
-        PyTorch is 2.4.0 or greater. If the version is lower, no action is performed.
-
-    Args:
-        safe_globals: list of globals to mark as safe.
-
-    """
-    torch.serialization.add_safe_globals(safe_globals)
-
-
 def safe_torch_load(
     f: str | os.PathLike | typing.BinaryIO | typing.IO[bytes],
     **kwargs: typing.Any,
@@ -475,17 +457,17 @@ def safe_torch_load(
     """
     Wrap :code:`torch.load` to handle safe loading.
 
-    This function will automatically set :code:`weights_only` to true if the PyTorch
-    version is at least 2.4.0. You are encouraged to use this function instead of the
-    plain :code:`torch.load` to ensure safe loading is maintained across PyTorch versions.
+    This function will automatically set :code:`weights_only` to true when calling
+    ``torch.load``. You are encouraged to use this function instead of the plain
+    :code:`torch.load` to ensure safe loading.
 
     .. warning::
-        :code:`weights_only` is set automatically by this function. **Do not** set this
+        :code:`weights_only` is set automatically by this function. **do not** set this
         value yourself when using this function.
 
-    Args:
+    args:
         f: a file-like object (has to implement ``read()``, ``readline()``, ``tell()``,
-            and ``seek()``), or a string or a ``os.PathLike`` object containing a file
+            and ``seek()``), or a string or a ``os.pathlike`` object containing a file
             name.
         **kwargs: keyword arguments to pass to :code:`torch.load`.
 
