@@ -51,9 +51,9 @@ By default, the registry contains the following plug-ins:
 
     * - Plugin
       - Name
-    * - helios.plugins.CUDAPlugin
+    * - :py:class:`helios.plugins.plugin.CUDAPlugin`
       - CUDAPlugin
-    * - helios.plugins.optuna.OptunaPlugin
+    * - :py:class:`helios.plugins.optuna.OptunaPlugin`
       - OptunaPlugin
 
 .. note::
