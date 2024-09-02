@@ -37,7 +37,7 @@ jobs:
       - name: Cache virtualenv
         uses: actions/cache@v4
         with:
-          key: venv_${{ matrix.os }}_py-${{ matrix.python-version }}_${{ hashFiles('requirements/ci.txt') }}
+          key: venv_${{ matrix.os }}_py-${{ steps.setup_python.outputs.python-version }}_${{ hashFiles('requirements/ci.txt') }}
           path: venv
 
       - name: Install dependencies
