@@ -451,7 +451,6 @@ class Trainer:
             datamodule: the datamodule to use.
             mode:: the operation to perform.
         """
-        register_trainer_types_for_safe_load()
         datamodule.prepare_data()
 
         if self._is_distributed and not self._is_torchrun:
@@ -594,6 +593,7 @@ class Trainer:
         the registries from being empty if distributed training is launched through spawn
         (note that ``torchrun`` doesn't have this problem).
         """
+        register_trainer_types_for_safe_load()
         rng.seed_rngs(self._random_seed)
         torch.use_deterministic_algorithms(self._enable_deterministic)
 
