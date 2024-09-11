@@ -1,0 +1,389 @@
+helios.plugins.plugin
+=====================
+
+.. py:module:: helios.plugins.plugin
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   helios.plugins.plugin.PLUGIN_REGISTRY
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.plugins.plugin.UniquePluginOverrides
+   helios.plugins.plugin.Plugin
+   helios.plugins.plugin.CUDAPlugin
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.plugins.plugin.create_plugin
+
+
+Module Contents
+---------------
+
+.. py:class:: UniquePluginOverrides
+
+   Set of flags that determine the unique overrides a plug-in can have.
+
+   In order to avoid conflicts, two plug-ins should *not* be able to perform the same
+   action twice. For example, it shouldn't be possible to have two distinct plug-ins
+   perform processing on the training batch as that would cause undefined behaviour. This
+   structure therefore holds all the possible overrides a plug-in might have that
+   **must** remain unique.
+
+   :param training_batch: if true, the plug-in performs processing on the training batch.
+   :param validation_batch: if true, the plug-in performs processing on the validation
+                            batch.
+   :param testing_batch: if true, the plug-in performs processing on the testing batch.
+   :param should_training_stop: if true, the plug-in can arbitrarily stop training.
+
+
+   .. py:attribute:: training_batch
+      :type:  bool
+      :value: False
+
+
+
+   .. py:attribute:: validation_batch
+      :type:  bool
+      :value: False
+
+
+
+   .. py:attribute:: testing_batch
+      :type:  bool
+      :value: False
+
+
+
+   .. py:attribute:: should_training_stop
+      :type:  bool
+      :value: False
+
+
+
+.. py:data:: PLUGIN_REGISTRY
+
+   Global instance of the registry for plug-ins.
+
+   By default, the registry contains the following plug-ins:
+
+   .. list-table:: Schedulers
+       :header-rows: 1
+
+       * - Plugin
+         - Name
+       * - :py:class:`helios.plugins.plugin.CUDAPlugin`
+         - CUDAPlugin
+       * - :py:class:`helios.plugins.optuna.OptunaPlugin`
+         - OptunaPlugin
+
+   .. note::
+       The :py:class:`~helios.plugins.optuna.OptunaPlugin` is only registered if the module
+       is imported somewhere in the code. Otherwise it won't be registered.
+
+   .. rubric:: Example
+
+   .. code-block:: python
+
+       import helios.plug-ins as hlp
+
+       # This automatically registers your plug-in
+       @hlp.PLUGIN_REGISTRY
+       class MyPlugin(hlp.Plugin):
+           ...
+
+       # Alternatively, you can manually register a plug-in like this:
+       hlp.PLUGIN_REGISTRY.register(MyPlugin)
+
+.. py:function:: create_plugin(type_name: str, *args: Any, **kwargs: Any) -> Plugin
+
+   Create the plug-in for the given type.
+
+   :param type_name: the type of the plug-in to create.
+   :param args: positional arguments to pass into the plug-in.
+   :param kwargs: keyword arguments to pass into the plug-in.
+
+   :returns: The plug-in.
+
+
+.. py:class:: Plugin(plug_id: str)
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Base class for plug-ins that extend the functionality of the Helios trainer.
+
+   You can use this class to customize the behaviour of training to achieve a variety of
+   objectives.
+   The plug-ins have a similar API to the :py:class:`~helios.model.model.Model` class.
+   The only major difference is that the plug-in functions are called *before* the
+   corresponding model functions, providing the ability to override the model if
+   necessary.
+
+   :param plug_id: the string with which the plug-in will be registered in the trainer
+                   plug-in table.
+
+
+   .. py:property:: unique_overrides
+      :type: UniquePluginOverrides
+
+      The set of unique overrides the plug-in uses.
+
+
+   .. py:property:: is_distributed
+      :type: bool
+
+      Flag controlling whether distributed training is being used or not.
+
+
+   .. py:property:: map_loc
+      :type: str | dict[str, str]
+
+      The location to map loaded weights from a checkpoint or pre-trained file.
+
+
+   .. py:property:: device
+      :type: torch.device
+
+      The device on which the plug-in is running.
+
+
+   .. py:property:: rank
+      :type: int
+
+      The local rank (device id) that the plug-in is running on.
+
+
+   .. py:property:: trainer
+      :type: helios.trainer.Trainer
+
+      Reference to the trainer.
+
+
+   .. py:method:: configure_trainer(trainer: helios.trainer.Trainer) -> None
+
+      Configure the trainer before training or testing.
+
+      This function can be used to set certain properties of the trainer. For example,
+      it can be used to assign valid exceptions that the plug-in requires or to register
+      the plug-in itself in the trainer.
+
+      :param trainer: the trainer instance.
+
+
+
+   .. py:method:: configure_model(model: helios.model.Model) -> None
+
+      Configure the model before training or testing.
+
+      This function can be used to set certain properties of the model. For example, it
+      can be used to override the save name of the model.
+
+
+
+   .. py:method:: setup() -> None
+      :abstractmethod:
+
+
+      Construct all required state for the plug-in.
+
+
+
+   .. py:method:: on_training_start() -> None
+
+      Perform any necessary actions when training starts.
+
+
+
+   .. py:method:: process_training_batch(batch: Any, state: helios.trainer.TrainingState) -> Any
+
+      Process the training batch.
+
+      This function can be used to perform any processing on the training batch *prior*
+      to the call to :py:meth:`~helios.model.model.Model.train_step`. For example, this
+      can be used to filter out elements in a batch to reduce its size, or it can be
+      used to move all elements in the batch to a set device.
+
+      :param batch: the batch data returned from the dataset.
+      :param state: the current training state.
+
+
+
+   .. py:method:: on_training_end() -> None
+
+      Perform any necessary actions when training ends.
+
+
+
+   .. py:method:: on_validation_start(validation_cycle: int) -> None
+
+      Perform any necessary actions when validation starts.
+
+      :param validation_cycle: the validation cycle number.
+
+
+
+   .. py:method:: process_validation_batch(batch: Any, step: int) -> Any
+
+      Process the validation batch.
+
+      This function can be used to perform any processing on the validation batch
+      *prior* to the call to :py:meth:`~helios.model.model.Model.valid_step`. For
+      example, this can be used to filter out elements in a batch to reduce its size,
+      or it can be used to move all elements in the batch to a set device.
+
+      :param batch: the batch data returned from the dataset.
+      :param step: the current validation batch.
+
+
+
+   .. py:method:: on_validation_end(validation_cycle: int) -> None
+
+      Perform any necessary actions when validation ends.
+
+      :param validation_cycle: the validation cycle number
+
+
+
+   .. py:method:: should_training_stop() -> bool
+
+      Determine whether training should stop or continue.
+
+      :returns: False if training should continue, true otherwise.
+
+
+
+   .. py:method:: on_testing_start() -> None
+
+      Perform any actions when testing starts.
+
+
+
+   .. py:method:: process_testing_batch(batch: Any, step: int) -> Any
+
+      Process the testing batch.
+
+      This function can be used to perform any processing on the testing batch
+      *prior* to the call to :py:meth:`~helios.model.model.Model.test_step`. For
+      example, this can be used to filter out elements in a batch to reduce its size,
+      or it can be used to move all elements in the batch to a set device.
+
+      :param batch: the batch data returned from the dataset.
+      :param step: the current testing batch number.
+
+
+
+   .. py:method:: on_testing_end() -> None
+
+      Perform any necessary actions when testing ends.
+
+
+
+.. py:class:: CUDAPlugin
+
+   Bases: :py:obj:`Plugin`
+
+
+   Plug-in to move elements of a training batch to a GPU.
+
+   This plug-in can be used to move the elements of a training batch to the currently
+   selected device automatically *prior* to the call to
+   :py:meth:`~helios.model.model.Model.train_step`. The device is automatically assigned
+   by the :py:class:`helios.trainer.Trainer` when training or testing starts.
+
+   In order to cover the largest possible number of structures, the plug-in can handle
+   the following containers:
+
+   #. Single tensors
+   #. Lists. Note that the elements of the list need not all be tensors. If any
+      tensors are present, they are automatically moved to the device.
+   #. Dictionaries. Similar to the list, not all the elements of the dictionary have
+      to be tensors. Any tensors are detected automatically.
+
+   .. warning::
+       The plug-in is **not** designed to work with nested structures. In other words, if
+       a list of dictionaries is passed in, the plug-in **will not** recognise any
+       tensors contained inside the dictionary. Similarly, if a dictionary contains
+       nested dictionaries (or any other container), the plug-in won't recognise them.
+
+   .. warning::
+       The use of this plug-in **requires** CUDA being enabled. If CUDA is not present,
+       an exception is raised.
+
+   .. note::
+       If you require custom handling for your specific data types, you can override the
+       behaviour of the plug-in by deriving from it. See the example below for details.
+
+       Example:
+           .. code-block:: python
+
+               import helios.plug-ins as hlp
+
+               class MyCUDAPlugin(hlp.CUDAPlugin):
+                   def _move_collection_to_device(self, batch: <your-type>):
+                       # Suppose our batch is a list:
+                       for i in range(len(batch)):
+                           batch[i] = batch[i].to(self.device)
+
+
+   .. py:attribute:: plugin_id
+      :value: 'cuda'
+
+
+
+   .. py:method:: setup() -> None
+
+      No-op setup function.
+
+
+
+   .. py:method:: configure_trainer(trainer: helios.trainer.Trainer) -> None
+
+      Register the plug-in instance into the trainer.
+
+      The plug-in will be registered under the name ``cuda``.
+
+      :param trainer: the trainer instance.
+
+
+
+   .. py:method:: process_training_batch(batch: Any, state: helios.trainer.TrainingState) -> Any
+
+      Move the training batch to the GPU.
+
+      :param batch: the batch returned by the training dataset.
+      :param state: the current training state.
+
+
+
+   .. py:method:: process_validation_batch(batch: Any, step: int) -> Any
+
+      Move the validation batch to the GPU.
+
+      :param batch: the batch returned by the training dataset.
+      :param state: the current training state.
+
+
+
+   .. py:method:: process_testing_batch(batch: Any, step: int) -> Any
+
+      Move the testing batch to the GPU.
+
+      :param batch: the batch returned by the training dataset.
+      :param state: the current training state.
+
+
+

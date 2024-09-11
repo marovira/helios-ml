@@ -1,0 +1,23 @@
+helios.plugins
+==============
+
+.. py:module:: helios.plugins
+
+.. autoapi-nested-parse::
+
+   Plugin package for Helios.
+
+   This contains the classes, utilities, and registries related to plugins.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/helios/plugins/optuna/index
+   /autoapi/helios/plugins/plugin/index
+
+

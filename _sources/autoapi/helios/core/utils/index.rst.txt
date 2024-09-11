@@ -32,6 +32,7 @@ Functions
    helios.core.utils.get_from_optional
    helios.core.utils.convert_to_list
    helios.core.utils.update_all_registries
+   helios.core.utils.safe_torch_load
 
 
 Module Contents
@@ -133,7 +134,7 @@ Module Contents
 
 
 
-   .. py:method:: __exit__(exc_type, exc_value, exc_traceback) -> None
+   .. py:method:: __exit__(exc_type: type[Exception] | None, exc_value: Exception | None, exc_traceback: types.TracebackType | None) -> None
 
       Restores the previous working directory.
 
@@ -304,5 +305,25 @@ Module Contents
 
    :raises RuntimeError: if the given path isn't a valid directory or if the directory is not
        Python package with ``__init__.py``.
+
+
+.. py:function:: safe_torch_load(f: str | os.PathLike | BinaryIO | IO[bytes], **kwargs: Any) -> Any
+
+   Wrap :code:`torch.load` to handle safe loading.
+
+   This function will automatically set :code:`weights_only` to true when calling
+   ``torch.load``. You are encouraged to use this function instead of the plain
+   :code:`torch.load` to ensure safe loading.
+
+   .. warning::
+       :code:`weights_only` is set automatically by this function. **do not** set this
+       value yourself when using this function.
+
+   :param f: a file-like object (has to implement ``read()``, ``readline()``, ``tell()``,
+             and ``seek()``), or a string or a ``os.pathlike`` object containing a file
+             name.
+   :param \*\*kwargs: keyword arguments to pass to :code:`torch.load`.
+
+   :returns: The result of calling :code:`torch.load`.
 
 

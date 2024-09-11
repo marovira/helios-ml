@@ -22,6 +22,7 @@ Subpackages
    /autoapi/helios/model/index
    /autoapi/helios/nn/index
    /autoapi/helios/optim/index
+   /autoapi/helios/plugins/index
    /autoapi/helios/scheduler/index
 
 

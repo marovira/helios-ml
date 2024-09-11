@@ -34,31 +34,31 @@ Module Contents
 
        * - Optimizer
          - Name
-       * - torch.optim.Adadelta
+       * - ``torch.optim.Adadelta``
          - Adadelta
-       * - torch.optim.Adagrad
+       * - ``torch.optim.Adagrad``
          - Adagrad
-       * - torch.optim.Adam
+       * - ``torch.optim.Adam``
          - Adam
-       * - torch.optim.AdamW
+       * - ``torch.optim.AdamW``
          - AdamW
-       * - torch.optim.SparseAdam
+       * - ``torch.optim.SparseAdam``
          - SparseAdam
-       * - torch.optim.Adamax
+       * - ``torch.optim.Adamax``
          - Adamax
-       * - torch.optim.ASGD
+       * - ``torch.optim.ASGD``
          - ASGD
-       * - torch.optim.LBFGS
+       * - ``torch.optim.LBFGS``
          - LBFGS
-       * - torch.optim.NAdam
+       * - ``torch.optim.NAdam``
          - NAdam
-       * - torch.optim.RAdam
+       * - ``torch.optim.RAdam``
          - RAdam
-       * - torch.optim.RMSprop
+       * - ``torch.optim.RMSprop``
          - RMSprop
-       * - torch.optim.Rprop
+       * - ``torch.optim.Rprop``
          - Rprop
-       * - torch.optim.SGD
+       * - ``torch.optim.SGD``
          - SGD
 
    .. rubric:: Example

@@ -32,39 +32,39 @@ Module Contents
    .. list-table:: Schedulers
        :header-rows: 1
 
-       * - Optimizer
+       * - Scheduler
          - Name
-       * - torch.optim.lr_scheduler.LambdaLR
+       * - ``torch.optim.lr_scheduler.LambdaLR``
          - LambdaLR
-       * - torch.optim.lr_scheduler.MultiplicativeLR
+       * - ``torch.optim.lr_scheduler.MultiplicativeLR``
          - MultiplicativeLR
-       * - torch.optim.lr_scheduler.StepLR
+       * - ``torch.optim.lr_scheduler.StepLR``
          - StepLR
-       * - torch.optim.lr_scheduler.MultiStepLR
+       * - ``torch.optim.lr_scheduler.MultiStepLR``
          - MultiStepLR
-       * - torch.optim.lr_scheduler.ConstantLR
+       * - ``torch.optim.lr_scheduler.ConstantLR``
          - ConstantLR
-       * - torch.optim.lr_scheduler.LinearLR
+       * - ``torch.optim.lr_scheduler.LinearLR``
          - LinearLR
-       * - torch.optim.lr_scheduler.ExponentialLR
+       * - ``torch.optim.lr_scheduler.ExponentialLR``
          - ExponentialLR
-       * - torch.optim.lr_scheduler.PolynomialLR
+       * - ``torch.optim.lr_scheduler.PolynomialLR``
          - PolynomialLR
-       * - torch.optim.lr_scheduler.CosineAnnealingLR
+       * - ``torch.optim.lr_scheduler.CosineAnnealingLR``
          - CosineAnnealingLR
-       * - torch.optim.lr_scheduler.SequentialLR
+       * - ``torch.optim.lr_scheduler.SequentialLR``
          - SequentialLR
-       * - torch.optim.lr_scheduler.ReduceLROnPlateau
+       * - ``torch.optim.lr_scheduler.ReduceLROnPlateau``
          - ReduceLROnPlateau
-       * - torch.optim.lr_scheduler.CyclicLR
+       * - ``torch.optim.lr_scheduler.CyclicLR``
          - CyclicLR
-       * - torch.optim.lr_scheduler.OneCycleLR
+       * - ``torch.optim.lr_scheduler.OneCycleLR``
          - OneCycleLR
-       * - torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+       * - ``torch.optim.lr_scheduler.CosineAnnealingWarmRestarts``
          - CosineAnnealingWarmRestarts
-       * - helios.scheduler.CosineAnnealingRestartLR
+       * - :py:class:`helios.scheduler.schedulers.CosineAnnealingRestartLR`
          - CosineAnnealingRestartLR
-       * - helios.scheduler.MultiStepRestartLR
+       * - :py:class:`helios.scheduler.schedulers.MultiStepRestartLR`
          - MultiStepRestartLR
 
    .. rubric:: Example

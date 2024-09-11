@@ -19,6 +19,8 @@ Functions
 
 .. autoapisummary::
 
+   helios.trainer.get_trainer_safe_types_for_load
+   helios.trainer.register_trainer_types_for_safe_load
    helios.trainer.find_last_checkpoint
 
 
@@ -127,6 +129,18 @@ Module Contents
    .. py:attribute:: dict
 
 
+.. py:function:: get_trainer_safe_types_for_load() -> list[type]
+
+   Return the list of safe types for loading needed by the trainer.
+
+   :returns: The list of types that need to be registered for safe loading.
+
+
+.. py:function:: register_trainer_types_for_safe_load() -> None
+
+   Register trainer types for safe loading.
+
+
 .. py:function:: find_last_checkpoint(root: pathlib.Path | None) -> pathlib.Path | None
 
    Find the last saved checkpoint (if available).
@@ -206,6 +220,34 @@ Module Contents
       :type: list[int]
 
       Return the list of GPU IDs to use for training.
+
+
+   .. py:property:: train_exceptions
+      :type: list[type[Exception]]
+
+      Return the list of valid exceptions for training.
+
+
+   .. py:property:: test_exceptions
+      :type: list[type[Exception]]
+
+      Return the list of valid exceptions for testing.
+
+
+   .. py:property:: plugins
+      :type: dict[str, helios.plugins.Plugin]
+
+      Return the list of plug-ins.
+
+
+   .. py:property:: queue
+      :type: torch.multiprocessing.Queue | None
+
+      Return the multi-processing queue instance.
+
+      .. note::
+          If training isn't distributed or if `torchrun`, then `None` is returned
+          instead.
 
 
    .. py:method:: fit(model: helios.model.Model, datamodule: helios.data.DataModule) -> None

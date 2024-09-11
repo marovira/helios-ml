@@ -13,6 +13,7 @@ Welcome to Helios's documentation!
    getting-started
    tutorial
    quick-ref
+   plugins
 
 
 .. include:: ../../README.rst

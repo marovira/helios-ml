@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API Reference" href="autoapi/index.html" /><link rel="prev" title="Training a Classifier with Helios" href="tutorial.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Plug-Ins" href="plugins.html" /><link rel="prev" title="Training a Classifier with Helios" href="tutorial.html" />
 
     <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>Quick Reference - Helios documentation</title>
@@ -219,6 +219,7 @@
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plug-Ins</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/helios/index.html">helios</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -260,7 +261,12 @@
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/plugins/plugin/index.html">helios.plugins.plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -886,7 +892,7 @@ following code:</p>
 <section id="testing-functions">
 <h3>Testing Functions<a class="headerlink" href="#testing-functions" title="Link to this heading">¶</a></h3>
 <p>The order of the testing functions is identical to the one shown for validation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 <span class="n">model</span><span class="o">.</span><span class="n">on_testing_start</span><span class="p">()</span>
      <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
          <span class="n">model</span><span class="o">.</span><span class="n">on_testing_batch_start</span><span class="p">()</span>
@@ -898,6 +904,63 @@ following code:</p>
 </div>
 </section>
 </section>
+<section id="exception-handling">
+<h2>Exception Handling<a class="headerlink" href="#exception-handling" title="Link to this heading">¶</a></h2>
+<p>By default, the main functions of <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> (those being
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.fit" title="helios.trainer.Trainer.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a> and <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.test" title="helios.trainer.Trainer.test"><code class="xref py py-meth docutils literal notranslate"><span class="pre">test()</span></code></a>) will
+automatically catch any unhandled exceptions and re-raise them as
+<code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code>. Depending on the situation, it may be desirable for certain
+exceptions to be passed through untouched. In order to accommodate this, the trainer has
+two sets of lists of exception types:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.train_exceptions" title="helios.trainer.Trainer.train_exceptions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">train_exceptions</span></code></a> and</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.test_exceptions" title="helios.trainer.Trainer.test_exceptions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">test_exceptions</span></code></a>.</p></li>
+</ul>
+<p>If an exception is raised and said exception is found in the training list (for
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.fit" title="helios.trainer.Trainer.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>) or testing list (for
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.test" title="helios.trainer.Trainer.test"><code class="xref py py-meth docutils literal notranslate"><span class="pre">test()</span></code></a>), then the exception is passed through unchanged.
+Any other exceptions use the default behaviour.</p>
+<p>For example, suppose we had a custom exception called <code class="docutils literal notranslate"><span class="pre">MyException</span></code> and we wanted that
+exception to be passed through when training because we’re going to handle it ourselves.
+We would then do the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.trainer</span> <span class="k">as</span> <span class="nn">hlt</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">hlt</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">train_esceptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MyException</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">MyException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>The same logic applies for testing. This functionality is particularly useful when paired
+with plug-ins.</p>
+</section>
+<section id="synchronization">
+<h2>Synchronization<a class="headerlink" href="#synchronization" title="Link to this heading">¶</a></h2>
+<p>Helios provides some synchronization wrappers found in the
+<a class="reference internal" href="autoapi/helios/core/distributed/index.html#module-helios.core.distributed" title="helios.core.distributed"><code class="xref py py-mod docutils literal notranslate"><span class="pre">distributed</span></code></a> module:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="autoapi/helios/core/distributed/index.html#helios.core.distributed.gather_into_tensor" title="helios.core.distributed.gather_into_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">gather_into_tensor()</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/core/distributed/index.html#helios.core.distributed.all_reduce_tensors" title="helios.core.distributed.all_reduce_tensors"><code class="xref py py-func docutils literal notranslate"><span class="pre">all_reduce_tensors()</span></code></a>.</p></li>
+</ul>
+<p>The trainer also provides another way to synchronize values through the multi-processing
+queue. When using distributed training that isn’t through <code class="docutils literal notranslate"><span class="pre">torchrun</span></code>, Helios uses
+<code class="docutils literal notranslate"><span class="pre">spawn</span></code> to create the processes for each GPU. This triggers a copy of the arguments
+passed in to the handler, which in this case are the trainer, model, and datamodule. This
+presents a problem in the event that we need to return values back to the main process
+once training is complete. To facilitate this task, the trainer will create a <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue">queue</a> that can
+be accessed through <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.queue" title="helios.trainer.Trainer.queue"><code class="xref py py-attr docutils literal notranslate"><span class="pre">queue</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If training isn’t distributed or if it was started through <code class="docutils literal notranslate"><span class="pre">torchrun</span></code>, then the
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.queue" title="helios.trainer.Trainer.queue"><code class="xref py py-attr docutils literal notranslate"><span class="pre">queue</span></code></a> is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</div>
+<p>The queue can then be used by either the <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, the
+<a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule" title="helios.data.datamodule.DataModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataModule</span></code></a>, or any plug-in through their reference to
+the trainer.</p>
+</section>
 </section>
 
         </article>
@@ -905,12 +968,12 @@ following code:</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="autoapi/index.html">
+          <a class="next-page" href="plugins.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">API Reference</div>
+                <div class="title">Plug-Ins</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -995,6 +1058,8 @@ following code:</p>
 <li><a class="reference internal" href="#testing-functions">Testing Functions</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#exception-handling">Exception Handling</a></li>
+<li><a class="reference internal" href="#synchronization">Synchronization</a></li>
 </ul>
 </li>
 </ul>

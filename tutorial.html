@@ -219,6 +219,7 @@
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plug-Ins</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/helios/index.html">helios</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -260,7 +261,12 @@
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a></li>
+<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/plugins/plugin/index.html">helios.plugins.plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -446,15 +452,7 @@ deep-copied to avoid conflicts.</p></li>
 <p>With the datasets ready, we can now turn our attention to the network. The code will be
 identical to the one from PyTorch so we won’t explain any details.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Net</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Example image classifier.</span>
-
-<span class="sd">    The code is taken from PyTorch&#39;s Training a Classifier tutorial:</span>
-<span class="sd">    https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the classifier.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -464,7 +462,6 @@ identical to the one from PyTorch so we won’t explain any details.</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">fc3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">84</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the label for the given image.&quot;&quot;&quot;</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># flatten all dimensions except batch</span>
@@ -488,20 +485,10 @@ necessary members for training. In our case, we need:</p>
 <p>Following the tutorial, we’ll use <code class="docutils literal notranslate"><span class="pre">SGD</span></code> for our optimizer and <code class="docutils literal notranslate"><span class="pre">CrossEntropyLoss</span></code> for
 our loss function. The could would be as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ClassifierModel</span><span class="p">(</span><span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Example model class for training the classifier.</span>
-
-<span class="sd">    Here you can see how to setup the model class and some of the basic functionality that</span>
-<span class="sd">    is available. The code is adapted from PyTorch&#39;s &quot;Training a Classifier&quot; tutorial:</span>
-<span class="sd">    https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the model.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;classifier&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the network, loss, and optimizer.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_net</span> <span class="o">=</span> <span class="n">Net</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
 
@@ -578,13 +565,11 @@ do this, we need to override <a class="reference internal" href="autoapi/helios/
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Restore the model from a saved checkpoint.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;net&quot;</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;criterion&quot;</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;optimizer&quot;</span><span class="p">])</span>
 
 <span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the state dict of the model.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;net&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
         <span class="s2">&quot;criterion&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
@@ -611,14 +596,12 @@ final value of the loss function.</p></li>
 </ul>
 <p>To start, let’s add the code to switch our network into training mode:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the model to train.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Next, lets add the code to trace. Since we only need to do this once when training begins,
 we’re going to use <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_start" title="helios.model.model.Model.on_training_start"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_start()</span></code></a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_training_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform steps before training starts.&quot;&quot;&quot;</span>
     <span class="n">tb_logger</span> <span class="o">=</span> <span class="n">hlc</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">get_tensorboard_writer</span><span class="p">())</span>
 
     <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">))</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
@@ -641,7 +624,6 @@ that the provided value is not <code class="docutils literal notranslate"><span 
 identifies. Now to add the forward and backward passes. These are going to be kept in
 <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.train_step" title="helios.model.model.Model.train_step"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train_step()</span></code></a>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">hlt</span><span class="o">.</span><span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Forward and backward training passes.&quot;&quot;&quot;</span>
     <span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>
     <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
@@ -676,13 +658,6 @@ training.</p></li>
     <span class="n">state</span><span class="p">:</span> <span class="n">hlt</span><span class="o">.</span><span class="n">TrainingState</span><span class="p">,</span>
     <span class="n">should_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Perform steps after the training batch.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        state (pyt.TrainingState): the current training state.</span>
-<span class="sd">        should_log (bool): if true, then writing to the log should be performed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_training_batch_end</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">should_log</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">should_log</span><span class="p">:</span>
@@ -760,7 +735,6 @@ event that the trainer is created with Tensorboard logging disabled,
 <p>Now that we have logged the training losses, let’s add the code to log the final
 validation result as well as the final loss value.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_training_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform steps after training ends.&quot;&quot;&quot;</span>
     <span class="n">total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span>
     <span class="n">correct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;correct&quot;</span><span class="p">]</span>
     <span class="n">accuracy</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">correct</span> <span class="o">//</span> <span class="n">total</span>
@@ -781,7 +755,6 @@ self-explanatory: we compute the final accuracy and then log it to the Tensorboa
 testing. In our example, we want to perform validation, so let’s first add a function to
 switch our network to evaluation mode:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the model to eval.&quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -790,7 +763,6 @@ similar to the one we used earlier for loss values. In our example, we need to k
 of the number of labels we have seen, and how many of those labels have been correct. To
 do this, we’re going to assign these fields before validation starts:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_validation_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform steps on validation start.&quot;&quot;&quot;</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_validation_start</span><span class="p">(</span><span class="n">validation_cycle</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -802,7 +774,6 @@ automatically clears out the <code class="docutils literal notranslate"><span cl
 over-write or overlap values. After setting the fields we care about, let’s perform the
 validation step:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">valid_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform the validation step.&quot;&quot;&quot;</span>
     <span class="n">images</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>
     <span class="n">images</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
@@ -822,7 +793,6 @@ PyTorch tutorial, with the only difference that we assign the results to the fie
 added before validation began.</p>
 <p>Finally, we need to compute the final accuracy score and log it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform steps after validation ends.&quot;&quot;&quot;</span>
     <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
     <span class="n">tb_logger</span> <span class="o">=</span> <span class="n">hlc</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">get_tensorboard_writer</span><span class="p">())</span>
 

@@ -219,6 +219,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../getting-started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plugins.html">Plug-Ins</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">helios</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">helios.core</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
@@ -260,7 +261,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../../optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/optuna/index.html">helios.plugins.optuna</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/plugin/index.html">helios.plugins.plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -363,6 +369,9 @@
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#helios.core.utils.update_all_registries" title="helios.core.utils.update_all_registries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_all_registries</span></code></a>(→ None)</p></td>
 <td><p>Ensure all registered types get added to their corresponding registries.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.core.utils.safe_torch_load" title="helios.core.utils.safe_torch_load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_torch_load</span></code></a>(→ Any)</p></td>
+<td><p>Wrap <code class="code docutils literal notranslate"><span class="pre">torch.load</span></code> to handle safe loading.</p></td>
 </tr>
 </tbody>
 </table>
@@ -488,7 +497,7 @@ the original working directory is restored.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="helios.core.utils.ChdirContext.__exit__">
-<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_traceback</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.core.utils.ChdirContext.__exit__" title="Link to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__exit__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">Exception</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc_traceback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">types.TracebackType</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.core.utils.ChdirContext.__exit__" title="Link to this definition">¶</a></dt>
 <dd><p>Restores the previous working directory.</p>
 </dd></dl>
 
@@ -686,6 +695,33 @@ Python package with <code class="docutils literal notranslate"><span class="pre"
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="helios.core.utils.safe_torch_load">
+<span class="sig-prename descclassname"><span class="pre">helios.core.utils.</span></span><span class="sig-name descname"><span class="pre">safe_torch_load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BinaryIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">IO</span><span class="p"><span class="pre">[</span></span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#helios.core.utils.safe_torch_load" title="Link to this definition">¶</a></dt>
+<dd><p>Wrap <code class="code docutils literal notranslate"><span class="pre">torch.load</span></code> to handle safe loading.</p>
+<p>This function will automatically set <code class="code docutils literal notranslate"><span class="pre">weights_only</span></code> to true when calling
+<code class="docutils literal notranslate"><span class="pre">torch.load</span></code>. You are encouraged to use this function instead of the plain
+<code class="code docutils literal notranslate"><span class="pre">torch.load</span></code> to ensure safe loading.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="code docutils literal notranslate"><span class="pre">weights_only</span></code> is set automatically by this function. <strong>do not</strong> set this
+value yourself when using this function.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> – a file-like object (has to implement <code class="docutils literal notranslate"><span class="pre">read()</span></code>, <code class="docutils literal notranslate"><span class="pre">readline()</span></code>, <code class="docutils literal notranslate"><span class="pre">tell()</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">seek()</span></code>), or a string or a <code class="docutils literal notranslate"><span class="pre">os.pathlike</span></code> object containing a file
+name.</p></li>
+<li><p><strong>**kwargs</strong> – keyword arguments to pass to <code class="code docutils literal notranslate"><span class="pre">torch.load</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of calling <code class="code docutils literal notranslate"><span class="pre">torch.load</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -775,6 +811,7 @@ Python package with <code class="docutils literal notranslate"><span class="pre"
 </ul>
 </li>
 <li><a class="reference internal" href="#helios.core.utils.update_all_registries"><code class="docutils literal notranslate"><span class="pre">update_all_registries()</span></code></a></li>
+<li><a class="reference internal" href="#helios.core.utils.safe_torch_load"><code class="docutils literal notranslate"><span class="pre">safe_torch_load()</span></code></a></li>
 </ul>
 </li>
 </ul>

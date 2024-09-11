@@ -112,6 +112,12 @@ Module Contents
       Reference to the trainer.
 
 
+   .. py:property:: metrics
+      :type: dict[str, Any]
+
+      The metric table for the model.
+
+
    .. py:method:: setup(fast_init: bool = False) -> None
       :abstractmethod:
 

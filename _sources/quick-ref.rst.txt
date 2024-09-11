@@ -603,7 +603,7 @@ The order of the testing functions is identical to the one shown for validation:
 
 .. code-block:: python
 
-   model.eval()()
+   model.eval()
    model.on_testing_start()
         for batch in dataloader:
             model.on_testing_batch_start()
@@ -611,3 +611,66 @@ The order of the testing functions is identical to the one shown for validation:
             model.on_testing_batch_end()
 
    model.on_testing_end()
+
+Exception Handling
+==================
+
+By default, the main functions of :py:class:`~helios.trainer.Trainer` (those being
+:py:meth:`~helios.trainer.Trainer.fit` and :py:meth:`~helios.trainer.Trainer.test`) will
+automatically catch any unhandled exceptions and re-raise them as
+:py:class:`RuntimeError`. Depending on the situation, it may be desirable for certain
+exceptions to be passed through untouched. In order to accommodate this, the trainer has
+two sets of lists of exception types:
+
+* :py:attr:`~helios.trainer.Trainer.train_exceptions` and
+* :py:attr:`~helios.trainer.Trainer.test_exceptions`.
+
+If an exception is raised and said exception is found in the training list (for
+:py:meth:`~helios.trainer.Trainer.fit`) or testing list (for
+:py:meth:`~helios.trainer.Trainer.test`), then the exception is passed through unchanged.
+Any other exceptions use the default behaviour.
+
+For example, suppose we had a custom exception called ``MyException`` and we wanted that
+exception to be passed through when training because we're going to handle it ourselves.
+We would then do the following:
+
+.. code-block:: python
+
+   import helios.trainer as hlt
+
+   trainer = hlt.Trainer(...)
+   trainer.train_esceptions.append(MyException)
+
+   try:
+       trainer.fit(...)
+   except MyException as e:
+       ...
+
+The same logic applies for testing. This functionality is particularly useful when paired
+with plug-ins.
+
+Synchronization
+===============
+
+Helios provides some synchronization wrappers found in the
+:py:mod:`~helios.core.distributed` module:
+
+* :py:func:`~helios.core.distributed.gather_into_tensor`,
+* :py:func:`~helios.core.distributed.all_reduce_tensors`.
+
+The trainer also provides another way to synchronize values through the multi-processing
+queue. When using distributed training that isn't through ``torchrun``, Helios uses
+``spawn`` to create the processes for each GPU. This triggers a copy of the arguments
+passed in to the handler, which in this case are the trainer, model, and datamodule. This
+presents a problem in the event that we need to return values back to the main process
+once training is complete. To facilitate this task, the trainer will create a `queue
+<https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue>`__ that can
+be accessed through :py:attr:`~helios.trainer.Trainer.queue`.
+
+.. note::
+   If training isn't distributed or if it was started through ``torchrun``, then the
+   :py:attr:`~helios.trainer.Trainer.queue` is set to ``None``.
+
+The queue can then be used by either the :py:class:`~helios.model.model.Model`, the
+:py:class:`~helios.data.datamodule.DataModule`, or any plug-in through their reference to
+the trainer.

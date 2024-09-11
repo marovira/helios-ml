@@ -219,6 +219,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../getting-started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plugins.html">Plug-Ins</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">helios</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -260,7 +261,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../../optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/optuna/index.html">helios.plugins.optuna</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/plugin/index.html">helios.plugins.plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -416,6 +422,12 @@ saved.</p>
 <dt class="sig sig-object py" id="helios.model.model.Model.trainer">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trainer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><span class="pre">helios.trainer.Trainer</span></a></em><a class="headerlink" href="#helios.model.model.Model.trainer" title="Link to this definition">¶</a></dt>
 <dd><p>Reference to the trainer.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="helios.model.model.Model.metrics">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metrics</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#helios.model.model.Model.metrics" title="Link to this definition">¶</a></dt>
+<dd><p>The metric table for the model.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -880,6 +892,7 @@ them.</p>
 <li><a class="reference internal" href="#helios.model.model.Model.device"><code class="docutils literal notranslate"><span class="pre">Model.device</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.rank"><code class="docutils literal notranslate"><span class="pre">Model.rank</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.trainer"><code class="docutils literal notranslate"><span class="pre">Model.trainer</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.metrics"><code class="docutils literal notranslate"><span class="pre">Model.metrics</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.setup"><code class="docutils literal notranslate"><span class="pre">Model.setup()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.load_for_testing"><code class="docutils literal notranslate"><span class="pre">Model.load_for_testing()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.load_state_dict"><code class="docutils literal notranslate"><span class="pre">Model.load_state_dict()</span></code></a></li>

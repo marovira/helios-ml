@@ -219,6 +219,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../getting-started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plugins.html">Plug-Ins</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">helios</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3 has-children"><a class="reference internal" href="../../core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -260,7 +261,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../../optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">helios.scheduler</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/optuna/index.html">helios.plugins.optuna</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../plugins/plugin/index.html">helios.plugins.plugin</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">helios.scheduler</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">helios.scheduler.utils</a></li>
 </ul>
@@ -349,57 +355,57 @@
 <table class="docutils align-default" id="id1">
 <caption><span class="caption-text">Schedulers</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
 <thead>
-<tr class="row-odd"><th class="head"><p>Optimizer</p></th>
+<tr class="row-odd"><th class="head"><p>Scheduler</p></th>
 <th class="head"><p>Name</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>torch.optim.lr_scheduler.LambdaLR</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.LambdaLR</span></code></p></td>
 <td><p>LambdaLR</p></td>
 </tr>
-<tr class="row-odd"><td><p>torch.optim.lr_scheduler.MultiplicativeLR</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.MultiplicativeLR</span></code></p></td>
 <td><p>MultiplicativeLR</p></td>
 </tr>
-<tr class="row-even"><td><p>torch.optim.lr_scheduler.StepLR</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.StepLR</span></code></p></td>
 <td><p>StepLR</p></td>
 </tr>
-<tr class="row-odd"><td><p>torch.optim.lr_scheduler.MultiStepLR</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.MultiStepLR</span></code></p></td>
 <td><p>MultiStepLR</p></td>
 </tr>
-<tr class="row-even"><td><p>torch.optim.lr_scheduler.ConstantLR</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.ConstantLR</span></code></p></td>
 <td><p>ConstantLR</p></td>
 </tr>
-<tr class="row-odd"><td><p>torch.optim.lr_scheduler.LinearLR</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.LinearLR</span></code></p></td>
 <td><p>LinearLR</p></td>
 </tr>
-<tr class="row-even"><td><p>torch.optim.lr_scheduler.ExponentialLR</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.ExponentialLR</span></code></p></td>
 <td><p>ExponentialLR</p></td>
 </tr>
-<tr class="row-odd"><td><p>torch.optim.lr_scheduler.PolynomialLR</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.PolynomialLR</span></code></p></td>
 <td><p>PolynomialLR</p></td>
 </tr>
-<tr class="row-even"><td><p>torch.optim.lr_scheduler.CosineAnnealingLR</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.CosineAnnealingLR</span></code></p></td>
 <td><p>CosineAnnealingLR</p></td>
 </tr>
-<tr class="row-odd"><td><p>torch.optim.lr_scheduler.SequentialLR</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.SequentialLR</span></code></p></td>
 <td><p>SequentialLR</p></td>
 </tr>
-<tr class="row-even"><td><p>torch.optim.lr_scheduler.ReduceLROnPlateau</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.ReduceLROnPlateau</span></code></p></td>
 <td><p>ReduceLROnPlateau</p></td>
 </tr>
-<tr class="row-odd"><td><p>torch.optim.lr_scheduler.CyclicLR</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.CyclicLR</span></code></p></td>
 <td><p>CyclicLR</p></td>
 </tr>
-<tr class="row-even"><td><p>torch.optim.lr_scheduler.OneCycleLR</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.OneCycleLR</span></code></p></td>
 <td><p>OneCycleLR</p></td>
 </tr>
-<tr class="row-odd"><td><p>torch.optim.lr_scheduler.CosineAnnealingWarmRestarts</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.optim.lr_scheduler.CosineAnnealingWarmRestarts</span></code></p></td>
 <td><p>CosineAnnealingWarmRestarts</p></td>
 </tr>
-<tr class="row-even"><td><p>helios.scheduler.CosineAnnealingRestartLR</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../schedulers/index.html#helios.scheduler.schedulers.CosineAnnealingRestartLR" title="helios.scheduler.schedulers.CosineAnnealingRestartLR"><code class="xref py py-class docutils literal notranslate"><span class="pre">helios.scheduler.schedulers.CosineAnnealingRestartLR</span></code></a></p></td>
 <td><p>CosineAnnealingRestartLR</p></td>
 </tr>
-<tr class="row-odd"><td><p>helios.scheduler.MultiStepRestartLR</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../schedulers/index.html#helios.scheduler.schedulers.MultiStepRestartLR" title="helios.scheduler.schedulers.MultiStepRestartLR"><code class="xref py py-class docutils literal notranslate"><span class="pre">helios.scheduler.schedulers.MultiStepRestartLR</span></code></a></p></td>
 <td><p>MultiStepRestartLR</p></td>
 </tr>
 </tbody>
