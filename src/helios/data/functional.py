@@ -3,38 +3,53 @@ import pathlib
 import cv2
 import numpy as np
 import numpy.typing as npt
-import PIL
 import torch
 
 
 def load_image(
-    path: pathlib.Path, out_fmt: str = "", as_numpy: bool = True
-) -> npt.NDArray | PIL.Image.Image:
+    path: pathlib.Path, flags: int = cv2.IMREAD_COLOR, as_rgb: bool = True
+) -> npt.NDArray:
     """
     Load the given image.
 
-    ``out_fmt`` is a format string that can be passed in to PIL.Image.convert. Please
-    `here <https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.convert>`__
-    for the list of accepted strings.
-    If no string is passed, the image will be converted to RGB format.
-    By default, the output is a NumPY array. If you need a PIL image instead, set
-    ``as_numpy`` to false.
+    ``flags`` correspond to the ``cv2.IMREAD_`` flags from OpenCV. Please see the full
+    list of options
+    `here <https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html>`__. If no
+    value is passed, the image will be loaded using ``cv2.IMREAD_COLOR``, which will load
+    it as an 8-bit BGR image.
+
+    ``as_rgb`` can be used to automatically convert the image from OpenCV's default BGR to
+    RGB using the following logic:
+    * If the image is grayscale, then it is returned as is.
+    * If the image is a 3-channel BGR, it is converted to RGB.
+    * If the image is a 4-channel BGRA, it is converted to RGBA.
+    If all these checks fail, the image is returned as is.
 
     Args:
         path: the path to the image to load.
-        out_fmt: the format to convert the loaded image to. Defaults to empty.
-        as_numpy: if true, the loaded image will be returned as a NumPY array, otherwise
-            it is returned as a PIL image. Defaults to true.
+        flags: the OpenCV flags to use when loading.
+        as_rgb: if true, the image will be converted from BGR/BGRA to RGB/RGBA, otherwise
+            the image is returned as is.
 
     Returns:
         The loaded image.
     """
-    with path.open(mode="rb") as infile:
-        img = PIL.Image.open(infile)
-        out = img.convert(out_fmt) if out_fmt != "" else img.convert("RGB")
-        if as_numpy:
-            return np.array(out)
-        return out
+    img = cv2.imread(str(path), flags=flags)
+    if not as_rgb:
+        return img
+
+    if len(img.shape) == 2:
+        return img
+
+    c = img.shape[2]
+    if c == 3:
+        return cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    if c == 4:
+        return cv2.cvtColor(img, cv2.COLOR_BGRA2RGBA)
+
+    raise RuntimeError(
+        f"error: expected a 3 or 4 channel image but received {c} channels"
+    )
 
 
 def tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> npt.NDArray:

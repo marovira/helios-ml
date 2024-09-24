@@ -3,7 +3,7 @@ import typing
 
 import cv2
 import numpy as np
-import PIL
+import numpy.typing as npt
 import torch
 from torch.utils import data as tud
 
@@ -87,23 +87,80 @@ class TestTransforms:
 
 
 class TestFunctional:
+    def check_image(self, gt: npt.NDArray, out_path: pathlib.Path, **kwargs) -> None:
+        # Ensure that we convert to "BGR" so the output comes out the way we expect it to
+        # come out.
+        if kwargs.get("as_rgb", True):
+            if len(gt.shape) == 2:
+                tmp = gt
+            elif len(gt.shape) == 3 and gt.shape[2] == 3:
+                tmp = cv2.cvtColor(gt, cv2.COLOR_RGB2BGR)
+            elif len(gt.shape) == 3 and gt.shape[2] == 4:
+                tmp = cv2.cvtColor(gt, cv2.COLOR_RGBA2BGRA)
+        else:
+            tmp = gt
+
+        cv2.imwrite(str(out_path), tmp)
+
+        ret = hldf.load_image(out_path, **kwargs)
+        assert isinstance(ret, np.ndarray)
+        assert np.array_equal(gt, ret)
+
     def test_load_image(self, tmp_path: pathlib.Path):
         rng.seed_rngs()
         gen = rng.get_default_numpy_rng().generator
-        img = (gen.random(size=(32, 32, 3)) * 255).astype(np.uint8)
-        as_pil = PIL.Image.fromarray(img)
-
         out_path = tmp_path / "tmp.png"
-        cv2.imwrite(str(out_path), cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        max_8 = 255
+        max_16 = 65535
 
-        ret = hldf.load_image(out_path)
-        assert isinstance(ret, np.ndarray)
-        assert np.array_equal(img, ret)
+        # 8-bit grayscale.
+        self.check_image(
+            (gen.random(size=(32, 32)) * max_8).astype(np.uint8),
+            out_path,
+            flags=cv2.IMREAD_GRAYSCALE,
+        )
 
-        ret = hldf.load_image(out_path, as_numpy=False)
-        assert isinstance(ret, PIL.Image.Image)
-        diff = PIL.ImageChops.difference(as_pil, ret)  # type: ignore[attr-defined]
-        assert diff.getbbox() is None
+        # 16-bit grayscale
+        self.check_image(
+            (gen.random(size=(32, 32)) * max_16).astype(np.uint16),
+            out_path,
+            flags=cv2.IMREAD_UNCHANGED,
+        )
+
+        # 8-bit RGB
+        self.check_image(
+            (gen.random(size=(32, 32, 3)) * max_8).astype(np.uint8),
+            out_path,
+        )
+
+        # 16-bit RGB
+        self.check_image(
+            (gen.random(size=(32, 32, 3)) * max_16).astype(np.uint16),
+            out_path,
+            flags=cv2.IMREAD_UNCHANGED,
+        )
+
+        # 8-bit RGBA
+        self.check_image(
+            (gen.random(size=(32, 32, 4)) * max_8).astype(np.uint8),
+            out_path,
+            flags=cv2.IMREAD_UNCHANGED,
+        )
+
+        # 16-bit RGB
+        self.check_image(
+            (gen.random(size=(32, 32, 4)) * max_16).astype(np.uint16),
+            out_path,
+            flags=cv2.IMREAD_UNCHANGED,
+        )
+
+        # Load image as is.
+        self.check_image(
+            (gen.random(size=(32, 32, 4)) * max_8).astype(np.uint8),
+            out_path,
+            flags=cv2.IMREAD_UNCHANGED,
+            as_rgb=False,
+        )
 
     def test_tensor_to_numpy(self):
         tens = torch.randn((3, 32, 32))
