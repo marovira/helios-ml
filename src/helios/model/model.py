@@ -87,8 +87,8 @@ class Model(abc.ABC):
 
         self._loss_items: dict[str, torch.Tensor] = {}
         self._running_losses: dict[str, float] = {}
-        self._val_scores: dict[str, float] = {}
-        self._test_scores: dict[str, float] = {}
+        self._val_scores: dict[str, typing.Any] = {}
+        self._test_scores: dict[str, typing.Any] = {}
 
     @property
     def save_name(self) -> str:
