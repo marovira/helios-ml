@@ -1,6 +1,7 @@
 import typing
 
 import numpy.typing as npt
+import PIL
 import torch
 import torchvision.transforms.v2 as T
 from torch import nn
@@ -67,7 +68,13 @@ class ToImageTensor(nn.Module):
         )
 
     def forward(
-        self, img: npt.NDArray | list[npt.NDArray] | tuple[npt.NDArray, ...]
+        self,
+        img: npt.NDArray
+        | list[npt.NDArray]
+        | tuple[npt.NDArray, ...]
+        | PIL.Image.Image
+        | list[PIL.Image.Image]
+        | tuple[PIL.Image.Image, ...],
     ) -> torch.Tensor | list[torch.Tensor] | tuple[torch.Tensor, ...]:
         """
         Convert the input image(s) into tensor(s).

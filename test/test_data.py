@@ -4,6 +4,7 @@ import typing
 import cv2
 import numpy as np
 import numpy.typing as npt
+import PIL
 import torch
 from torch.utils import data as tud
 
@@ -72,18 +73,82 @@ class SampleDataModule(data.DataModule):
 
 
 class TestTransforms:
+    def check_type(self, x, exp_type: type) -> None:
+        assert isinstance(x, exp_type)
+
+        if isinstance(exp_type, list | tuple):
+            for elem in x:  # type: ignore[attr-defined]
+                assert isinstance(elem, torch.Tensor)
+
+    def check_to_tensor(self, img, exp_type: type, exp_shape: tuple[int, ...]) -> None:
+        to_tensor = hldt.create_transform("ToImageTensor")
+        as_tens: torch.Tensor | list[torch.Tensor] | tuple[torch.Tensor, ...] = to_tensor(
+            img
+        )
+
+        self.check_type(as_tens, exp_type)
+
+        if isinstance(as_tens, list | tuple):
+            for t in as_tens:
+                assert t.shape == exp_shape
+        else:
+            assert as_tens.shape == exp_shape
+
+    def generate_sample(
+        self,
+        size: tuple[int, ...],
+        num_elems: int,
+        as_tuple: bool = False,
+        as_pil: bool = False,
+    ):
+        gen = rng.get_default_numpy_rng().generator
+
+        samples: list[npt.NDArray | PIL.Image.Image] = []
+        for _ in range(num_elems):
+            base = np.uint8(gen.random(size=size)) * 255
+            if as_pil:
+                samples.append(PIL.Image.fromarray(base))
+            else:
+                samples.append(base)
+
+        if as_tuple:
+            return tuple(samples)
+        return samples
+
     def test_to_tensor(self) -> None:
         assert "ToImageTensor" in hldt.TRANSFORM_REGISTRY
 
         rng.seed_rngs()
-        gen = rng.get_default_numpy_rng().generator
-        img = gen.random(size=(32, 32, 3))
+        size = (32, 32, 3)
+        exp_size = (3, 32, 32)
 
-        to_tensor = hldt.create_transform("ToImageTensor")
-        as_tens = to_tensor(img)
+        # Single image (numpy)
+        self.check_to_tensor(self.generate_sample(size, 1)[0], torch.Tensor, exp_size)
 
-        assert isinstance(as_tens, torch.Tensor)
-        assert as_tens.shape == (3, 32, 32)
+        # Multi-image list (numpy)
+        self.check_to_tensor(self.generate_sample(size, 2), list, exp_size)
+
+        # Multi-image tuple (numpy)
+        self.check_to_tensor(
+            self.generate_sample(size, 2, as_tuple=True),
+            tuple,
+            exp_size,
+        )
+
+        # Single image (PIL)
+        self.check_to_tensor(
+            self.generate_sample(size, 1, as_pil=True)[0], torch.Tensor, exp_size
+        )
+
+        # Multi-image list (PIL)
+        self.check_to_tensor(self.generate_sample(size, 2, as_pil=True), list, exp_size)
+
+        # Multi-image tuple (PIL)
+        self.check_to_tensor(
+            self.generate_sample(size, 2, as_tuple=True, as_pil=True),
+            tuple,
+            exp_size,
+        )
 
 
 class TestFunctional:
