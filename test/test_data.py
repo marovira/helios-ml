@@ -227,6 +227,24 @@ class TestFunctional:
             as_rgb=False,
         )
 
+    def test_load_image_pil(self, tmp_path: pathlib.Path):
+        rng.seed_rngs()
+        gen = rng.get_default_numpy_rng().generator
+        img = (gen.random(size=(32, 32, 3)) * 255).astype(np.uint8)
+        as_pil = PIL.Image.fromarray(img)
+
+        out_path = tmp_path / "tmp.png"
+        cv2.imwrite(str(out_path), cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+        ret = hldf.load_image_pil(out_path)
+        assert isinstance(ret, np.ndarray)
+        assert np.array_equal(img, ret)
+
+        ret = hldf.load_image_pil(out_path, as_numpy=False)
+        assert isinstance(ret, PIL.Image.Image)
+        diff = PIL.ImageChops.difference(as_pil, ret)  # type: ignore[attr-defined]
+        assert diff.getbbox() is None
+
     def test_tensor_to_numpy(self):
         tens = torch.randn((3, 32, 32))
         ret = hldf.tensor_to_numpy(tens)

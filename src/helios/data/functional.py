@@ -3,6 +3,7 @@ import pathlib
 import cv2
 import numpy as np
 import numpy.typing as npt
+import PIL
 import torch
 
 
@@ -10,7 +11,7 @@ def load_image(
     path: pathlib.Path, flags: int = cv2.IMREAD_COLOR, as_rgb: bool = True
 ) -> npt.NDArray:
     """
-    Load the given image.
+    Load the given image using OpenCV.
 
     ``flags`` correspond to the ``cv2.IMREAD_`` flags from OpenCV. Please see the full
     list of options
@@ -50,6 +51,36 @@ def load_image(
     raise RuntimeError(
         f"error: expected a 3 or 4 channel image but received {c} channels"
     )
+
+
+def load_image_pil(
+    path: pathlib.Path, out_fmt: str = "", as_numpy: bool = True
+) -> npt.NDArray | PIL.Image.Image:
+    """
+    Load the given image using PIL.
+
+    ``out_fmt`` is a format string that can be passed in to PIL.Image.convert. Please
+    `here <https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.convert>`__
+    for the list of accepted strings.
+    If no string is passed, the image will be converted to RGB format.
+    By default, the output is a NumPY array. If you need a PIL image instead, set
+    ``as_numpy`` to false.
+
+    Args:
+        path: the path to the image to load.
+        out_fmt: the format to convert the loaded image to. Defaults to empty.
+        as_numpy: if true, the loaded image will be returned as a NumPY array, otherwise
+            it is returned as a PIL image. Defaults to true.
+
+    Returns:
+        The loaded image.
+    """
+    with path.open(mode="rb") as infile:
+        img = PIL.Image.open(infile)
+        out = img.convert(out_fmt) if out_fmt != "" else img.convert("RGB")
+        if as_numpy:
+            return np.array(out)
+        return out
 
 
 def tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> npt.NDArray:
