@@ -185,15 +185,23 @@ def _spawn_handler(
     trainer.local_rank = rank
     trainer.queue = queue
 
+    def safe_shutdown():
+        dist.safe_barrier()
+        dist.shutdown_dist()
+        logging.close_default_loggers()
+
     try:
         if mode == _TrainerMode.TRAIN:
             trainer._train()  # noqa: SLF001
         elif mode == _TrainerMode.TEST:
             trainer._test()  # noqa: SLF001
-    except Exception:
-        dist.shutdown_dist()
-        raise
+    except Exception as e:
+        ret = trainer._handle_exception(e, mode)  # noqa: SLF001
+        if not ret:
+            safe_shutdown()
+            raise
 
+    dist.safe_barrier()
     dist.shutdown_dist()
 
 
@@ -408,13 +416,8 @@ class Trainer:
         try:
             self._launch(model, datamodule, _TrainerMode.TRAIN)
         except Exception as e:
-            if any(isinstance(e, exc) for exc in self._train_exceptions):
+            if not self._handle_exception(e, _TrainerMode.TRAIN):
                 raise
-
-            if logging.is_root_logger_active():
-                root_logger = logging.get_root_logger()
-                root_logger.exception("error: uncaught exception")
-                logging.close_default_loggers()
             raise RuntimeError("error: uncaught exception") from e
 
     def test(self, model: hlm.Model, datamodule: data.DataModule) -> None:
@@ -428,14 +431,34 @@ class Trainer:
         try:
             self._launch(model, datamodule, _TrainerMode.TEST)
         except Exception as e:
-            if any(isinstance(e, exc) for exc in self._test_exceptions):
+            if not self._handle_exception(e, _TrainerMode.TEST):
                 raise
-
-            if logging.is_root_logger_active():
-                root_logger = logging.get_root_logger()
-                root_logger.exception("error: uncaught exception")
-                logging.close_default_loggers()
             raise RuntimeError("error: uncaught exception") from e
+
+    def _handle_exception(self, e: Exception, mode: _TrainerMode) -> bool:
+        """
+        Exception handler.
+
+        Args:
+            e: the raised exception.
+
+        Returns:
+            False if the exception isn't handled and should be re-raised, True otherwise
+                in which case a `RuntimeError` should be raised from it.
+        """
+        exc_list = (
+            self._train_exceptions
+            if mode == _TrainerMode.TRAIN
+            else self._test_exceptions
+        )
+        if any(isinstance(e, exc) for exc in exc_list):
+            return False
+
+        if logging.is_root_logger_active():
+            root_logger = logging.get_root_logger()
+            root_logger.exception("error: uncaught exception")
+            logging.close_default_loggers()
+        return True
 
     def _launch(
         self, model: hlm.Model, datamodule: data.DataModule, mode: _TrainerMode
@@ -481,6 +504,8 @@ class Trainer:
 
         if self._is_torchrun and self._is_distributed:
             dist.shutdown_dist()
+
+        logging.close_default_loggers()
 
     def _train(self) -> None:
         """
