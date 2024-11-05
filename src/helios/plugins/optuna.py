@@ -69,16 +69,21 @@ class OptunaPlugin(hlp.Plugin):
         trial: the Optuna trial.
         metric_name: the name of the metric to monitor. This assumes the name will be
             present in the :py:attr:`~helios.model.model.Model.metrics` table.
+        num_trials: the number of trials that should run. This is used to automatically
+            stop the optimisation run if the trial number exceeds `num_trials`.
     """
 
     plugin_id = "optuna"
 
-    def __init__(self, trial: optuna.Trial, metric_name: str) -> None:
+    def __init__(
+        self, trial: optuna.Trial, metric_name: str, num_trials: int | None = None
+    ) -> None:
         """Create the plug-in."""
         super().__init__(self.plugin_id)
         self._trial = trial
         self._metric_name = metric_name
         self._last_cycle: int = 0
+        self._num_trials = num_trials
 
         self.unique_overrides.should_training_stop = True
 
@@ -192,6 +197,12 @@ class OptunaPlugin(hlp.Plugin):
         """
         Configure the plug-in.
 
+        If `num_trials` is passed in to the constructor, then this will also check the
+        current trial number against that value. If the current trial's number exceeds the
+        value passed in to `num_trials`, it will request that the current optimisation
+        loop exits after the running trials finish. This ensures that if the optimisation
+        loop is restarted, the count of trials is respected.
+
         Raises:
             ValueError: if the study wasn't created with persistent storage.
         """
@@ -203,6 +214,9 @@ class OptunaPlugin(hlp.Plugin):
                 "error: optuna integration supports only optuna.storages.RDBStorage "
                 "in distributed mode"
             )
+
+        if self._num_trials is not None and self.trial.number == (self._num_trials - 1):
+            self.trial.study.stop()
 
     def on_validation_end(self, validation_cycle: int) -> None:
         """
