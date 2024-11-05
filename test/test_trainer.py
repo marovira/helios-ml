@@ -524,10 +524,10 @@ class TestTrainer:
 
         called_funs: dict[str, bool]
         if fit:
-            trainer.fit(model, datamodule)
+            assert trainer.fit(model, datamodule)
             called_funs = model.called_train_funs
         else:
-            trainer.test(model, datamodule)
+            assert trainer.test(model, datamodule)
             called_funs = model.called_test_funs
 
         for _, seen in called_funs.items():
@@ -624,7 +624,7 @@ class TestTrainer:
         trainer = self.get_restart_trainer(unit, tmp_path)
         chkpt_root = tmp_path / model.save_name
 
-        trainer.fit(model, datamodule)
+        assert trainer.fit(model, datamodule)
         batches = model.batches
 
         self.clear_chkpts(chkpt_root)
@@ -632,8 +632,7 @@ class TestTrainer:
 
         datamodule, model = self.get_restart_model_and_datamodule(1)
         trainer = self.get_restart_trainer(unit, tmp_path)
-        with pytest.raises(RuntimeError):
-            trainer.fit(model, datamodule)
+        assert not trainer.fit(model, datamodule)
 
         # Clear out everything again and restart.
         ret_batches = model.batches
@@ -642,7 +641,7 @@ class TestTrainer:
         datamodule, model = self.get_restart_model_and_datamodule()
         trainer = self.get_restart_trainer(unit, tmp_path)
         model.batches = ret_batches
-        trainer.fit(model, datamodule)
+        assert trainer.fit(model, datamodule)
 
         self.check_batches(batches, model.batches)
 
@@ -662,7 +661,7 @@ class TestTrainer:
             accumulation_steps=num_steps,
         )
 
-        trainer.fit(model, datamodule)
+        assert trainer.fit(model, datamodule)
 
     def test_accumulation(self) -> None:
         self.check_accumulation(1)
@@ -688,11 +687,10 @@ class TestTrainer:
                 else:
                     trainer.test(model, datamodule)
         else:
-            with pytest.raises(RuntimeError):
-                if fit:
-                    trainer.fit(model, datamodule)
-                else:
-                    trainer.test(model, datamodule)
+            if fit:
+                assert not trainer.fit(model, datamodule)
+            else:
+                assert not trainer.test(model, datamodule)
 
     def test_trainer_exceptions(self) -> None:
         exception_types = [ValueError, RuntimeError, KeyError]
@@ -748,10 +746,10 @@ class TestTrainer:
 
         called_funs: dict[str, bool]
         if fit:
-            trainer.fit(model, datamodule)
+            assert trainer.fit(model, datamodule)
             called_funs = trainer.plugins[name].called_train_funs  # type: ignore[attr-defined]
         else:
-            trainer.test(model, datamodule)
+            assert trainer.test(model, datamodule)
             called_funs = trainer.plugins[name].called_test_funs  # type: ignore[attr-defined]
 
         for _, seen in called_funs.items():

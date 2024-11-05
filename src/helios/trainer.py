@@ -165,6 +165,7 @@ def _spawn_handler(
     model: hlm.Model,
     mode: _TrainerMode,
     queue: mp.Queue,
+    internal_queue: mp.Queue,
 ) -> None:
     """
     Spawn handler for distributed training.
@@ -184,11 +185,7 @@ def _spawn_handler(
     trainer.rank = rank
     trainer.local_rank = rank
     trainer.queue = queue
-
-    def safe_shutdown():
-        dist.safe_barrier()
-        dist.shutdown_dist()
-        logging.close_default_loggers()
+    trainer._internal_queue = internal_queue  # noqa: SLF001
 
     try:
         if mode == _TrainerMode.TRAIN:
@@ -196,10 +193,8 @@ def _spawn_handler(
         elif mode == _TrainerMode.TEST:
             trainer._test()  # noqa: SLF001
     except Exception as e:
-        ret = trainer._handle_exception(e, mode)  # noqa: SLF001
-        if not ret:
-            safe_shutdown()
-            raise
+        dist.shutdown_dist()
+        raise e
 
     dist.safe_barrier()
     dist.shutdown_dist()
@@ -316,6 +311,7 @@ class Trainer:
         self._plugins: dict[str, hlp.Plugin] = {}
 
         self._queue: mp.Queue | None = None
+        self._internal_queue: mp.Queue | None = None
 
         self._validate_flags(use_cpu)
         self._setup_device_flags(use_cpu)
@@ -405,35 +401,45 @@ class Trainer:
     def queue(self, q: mp.Queue) -> None:
         self._queue = q
 
-    def fit(self, model: hlm.Model, datamodule: data.DataModule) -> None:
+    def fit(self, model: hlm.Model, datamodule: data.DataModule) -> bool:
         """
         Run the full training routine.
 
         Args:
             model: the model to run on.
             datamodule: the datamodule to use.
+
+        Returns:
+            True if the training process completed successfully, false otherwise.
         """
         try:
             self._launch(model, datamodule, _TrainerMode.TRAIN)
         except Exception as e:
             if not self._handle_exception(e, _TrainerMode.TRAIN):
-                raise
-            raise RuntimeError("error: uncaught exception") from e
+                raise e
+            return False
 
-    def test(self, model: hlm.Model, datamodule: data.DataModule) -> None:
+        return True
+
+    def test(self, model: hlm.Model, datamodule: data.DataModule) -> bool:
         """
         Run the full testing routine.
 
         Args:
             model: the model to run on.
             datamodule: the datamodule to use.
+
+        Returns:
+            True if the training process completed successfully, false otherwise.
         """
         try:
             self._launch(model, datamodule, _TrainerMode.TEST)
         except Exception as e:
             if not self._handle_exception(e, _TrainerMode.TEST):
-                raise
-            raise RuntimeError("error: uncaught exception") from e
+                raise e
+            return False
+
+        return True
 
     def _handle_exception(self, e: Exception, mode: _TrainerMode) -> bool:
         """
@@ -443,8 +449,8 @@ class Trainer:
             e: the raised exception.
 
         Returns:
-            False if the exception isn't handled and should be re-raised, True otherwise
-                in which case a `RuntimeError` should be raised from it.
+            False if the exception should be allowed to continue up the stack. If true,
+            the exception has been handled and should not be re-raised.
         """
         exc_list = (
             self._train_exceptions
@@ -452,6 +458,7 @@ class Trainer:
             else self._test_exceptions
         )
         if any(isinstance(e, exc) for exc in exc_list):
+            logging.close_default_loggers()
             return False
 
         if logging.is_root_logger_active():
@@ -459,6 +466,17 @@ class Trainer:
             root_logger.exception("error: uncaught exception")
             logging.close_default_loggers()
         return True
+
+    def _handle_distributed_exception(self, e: Exception, mode: _TrainerMode) -> bool:
+        assert self._internal_queue is not None
+        if self._enable_file_logging:
+            # If we have file logging enabled, then grab the path from the queue and
+            # create the root logger from that file so we can log the exception.
+            log_path: pathlib.Path = self._internal_queue.get()
+            logging.create_default_loggers(False)
+            logging.restore_default_loggers(log_path)
+
+        return self._handle_exception(e, mode)
 
     def _launch(
         self, model: hlm.Model, datamodule: data.DataModule, mode: _TrainerMode
@@ -480,13 +498,27 @@ class Trainer:
             if mp.get_start_method(allow_none=True) is None:
                 mp.set_start_method("spawn")
             queue: mp.Queue = mp.Queue()
+            internal_queue: mp.Queue = mp.Queue()
             world_size = len(self._gpu_ids)
-            mp.spawn(
-                _spawn_handler,
-                args=(world_size, self, datamodule, model, mode, queue),
-                nprocs=world_size,
-                join=True,
-            )
+            try:
+                mp.spawn(
+                    _spawn_handler,
+                    args=(
+                        world_size,
+                        self,
+                        datamodule,
+                        model,
+                        mode,
+                        queue,
+                        internal_queue,
+                    ),
+                    nprocs=world_size,
+                    join=True,
+                )
+            except Exception as e:
+                self._internal_queue = internal_queue
+                if not self._handle_distributed_exception(e, mode):
+                    raise e
             self.queue = queue
             return
 
