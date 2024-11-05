@@ -215,7 +215,7 @@ class OptunaPlugin(hlp.Plugin):
                 "in distributed mode"
             )
 
-        if self._num_trials is not None and self.trial.number == (self._num_trials - 1):
+        if self._num_trials is not None and self.trial.number >= (self._num_trials - 1):
             self.trial.study.stop()
 
     def on_validation_end(self, validation_cycle: int) -> None:
