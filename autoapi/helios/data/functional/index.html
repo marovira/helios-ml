@@ -325,28 +325,31 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#helios.data.functional.load_image" title="helios.data.functional.load_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_image</span></code></a>(→ numpy.typing.NDArray | PIL.Image.Image)</p></td>
-<td><p>Load the given image.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.data.functional.load_image" title="helios.data.functional.load_image"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_image</span></code></a>(→ numpy.typing.NDArray)</p></td>
+<td><p>Load the given image using OpenCV.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#helios.data.functional.tensor_to_numpy" title="helios.data.functional.tensor_to_numpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tensor_to_numpy</span></code></a>(→ numpy.typing.NDArray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#helios.data.functional.load_image_pil" title="helios.data.functional.load_image_pil"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_image_pil</span></code></a>(→ numpy.typing.NDArray | PIL.Image.Image)</p></td>
+<td><p>Load the given image using PIL.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.data.functional.tensor_to_numpy" title="helios.data.functional.tensor_to_numpy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tensor_to_numpy</span></code></a>(→ numpy.typing.NDArray)</p></td>
 <td><p>Convert the given tensor to a numpy array.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#helios.data.functional.show_tensor" title="helios.data.functional.show_tensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_tensor</span></code></a>(→ None)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#helios.data.functional.show_tensor" title="helios.data.functional.show_tensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_tensor</span></code></a>(→ None)</p></td>
 <td><p>Display the image held by the tensor. Useful for debugging purposes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#helios.data.functional.show_tensors" title="helios.data.functional.show_tensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_tensors</span></code></a>(→ None)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.data.functional.show_tensors" title="helios.data.functional.show_tensors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_tensors</span></code></a>(→ None)</p></td>
 <td><p>Show batches of tensors.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#helios.data.functional.convert_to_hwc" title="helios.data.functional.convert_to_hwc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_to_hwc</span></code></a>(→ numpy.typing.NDArray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#helios.data.functional.convert_to_hwc" title="helios.data.functional.convert_to_hwc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_to_hwc</span></code></a>(→ numpy.typing.NDArray)</p></td>
 <td><p>Change the order of the input image channels so the result is in (h, w, c) order.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#helios.data.functional.to_y_channel" title="helios.data.functional.to_y_channel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_y_channel</span></code></a>(→ numpy.typing.NDArray)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.data.functional.to_y_channel" title="helios.data.functional.to_y_channel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_y_channel</span></code></a>(→ numpy.typing.NDArray)</p></td>
 <td><p>Return the Y (luma) channel of a YCbCr image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#helios.data.functional.bgr2ycbcr" title="helios.data.functional.bgr2ycbcr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bgr2ycbcr</span></code></a>(→ numpy.typing.NDArray)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#helios.data.functional.bgr2ycbcr" title="helios.data.functional.bgr2ycbcr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bgr2ycbcr</span></code></a>(→ numpy.typing.NDArray)</p></td>
 <td><p>Convert the given numpy image array from BGR to YCBCR.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#helios.data.functional.rgb2ycbcr_torch" title="helios.data.functional.rgb2ycbcr_torch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rgb2ycbcr_torch</span></code></a>(→ torch.Tensor)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.data.functional.rgb2ycbcr_torch" title="helios.data.functional.rgb2ycbcr_torch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rgb2ycbcr_torch</span></code></a>(→ torch.Tensor)</p></td>
 <td><p>Convert the given torch Tensor image array from RGB to YCBCR.</p></td>
 </tr>
 </tbody>
@@ -357,8 +360,38 @@
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="helios.data.functional.load_image">
-<span class="sig-prename descclassname"><span class="pre">helios.data.functional.</span></span><span class="sig-name descname"><span class="pre">load_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_fmt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_numpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.typing.NDArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PIL.Image.Image</span></span></span><a class="headerlink" href="#helios.data.functional.load_image" title="Link to this definition">¶</a></dt>
-<dd><p>Load the given image.</p>
+<span class="sig-prename descclassname"><span class="pre">helios.data.functional.</span></span><span class="sig-name descname"><span class="pre">load_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">cv2.IMREAD_COLOR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.typing.NDArray</span></span></span><a class="headerlink" href="#helios.data.functional.load_image" title="Link to this definition">¶</a></dt>
+<dd><p>Load the given image using OpenCV.</p>
+<p><code class="docutils literal notranslate"><span class="pre">flags</span></code> correspond to the <code class="docutils literal notranslate"><span class="pre">cv2.IMREAD_</span></code> flags from OpenCV. Please see the full
+list of options
+<a class="reference external" href="https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html">here</a>. If no
+value is passed, the image will be loaded using <code class="docutils literal notranslate"><span class="pre">cv2.IMREAD_COLOR</span></code>, which will load
+it as an 8-bit BGR image.</p>
+<p><code class="docutils literal notranslate"><span class="pre">as_rgb</span></code> can be used to automatically convert the image from OpenCV’s default BGR to
+RGB using the following logic:
+* If the image is grayscale, then it is returned as is.
+* If the image is a 3-channel BGR, it is converted to RGB.
+* If the image is a 4-channel BGRA, it is converted to RGBA.
+If all these checks fail, the image is returned as is.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – the path to the image to load.</p></li>
+<li><p><strong>flags</strong> – the OpenCV flags to use when loading.</p></li>
+<li><p><strong>as_rgb</strong> – if true, the image will be converted from BGR/BGRA to RGB/RGBA, otherwise
+the image is returned as is.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The loaded image.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helios.data.functional.load_image_pil">
+<span class="sig-prename descclassname"><span class="pre">helios.data.functional.</span></span><span class="sig-name descname"><span class="pre">load_image_pil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_fmt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_numpy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.typing.NDArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">PIL.Image.Image</span></span></span><a class="headerlink" href="#helios.data.functional.load_image_pil" title="Link to this definition">¶</a></dt>
+<dd><p>Load the given image using PIL.</p>
 <p><code class="docutils literal notranslate"><span class="pre">out_fmt</span></code> is a format string that can be passed in to PIL.Image.convert. Please
 <a class="reference external" href="https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.convert">here</a>
 for the list of accepted strings.
@@ -553,6 +586,7 @@ or ‘CHW’.</p></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
 <li><a class="reference internal" href="#helios.data.functional.load_image"><code class="docutils literal notranslate"><span class="pre">load_image()</span></code></a></li>
+<li><a class="reference internal" href="#helios.data.functional.load_image_pil"><code class="docutils literal notranslate"><span class="pre">load_image_pil()</span></code></a></li>
 <li><a class="reference internal" href="#helios.data.functional.tensor_to_numpy"><code class="docutils literal notranslate"><span class="pre">tensor_to_numpy()</span></code></a></li>
 <li><a class="reference internal" href="#helios.data.functional.show_tensor"><code class="docutils literal notranslate"><span class="pre">show_tensor()</span></code></a></li>
 <li><a class="reference internal" href="#helios.data.functional.show_tensors"><code class="docutils literal notranslate"><span class="pre">show_tensors()</span></code></a></li>

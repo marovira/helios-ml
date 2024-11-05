@@ -10,6 +10,7 @@ Functions
 .. autoapisummary::
 
    helios.data.functional.load_image
+   helios.data.functional.load_image_pil
    helios.data.functional.tensor_to_numpy
    helios.data.functional.show_tensor
    helios.data.functional.show_tensors
@@ -22,9 +23,34 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: load_image(path: pathlib.Path, out_fmt: str = '', as_numpy: bool = True) -> numpy.typing.NDArray | PIL.Image.Image
+.. py:function:: load_image(path: pathlib.Path, flags: int = cv2.IMREAD_COLOR, as_rgb: bool = True) -> numpy.typing.NDArray
 
-   Load the given image.
+   Load the given image using OpenCV.
+
+   ``flags`` correspond to the ``cv2.IMREAD_`` flags from OpenCV. Please see the full
+   list of options
+   `here <https://docs.opencv.org/3.4/d8/d6a/group__imgcodecs__flags.html>`__. If no
+   value is passed, the image will be loaded using ``cv2.IMREAD_COLOR``, which will load
+   it as an 8-bit BGR image.
+
+   ``as_rgb`` can be used to automatically convert the image from OpenCV's default BGR to
+   RGB using the following logic:
+   * If the image is grayscale, then it is returned as is.
+   * If the image is a 3-channel BGR, it is converted to RGB.
+   * If the image is a 4-channel BGRA, it is converted to RGBA.
+   If all these checks fail, the image is returned as is.
+
+   :param path: the path to the image to load.
+   :param flags: the OpenCV flags to use when loading.
+   :param as_rgb: if true, the image will be converted from BGR/BGRA to RGB/RGBA, otherwise
+                  the image is returned as is.
+
+   :returns: The loaded image.
+
+
+.. py:function:: load_image_pil(path: pathlib.Path, out_fmt: str = '', as_numpy: bool = True) -> numpy.typing.NDArray | PIL.Image.Image
+
+   Load the given image using PIL.
 
    ``out_fmt`` is a format string that can be passed in to PIL.Image.convert. Please
    `here <https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.convert>`__

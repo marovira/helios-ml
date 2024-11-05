@@ -77,7 +77,7 @@ Module Contents
    :param scale: if true, scale the values to the valid range. Defaults to true.
 
 
-   .. py:method:: forward(img: numpy.typing.NDArray | list[numpy.typing.NDArray] | tuple[numpy.typing.NDArray, Ellipsis]) -> torch.Tensor | list[torch.Tensor] | tuple[torch.Tensor, Ellipsis]
+   .. py:method:: forward(img: numpy.typing.NDArray | list[numpy.typing.NDArray] | tuple[numpy.typing.NDArray, Ellipsis] | PIL.Image.Image | list[PIL.Image.Image] | tuple[PIL.Image.Image, Ellipsis]) -> torch.Tensor | list[torch.Tensor] | tuple[torch.Tensor, Ellipsis]
 
       Convert the input image(s) into tensor(s).
 

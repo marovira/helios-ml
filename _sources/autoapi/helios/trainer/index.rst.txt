@@ -250,21 +250,25 @@ Module Contents
           instead.
 
 
-   .. py:method:: fit(model: helios.model.Model, datamodule: helios.data.DataModule) -> None
+   .. py:method:: fit(model: helios.model.Model, datamodule: helios.data.DataModule) -> bool
 
       Run the full training routine.
 
       :param model: the model to run on.
       :param datamodule: the datamodule to use.
 
+      :returns: True if the training process completed successfully, false otherwise.
 
 
-   .. py:method:: test(model: helios.model.Model, datamodule: helios.data.DataModule) -> None
+
+   .. py:method:: test(model: helios.model.Model, datamodule: helios.data.DataModule) -> bool
 
       Run the full testing routine.
 
       :param model: the model to run on.
       :param datamodule: the datamodule to use.
+
+      :returns: True if the training process completed successfully, false otherwise.
 
 
 

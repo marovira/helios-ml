@@ -15,7 +15,7 @@ Classes
 Module Contents
 ---------------
 
-.. py:class:: OptunaPlugin(trial: optuna.Trial, metric_name: str)
+.. py:class:: OptunaPlugin(trial: optuna.Trial, metric_name: str, num_trials: int | None = None)
 
    Bases: :py:obj:`helios.plugins.Plugin`
 
@@ -68,6 +68,8 @@ Module Contents
    :param trial: the Optuna trial.
    :param metric_name: the name of the metric to monitor. This assumes the name will be
                        present in the :py:attr:`~helios.model.model.Model.metrics` table.
+   :param num_trials: the number of trials that should run. This is used to automatically
+                      stop the optimisation run if the trial number exceeds `num_trials`.
 
 
    .. py:attribute:: plugin_id
@@ -164,6 +166,12 @@ Module Contents
    .. py:method:: setup() -> None
 
       Configure the plug-in.
+
+      If `num_trials` is passed in to the constructor, then this will also check the
+      current trial number against that value. If the current trial's number exceeds the
+      value passed in to `num_trials`, it will request that the current optimisation
+      loop exits after the running trials finish. This ensures that if the optimisation
+      loop is restarted, the count of trials is respected.
 
       :raises ValueError: if the study wasn't created with persistent storage.
 

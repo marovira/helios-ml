@@ -336,7 +336,7 @@
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">OptunaPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.Trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">OptunaPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.Trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_trials</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">helios.plugins.Plugin</span></code></p>
 <p>Plug-in to do hyper-parameter tuning with Optuna.</p>
 <p>This plug-in integrates <a class="reference external" href="https://optuna.readthedocs.io/en/stable/">Optuna</a> into the
@@ -387,6 +387,8 @@ then <code class="xref py py-exc docutils literal notranslate"><span class="pre"
 <li><p><strong>trial</strong> – the Optuna trial.</p></li>
 <li><p><strong>metric_name</strong> – the name of the metric to monitor. This assumes the name will be
 present in the <a class="reference internal" href="../../model/model/index.html#helios.model.model.Model.metrics" title="helios.model.model.Model.metrics"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metrics</span></code></a> table.</p></li>
+<li><p><strong>num_trials</strong> – the number of trials that should run. This is used to automatically
+stop the optimisation run if the trial number exceeds <cite>num_trials</cite>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -503,6 +505,11 @@ wrapper.</p>
 <dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.setup">
 <span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.setup" title="Link to this definition">¶</a></dt>
 <dd><p>Configure the plug-in.</p>
+<p>If <cite>num_trials</cite> is passed in to the constructor, then this will also check the
+current trial number against that value. If the current trial’s number exceeds the
+value passed in to <cite>num_trials</cite>, it will request that the current optimisation
+loop exits after the running trials finish. This ensures that if the optimisation
+loop is restarted, the count of trials is respected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ValueError</strong> – if the study wasn’t created with persistent storage.</p>
