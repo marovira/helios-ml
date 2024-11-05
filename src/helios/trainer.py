@@ -71,6 +71,21 @@ class _TrainerMode(enum.Enum):
 
 
 @dc.dataclass
+class _DistributedErrorState:
+    """
+    Holds the state necessary to correctly handle errors in distributed training.
+
+    This class is pushed into the internal error handling queue and used by the main
+    process when an error occurs to ensure the exception is handled correctly.
+
+    Args:
+        log_path: the path used by the root logger (if using).
+    """
+
+    log_path: pathlib.Path | None = None
+
+
+@dc.dataclass
 class TrainingState:
     """
     The training state.
@@ -165,7 +180,7 @@ def _spawn_handler(
     model: hlm.Model,
     mode: _TrainerMode,
     queue: mp.Queue,
-    internal_queue: mp.Queue,
+    error_queue: mp.Queue,
 ) -> None:
     """
     Spawn handler for distributed training.
@@ -185,7 +200,7 @@ def _spawn_handler(
     trainer.rank = rank
     trainer.local_rank = rank
     trainer.queue = queue
-    trainer._internal_queue = internal_queue  # noqa: SLF001
+    trainer._distributed_error_queue = error_queue  # noqa: SLF001
 
     try:
         if mode == _TrainerMode.TRAIN:
@@ -311,7 +326,7 @@ class Trainer:
         self._plugins: dict[str, hlp.Plugin] = {}
 
         self._queue: mp.Queue | None = None
-        self._internal_queue: mp.Queue | None = None
+        self._distributed_error_queue: mp.Queue | None = None
 
         self._validate_flags(use_cpu)
         self._setup_device_flags(use_cpu)
@@ -467,16 +482,20 @@ class Trainer:
             logging.close_default_loggers()
         return True
 
-    def _handle_distributed_exception(self, e: Exception, mode: _TrainerMode) -> bool:
-        assert self._internal_queue is not None
-        if self._enable_file_logging:
-            # If we have file logging enabled, then grab the path from the queue and
-            # create the root logger from that file so we can log the exception.
-            log_path: pathlib.Path = self._internal_queue.get()
-            logging.create_default_loggers(False)
-            logging.restore_default_loggers(log_path)
+    def _configure_env_for_distributed_error_handling(self) -> None:
+        assert self._distributed_error_queue is not None
+        if self._distributed_error_queue.empty():
+            return
 
-        return self._handle_exception(e, mode)
+        state: _DistributedErrorState = self._distributed_error_queue.get_nowait()
+        if self._enable_file_logging and state.log_path is not None:
+            logging.create_default_loggers(enable_tensorboard=False)
+            logging.restore_default_loggers(log_path=state.log_path)
+
+    def _push_distributed_error_state(self, state: _DistributedErrorState) -> None:
+        if self._distributed_error_queue is None:
+            return
+        self._distributed_error_queue.put(state)
 
     def _launch(
         self, model: hlm.Model, datamodule: data.DataModule, mode: _TrainerMode
@@ -498,7 +517,7 @@ class Trainer:
             if mp.get_start_method(allow_none=True) is None:
                 mp.set_start_method("spawn")
             queue: mp.Queue = mp.Queue()
-            internal_queue: mp.Queue = mp.Queue()
+            error_queue: mp.Queue = mp.Queue()
             world_size = len(self._gpu_ids)
             try:
                 mp.spawn(
@@ -510,15 +529,16 @@ class Trainer:
                         model,
                         mode,
                         queue,
-                        internal_queue,
+                        error_queue,
                     ),
                     nprocs=world_size,
                     join=True,
                 )
             except Exception as e:
-                self._internal_queue = internal_queue
-                if not self._handle_distributed_exception(e, mode):
-                    raise e
+                self._distributed_error_queue = error_queue
+                self._configure_env_for_distributed_error_handling()
+                raise e
+
             self.queue = queue
             return
 
@@ -554,6 +574,9 @@ class Trainer:
 
         chkpt_path = find_last_checkpoint(self._chkpt_root)
         training_state = self._load_checkpoint(chkpt_path)
+
+        log_path = logging.get_root_logger().log_file
+        self._push_distributed_error_state(_DistributedErrorState(log_path=log_path))
 
         self._print_header(chkpt_path)
 
@@ -601,6 +624,9 @@ class Trainer:
         # We failed to load the last checkpoint, so tell the model to load its state.
         if self._chkpt_root is None or not loaded:
             self.model.load_for_testing()
+
+        log_path = logging.get_root_logger().log_file
+        self._push_distributed_error_state(_DistributedErrorState(log_path=log_path))
 
         self._print_header(chkpt_path, for_training=False)
 
