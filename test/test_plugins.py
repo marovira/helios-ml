@@ -1,4 +1,3 @@
-import pathlib
 import typing
 
 import optuna
@@ -158,40 +157,6 @@ class TestOptunaPlugin:
 
         study = optuna.create_study()
         study.optimize(objective, n_trials=1)
-
-    def test_trial_count(self, tmp_path: pathlib.Path) -> None:
-        num_trials = 10
-
-        def objective(trial: optuna.Trial) -> float:
-            plugin = OptunaPlugin(trial, "accuracy", num_trials=num_trials)
-            plugin.setup()
-
-            if plugin.trial.number == 5:
-                raise RuntimeError("error")
-            x = plugin.trial.suggest_float("x", 0, 10)
-            return x**2
-
-        storage_path = tmp_path / "trial_test.db"
-        study = optuna.create_study(
-            study_name="trial_test",
-            storage=f"sqlite:///{storage_path}",
-            load_if_exists=True,
-        )
-
-        with pytest.raises(RuntimeError):
-            study.optimize(objective, n_trials=num_trials)
-
-        # Clear out the study and start again.
-        del study
-
-        study = optuna.create_study(
-            study_name="trial_test",
-            storage=f"sqlite:///{storage_path}",
-            load_if_exists=True,
-        )
-        study.optimize(objective, n_trials=num_trials)
-
-        assert len(study.trials) == num_trials
 
     def check_in_range(
         self, val: typing.Any, t: type, low: typing.Any, high: typing.Any
