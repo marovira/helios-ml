@@ -17,6 +17,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "autoapi.extension",
     "sphinx.ext.mathjax",
+    "sphinx.ext.viewcode",
 ]
 autosummary_generate = True
 templates_path = ["_templates"]
