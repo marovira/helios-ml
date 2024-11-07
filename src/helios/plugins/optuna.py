@@ -108,27 +108,15 @@ class OptunaPlugin(hlp.Plugin):
 
     def configure_model(self, model: hlm.Model) -> None:
         """
-        Configure the model to allow trials to resume.
+        Configure the model to set the trial number into the save name.
 
         This will alter the :py:attr:`~helios.model.model.Model.save_name` property of the
-        model by appending :code:`_trial-<trial-numer>`. In the event that a trial with
-        that number has already been attempted, it will be set to that number instead.
-        This will allow the automatic checkpoint system of the trainer to resume the
-        trial.
+        model by appending :code:`_trial-<trial-numer>`.
 
         Args:
             model: the model instance.
         """
-        trial_number = optuna.storages.RetryFailedTrialCallback.retried_trial_number(
-            self.trial  # type: ignore[arg-type]
-        )
-        trial_id = (
-            f"_trial-{self.trial.number}"
-            if trial_number is None
-            else f"_trial-{trial_number}"
-        )
-
-        model._save_name = model._save_name + trial_id
+        model._save_name = model._save_name + f"_trial-{self.trial.number}"
 
     def suggest(self, type_name: str, name: str, **kwargs: typing.Any) -> typing.Any:
         """
