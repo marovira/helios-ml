@@ -1,3 +1,4 @@
+import pathlib
 import typing
 
 import optuna
@@ -7,7 +8,7 @@ import torch
 import helios.model as hlm
 import helios.plugins as hlp
 import helios.trainer as hlt
-from helios.plugins.optuna import OptunaPlugin
+from helios.plugins.optuna import _ORIG_NUMBER_KEY, OptunaPlugin
 
 
 class ExceptionPlugin(hlp.Plugin):
@@ -195,3 +196,82 @@ class TestOptunaPlugin:
 
         study = optuna.create_study()
         study.optimize(objective, n_trials=1)
+
+    def test_state_dict(self) -> None:
+        def objective(trial: optuna.Trial) -> int:
+            plugin = OptunaPlugin(trial, "accuracy")
+            x = plugin.suggest("float", "x", low=-10, high=10)
+
+            state_dict = plugin.state_dict()
+            assert len(state_dict) == 1
+            assert "x" in state_dict
+            assert state_dict["x"] == x
+
+            return 0
+
+        study = optuna.create_study()
+        study.optimize(objective, n_trials=1)
+
+    def test_resume_trial(self, tmp_path: pathlib.Path) -> None:
+        num_trials = 10
+        successful_trials = [False for _ in range(num_trials)]
+        offset = 0
+
+        def objective(trial: optuna.Trial) -> float:
+            nonlocal offset
+            plugin = OptunaPlugin(trial, "accuracy")
+            plugin.setup()
+
+            model = PluginModel("plugin-model")
+            plugin.configure_model(model)
+
+            trial_num = trial.number
+            if _ORIG_NUMBER_KEY in trial.user_attrs:
+                trial_num = trial.user_attrs[_ORIG_NUMBER_KEY]
+                assert model.save_name == f"plugin-model_trial-{trial_num}"
+
+                # Artificially offset the number by 1 so that when we subtract 1 later on
+                # the indices work out correctly.
+                trial_num += 1
+                offset = 1
+
+            if trial.number == num_trials / 2:
+                raise RuntimeError("half-way stop")
+
+            successful_trials[trial_num - offset] = True
+
+            return 0
+
+        def create_study() -> optuna.Study:
+            storage_path = tmp_path / "trial_test.db"
+            return optuna.create_study(
+                study_name="trial_test",
+                storage=f"sqlite:///{storage_path}",
+                load_if_exists=True,
+            )
+
+        def optimize(study: optuna.Study) -> None:
+            study.optimize(
+                objective,
+                n_trials=num_trials,
+                callbacks=[
+                    optuna.study.MaxTrialsCallback(
+                        num_trials,
+                        states=(optuna.trial.TrialState.COMPLETE,),
+                    )
+                ],
+            )
+
+        study = create_study()
+        with pytest.raises(RuntimeError):
+            optimize(study)
+
+        del study
+
+        study = create_study()
+
+        OptunaPlugin.enqueue_failed_trials(study)
+        optimize(study)
+
+        for v in successful_trials:
+            assert v

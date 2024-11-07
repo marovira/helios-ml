@@ -928,6 +928,10 @@ class Trainer:
             writer = core.get_from_optional(logging.get_tensorboard_writer())
             state_dict["run_path"] = writer.run_path
 
+        # Add the plug-ins (if using)
+        for plug_id, plugin in self._plugins.items():
+            state_dict[plug_id] = plugin.state_dict()
+
         # Safety check.
         assert self._validate_state_dict(state_dict)
 
@@ -968,6 +972,11 @@ class Trainer:
         if not skip_rng:
             rng.load_rng_state_dict(state_dict["rng"])
         self.model.load_state_dict(state_dict["model"], fast_init=model_fast_init)
+
+        for plug_id, plugin in self._plugins.items():
+            if plug_id in state_dict:
+                plugin.load_state_dict(state_dict[plug_id])
+
         return state_dict["training_state"]
 
     def _train_on_iteration(self, state: TrainingState) -> None:

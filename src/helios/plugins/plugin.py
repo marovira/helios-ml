@@ -254,6 +254,27 @@ class Plugin(abc.ABC):
         """
         return False
 
+    def load_state_dict(self, state_dict: dict[str, typing.Any]) -> None:
+        """
+        Load the plug-in state from the given state dictionary.
+
+        Use this function to restore any state from a checkpoint.
+
+        Args:
+            state_dict: the state dictionary to load from.
+        """
+
+    def state_dict(self) -> dict[str, typing.Any]:
+        """
+        Get the state dictionary of the plug-in.
+
+        Use this function to save any state that you require for checkpoints.
+
+        Returns:
+            The state dictionary of the plug-in.
+        """
+        return {}
+
     def on_testing_start(self) -> None:
         """Perform any actions when testing starts."""
 

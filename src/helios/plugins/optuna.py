@@ -16,6 +16,7 @@ import helios.trainer as hlt
 
 _PRUNED_KEY = "ddp_hl:pruned"
 _CYCLE_KEY = "ddp_hl:cycle"
+_ORIG_NUMBER_KEY = "hl:id"
 
 
 @hlp.PLUGIN_REGISTRY.register
@@ -91,6 +92,28 @@ class OptunaPlugin(hlp.Plugin):
     def trial(self, t: optuna.Trial) -> None:
         self._trial = t
 
+    @staticmethod
+    def enqueue_failed_trials(study: optuna.study.Study) -> None:
+        """
+        Enqueue any failed trials so they can be re-run.
+
+        This will add any failed trials from a previous run. This is used for cases when
+        the study had to be stopped due to an error, exception, or by the user, allowing
+        trials that didn't finish to complete.
+
+        This function works in tandem with
+        :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` to ensure that when
+        the failed trial is re-run, the original save name is restored so any saved
+        checkpoints can be re-used so the trial can continue instead of starting from
+        scratch.
+
+        Args:
+            study: the study to get the failed trials from and enqueue them.
+        """
+        for trial in study.trials:
+            if trial.state == optuna.trial.TrialState.FAIL:
+                study.enqueue_trial(trial.params, {_ORIG_NUMBER_KEY: trial.number})
+
     def configure_trainer(self, trainer: hlt.Trainer) -> None:
         """
         Configure the trainer with the required settings.
@@ -116,7 +139,8 @@ class OptunaPlugin(hlp.Plugin):
         Args:
             model: the model instance.
         """
-        model._save_name = model._save_name + f"_trial-{self.trial.number}"
+        n_trial = self.trial.user_attrs.get(_ORIG_NUMBER_KEY, self.trial.number)
+        model._save_name = model._save_name + f"_trial-{n_trial}"
 
     def suggest(self, type_name: str, name: str, **kwargs: typing.Any) -> typing.Any:
         """
@@ -179,12 +203,6 @@ class OptunaPlugin(hlp.Plugin):
     def setup(self) -> None:
         """
         Configure the plug-in.
-
-        If `num_trials` is passed in to the constructor, then this will also check the
-        current trial number against that value. If the current trial's number exceeds the
-        value passed in to `num_trials`, it will request that the current optimisation
-        loop exits after the running trials finish. This ensures that if the optimisation
-        loop is restarted, the count of trials is respected.
 
         Raises:
             ValueError: if the study wasn't created with persistent storage.
@@ -285,3 +303,14 @@ class OptunaPlugin(hlp.Plugin):
 
         if is_pruned:
             raise optuna.TrialPruned(f"Pruned on validation cycle {val_cycle}")
+
+    def state_dict(self) -> dict[str, typing.Any]:
+        """
+        Get the state of the current trial.
+
+        This will return the parameters to be optimised for the current trial.
+
+        Returns:
+            The parameters of the trial.
+        """
+        return self._trial.params
