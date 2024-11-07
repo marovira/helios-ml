@@ -197,6 +197,28 @@ class RestartModel(hlm.Model):
         self.batches.append(as_np)
 
 
+class CheckpointModel(hlm.Model):
+    def __init__(self) -> None:
+        super().__init__("test-checkpoint")
+
+        self._state = {
+            "a": 1,
+            "b": 2.0,
+            "c": "x",
+        }
+
+    def setup(self, fast_init: bool = False) -> None:
+        pass
+
+    def state_dict(self) -> dict[str, typing.Any]:
+        return self._state
+
+    def load_state_dict(
+        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+    ) -> None:
+        assert self._state == state_dict
+
+
 class AccumulationModel(hlm.Model):
     def __init__(self, accumulation_steps: int = 1) -> None:
         super().__init__("test-accumulation")
@@ -237,6 +259,30 @@ class EmptyPlugin(hlp.Plugin):
 
     def setup(self):
         pass
+
+
+class CheckpointPlugin(hlp.Plugin):
+    def __init__(self):
+        super().__init__("chkpt")
+        self._state = {
+            "a": 1,
+            "b": 2.0,
+            "c": "x",
+        }
+
+    def setup(self):
+        pass
+
+    def configure_trainer(self, trainer: hlt.Trainer) -> None:
+        self._register_in_trainer(trainer)
+
+    def state_dict(self) -> dict[str, typing.Any]:
+        return self._state
+
+    def load_state_dict(
+        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+    ) -> None:
+        assert self._state == state_dict
 
 
 class OverrideFlagsPlugin(hlp.Plugin):
@@ -775,3 +821,27 @@ class TestTrainer:
         )
 
         self.check_plugin_functions(hlt.Trainer(use_cpu=True), fit=False)
+
+    def test_checkpoints(self, tmp_path: pathlib.Path) -> None:
+        datamodule = RandomDatamodule()
+        model = CheckpointModel()
+        plugin = CheckpointPlugin()
+
+        trainer = hlt.Trainer(
+            train_unit=hlt.TrainingUnit.ITERATION,
+            total_steps=10,
+            valid_frequency=10,
+            chkpt_root=tmp_path,
+            chkpt_frequency=10,
+            use_cpu=True,
+        )
+        plugin.configure_trainer(trainer)
+        assert trainer.fit(model, datamodule)
+
+        chkpt_root = tmp_path / model._save_name
+        chkpts = list(chkpt_root.glob("*.pth"))
+        assert len(chkpts) == 1
+
+        chkpt = hlc.safe_torch_load(chkpts[0])
+        model.load_state_dict(chkpt["model"])
+        plugin.load_state_dict(chkpt[plugin._plug_id])
