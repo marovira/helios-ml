@@ -92,8 +92,8 @@ class OptunaPlugin(hlp.Plugin):
     def trial(self, t: optuna.Trial) -> None:
         self._trial = t
 
-    @staticmethod
-    def enqueue_failed_trials(study: optuna.study.Study) -> None:
+    @classmethod
+    def enqueue_failed_trials(cls, study: optuna.study.Study) -> None:
         """
         Enqueue any failed trials so they can be re-run.
 
@@ -107,12 +107,36 @@ class OptunaPlugin(hlp.Plugin):
         checkpoints can be re-used so the trial can continue instead of starting from
         scratch.
 
+        .. note::
+            Only trials that fail but haven't been completed will be enqueued by this
+            function. If a trial fails and is completed later on, it will be skipped.
+
+        .. warning::
+            Depending on the reason for a trial failing, it is possible for this function
+            to re-add trials that will continue to fail. If you require special handling,
+            you may override this function to achieve your desired behaviour.
+
         Args:
             study: the study to get the failed trials from and enqueue them.
         """
+        failed_but_completed: list[optuna.trial.FrozenTrial] = []
+        failed: dict[int, optuna.trial.FrozenTrial] = {}
         for trial in study.trials:
+            if (
+                trial.state == optuna.trial.TrialState.COMPLETE
+                and _ORIG_NUMBER_KEY in trial.user_attrs
+            ):
+                failed_but_completed.append(trial)
+
             if trial.state == optuna.trial.TrialState.FAIL:
-                study.enqueue_trial(trial.params, {_ORIG_NUMBER_KEY: trial.number})
+                failed[trial.number] = trial
+
+        for trial in failed_but_completed:
+            trial_num = trial.user_attrs[_ORIG_NUMBER_KEY]
+            failed.pop(trial_num, None)
+
+        for _, trial in failed.items():
+            study.enqueue_trial(trial.params, {_ORIG_NUMBER_KEY: trial.number})
 
     def configure_trainer(self, trainer: hlt.Trainer) -> None:
         """
