@@ -629,6 +629,30 @@ or it can be used to move all elements in the batch to a set device.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="helios.plugins.plugin.Plugin.load_state_dict">
+<span class="sig-name descname"><span class="pre">load_state_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.plugins.plugin.Plugin.load_state_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Load the plug-in state from the given state dictionary.</p>
+<p>Use this function to restore any state from a checkpoint.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>state_dict</strong> – the state dictionary to load from.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.plugins.plugin.Plugin.state_dict">
+<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helios.plugins.plugin.Plugin.state_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Get the state dictionary of the plug-in.</p>
+<p>Use this function to save any state that you require for checkpoints.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The state dictionary of the plug-in.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="helios.plugins.plugin.Plugin.on_testing_start">
 <span class="sig-name descname"><span class="pre">on_testing_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.plugins.plugin.Plugin.on_testing_start" title="Link to this definition">¶</a></dt>
 <dd><p>Perform any actions when testing starts.</p>
@@ -863,6 +887,8 @@ behaviour of the plug-in by deriving from it. See the example below for details.
 <li><a class="reference internal" href="#helios.plugins.plugin.Plugin.process_validation_batch"><code class="docutils literal notranslate"><span class="pre">Plugin.process_validation_batch()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.plugin.Plugin.on_validation_end"><code class="docutils literal notranslate"><span class="pre">Plugin.on_validation_end()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.plugin.Plugin.should_training_stop"><code class="docutils literal notranslate"><span class="pre">Plugin.should_training_stop()</span></code></a></li>
+<li><a class="reference internal" href="#helios.plugins.plugin.Plugin.load_state_dict"><code class="docutils literal notranslate"><span class="pre">Plugin.load_state_dict()</span></code></a></li>
+<li><a class="reference internal" href="#helios.plugins.plugin.Plugin.state_dict"><code class="docutils literal notranslate"><span class="pre">Plugin.state_dict()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.plugin.Plugin.on_testing_start"><code class="docutils literal notranslate"><span class="pre">Plugin.on_testing_start()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.plugin.Plugin.process_testing_batch"><code class="docutils literal notranslate"><span class="pre">Plugin.process_testing_batch()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.plugin.Plugin.on_testing_end"><code class="docutils literal notranslate"><span class="pre">Plugin.on_testing_end()</span></code></a></li>

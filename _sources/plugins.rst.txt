@@ -400,3 +400,31 @@ The exact arguments for each ``suggest_`` function can be found `here
 
 .. warning::
    The plug-in does *not* provide wrappers for any function that is marked as deprecated.
+
+Restarting Failed Trials
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the event that a trial fails and this results in the entire study being aborted, the
+Optuna plug-in provides a way to ensure that failed trials get re-run. To do so, we need
+to do a bit of textra setup when we create the study:
+
+.. code-block:: python
+
+   study = optuna.create_study(...)
+   OptunaPlugin.enqueue_failed_trials(study)
+
+   # Continue as before
+
+The :py:meth:`~helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials` will re-add any
+failed trials from the study. In addition, it will also add the necessary data so that
+when :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` gets called, it will
+be able to re-set the id of the failed trial into the
+:py:attr:`~helios.model.model.Model.save_name` of the model so that any saved checkpoints
+can be re-used. This allows failed trials to continue training as opposed to re-starting
+from scratch.
+
+.. note::
+   :py:meth:`~helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials` will add *all*
+   failed trials that are found that have not been completed in subsequent runs. This
+   could result in trials that are known to fail to be re-added. Please look at the
+   implementation if you require extra logic.

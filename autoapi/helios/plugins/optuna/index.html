@@ -336,7 +336,7 @@
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">OptunaPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.Trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_trials</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">OptunaPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.Trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">helios.plugins.Plugin</span></code></p>
 <p>Plug-in to do hyper-parameter tuning with Optuna.</p>
 <p>This plug-in integrates <a class="reference external" href="https://optuna.readthedocs.io/en/stable/">Optuna</a> into the
@@ -387,8 +387,6 @@ then <code class="xref py py-exc docutils literal notranslate"><span class="pre"
 <li><p><strong>trial</strong> – the Optuna trial.</p></li>
 <li><p><strong>metric_name</strong> – the name of the metric to monitor. This assumes the name will be
 present in the <a class="reference internal" href="../../model/model/index.html#helios.model.model.Model.metrics" title="helios.model.model.Model.metrics"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metrics</span></code></a> table.</p></li>
-<li><p><strong>num_trials</strong> – the number of trials that should run. This is used to automatically
-stop the optimisation run if the trial number exceeds <cite>num_trials</cite>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -401,6 +399,36 @@ stop the optimisation run if the trial number exceeds <cite>num_trials</cite>.</
 <dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.trial">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trial</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">optuna.Trial</span></em><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.trial" title="Link to this definition">¶</a></dt>
 <dd><p>Return the trial.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enqueue_failed_trials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.study.Study</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials" title="Link to this definition">¶</a></dt>
+<dd><p>Enqueue any failed trials so they can be re-run.</p>
+<p>This will add any failed trials from a previous run. This is used for cases when
+the study had to be stopped due to an error, exception, or by the user, allowing
+trials that didn’t finish to complete.</p>
+<p>This function works in tandem with
+<a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_model" title="helios.plugins.optuna.OptunaPlugin.configure_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">configure_model()</span></code></a> to ensure that when
+the failed trial is re-run, the original save name is restored so any saved
+checkpoints can be re-used so the trial can continue instead of starting from
+scratch.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only trials that fail but haven’t been completed will be enqueued by this
+function. If a trial fails and is completed later on, it will be skipped.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the reason for a trial failing, it is possible for this function
+to re-add trials that will continue to fail. If you require special handling,
+you may override this function to achieve your desired behaviour.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>study</strong> – the study to get the failed trials from and enqueue them.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -422,12 +450,9 @@ stop the optimisation run if the trial number exceeds <cite>num_trials</cite>.</
 <dl class="py method">
 <dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.configure_model">
 <span class="sig-name descname"><span class="pre">configure_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">helios.model.Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.configure_model" title="Link to this definition">¶</a></dt>
-<dd><p>Configure the model to allow trials to resume.</p>
+<dd><p>Configure the model to set the trial number into the save name.</p>
 <p>This will alter the <a class="reference internal" href="../../model/model/index.html#helios.model.model.Model.save_name" title="helios.model.model.Model.save_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">save_name</span></code></a> property of the
-model by appending <code class="code docutils literal notranslate"><span class="pre">_trial-&lt;trial-numer&gt;</span></code>. In the event that a trial with
-that number has already been attempted, it will be set to that number instead.
-This will allow the automatic checkpoint system of the trainer to resume the
-trial.</p>
+model by appending <code class="code docutils literal notranslate"><span class="pre">_trial-&lt;trial-numer&gt;</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>model</strong> – the model instance.</p>
@@ -505,11 +530,6 @@ wrapper.</p>
 <dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.setup">
 <span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.setup" title="Link to this definition">¶</a></dt>
 <dd><p>Configure the plug-in.</p>
-<p>If <cite>num_trials</cite> is passed in to the constructor, then this will also check the
-current trial number against that value. If the current trial’s number exceeds the
-value passed in to <cite>num_trials</cite>, it will request that the current optimisation
-loop exits after the running trials finish. This ensures that if the optimisation
-loop is restarted, the count of trials is respected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ValueError</strong> – if the study wasn’t created with persistent storage.</p>
@@ -582,6 +602,18 @@ distributed training wasn’t used, this function does nothing.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.state_dict">
+<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.state_dict" title="Link to this definition">¶</a></dt>
+<dd><p>Get the state of the current trial.</p>
+<p>This will return the parameters to be optimised for the current trial.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The parameters of the trial.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -648,6 +680,7 @@ distributed training wasn’t used, this function does nothing.</p>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin</span></code></a><ul>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.plugin_id"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.plugin_id</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.trial"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.trial</span></code></a></li>
+<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.enqueue_failed_trials()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_trainer"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.configure_trainer()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_model"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.configure_model()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.suggest"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.suggest()</span></code></a></li>
@@ -656,6 +689,7 @@ distributed training wasn’t used, this function does nothing.</p>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.should_training_stop"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.should_training_stop()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.on_training_end"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.on_training_end()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.check_pruned"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.check_pruned()</span></code></a></li>
+<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.state_dict"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.state_dict()</span></code></a></li>
 </ul>
 </li>
 </ul>

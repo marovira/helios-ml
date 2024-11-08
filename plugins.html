@@ -694,6 +694,32 @@ parameters be hard-coded. The function is called
 <p>The plug-in does <em>not</em> provide wrappers for any function that is marked as deprecated.</p>
 </div>
 </section>
+<section id="restarting-failed-trials">
+<h4>Restarting Failed Trials<a class="headerlink" href="#restarting-failed-trials" title="Link to this heading">¶</a></h4>
+<p>In the event that a trial fails and this results in the entire study being aborted, the
+Optuna plug-in provides a way to ensure that failed trials get re-run. To do so, we need
+to do a bit of textra setup when we create the study:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">study</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">create_study</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">OptunaPlugin</span><span class="o">.</span><span class="n">enqueue_failed_trials</span><span class="p">(</span><span class="n">study</span><span class="p">)</span>
+
+<span class="c1"># Continue as before</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials" title="helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials"><code class="xref py py-meth docutils literal notranslate"><span class="pre">enqueue_failed_trials()</span></code></a> will re-add any
+failed trials from the study. In addition, it will also add the necessary data so that
+when <a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.configure_model" title="helios.plugins.optuna.OptunaPlugin.configure_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">configure_model()</span></code></a> gets called, it will
+be able to re-set the id of the failed trial into the
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.save_name" title="helios.model.model.Model.save_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">save_name</span></code></a> of the model so that any saved checkpoints
+can be re-used. This allows failed trials to continue training as opposed to re-starting
+from scratch.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials" title="helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials"><code class="xref py py-meth docutils literal notranslate"><span class="pre">enqueue_failed_trials()</span></code></a> will add <em>all</em>
+failed trials that are found that have not been completed in subsequent runs. This
+could result in trials that are known to fail to be re-added. Please look at the
+implementation if you require extra logic.</p>
+</div>
+</section>
 </section>
 </section>
 </section>
@@ -768,6 +794,7 @@ parameters be hard-coded. The function is called
 <li><a class="reference internal" href="#reporting-metrics">Reporting Metrics</a></li>
 <li><a class="reference internal" href="#trial-pruning-and-returning-metrics">Trial Pruning and Returning Metrics</a></li>
 <li><a class="reference internal" href="#generic-suggestion-of-parameters">Generic Suggestion of Parameters</a></li>
+<li><a class="reference internal" href="#restarting-failed-trials">Restarting Failed Trials</a></li>
 </ul>
 </li>
 </ul>

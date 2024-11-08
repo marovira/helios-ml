@@ -15,7 +15,7 @@ Classes
 Module Contents
 ---------------
 
-.. py:class:: OptunaPlugin(trial: optuna.Trial, metric_name: str, num_trials: int | None = None)
+.. py:class:: OptunaPlugin(trial: optuna.Trial, metric_name: str)
 
    Bases: :py:obj:`helios.plugins.Plugin`
 
@@ -68,8 +68,6 @@ Module Contents
    :param trial: the Optuna trial.
    :param metric_name: the name of the metric to monitor. This assumes the name will be
                        present in the :py:attr:`~helios.model.model.Model.metrics` table.
-   :param num_trials: the number of trials that should run. This is used to automatically
-                      stop the optimisation run if the trial number exceeds `num_trials`.
 
 
    .. py:attribute:: plugin_id
@@ -81,6 +79,35 @@ Module Contents
       :type: optuna.Trial
 
       Return the trial.
+
+
+   .. py:method:: enqueue_failed_trials(study: optuna.study.Study) -> None
+      :classmethod:
+
+
+      Enqueue any failed trials so they can be re-run.
+
+      This will add any failed trials from a previous run. This is used for cases when
+      the study had to be stopped due to an error, exception, or by the user, allowing
+      trials that didn't finish to complete.
+
+      This function works in tandem with
+      :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` to ensure that when
+      the failed trial is re-run, the original save name is restored so any saved
+      checkpoints can be re-used so the trial can continue instead of starting from
+      scratch.
+
+      .. note::
+          Only trials that fail but haven't been completed will be enqueued by this
+          function. If a trial fails and is completed later on, it will be skipped.
+
+      .. warning::
+          Depending on the reason for a trial failing, it is possible for this function
+          to re-add trials that will continue to fail. If you require special handling,
+          you may override this function to achieve your desired behaviour.
+
+      :param study: the study to get the failed trials from and enqueue them.
+
 
 
    .. py:method:: configure_trainer(trainer: helios.trainer.Trainer) -> None
@@ -98,13 +125,10 @@ Module Contents
 
    .. py:method:: configure_model(model: helios.model.Model) -> None
 
-      Configure the model to allow trials to resume.
+      Configure the model to set the trial number into the save name.
 
       This will alter the :py:attr:`~helios.model.model.Model.save_name` property of the
-      model by appending :code:`_trial-<trial-numer>`. In the event that a trial with
-      that number has already been attempted, it will be set to that number instead.
-      This will allow the automatic checkpoint system of the trainer to resume the
-      trial.
+      model by appending :code:`_trial-<trial-numer>`.
 
       :param model: the model instance.
 
@@ -167,12 +191,6 @@ Module Contents
 
       Configure the plug-in.
 
-      If `num_trials` is passed in to the constructor, then this will also check the
-      current trial number against that value. If the current trial's number exceeds the
-      value passed in to `num_trials`, it will request that the current optimisation
-      loop exits after the running trials finish. This ensures that if the optimisation
-      loop is restarted, the count of trials is respected.
-
       :raises ValueError: if the study wasn't created with persistent storage.
 
 
@@ -227,6 +245,16 @@ Module Contents
           :py:meth:`~helios.trainer.Trainer.fit` to ensure pruning works correctly.
 
       :raises TrialPruned: if the trial was pruned.
+
+
+
+   .. py:method:: state_dict() -> dict[str, Any]
+
+      Get the state of the current trial.
+
+      This will return the parameters to be optimised for the current trial.
+
+      :returns: The parameters of the trial.
 
 
 

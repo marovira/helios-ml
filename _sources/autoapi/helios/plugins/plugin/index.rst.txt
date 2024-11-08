@@ -266,6 +266,26 @@ Module Contents
 
 
 
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
+      Load the plug-in state from the given state dictionary.
+
+      Use this function to restore any state from a checkpoint.
+
+      :param state_dict: the state dictionary to load from.
+
+
+
+   .. py:method:: state_dict() -> dict[str, Any]
+
+      Get the state dictionary of the plug-in.
+
+      Use this function to save any state that you require for checkpoints.
+
+      :returns: The state dictionary of the plug-in.
+
+
+
    .. py:method:: on_testing_start() -> None
 
       Perform any actions when testing starts.
