@@ -34,8 +34,17 @@ jobs:
           echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
           echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
 
-      - name: Build
-        uses: ammaraskar/sphinx-action@7.3.7
+      - name: Install Helios
+        shell: bash
+        run: |
+          pip install .
+
+      - name: Build Docs
+        shell: bash
+        run: |
+          cd docs
+          make html
+
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
