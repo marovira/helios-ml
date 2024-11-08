@@ -195,11 +195,13 @@ Module Contents
    .. py:property:: model
       :type: helios.model.Model
 
+
       Return the model.
 
 
    .. py:property:: datamodule
       :type: helios.data.DataModule
+
 
       Return the datamodule.
 
@@ -207,11 +209,13 @@ Module Contents
    .. py:property:: local_rank
       :type: int
 
+
       Return the local rank of the trainer.
 
 
    .. py:property:: rank
       :type: int
+
 
       Return the global rank of the trainer.
 
@@ -219,11 +223,13 @@ Module Contents
    .. py:property:: gpu_ids
       :type: list[int]
 
+
       Return the list of GPU IDs to use for training.
 
 
    .. py:property:: train_exceptions
       :type: list[type[Exception]]
+
 
       Return the list of valid exceptions for training.
 
@@ -231,17 +237,20 @@ Module Contents
    .. py:property:: test_exceptions
       :type: list[type[Exception]]
 
+
       Return the list of valid exceptions for testing.
 
 
    .. py:property:: plugins
       :type: dict[str, helios.plugins.Plugin]
 
+
       Return the list of plug-ins.
 
 
    .. py:property:: queue
       :type: torch.multiprocessing.Queue | None
+
 
       Return the multi-processing queue instance.
 

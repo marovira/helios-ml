@@ -126,6 +126,12 @@ Module Contents
    :param target_path: the path to switch to.
 
 
+   .. py:attribute:: start_path
+
+
+   .. py:attribute:: target_path
+
+
    .. py:method:: __enter__() -> pathlib.Path
 
       Perform the switch from the current working directory to the new one.

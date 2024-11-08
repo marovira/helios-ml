@@ -140,11 +140,13 @@ Module Contents
    .. py:property:: unique_overrides
       :type: UniquePluginOverrides
 
+
       The set of unique overrides the plug-in uses.
 
 
    .. py:property:: is_distributed
       :type: bool
+
 
       Flag controlling whether distributed training is being used or not.
 
@@ -152,11 +154,13 @@ Module Contents
    .. py:property:: map_loc
       :type: str | dict[str, str]
 
+
       The location to map loaded weights from a checkpoint or pre-trained file.
 
 
    .. py:property:: device
       :type: torch.device
+
 
       The device on which the plug-in is running.
 
@@ -164,11 +168,13 @@ Module Contents
    .. py:property:: rank
       :type: int
 
+
       The local rank (device id) that the plug-in is running on.
 
 
    .. py:property:: trainer
       :type: helios.trainer.Trainer
+
 
       Reference to the trainer.
 

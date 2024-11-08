@@ -9,23 +9,6 @@ helios
 
 
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 1
-
-   /autoapi/helios/core/index
-   /autoapi/helios/data/index
-   /autoapi/helios/losses/index
-   /autoapi/helios/metrics/index
-   /autoapi/helios/model/index
-   /autoapi/helios/nn/index
-   /autoapi/helios/optim/index
-   /autoapi/helios/plugins/index
-   /autoapi/helios/scheduler/index
-
-
 Submodules
 ----------
 
@@ -33,7 +16,16 @@ Submodules
    :maxdepth: 1
 
    /autoapi/helios/chkpt_migrator/index
+   /autoapi/helios/core/index
+   /autoapi/helios/data/index
+   /autoapi/helios/losses/index
+   /autoapi/helios/metrics/index
+   /autoapi/helios/model/index
+   /autoapi/helios/nn/index
    /autoapi/helios/onnx/index
+   /autoapi/helios/optim/index
+   /autoapi/helios/plugins/index
+   /autoapi/helios/scheduler/index
    /autoapi/helios/trainer/index
 
 

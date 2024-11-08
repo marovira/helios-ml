@@ -121,7 +121,7 @@ Module Contents
 
 
 
-.. py:class:: CalculateMAP
+.. py:class:: CalculateMAP(*args, **kwargs)
 
    Bases: :py:obj:`torch.nn.Module`
 

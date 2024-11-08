@@ -30,6 +30,7 @@ Module Contents
    .. py:property:: module
       :type: torch.nn.Module
 
+
       Get the underlying network.
 
 

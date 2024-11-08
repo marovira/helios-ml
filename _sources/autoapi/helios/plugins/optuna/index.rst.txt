@@ -78,6 +78,7 @@ Module Contents
    .. py:property:: trial
       :type: optuna.Trial
 
+
       Return the trial.
 
 

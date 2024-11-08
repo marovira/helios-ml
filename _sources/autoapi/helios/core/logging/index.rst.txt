@@ -57,11 +57,13 @@ Module Contents
    .. py:property:: logger
       :type: logging.Logger
 
+
       Return the logger instance.
 
 
    .. py:property:: log_file
       :type: pathlib.Path | None
+
 
       Return the path to the current log file.
 
@@ -143,6 +145,7 @@ Module Contents
 
    .. py:property:: run_path
       :type: pathlib.Path
+
 
       Return the path to the current run folder.
 

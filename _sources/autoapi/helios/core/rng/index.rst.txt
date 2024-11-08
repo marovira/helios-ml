@@ -47,6 +47,7 @@ Module Contents
    .. py:property:: generator
       :type: numpy.random.Generator
 
+
       Return the Numpy Generator instance.
 
 

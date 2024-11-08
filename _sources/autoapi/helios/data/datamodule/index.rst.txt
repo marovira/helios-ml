@@ -307,11 +307,13 @@ Module Contents
    .. py:property:: is_distributed
       :type: bool
 
+
       Flag controlling whether distributed training is being used or not.
 
 
    .. py:property:: trainer
       :type: helios.trainer.Trainer
+
 
       Reference to the trainer.
 
@@ -319,17 +321,20 @@ Module Contents
    .. py:property:: train_dataset
       :type: torch.utils.data.Dataset | None
 
+
       The training dataset (if available).
 
 
    .. py:property:: valid_dataset
       :type: torch.utils.data.Dataset | None
 
+
       The validation dataset (if available).
 
 
    .. py:property:: test_dataset
       :type: torch.utils.data.Dataset | None
+
 
       The testing dataset (if available).
 
