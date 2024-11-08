@@ -18,14 +18,30 @@ jobs:
         uses: actions/setup-python@v5
         id: setup_python
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+
+      - name: Cache virtualenv
+        uses: actions/cache@v4
+        with:
+          key: venv_ubuntu-latest_py-${{ steps.setup_python.outputs.python-version}}_${{ hashFiles('requirements/ci.txt') }}
+          path: venv
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          python -m pip install -r requirements/ci.txt
+          echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
+          echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
+
       - name: Build
-        uses: ammaraskar/sphinx-action@7.1.2
+        uses: ammaraskar/sphinx-action@7.3.7
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: html-docs
           path: docs/build/html/
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
