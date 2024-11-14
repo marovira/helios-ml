@@ -240,9 +240,28 @@ class OptunaPlugin(hlp.Plugin):
                 "in distributed mode"
             )
 
-    def on_validation_end(self, validation_cycle: int) -> None:
+    def report_metrics(self, validation_cycle: int) -> None:
         """
         Report metrics to the trial.
+
+        This function should be called from the model once the corresponding metrics have
+        been saved into the :py:attr:`~helios.model.model.Model.metrics` table.
+
+        Example:
+            .. code-block:: python
+
+                import helios.model as hlm
+                import helios.plugins.optuna as hlpo
+
+                class MyModel(hlm.Model):
+                    ...
+                    def on_validation_end(self, validation_cycle: int) -> None:
+                        # Compute metrics
+                        self.metrics["accuracy"] = 10
+
+                        plugin = self.trainer.plugins[hlpo.OptunaPlugin.plugin_id]
+                        assert isinstance(plugin hlpo.OptunaPlugin)
+                        plugin.report_metrics(validation_cycle)
 
         .. note::
             In distributed training, only rank 0 will report the metrics to the trial.
