@@ -259,6 +259,11 @@ class ClassifierModel(hlm.Model):
             validation_cycle,
         )
 
+        # Report metrics to the trial
+        plugin = self.trainer.plugins[OptunaPlugin.plugin_id]
+        assert isinstance(plugin, OptunaPlugin)
+        plugin.report_metrics(validation_cycle)
+
     def append_metadata_to_chkpt_name(self, chkpt_name: str) -> str:
         if len(self._val_scores) == 0:
             return chkpt_name
