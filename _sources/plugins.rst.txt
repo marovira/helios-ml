@@ -26,8 +26,8 @@ like this:
             model.on_training_batch_end()
 
         model.on_training_epoch_end()
-   model.on_training_end()
    plugin.on_training_end()
+   model.on_training_end()
 
 Notice that the plug-in functions are always called *before* the corresponding model
 functions. This is to allow the plug-ins to override the model if necessary or to set
@@ -220,8 +220,8 @@ In order to use the Optuna plugin, we first need to install `optuna
 The plug-in will automatically integrate with Optuna for hyper-parameter optimisation by
 performing the following tasks:
 
-* Register the :py:class:`optuna.TrialPruned` exception type with the trainer for correct
-  trial pruning.
+* Register the ``optuna.TrialPruned`` exception type with the trainer for correct trial
+  pruning.
 * Automatically update the :py:class:`~helios.model.model.Model` so the save name is
   consistent and allow trials to continue if they're interrupted.
 * Correctly handle reporting and pruning for regular and distributed training.
@@ -256,7 +256,7 @@ After the creation of the :py:class:`~helios.model.model.Model`,
 The two ``configure_`` functions will do the following:
 
 #. Configure the trainer so the plug-in is registered into the plug-in table and ensure
-   that :py:class`optuna.TrialPruned`.
+   that ``optuna.TrialPruned`` is registered as a valid exception.
 #. Configure the name of the model to allow cancelled trials to continue. Specifically, it
    will append ``_trial-<trial-numer>`` to the model name.
 
@@ -296,9 +296,12 @@ For example, we can use it to configure the layers in the classifier network wit
 Reporting Metrics
 ^^^^^^^^^^^^^^^^^
 
-As the plug-in will automatically handle the reporting of metrics to the trial, it is
-important for it to know which metric should be reported. This is accomplished by two
-things:
+In order to allow the model to compute the metrics whenever it fits best within the
+training workflow, the plug-in does *not* automatically report metrics to the trial. As a
+result, it is the responsibility of the model to call
+:py:meth:`~helios.plugins.optuna.OptunaPlugin.register_metrics` whenever the metrics are
+ready. In order for the plug-in to correctly report the metrics, the plug-in relies on the
+following things:
 
 #. The :py:attr:`~helios.model.model.Model.metrics` table and
 #. The value of ``metric_name`` in the constructor of
@@ -312,6 +315,18 @@ training correctly, so there's no need for the model to do extra work.
 .. warning::
    In distributed training, it is your responsibility to ensure that the value of the
    metric is correctly synced across processess (if applicable).
+
+For example, we can report the metrics at the end of
+:py:meth:`~helios.model.model.Model.on_validation_end` like this:
+
+.. code-block:: python
+
+   def on_validation_end(self, validation_cycle: int) -> None:
+        ...
+        plugin = self.trainer.plugins[OptunaPlugin.plugin_id]
+        assert isinstance(plugin, OptunaPlugin)
+        plugin.report_metrics(validation_cycle)
+
 
 Trial Pruning and Returning Metrics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

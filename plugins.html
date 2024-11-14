@@ -328,8 +328,8 @@ like this:</p>
          <span class="n">model</span><span class="o">.</span><span class="n">on_training_batch_end</span><span class="p">()</span>
 
      <span class="n">model</span><span class="o">.</span><span class="n">on_training_epoch_end</span><span class="p">()</span>
-<span class="n">model</span><span class="o">.</span><span class="n">on_training_end</span><span class="p">()</span>
 <span class="n">plugin</span><span class="o">.</span><span class="n">on_training_end</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">on_training_end</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Notice that the plug-in functions are always called <em>before</em> the corresponding model
@@ -514,8 +514,8 @@ exception is raised.</p>
 <p>The plug-in will automatically integrate with Optuna for hyper-parameter optimisation by
 performing the following tasks:</p>
 <ul class="simple">
-<li><p>Register the <code class="xref py py-class docutils literal notranslate"><span class="pre">optuna.TrialPruned</span></code> exception type with the trainer for correct
-trial pruning.</p></li>
+<li><p>Register the <code class="docutils literal notranslate"><span class="pre">optuna.TrialPruned</span></code> exception type with the trainer for correct trial
+pruning.</p></li>
 <li><p>Automatically update the <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> so the save name is
 consistent and allow trials to continue if they’re interrupted.</p></li>
 <li><p>Correctly handle reporting and pruning for regular and distributed training.</p></li>
@@ -545,7 +545,7 @@ example, so we will only focus on the necessary code to use the plug-in.</p>
 <p>The two <code class="docutils literal notranslate"><span class="pre">configure_</span></code> functions will do the following:</p>
 <ol class="arabic simple">
 <li><p>Configure the trainer so the plug-in is registered into the plug-in table and ensure
-that :py:class`optuna.TrialPruned`.</p></li>
+that <code class="docutils literal notranslate"><span class="pre">optuna.TrialPruned</span></code> is registered as a valid exception.</p></li>
 <li><p>Configure the name of the model to allow cancelled trials to continue. Specifically, it
 will append <code class="docutils literal notranslate"><span class="pre">_trial-&lt;trial-numer&gt;</span></code> to the model name.</p></li>
 </ol>
@@ -584,9 +584,12 @@ For example, we can use it to configure the layers in the classifier network wit
 </section>
 <section id="reporting-metrics">
 <h4>Reporting Metrics<a class="headerlink" href="#reporting-metrics" title="Link to this heading">¶</a></h4>
-<p>As the plug-in will automatically handle the reporting of metrics to the trial, it is
-important for it to know which metric should be reported. This is accomplished by two
-things:</p>
+<p>In order to allow the model to compute the metrics whenever it fits best within the
+training workflow, the plug-in does <em>not</em> automatically report metrics to the trial. As a
+result, it is the responsibility of the model to call
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">register_metrics()</span></code> whenever the metrics are
+ready. In order for the plug-in to correctly report the metrics, the plug-in relies on the
+following things:</p>
 <ol class="arabic simple">
 <li><p>The <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.metrics" title="helios.model.model.Model.metrics"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metrics</span></code></a> table and</p></li>
 <li><p>The value of <code class="docutils literal notranslate"><span class="pre">metric_name</span></code> in the constructor of
@@ -600,6 +603,15 @@ training correctly, so there’s no need for the model to do extra work.</p>
 <p class="admonition-title">Warning</p>
 <p>In distributed training, it is your responsibility to ensure that the value of the
 metric is correctly synced across processess (if applicable).</p>
+</div>
+<p>For example, we can report the metrics at the end of
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_validation_end" title="helios.model.model.Model.on_validation_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_validation_end()</span></code></a> like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+     <span class="o">...</span>
+     <span class="n">plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="n">OptunaPlugin</span><span class="o">.</span><span class="n">plugin_id</span><span class="p">]</span>
+     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">OptunaPlugin</span><span class="p">)</span>
+     <span class="n">plugin</span><span class="o">.</span><span class="n">report_metrics</span><span class="p">(</span><span class="n">validation_cycle</span><span class="p">)</span>
+</pre></div>
 </div>
 </section>
 <section id="trial-pruning-and-returning-metrics">

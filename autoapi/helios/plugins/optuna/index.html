@@ -525,9 +525,26 @@ wrapper.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.on_validation_end">
-<span class="sig-name descname"><span class="pre">on_validation_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validation_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.on_validation_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.on_validation_end" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.report_metrics">
+<span class="sig-name descname"><span class="pre">report_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validation_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.report_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.report_metrics" title="Link to this definition">¶</a></dt>
 <dd><p>Report metrics to the trial.</p>
+<p>This function should be called from the model once the corresponding metrics have
+been saved into the <a class="reference internal" href="../../model/model/index.html#helios.model.model.Model.metrics" title="helios.model.model.Model.metrics"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metrics</span></code></a> table.</p>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.model</span> <span class="k">as</span> <span class="nn">hlm</span>
+<span class="kn">import</span> <span class="nn">helios.plugins.optuna</span> <span class="k">as</span> <span class="nn">hlpo</span>
+
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Compute metrics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+
+        <span class="n">plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="n">hlpo</span><span class="o">.</span><span class="n">OptunaPlugin</span><span class="o">.</span><span class="n">plugin_id</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plugin</span> <span class="n">hlpo</span><span class="o">.</span><span class="n">OptunaPlugin</span><span class="p">)</span>
+        <span class="n">plugin</span><span class="o">.</span><span class="n">report_metrics</span><span class="p">(</span><span class="n">validation_cycle</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In distributed training, only rank 0 will report the metrics to the trial.</p>
@@ -672,7 +689,7 @@ distributed training wasn’t used, this function does nothing.</p>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_model"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.configure_model()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.suggest"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.suggest()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.setup"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.setup()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.on_validation_end"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.on_validation_end()</span></code></a></li>
+<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.report_metrics"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.report_metrics()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.should_training_stop"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.should_training_stop()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.on_training_end"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.on_training_end()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.check_pruned"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.check_pruned()</span></code></a></li>
