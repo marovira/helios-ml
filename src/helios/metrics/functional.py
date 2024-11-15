@@ -406,4 +406,4 @@ def calculate_mae_torch(
     Returns:
         The MAE score.
     """
-    return _mae_torch(pred, gt)
+    return _mae_torch(pred, gt, scale)
