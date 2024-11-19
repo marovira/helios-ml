@@ -114,6 +114,7 @@ select = [
     "ERA",
     "NPY",
     "RUF100",
+    "PLR0402",
 ]
 
 ignore = [
