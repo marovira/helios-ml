@@ -275,3 +275,17 @@ class TestOptunaPlugin:
 
         for v in successful_trials:
             assert v
+
+    def test_enqueue_failed_trials(self, tmp_path: pathlib.Path) -> None:
+        def objective(trial: optuna.Trial) -> float:
+            return 0
+
+        storage_path = tmp_path / "enqueue_test.db"
+        study = optuna.create_study(
+            study_name="enqueue_test", storage=f"sqlite:///{storage_path}"
+        )
+
+        with pytest.warns(UserWarning):
+            OptunaPlugin.enqueue_failed_trials(
+                study, [optuna.trial.TrialState.FAIL, optuna.trial.TrialState.COMPLETE]
+            )

@@ -3,6 +3,7 @@ try:
 except ImportError as e:
     raise ImportError("error: OptunaPlugin requires Optuna to be installed") from e
 import typing
+import warnings
 
 import torch
 
@@ -93,13 +94,24 @@ class OptunaPlugin(hlp.Plugin):
         self._trial = t
 
     @classmethod
-    def enqueue_failed_trials(cls, study: optuna.study.Study) -> None:
+    def enqueue_failed_trials(
+        cls,
+        study: optuna.study.Study,
+        failed_states: typing.Sequence = (optuna.trial.TrialState.FAIL,),
+    ) -> None:
         """
         Enqueue any failed trials so they can be re-run.
 
         This will add any failed trials from a previous run. This is used for cases when
         the study had to be stopped due to an error, exception, or by the user, allowing
         trials that didn't finish to complete.
+
+        .. warning::
+            This function should **only** be called before trials are started.
+
+        The ``failed_states`` argument can be used to set additional trial states to be
+        considered as "failures". This can be useful when dealing with trials that stopped
+        due to external causes such as power outages or system crashes.
 
         This function works in tandem with
         :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` to ensure that when
@@ -116,9 +128,17 @@ class OptunaPlugin(hlp.Plugin):
             to re-add trials that will continue to fail. If you require special handling,
             you may override this function to achieve your desired behaviour.
 
+
         Args:
             study: the study to get the failed trials from and enqueue them.
+            failed_states: the trial states that are considered to be failures and should
+                be re-enqueued.
         """
+        if optuna.trial.TrialState.COMPLETE in failed_states:
+            warnings.warn(
+                "warning: re-enqueuing completed trials could lead to incorrect results",
+                stacklevel=2,
+            )
         failed_but_completed: list[optuna.trial.FrozenTrial] = []
         failed: dict[int, optuna.trial.FrozenTrial] = {}
         for trial in study.trials:
@@ -128,7 +148,7 @@ class OptunaPlugin(hlp.Plugin):
             ):
                 failed_but_completed.append(trial)
 
-            if trial.state == optuna.trial.TrialState.FAIL:
+            if trial.state in failed_states:
                 failed[trial.number] = trial
 
         for trial in failed_but_completed:
