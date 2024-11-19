@@ -110,8 +110,8 @@ class OptunaPlugin(hlp.Plugin):
             This function should **only** be called before trials are started.
 
         The ``failed_states`` argument can be used to set additional trial states to be
-        considered as "failures". This can be useful when dealing with trials that stopped
-        due to external causes such as power outages or system crashes.
+        considered as "failures". This can be useful when dealing with special cases where
+        trials were either completed or pruned but need to be re-run.
 
         This function works in tandem with
         :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` to ensure that when
