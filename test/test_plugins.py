@@ -1,3 +1,5 @@
+import dataclasses as dc
+import functools
 import pathlib
 import typing
 
@@ -7,8 +9,12 @@ import torch
 
 import helios.model as hlm
 import helios.plugins as hlp
+import helios.plugins.optuna as hlpo
 import helios.trainer as hlt
-from helios.plugins.optuna import _ORIG_NUMBER_KEY, OptunaPlugin
+from helios.core import rng
+
+# Ignore the use of private members so we can test them correctly.
+# ruff: noqa: SLF001
 
 
 class ExceptionPlugin(hlp.Plugin):
@@ -124,12 +130,12 @@ class TestCUDAPlugin:
 )
 class TestOptunaPlugin:
     def test_plugin_id(self) -> None:
-        assert hasattr(OptunaPlugin, "plugin_id")
-        assert OptunaPlugin.plugin_id == "optuna"
+        assert hasattr(hlpo.OptunaPlugin, "plugin_id")
+        assert hlpo.OptunaPlugin.plugin_id == "optuna"
 
     def test_invalid_storage(self) -> None:
         def objective(trial: optuna.Trial) -> int:
-            plugin = OptunaPlugin(trial, "accuracy")
+            plugin = hlpo.OptunaPlugin(trial, "accuracy")
             plugin.is_distributed = True
             with pytest.raises(ValueError):
                 plugin.setup()
@@ -141,7 +147,7 @@ class TestOptunaPlugin:
 
     def test_configure(self) -> None:
         def objective(trial: optuna.Trial) -> int:
-            plugin = OptunaPlugin(trial, "accuracy")
+            plugin = hlpo.OptunaPlugin(trial, "accuracy")
             trainer = hlt.Trainer()
 
             plugin.configure_trainer(trainer)
@@ -171,7 +177,7 @@ class TestOptunaPlugin:
 
     def test_suggest(self) -> None:
         def objective(trial: optuna.Trial) -> int:
-            plugin = OptunaPlugin(trial, "accuracy")
+            plugin = hlpo.OptunaPlugin(trial, "accuracy")
 
             with pytest.raises(KeyError):
                 plugin.suggest("foo", "bar")
@@ -199,7 +205,7 @@ class TestOptunaPlugin:
 
     def test_state_dict(self) -> None:
         def objective(trial: optuna.Trial) -> int:
-            plugin = OptunaPlugin(trial, "accuracy")
+            plugin = hlpo.OptunaPlugin(trial, "accuracy")
             x = plugin.suggest("float", "x", low=-10, high=10)
 
             state_dict = plugin.state_dict()
@@ -214,41 +220,40 @@ class TestOptunaPlugin:
 
     def test_resume_trial(self, tmp_path: pathlib.Path) -> None:
         num_trials = 10
+        storage_path = tmp_path / "trial_test.db"
         successful_trials = [False for _ in range(num_trials)]
         offset = 0
+        study_args = {
+            "study_name": "trial_test",
+            "storage": f"sqlite:///{storage_path}",
+            "load_if_exists": True,
+        }
 
         def objective(trial: optuna.Trial) -> float:
             nonlocal offset
-            plugin = OptunaPlugin(trial, "accuracy")
+            plugin = hlpo.OptunaPlugin(trial, "accuracy")
             plugin.setup()
 
             model = PluginModel("plugin-model")
             plugin.configure_model(model)
 
             trial_num = trial.number
-            if _ORIG_NUMBER_KEY in trial.user_attrs:
-                trial_num = trial.user_attrs[_ORIG_NUMBER_KEY]
+            if hlpo._ORIG_NUMBER_KEY in trial.user_attrs:
+                trial_num = trial.user_attrs[hlpo._ORIG_NUMBER_KEY]
                 assert model.save_name == f"plugin-model_trial-{trial_num}"
 
-                # Artificially offset the number by 1 so that when we subtract 1 later on
-                # the indices work out correctly.
+                # Artificially offset the trial number so we don't raise the exception
+                # again.
                 trial_num += 1
                 offset = 1
 
-            if trial.number == num_trials / 2:
+            if trial_num == num_trials / 2:
                 raise RuntimeError("half-way stop")
 
             successful_trials[trial_num - offset] = True
+            offset = 0
 
             return 0
-
-        def create_study() -> optuna.Study:
-            storage_path = tmp_path / "trial_test.db"
-            return optuna.create_study(
-                study_name="trial_test",
-                storage=f"sqlite:///{storage_path}",
-                load_if_exists=True,
-            )
 
         def optimize(study: optuna.Study) -> None:
             study.optimize(
@@ -262,30 +267,84 @@ class TestOptunaPlugin:
                 ],
             )
 
-        study = create_study()
+        study = hlpo.resume_study(study_args)
         with pytest.raises(RuntimeError):
             optimize(study)
 
         del study
 
-        study = create_study()
-
-        OptunaPlugin.enqueue_failed_trials(study)
+        study = hlpo.resume_study(study_args)
         optimize(study)
 
         for v in successful_trials:
             assert v
 
-    def test_enqueue_failed_trials(self, tmp_path: pathlib.Path) -> None:
-        def objective(trial: optuna.Trial) -> float:
-            return 0
+    def test_sampler_checkpoints(self, tmp_path: pathlib.Path) -> None:
+        @dc.dataclass
+        class TestRun:
+            samples: list[float]
+            chkpt_root: pathlib.Path
 
-        storage_path = tmp_path / "enqueue_test.db"
-        study = optuna.create_study(
-            study_name="enqueue_test", storage=f"sqlite:///{storage_path}"
+        num_trials = 10
+        run1 = TestRun([], tmp_path / "run1")
+        run2 = TestRun([], tmp_path / "run2")
+
+        run1.chkpt_root.mkdir(exist_ok=True)
+        run2.chkpt_root.mkdir(exist_ok=True)
+
+        def objective(
+            trial: optuna.Trial,
+            raise_error: bool,
+            run: TestRun,
+        ) -> float:
+            hlpo.checkpoint_sampler(trial, run.chkpt_root)
+            res = trial.suggest_float("accuracy", 0, 1)
+            if raise_error and trial.number == num_trials // 2:
+                raise RuntimeError("half-way stop")
+            run.samples.append(res)
+            return res
+
+        def create_study(
+            sampler: optuna.samplers.BaseSampler | None = None,
+        ) -> optuna.Study:
+            return optuna.create_study(
+                study_name="chkpt_test",
+                sampler=optuna.samplers.TPESampler(seed=rng.get_default_seed())
+                if sampler is None
+                else sampler,
+            )
+
+        study = create_study()
+        study.optimize(
+            functools.partial(
+                objective,
+                raise_error=False,
+                run=run1,
+            ),
+            n_trials=num_trials,
         )
 
-        with pytest.warns(UserWarning):
-            OptunaPlugin.enqueue_failed_trials(
-                study, [optuna.trial.TrialState.FAIL, optuna.trial.TrialState.COMPLETE]
+        chkpts = list(run1.chkpt_root.glob("*.pkl"))
+        assert len(chkpts) == num_trials
+        assert all(chkpt.stem == f"sampler_trial-{i}" for i, chkpt in enumerate(chkpts))
+        del study
+
+        study = create_study()
+        with pytest.raises(RuntimeError):
+            study.optimize(
+                functools.partial(
+                    objective,
+                    raise_error=True,
+                    run=run2,
+                ),
+                n_trials=num_trials,
             )
+
+        torch.serialization.clear_safe_globals()
+        sampler = hlpo.restore_sampler(run2.chkpt_root)
+        study = create_study(sampler)
+        study.optimize(
+            functools.partial(objective, raise_error=False, run=run2),
+            n_trials=num_trials // 2,
+        )
+        assert run2.samples == run1.samples
