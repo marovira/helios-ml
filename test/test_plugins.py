@@ -331,6 +331,9 @@ class TestOptunaPlugin:
         del study
 
         study = create_study()
+        sampler = hlpo.restore_sampler(run2.chkpt_root)
+        assert sampler is None
+
         with pytest.raises(RuntimeError):
             study.optimize(
                 functools.partial(

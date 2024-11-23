@@ -76,6 +76,11 @@ def resume_study(
 
     # Step 1: create the study with the current DB and grab all the trials.
     study = optuna.create_study(**study_args)
+
+    # Fast exit: if there are no trials, return immediately.
+    if len(study.trials) == 0:
+        return study
+
     complete: list[optuna.trial.FrozenTrial] = []
     failed_but_completed: list[optuna.trial.FrozenTrial] = []
     failed: dict[int, optuna.trial.FrozenTrial] = {}
@@ -143,7 +148,7 @@ def checkpoint_sampler(trial: optuna.Trial, chkpt_root: pathlib.Path) -> None:
         pickle.dump(sampler, outfile)
 
 
-def restore_sampler(chkpt_root: pathlib.Path) -> optuna.samplers.BaseSampler:
+def restore_sampler(chkpt_root: pathlib.Path) -> optuna.samplers.BaseSampler | None:
     """
     Restore the sampler from a previously saved checkpoint.
 
@@ -164,6 +169,9 @@ def restore_sampler(chkpt_root: pathlib.Path) -> optuna.samplers.BaseSampler:
 
     chkpts = list(chkpt_root.glob("*.pkl"))
     chkpts.sort(key=key)
+    if len(chkpts) == 0:
+        return None
+
     sampler = pickle.load(chkpts[-1].open("rb"))
     return sampler
 
