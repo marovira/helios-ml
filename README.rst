@@ -63,16 +63,18 @@ Main Features
 
 Helios offers the following functionality out of the box:
 
-1. Resume training: Helios has been built with the ability to resume training if it is
+#. Resume training: Helios has been built with the ability to resume training if it is
    paused. Specifically, Helios will ensure that the behaviour of the trained model is
    *identical* to the one it would've had if it had been trained without pauses.
-2. Automatic detection of multi-GPU environments for distributed training. In addition,
+#. Automatic detection of multi-GPU environments for distributed training. In addition,
    Helios also supports training using ``torchrun`` and will automatically handle the
    initialisation and clean up of the distributed state. It will also correctly set the
    devices and maps to ensure weights are mapped tot he correct location.
-3. Registries for creation of arbitrary types. These include: networks, loss functions,
+#. Registries for creation of arbitrary types. These include: networks, loss functions,
    optimizers, schedulers, etc.
-4. Correct handling of logging when doing distributed training (even over multiple nodes).
+#. Correct handling of logging when doing distributed training (even over multiple nodes).
+#. Native integration with Optuna for hyper-parameter optimisation. Also supports resuming
+   studies and generating checkpoints to ensure reproducibility.
 
 .. installation
 
