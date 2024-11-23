@@ -326,7 +326,8 @@ class TestOptunaPlugin:
 
         chkpts = list(run1.chkpt_root.glob("*.pkl"))
         assert len(chkpts) == num_trials
-        assert all(chkpt.stem == f"sampler_trial-{i}" for i, chkpt in enumerate(chkpts))
+        for i, chkpt in enumerate(chkpts):
+            assert chkpt.stem == f"sampler_trial-{i}"
         del study
 
         study = create_study()
