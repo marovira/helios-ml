@@ -252,6 +252,8 @@ class TestOptunaPlugin:
 
             successful_trials[trial_num - offset] = True
             offset = 0
+            if trial_num % 2 == 1:
+                raise optuna.TrialPruned()
 
             return 0
 
@@ -262,22 +264,48 @@ class TestOptunaPlugin:
                 callbacks=[
                     optuna.study.MaxTrialsCallback(
                         num_trials,
-                        states=(optuna.trial.TrialState.COMPLETE,),
+                        states=(
+                            optuna.trial.TrialState.COMPLETE,
+                            optuna.trial.TrialState.PRUNED,
+                        ),
                     )
                 ],
             )
 
-        study = hlpo.resume_study(study_args)
+        study = hlpo.resume_study(study_args, backup_study=False)
+        assert len(study.trials) == 0
         with pytest.raises(RuntimeError):
             optimize(study)
 
         del study
 
-        study = hlpo.resume_study(study_args)
+        study = hlpo.resume_study(study_args, backup_study=False)
+        assert len(study.trials) == (num_trials // 2) + 1
         optimize(study)
 
         for v in successful_trials:
             assert v
+
+    def test_study_backup(self, tmp_path: pathlib.Path) -> None:
+        storage_path = tmp_path / "test.db"
+        storage_path.touch(exist_ok=True)
+
+        for _ in range(10):
+            hlpo._backup_study(storage_path)
+
+        # Ensure there are 11 "trials"
+        backups = list(tmp_path.glob("*.db"))
+        assert len(backups) == 11
+
+        idx = [i for i, b in enumerate(backups) if b.name == "test.db"][0]
+        backups.pop(idx)
+
+        value = [False] * 10
+        for p in backups:
+            idx = int(p.stem.split("-")[-1])
+            value[idx] = True
+
+        assert all(v for v in value)
 
     def test_sampler_checkpoints(self, tmp_path: pathlib.Path) -> None:
         @dc.dataclass
