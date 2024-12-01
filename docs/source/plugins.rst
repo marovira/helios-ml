@@ -244,7 +244,7 @@ After the creation of the :py:class:`~helios.model.model.Model`,
    import helios.plugins.optuna as hlpo
    import optuna
 
-   def objective(trial: optuna.Trial) -> float:
+def objective(trial: optuna.Trial) -> float:
        model = ...
        datamodule = ...
        trainer = ...
@@ -416,30 +416,76 @@ The exact arguments for each ``suggest_`` function can be found `here
 .. warning::
    The plug-in does *not* provide wrappers for any function that is marked as deprecated.
 
-Restarting Failed Trials
+Resuming Optuna Studies
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-In the event that a trial fails and this results in the entire study being aborted, the
-Optuna plug-in provides a way to ensure that failed trials get re-run. To do so, we need
-to do a bit of textra setup when we create the study:
+Similar to the ability of the :py:class`~helios.trainer.Trainer` to resume training in the
+event of a failure or cancellation, Helios ships with a system to allow Optuna studies to
+resume. The system is split into two halves: restoring the state of the samplers and
+restoring trials that failed while preserving trials that completed. Let's start by
+looking at how we can recover samplers.
+
+As per the official Optuna documentation, the recommended way of ensuring samplers are
+reproducible is to:
+
+#. Seed them,
+#. Save them periodically to ensure they can be restored.
+
+Seeding of samplers is left to the user, though the use of
+:py:func:`~helios.core.rng.get_default_seed` is recommended to ensure consistency. To
+checkpoint the samplers, you can add do:
 
 .. code-block:: python
 
-   study = optuna.create_study(...)
-   OptunaPlugin.enqueue_failed_trials(study)
+   def objective(trial: optuna.Trial) -> float:
+        checkpoint_sampler(trial, root)
 
-   # Continue as before
+This will create a checkpoint stored in the folder specified by ``root``. If the study
+is stopped and you wish to restore the last checkpoint, you may do so like this:
 
-The :py:meth:`~helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials` will re-add any
-failed trials from the study. In addition, it will also add the necessary data so that
-when :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` gets called, it will
-be able to re-set the id of the failed trial into the
-:py:attr:`~helios.model.model.Model.save_name` of the model so that any saved checkpoints
-can be re-used. This allows failed trials to continue training as opposed to re-starting
-from scratch.
+.. code-block:: python
 
-.. note::
-   :py:meth:`~helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials` will add *all*
-   failed trials that are found that have not been completed in subsequent runs. This
-   could result in trials that are known to fail to be re-added. Please look at the
-   implementation if you require extra logic.
+   # In your setup code
+   sampler = restore_sampler(root)
+
+Note that :py:func:`~helios.plugins.optuna.restore_sampler` can return ``None`` if no
+checkpoint is found, in which case you should construct the sampler manually.
+
+To resume studies, you may use :py:func:`~helios.plugins.optuna.resume_study`. The
+function can be used as follows:
+
+.. code-block:: python
+
+   # In your setup code
+   study_args = {
+        "study_name": "test_study",
+        "storage": "sqlite:///study.db", # <- This is required
+        "load_if_exists": True,
+   }
+
+   study = resume_study(study_args)
+
+The call to :py:func:`~helios.plugins.optuna.resume_study` will perform the following
+operations:
+
+#. It will create the study using the provided ``study_args``. If the study contains no
+   previously run trials, it will return immediately.
+#. If trials are found, then they are split into two groups: trials that completed (this
+   includes pruned trials) and trials that failed.
+#. The old study will be backed up and a new one will be made. Trials that completed
+   successfully will be transferred over intact, whereas trials that failed will be
+   re-enqueued. Once this is done, the study is returned.
+
+.. warning::
+   The ``study_args`` dictionary **must** contain the ``storage`` key set to a path
+   beginning with ``sqlite``. Likewise, ``load_if_exists`` **must** be set to true.
+
+The function offers some points of control, mainly:
+
+* A list of states to be considered as failures can be passed in to ``failed_states``. By
+  default only ``optuna.trial.TrialState.FAIL`` is considered, but you may add additional
+  states such as ``optuna.trial.TrialState.RUNNING`` to handle cases where the study was
+  killed by an external source.
+* The function will automatically backup the storage of the study before creating the new
+  one as a fail-safe in the event that something goes wrong. If you don't wish for a
+  backup to be made, you may set ``backup_study`` to false.
