@@ -531,17 +531,17 @@ example, so we will only focus on the necessary code to use the plug-in.</p>
 <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a>, we can create the plug-in and do the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.plugins.optuna</span> <span class="k">as</span> <span class="nn">hlpo</span>
 <span class="kn">import</span> <span class="nn">optuna</span>
-
-<span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
-    <span class="n">datamodule</span> <span class="o">=</span> <span class="o">...</span>
-    <span class="n">trainer</span> <span class="o">=</span> <span class="o">...</span>
-
-    <span class="n">plugin</span> <span class="o">=</span> <span class="n">hlpo</span><span class="o">.</span><span class="n">OptunaPlugin</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">)</span>
-    <span class="n">plugin</span><span class="o">.</span><span class="n">configure_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
-    <span class="n">plugin</span><span class="o">.</span><span class="n">configure_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl>
+<dt>def objective(trial: optuna.Trial) -&gt; float:</dt><dd><p>model = …
+datamodule = …
+trainer = …</p>
+<p>plugin = hlpo.OptunaPlugin(trial, “accuracy”)
+plugin.configure_trainer(trainer)
+plugin.configure_model(model)</p>
+</dd>
+</dl>
 <p>The two <code class="docutils literal notranslate"><span class="pre">configure_</span></code> functions will do the following:</p>
 <ol class="arabic simple">
 <li><p>Configure the trainer so the plug-in is registered into the plug-in table and ensure
@@ -693,31 +693,72 @@ parameters be hard-coded. The function is called
 <p>The plug-in does <em>not</em> provide wrappers for any function that is marked as deprecated.</p>
 </div>
 </section>
-<section id="restarting-failed-trials">
-<h4>Restarting Failed Trials<a class="headerlink" href="#restarting-failed-trials" title="Link to this heading">¶</a></h4>
-<p>In the event that a trial fails and this results in the entire study being aborted, the
-Optuna plug-in provides a way to ensure that failed trials get re-run. To do so, we need
-to do a bit of textra setup when we create the study:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">study</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">create_study</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">OptunaPlugin</span><span class="o">.</span><span class="n">enqueue_failed_trials</span><span class="p">(</span><span class="n">study</span><span class="p">)</span>
-
-<span class="c1"># Continue as before</span>
+<section id="resuming-optuna-studies">
+<h4>Resuming Optuna Studies<a class="headerlink" href="#resuming-optuna-studies" title="Link to this heading">¶</a></h4>
+<p>Similar to the ability of the :py:class`~helios.trainer.Trainer` to resume training in the
+event of a failure or cancellation, Helios ships with a system to allow Optuna studies to
+resume. The system is split into two halves: restoring the state of the samplers and
+restoring trials that failed while preserving trials that completed. Let’s start by
+looking at how we can recover samplers.</p>
+<p>As per the official Optuna documentation, the recommended way of ensuring samplers are
+reproducible is to:</p>
+<ol class="arabic simple">
+<li><p>Seed them,</p></li>
+<li><p>Save them periodically to ensure they can be restored.</p></li>
+</ol>
+<p>Seeding of samplers is left to the user, though the use of
+<a class="reference internal" href="autoapi/helios/core/rng/index.html#helios.core.rng.get_default_seed" title="helios.core.rng.get_default_seed"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_default_seed()</span></code></a> is recommended to ensure consistency. To
+checkpoint the samplers, you can add do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+     <span class="n">checkpoint_sampler</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">enqueue_failed_trials()</span></code> will re-add any
-failed trials from the study. In addition, it will also add the necessary data so that
-when <a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.configure_model" title="helios.plugins.optuna.OptunaPlugin.configure_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">configure_model()</span></code></a> gets called, it will
-be able to re-set the id of the failed trial into the
-<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.save_name" title="helios.model.model.Model.save_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">save_name</span></code></a> of the model so that any saved checkpoints
-can be re-used. This allows failed trials to continue training as opposed to re-starting
-from scratch.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">enqueue_failed_trials()</span></code> will add <em>all</em>
-failed trials that are found that have not been completed in subsequent runs. This
-could result in trials that are known to fail to be re-added. Please look at the
-implementation if you require extra logic.</p>
+<p>This will create a checkpoint stored in the folder specified by <code class="docutils literal notranslate"><span class="pre">root</span></code>. If the study
+is stopped and you wish to restore the last checkpoint, you may do so like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In your setup code</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">restore_sampler</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+</pre></div>
 </div>
+<p>Note that <a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.restore_sampler" title="helios.plugins.optuna.restore_sampler"><code class="xref py py-func docutils literal notranslate"><span class="pre">restore_sampler()</span></code></a> can return <code class="docutils literal notranslate"><span class="pre">None</span></code> if no
+checkpoint is found, in which case you should construct the sampler manually.</p>
+<p>To resume studies, you may use <a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.resume_study" title="helios.plugins.optuna.resume_study"><code class="xref py py-func docutils literal notranslate"><span class="pre">resume_study()</span></code></a>. The
+function can be used as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In your setup code</span>
+<span class="n">study_args</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="s2">&quot;study_name&quot;</span><span class="p">:</span> <span class="s2">&quot;test_study&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;storage&quot;</span><span class="p">:</span> <span class="s2">&quot;sqlite:///study.db&quot;</span><span class="p">,</span> <span class="c1"># &lt;- This is required</span>
+     <span class="s2">&quot;load_if_exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">study</span> <span class="o">=</span> <span class="n">resume_study</span><span class="p">(</span><span class="n">study_args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The call to <a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.resume_study" title="helios.plugins.optuna.resume_study"><code class="xref py py-func docutils literal notranslate"><span class="pre">resume_study()</span></code></a> will perform the following
+operations:</p>
+<ol class="arabic simple">
+<li><p>It will create the study using the provided <code class="docutils literal notranslate"><span class="pre">study_args</span></code>. If the study contains no
+previously run trials, it will return immediately.</p></li>
+<li><p>If trials are found, then they are split into two groups: trials that completed (this
+includes pruned trials) and trials that failed.</p></li>
+<li><p>The old study will be backed up and a new one will be made. Trials that completed
+successfully will be transferred over intact, whereas trials that failed will be
+re-enqueued. Once this is done, the study is returned.</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">study_args</span></code> dictionary <strong>must</strong> contain the <code class="docutils literal notranslate"><span class="pre">storage</span></code> key set to a path
+beginning with <code class="docutils literal notranslate"><span class="pre">sqlite</span></code>. Likewise, <code class="docutils literal notranslate"><span class="pre">load_if_exists</span></code> <strong>must</strong> be set to true.</p>
+</div>
+<p>The function offers some points of control, mainly:</p>
+<ul class="simple">
+<li><p>A list of states to be considered as failures can be passed in to <code class="docutils literal notranslate"><span class="pre">failed_states</span></code>. By
+default only <code class="docutils literal notranslate"><span class="pre">optuna.trial.TrialState.FAIL</span></code> is considered, but you may add additional
+states such as <code class="docutils literal notranslate"><span class="pre">optuna.trial.TrialState.RUNNING</span></code> to handle cases where the study was
+killed by an external source.</p></li>
+<li><p>The function will automatically backup the storage of the study before creating the new
+one as a fail-safe in the event that something goes wrong. If you don’t wish for a
+backup to be made, you may set <code class="docutils literal notranslate"><span class="pre">backup_study</span></code> to false.</p></li>
+</ul>
 </section>
 </section>
 </section>
@@ -793,7 +834,7 @@ implementation if you require extra logic.</p>
 <li><a class="reference internal" href="#reporting-metrics">Reporting Metrics</a></li>
 <li><a class="reference internal" href="#trial-pruning-and-returning-metrics">Trial Pruning and Returning Metrics</a></li>
 <li><a class="reference internal" href="#generic-suggestion-of-parameters">Generic Suggestion of Parameters</a></li>
-<li><a class="reference internal" href="#restarting-failed-trials">Restarting Failed Trials</a></li>
+<li><a class="reference internal" href="#resuming-optuna-studies">Resuming Optuna Studies</a></li>
 </ul>
 </li>
 </ul>
