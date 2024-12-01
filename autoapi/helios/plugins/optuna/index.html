@@ -319,8 +319,130 @@
 </table>
 </div>
 </section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.plugins.optuna.resume_study" title="helios.plugins.optuna.resume_study"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resume_study</span></code></a>(, backup_study)</p></td>
+<td><p>Resume a study that stopped because of a failure.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#helios.plugins.optuna.checkpoint_sampler" title="helios.plugins.optuna.checkpoint_sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">checkpoint_sampler</span></code></a>(→ None)</p></td>
+<td><p>Create a checkpoint with the state of the sampler.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.plugins.optuna.restore_sampler" title="helios.plugins.optuna.restore_sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore_sampler</span></code></a>(→ optuna.samplers.BaseSampler | None)</p></td>
+<td><p>Restore the sampler from a previously saved checkpoint.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="module-contents">
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helios.plugins.optuna.resume_study">
+<span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">resume_study</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(optuna.trial.TrialState.FAIL,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backup_study</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">optuna.Study</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#resume_study"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.resume_study" title="Link to this definition">¶</a></dt>
+<dd><p>Resume a study that stopped because of a failure.</p>
+<p>The goal of this function is to allow studies that failed due to an error (either an
+exception, system error etc.) to continue utilising the built-in checkpoint system
+from Helios. To accomplish this, the function will do the following:</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>Grab all the trials from the study created by the given <code class="docutils literal notranslate"><span class="pre">study_args</span></code>, splitting</dt><dd><p>them into three groups: completed/pruned, failed, and failed but completed.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Create a new study with the same name and storage. This new study will get all of</dt><dd><p>the completed trials of the original, and will have the failed trials re-enqueued.</p>
+</dd>
+</dl>
+</li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<dl>
+<dt>This function <strong>requires</strong> the following conditions to be true:</dt><dd><ol class="arabic simple">
+<li><p>It is called <strong>before</strong> the trials are started.</p></li>
+</ol>
+<p>#. The study uses <code class="docutils literal notranslate"><span class="pre">RDBStorage</span></code> as the storage argument for
+<code class="docutils literal notranslate"><span class="pre">optuna.create_study</span></code>.
+#. <code class="docutils literal notranslate"><span class="pre">load_if_exists</span></code> is set to True in <code class="docutils literal notranslate"><span class="pre">study_args</span></code>.
+#. <code class="docutils literal notranslate"><span class="pre">TrialState.PRUNED</span></code> <strong>cannot</strong> be in the list of <code class="docutils literal notranslate"><span class="pre">failed_states</span></code>.</p>
+</dd>
+</dl>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">failed_states</span></code> argument can be used to set additional trial states to be
+considered as “failures”. This can be useful when dealing with special cases where
+trials were either completed or pruned but need to be re-run.</p>
+<p>By default, the original study (assuming there is one) will be backed up with the name
+<code class="docutils literal notranslate"><span class="pre">&lt;study-name&gt;_backup-#</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;study-name&gt;</span></code> is the name of the database of the
+original study, and <code class="docutils literal notranslate"><span class="pre">#</span></code> is an incremental number starting at 0. This behaviour can
+be disabled by setting <code class="docutils literal notranslate"><span class="pre">backup_study</span></code> to False.</p>
+<p>This function works in tandem with
+<a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_model" title="helios.plugins.optuna.OptunaPlugin.configure_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">configure_model()</span></code></a> to ensure that when
+the failed trial is re-run, the original save name is restored so any saved
+checkpoints can be re-used so the trial can continue instead of starting from
+scratch.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only trials that fail but haven’t been completed will be enqueued by this
+function. If a trial fails and is completed later on, it will be treated as if it
+had finished successfully.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>study_args</strong> – dictionary of arguments for <code class="docutils literal notranslate"><span class="pre">optuna.create_study</span></code>.</p></li>
+<li><p><strong>failed_states</strong> – the trial states that are considered to be failures and should
+be re-enqueued.</p></li>
+<li><p><strong>backup_study</strong> – if True, the original study is backed up so it can be re-used later
+on.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helios.plugins.optuna.checkpoint_sampler">
+<span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">checkpoint_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.Trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chkpt_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#checkpoint_sampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.checkpoint_sampler" title="Link to this definition">¶</a></dt>
+<dd><p>Create a checkpoint with the state of the sampler.</p>
+<p>This function can be used to ensure that if a study is restarted, the state of the
+sampler is recovered so trials can be reproducible. The function will automatically
+create a checkpoint using <code class="docutils literal notranslate"><span class="pre">torch.save</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is recommended that this function be called at the start of the objective
+function to ensure the checkpoint is made correctly, but it can be called at any
+time.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trial</strong> – the current trial.</p></li>
+<li><p><strong>chkpt_root</strong> – the root where the checkpoints will be saved.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helios.plugins.optuna.restore_sampler">
+<span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">restore_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chkpt_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">optuna.samplers.BaseSampler</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#restore_sampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.restore_sampler" title="Link to this definition">¶</a></dt>
+<dd><p>Restore the sampler from a previously saved checkpoint.</p>
+<p>This function can be used in tandem with
+<a class="reference internal" href="#helios.plugins.optuna.checkpoint_sampler" title="helios.plugins.optuna.checkpoint_sampler"><code class="xref py py-func docutils literal notranslate"><span class="pre">checkpoint_sampler()</span></code></a> to ensure that the last
+checkpoint is loaded and the correct state is restored for the sampler. This function
+<strong>needs</strong> to be called before <code class="docutils literal notranslate"><span class="pre">optuna.create_study</span></code> is called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chkpt_root</strong> – the root where the checkpoints are stored.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The restored sampler.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">OptunaPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.Trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin" title="Link to this definition">¶</a></dt>
@@ -386,36 +508,6 @@ present in the <a class="reference internal" href="../../model/model/index.html#
 <dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.trial">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trial</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">optuna.Trial</span></em><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.trial" title="Link to this definition">¶</a></dt>
 <dd><p>Return the trial.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">enqueue_failed_trials</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.study.Study</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.enqueue_failed_trials"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials" title="Link to this definition">¶</a></dt>
-<dd><p>Enqueue any failed trials so they can be re-run.</p>
-<p>This will add any failed trials from a previous run. This is used for cases when
-the study had to be stopped due to an error, exception, or by the user, allowing
-trials that didn’t finish to complete.</p>
-<p>This function works in tandem with
-<a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_model" title="helios.plugins.optuna.OptunaPlugin.configure_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">configure_model()</span></code></a> to ensure that when
-the failed trial is re-run, the original save name is restored so any saved
-checkpoints can be re-used so the trial can continue instead of starting from
-scratch.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Only trials that fail but haven’t been completed will be enqueued by this
-function. If a trial fails and is completed later on, it will be skipped.</p>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Depending on the reason for a trial failing, it is possible for this function
-to re-add trials that will continue to fail. If you require special handling,
-you may override this function to achieve your desired behaviour.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>study</strong> – the study to get the failed trials from and enqueue them.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -680,11 +772,14 @@ distributed training wasn’t used, this function does nothing.</p>
             <ul>
 <li><a class="reference internal" href="#">helios.plugins.optuna</a><ul>
 <li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+<li><a class="reference internal" href="#helios.plugins.optuna.resume_study"><code class="docutils literal notranslate"><span class="pre">resume_study()</span></code></a></li>
+<li><a class="reference internal" href="#helios.plugins.optuna.checkpoint_sampler"><code class="docutils literal notranslate"><span class="pre">checkpoint_sampler()</span></code></a></li>
+<li><a class="reference internal" href="#helios.plugins.optuna.restore_sampler"><code class="docutils literal notranslate"><span class="pre">restore_sampler()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin</span></code></a><ul>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.plugin_id"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.plugin_id</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.trial"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.trial</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.enqueue_failed_trials()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_trainer"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.configure_trainer()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_model"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.configure_model()</span></code></a></li>
 <li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.suggest"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.suggest()</span></code></a></li>

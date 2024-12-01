@@ -303,7 +303,11 @@
     <span class="kn">import</span> <span class="nn">optuna</span>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;error: OptunaPlugin requires Optuna to be installed&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-<span class="kn">import</span> <span class="n">typing</span>
+<span class="kn">import</span> <span class="n">gc</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">typing</span>
 
 <span class="kn">import</span> <span class="nn">torch</span>
 
@@ -318,6 +322,209 @@
 <span class="n">_PRUNED_KEY</span> <span class="o">=</span> <span class="s2">&quot;ddp_hl:pruned&quot;</span>
 <span class="n">_CYCLE_KEY</span> <span class="o">=</span> <span class="s2">&quot;ddp_hl:cycle&quot;</span>
 <span class="n">_ORIG_NUMBER_KEY</span> <span class="o">=</span> <span class="s2">&quot;hl:id&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_backup_study</span><span class="p">(</span><span class="n">storage_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">storage_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">storage_path</span><span class="o">.</span><span class="n">stem</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">storage_path</span><span class="o">.</span><span class="n">parent</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="s2">&quot;_bkp-&quot;</span> <span class="ow">in</span> <span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="p">:</span>
+            <span class="n">elems</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elems</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;bkp-&quot;</span> <span class="ow">in</span> <span class="n">e</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">elems</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">bkp_path</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_bkp-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">.db&quot;</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">storage_path</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">bkp_path</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="resume_study">
+<a class="viewcode-back" href="../../../autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.resume_study">[docs]</a>
+<span class="k">def</span> <span class="nf">resume_study</span><span class="p">(</span>
+    <span class="n">study_args</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span>
+    <span class="n">failed_states</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span> <span class="o">=</span> <span class="p">(</span><span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">TrialState</span><span class="o">.</span><span class="n">FAIL</span><span class="p">,),</span>
+    <span class="n">backup_study</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Study</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resume a study that stopped because of a failure.</span>
+
+<span class="sd">    The goal of this function is to allow studies that failed due to an error (either an</span>
+<span class="sd">    exception, system error etc.) to continue utilising the built-in checkpoint system</span>
+<span class="sd">    from Helios. To accomplish this, the function will do the following:</span>
+
+<span class="sd">    #. Grab all the trials from the study created by the given ``study_args``, splitting</span>
+<span class="sd">        them into three groups: completed/pruned, failed, and failed but completed.</span>
+<span class="sd">    #. Create a new study with the same name and storage. This new study will get all of</span>
+<span class="sd">        the completed trials of the original, and will have the failed trials re-enqueued.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        This function **requires** the following conditions to be true:</span>
+<span class="sd">            #. It is called **before** the trials are started.</span>
+<span class="sd">            #. The study uses ``RDBStorage`` as the storage argument for</span>
+<span class="sd">            ``optuna.create_study``.</span>
+<span class="sd">            #. ``load_if_exists`` is set to True in ``study_args``.</span>
+<span class="sd">            #. ``TrialState.PRUNED`` **cannot** be in the list of ``failed_states``.</span>
+
+<span class="sd">    The ``failed_states`` argument can be used to set additional trial states to be</span>
+<span class="sd">    considered as &quot;failures&quot;. This can be useful when dealing with special cases where</span>
+<span class="sd">    trials were either completed or pruned but need to be re-run.</span>
+
+<span class="sd">    By default, the original study (assuming there is one) will be backed up with the name</span>
+<span class="sd">    ``&lt;study-name&gt;_backup-#`` where ``&lt;study-name&gt;`` is the name of the database of the</span>
+<span class="sd">    original study, and ``#`` is an incremental number starting at 0. This behaviour can</span>
+<span class="sd">    be disabled by setting ``backup_study`` to False.</span>
+
+<span class="sd">    This function works in tandem with</span>
+<span class="sd">    :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` to ensure that when</span>
+<span class="sd">    the failed trial is re-run, the original save name is restored so any saved</span>
+<span class="sd">    checkpoints can be re-used so the trial can continue instead of starting from</span>
+<span class="sd">    scratch.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Only trials that fail but haven&#39;t been completed will be enqueued by this</span>
+<span class="sd">        function. If a trial fails and is completed later on, it will be treated as if it</span>
+<span class="sd">        had finished successfully.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        study_args: dictionary of arguments for ``optuna.create_study``.</span>
+<span class="sd">        failed_states: the trial states that are considered to be failures and should</span>
+<span class="sd">            be re-enqueued.</span>
+<span class="sd">        backup_study: if True, the original study is backed up so it can be re-used later</span>
+<span class="sd">            on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;storage&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">study_args</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;error: RDB storage is required for resuming studies&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;load_if_exists&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">study_args</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">study_args</span><span class="p">[</span><span class="s2">&quot;load_if_exists&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;error: study must be created with &#39;load_if_exists&#39; set to True&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">TrialState</span><span class="o">.</span><span class="n">PRUNED</span> <span class="ow">in</span> <span class="n">failed_states</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;error: pruned trials cannot be considered as failed&quot;</span><span class="p">)</span>
+
+    <span class="n">storage_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">study_args</span><span class="p">[</span><span class="s2">&quot;storage&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">storage_str</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;error: only strings are supported for &#39;storage&#39;&quot;</span><span class="p">)</span>
+
+    <span class="n">storage</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">storage_str</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;sqlite:///&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">backup_study</span><span class="p">:</span>
+        <span class="n">_backup_study</span><span class="p">(</span><span class="n">storage</span><span class="p">)</span>
+
+    <span class="c1"># Step 1: create the study with the current DB and grab all the trials.</span>
+    <span class="n">study</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">create_study</span><span class="p">(</span><span class="o">**</span><span class="n">study_args</span><span class="p">)</span>
+
+    <span class="c1"># Fast exit: if there are no trials, return immediately.</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">study</span>
+
+    <span class="n">complete</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">FrozenTrial</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">failed_but_completed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">FrozenTrial</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">failed</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">FrozenTrial</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">trial</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">TrialState</span><span class="o">.</span><span class="n">COMPLETE</span>
+            <span class="ow">and</span> <span class="n">_ORIG_NUMBER_KEY</span> <span class="ow">in</span> <span class="n">trial</span><span class="o">.</span><span class="n">user_attrs</span>
+        <span class="p">):</span>
+            <span class="n">failed_but_completed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">trial</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">TrialState</span><span class="o">.</span><span class="n">COMPLETE</span>
+            <span class="ow">or</span> <span class="n">trial</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">TrialState</span><span class="o">.</span><span class="n">PRUNED</span>
+        <span class="p">):</span>
+            <span class="n">complete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">trial</span><span class="o">.</span><span class="n">state</span> <span class="ow">in</span> <span class="n">failed_states</span><span class="p">:</span>
+            <span class="n">failed</span><span class="p">[</span><span class="n">trial</span><span class="o">.</span><span class="n">number</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial</span>
+
+    <span class="c1"># Make sure that any trials that failed but were completed are pruned from the failed</span>
+    <span class="c1"># trials list.</span>
+    <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">failed_but_completed</span><span class="p">:</span>
+        <span class="n">trial_num</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">user_attrs</span><span class="p">[</span><span class="n">_ORIG_NUMBER_KEY</span><span class="p">]</span>
+        <span class="n">failed</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">trial_num</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Make sure that the study is cleared out before we attempt to rename the storage</span>
+    <span class="k">del</span> <span class="n">study</span>
+    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+    <span class="c1"># Step 2: rename the DB and create a new empty study.</span>
+    <span class="n">tmp_storage</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="p">(</span><span class="n">storage</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s2">&quot;_tmp&quot;</span> <span class="o">+</span> <span class="n">storage</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="n">storage</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">tmp_storage</span><span class="p">)</span>
+    <span class="n">study</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">create_study</span><span class="p">(</span><span class="o">**</span><span class="n">study_args</span><span class="p">)</span>
+
+    <span class="c1"># Step 3: move all the trials into the new study, re-setting all trials that failed.</span>
+    <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">complete</span><span class="p">:</span>
+        <span class="n">study</span><span class="o">.</span><span class="n">add_trial</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">failed</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">study</span><span class="o">.</span><span class="n">enqueue_trial</span><span class="p">(</span><span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="p">{</span><span class="n">_ORIG_NUMBER_KEY</span><span class="p">:</span> <span class="n">trial</span><span class="o">.</span><span class="n">number</span><span class="p">})</span>
+
+    <span class="c1"># Once everything&#39;s done, clean up the temp storage.</span>
+    <span class="n">tmp_storage</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">study</span></div>
+
+
+
+<div class="viewcode-block" id="checkpoint_sampler">
+<a class="viewcode-back" href="../../../autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.checkpoint_sampler">[docs]</a>
+<span class="k">def</span> <span class="nf">checkpoint_sampler</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">,</span> <span class="n">chkpt_root</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a checkpoint with the state of the sampler.</span>
+
+<span class="sd">    This function can be used to ensure that if a study is restarted, the state of the</span>
+<span class="sd">    sampler is recovered so trials can be reproducible. The function will automatically</span>
+<span class="sd">    create a checkpoint using ``torch.save``.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        It is recommended that this function be called at the start of the objective</span>
+<span class="sd">        function to ensure the checkpoint is made correctly, but it can be called at any</span>
+<span class="sd">        time.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        trial: the current trial.</span>
+<span class="sd">        chkpt_root: the root where the checkpoints will be saved.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">chkpt_path</span> <span class="o">=</span> <span class="n">chkpt_root</span> <span class="o">/</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sampler_trial-</span><span class="si">{</span><span class="n">trial</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="p">)</span>
+
+    <span class="n">sampler</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">study</span><span class="o">.</span><span class="n">sampler</span>
+    <span class="k">with</span> <span class="n">chkpt_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sampler</span><span class="p">,</span> <span class="n">outfile</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="restore_sampler">
+<a class="viewcode-back" href="../../../autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.restore_sampler">[docs]</a>
+<span class="k">def</span> <span class="nf">restore_sampler</span><span class="p">(</span><span class="n">chkpt_root</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">optuna</span><span class="o">.</span><span class="n">samplers</span><span class="o">.</span><span class="n">BaseSampler</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Restore the sampler from a previously saved checkpoint.</span>
+
+<span class="sd">    This function can be used in tandem with</span>
+<span class="sd">    :py:func:`~helios.plugins.optuna.checkpoint_sampler` to ensure that the last</span>
+<span class="sd">    checkpoint is loaded and the correct state is restored for the sampler. This function</span>
+<span class="sd">    **needs** to be called before ``optuna.create_study`` is called.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        chkpt_root: the root where the checkpoints are stored.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The restored sampler.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">chkpts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chkpt_root</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.pkl&quot;</span><span class="p">))</span>
+    <span class="n">chkpts</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chkpts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">sampler</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">chkpts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;rb&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sampler</span></div>
+
 
 
 <div class="viewcode-block" id="OptunaPlugin">
@@ -394,55 +601,6 @@
     <span class="nd">@trial</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">trial</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trial</span> <span class="o">=</span> <span class="n">t</span>
-
-<div class="viewcode-block" id="OptunaPlugin.enqueue_failed_trials">
-<a class="viewcode-back" href="../../../autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials">[docs]</a>
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">enqueue_failed_trials</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">study</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">study</span><span class="o">.</span><span class="n">Study</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Enqueue any failed trials so they can be re-run.</span>
-
-<span class="sd">        This will add any failed trials from a previous run. This is used for cases when</span>
-<span class="sd">        the study had to be stopped due to an error, exception, or by the user, allowing</span>
-<span class="sd">        trials that didn&#39;t finish to complete.</span>
-
-<span class="sd">        This function works in tandem with</span>
-<span class="sd">        :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` to ensure that when</span>
-<span class="sd">        the failed trial is re-run, the original save name is restored so any saved</span>
-<span class="sd">        checkpoints can be re-used so the trial can continue instead of starting from</span>
-<span class="sd">        scratch.</span>
-
-<span class="sd">        .. note::</span>
-<span class="sd">            Only trials that fail but haven&#39;t been completed will be enqueued by this</span>
-<span class="sd">            function. If a trial fails and is completed later on, it will be skipped.</span>
-
-<span class="sd">        .. warning::</span>
-<span class="sd">            Depending on the reason for a trial failing, it is possible for this function</span>
-<span class="sd">            to re-add trials that will continue to fail. If you require special handling,</span>
-<span class="sd">            you may override this function to achieve your desired behaviour.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            study: the study to get the failed trials from and enqueue them.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">failed_but_completed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">FrozenTrial</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">failed</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">FrozenTrial</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">study</span><span class="o">.</span><span class="n">trials</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span>
-                <span class="n">trial</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">TrialState</span><span class="o">.</span><span class="n">COMPLETE</span>
-                <span class="ow">and</span> <span class="n">_ORIG_NUMBER_KEY</span> <span class="ow">in</span> <span class="n">trial</span><span class="o">.</span><span class="n">user_attrs</span>
-            <span class="p">):</span>
-                <span class="n">failed_but_completed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trial</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">trial</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="n">optuna</span><span class="o">.</span><span class="n">trial</span><span class="o">.</span><span class="n">TrialState</span><span class="o">.</span><span class="n">FAIL</span><span class="p">:</span>
-                <span class="n">failed</span><span class="p">[</span><span class="n">trial</span><span class="o">.</span><span class="n">number</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial</span>
-
-        <span class="k">for</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">failed_but_completed</span><span class="p">:</span>
-            <span class="n">trial_num</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">user_attrs</span><span class="p">[</span><span class="n">_ORIG_NUMBER_KEY</span><span class="p">]</span>
-            <span class="n">failed</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">trial_num</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">failed</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">study</span><span class="o">.</span><span class="n">enqueue_trial</span><span class="p">(</span><span class="n">trial</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="p">{</span><span class="n">_ORIG_NUMBER_KEY</span><span class="p">:</span> <span class="n">trial</span><span class="o">.</span><span class="n">number</span><span class="p">})</span></div>
-
 
 <div class="viewcode-block" id="OptunaPlugin.configure_trainer">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.configure_trainer">[docs]</a>

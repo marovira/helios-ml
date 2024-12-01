@@ -704,7 +704,7 @@ to do a bit of textra setup when we create the study:</p>
 <span class="c1"># Continue as before</span>
 </pre></div>
 </div>
-<p>The <a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials" title="helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials"><code class="xref py py-meth docutils literal notranslate"><span class="pre">enqueue_failed_trials()</span></code></a> will re-add any
+<p>The <code class="xref py py-meth docutils literal notranslate"><span class="pre">enqueue_failed_trials()</span></code> will re-add any
 failed trials from the study. In addition, it will also add the necessary data so that
 when <a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.configure_model" title="helios.plugins.optuna.OptunaPlugin.configure_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">configure_model()</span></code></a> gets called, it will
 be able to re-set the id of the failed trial into the
@@ -713,7 +713,7 @@ can be re-used. This allows failed trials to continue training as opposed to re-
 from scratch.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials" title="helios.plugins.optuna.OptunaPlugin.enqueue_failed_trials"><code class="xref py py-meth docutils literal notranslate"><span class="pre">enqueue_failed_trials()</span></code></a> will add <em>all</em>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">enqueue_failed_trials()</span></code> will add <em>all</em>
 failed trials that are found that have not been completed in subsequent runs. This
 could result in trials that are known to fail to be re-added. Please look at the
 implementation if you require extra logic.</p>

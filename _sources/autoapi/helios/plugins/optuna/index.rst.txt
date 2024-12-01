@@ -12,8 +12,97 @@ Classes
    helios.plugins.optuna.OptunaPlugin
 
 
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.plugins.optuna.resume_study
+   helios.plugins.optuna.checkpoint_sampler
+   helios.plugins.optuna.restore_sampler
+
+
 Module Contents
 ---------------
+
+.. py:function:: resume_study(study_args: dict[str, Any], failed_states: Sequence = (optuna.trial.TrialState.FAIL, ), backup_study: bool = True) -> optuna.Study
+
+   Resume a study that stopped because of a failure.
+
+   The goal of this function is to allow studies that failed due to an error (either an
+   exception, system error etc.) to continue utilising the built-in checkpoint system
+   from Helios. To accomplish this, the function will do the following:
+
+   #. Grab all the trials from the study created by the given ``study_args``, splitting
+       them into three groups: completed/pruned, failed, and failed but completed.
+   #. Create a new study with the same name and storage. This new study will get all of
+       the completed trials of the original, and will have the failed trials re-enqueued.
+
+   .. warning::
+       This function **requires** the following conditions to be true:
+           #. It is called **before** the trials are started.
+           #. The study uses ``RDBStorage`` as the storage argument for
+           ``optuna.create_study``.
+           #. ``load_if_exists`` is set to True in ``study_args``.
+           #. ``TrialState.PRUNED`` **cannot** be in the list of ``failed_states``.
+
+   The ``failed_states`` argument can be used to set additional trial states to be
+   considered as "failures". This can be useful when dealing with special cases where
+   trials were either completed or pruned but need to be re-run.
+
+   By default, the original study (assuming there is one) will be backed up with the name
+   ``<study-name>_backup-#`` where ``<study-name>`` is the name of the database of the
+   original study, and ``#`` is an incremental number starting at 0. This behaviour can
+   be disabled by setting ``backup_study`` to False.
+
+   This function works in tandem with
+   :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` to ensure that when
+   the failed trial is re-run, the original save name is restored so any saved
+   checkpoints can be re-used so the trial can continue instead of starting from
+   scratch.
+
+   .. note::
+       Only trials that fail but haven't been completed will be enqueued by this
+       function. If a trial fails and is completed later on, it will be treated as if it
+       had finished successfully.
+
+   :param study_args: dictionary of arguments for ``optuna.create_study``.
+   :param failed_states: the trial states that are considered to be failures and should
+                         be re-enqueued.
+   :param backup_study: if True, the original study is backed up so it can be re-used later
+                        on.
+
+
+.. py:function:: checkpoint_sampler(trial: optuna.Trial, chkpt_root: pathlib.Path) -> None
+
+   Create a checkpoint with the state of the sampler.
+
+   This function can be used to ensure that if a study is restarted, the state of the
+   sampler is recovered so trials can be reproducible. The function will automatically
+   create a checkpoint using ``torch.save``.
+
+   .. note::
+       It is recommended that this function be called at the start of the objective
+       function to ensure the checkpoint is made correctly, but it can be called at any
+       time.
+
+   :param trial: the current trial.
+   :param chkpt_root: the root where the checkpoints will be saved.
+
+
+.. py:function:: restore_sampler(chkpt_root: pathlib.Path) -> optuna.samplers.BaseSampler | None
+
+   Restore the sampler from a previously saved checkpoint.
+
+   This function can be used in tandem with
+   :py:func:`~helios.plugins.optuna.checkpoint_sampler` to ensure that the last
+   checkpoint is loaded and the correct state is restored for the sampler. This function
+   **needs** to be called before ``optuna.create_study`` is called.
+
+   :param chkpt_root: the root where the checkpoints are stored.
+
+   :returns: The restored sampler.
+
 
 .. py:class:: OptunaPlugin(trial: optuna.Trial, metric_name: str)
 
@@ -80,35 +169,6 @@ Module Contents
 
 
       Return the trial.
-
-
-   .. py:method:: enqueue_failed_trials(study: optuna.study.Study) -> None
-      :classmethod:
-
-
-      Enqueue any failed trials so they can be re-run.
-
-      This will add any failed trials from a previous run. This is used for cases when
-      the study had to be stopped due to an error, exception, or by the user, allowing
-      trials that didn't finish to complete.
-
-      This function works in tandem with
-      :py:meth:`~helios.plugins.optuna.OptunaPlugin.configure_model` to ensure that when
-      the failed trial is re-run, the original save name is restored so any saved
-      checkpoints can be re-used so the trial can continue instead of starting from
-      scratch.
-
-      .. note::
-          Only trials that fail but haven't been completed will be enqueued by this
-          function. If a trial fails and is completed later on, it will be skipped.
-
-      .. warning::
-          Depending on the reason for a trial failing, it is possible for this function
-          to re-add trials that will continue to fail. If you require special handling,
-          you may override this function to achieve your desired behaviour.
-
-      :param study: the study to get the failed trials from and enqueue them.
-
 
 
    .. py:method:: configure_trainer(trainer: helios.trainer.Trainer) -> None
