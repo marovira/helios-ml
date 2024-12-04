@@ -40,8 +40,7 @@ def export_to_onnx(
 
     torch.onnx.export(net, net_args, str(out_path), **kwargs)  # type: ignore[arg-type]
 
-    onnx_model = onnx.load(out_path)
-    onnx.checker.check_model(onnx_model)
+    onnx.checker.check_model(out_path)
 
     if validate_output:
         ort_session = onnxruntime.InferenceSession(
