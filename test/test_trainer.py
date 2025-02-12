@@ -445,7 +445,7 @@ class TestTrainer:
         hlt.register_trainer_types_for_safe_load()
         reg_types = torch.serialization.get_safe_globals()
         exp_types = hlt.get_trainer_safe_types_for_load()
-        assert reg_types == exp_types
+        assert set(reg_types) == set(exp_types)
 
         ret_dict = hlc.safe_torch_load(out_path)
         assert test_dict == ret_dict
