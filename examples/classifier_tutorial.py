@@ -139,7 +139,7 @@ class ClassifierModel(hlm.Model):
         outputs = self._net(inputs)
         loss = self._criterion(outputs, labels)
         loss.backward()
-        self._optimizer.step()
+        self._optimizer.step()  # type: ignore[operator]
 
         # Note that we save the value of the loss function to the _loss_items dictionary.
         # This allows the model to automatically gather the losses for us if we are

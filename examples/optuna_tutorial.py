@@ -172,7 +172,7 @@ class ClassifierModel(hlm.Model):
         outputs = self._net(inputs)
         loss = self._criterion(outputs, labels)
         loss.backward()
-        self._optimizer.step()
+        self._optimizer.step()  # type: ignore[operator]
 
         self._loss_items["loss"] = loss
 
