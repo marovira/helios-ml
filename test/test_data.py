@@ -109,7 +109,7 @@ class TestTransforms:
             if as_pil:
                 samples.append(PIL.Image.fromarray(base))
             else:
-                samples.append(base)
+                samples.append(base)  # type: ignore[arg-type]
 
         if as_tuple:
             return tuple(samples)
