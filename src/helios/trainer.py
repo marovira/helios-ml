@@ -116,7 +116,9 @@ class TrainingState:
     dict = dc.asdict
 
 
-def get_trainer_safe_types_for_load() -> list[type]:
+def get_trainer_safe_types_for_load() -> (
+    list[typing.Callable | tuple[typing.Callable, str]]
+):
     """
     Return the list of safe types for loading needed by the trainer.
 

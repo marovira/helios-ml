@@ -1,3 +1,9 @@
+# ruff: noqa: A005
+# Ignore the shadowing of logging. The main reason is to avoid a breaking change in what
+# will be a minor release of helios.
+#
+# NOTE: when we release helios 2.0, this module should be renamed to loggers.py
+
 import copy
 import logging
 import pathlib
