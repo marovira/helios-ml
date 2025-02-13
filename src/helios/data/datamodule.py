@@ -22,6 +22,11 @@ from .samplers import (
     ResumableSequentialSampler,
 )
 
+
+def _register_default_collate(registry: core.Registry) -> None:
+    registry.register(tud.default_collate)
+
+
 DATASET_REGISTRY = core.Registry("dataset")
 """
 Global instance of the registry for datasets.
@@ -57,6 +62,8 @@ Example:
         # Alternatively you can manually register a collate function like this:
         hld.COLLATE_FN_REGISTRY.register(my_collate_fn)
 """
+
+_register_default_collate(COLLATE_FN_REGISTRY)
 
 
 def create_dataset(

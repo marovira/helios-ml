@@ -1,5 +1,4 @@
 import pathlib
-import typing
 
 import cv2
 import numpy as np
@@ -17,6 +16,7 @@ from helios.data import transforms as hldt
 DATASET_SIZE: int = 16
 
 
+@data.DATASET_REGISTRY.register
 class RandomDataset(tud.Dataset):
     def __getitem__(self, index):
         gen = rng.get_default_numpy_rng().generator
@@ -26,6 +26,7 @@ class RandomDataset(tud.Dataset):
         return DATASET_SIZE
 
 
+@data.DATASET_REGISTRY.register
 class SequentialDataset(tud.Dataset):
     def __init__(self):
         super().__init__()
@@ -390,17 +391,41 @@ class TestDataModule:
 
         self.check_batches(exp_batches[half_step:], batches)
 
-    def test_sampler_registry(self) -> None:
-        registered_names = [
-            "ResumableRandomSampler",
-            "ResumableSequentialSampler",
-            "ResumableDistributedSampler",
-        ]
-        assert len(typing.cast(typing.Sized, hlds.SAMPLER_REGISTRY.keys())) == len(
-            registered_names
+    def test_sampler_registry(self, check_registry) -> None:
+        check_registry(
+            hlds.SAMPLER_REGISTRY,
+            [
+                "ResumableRandomSampler",
+                "ResumableSequentialSampler",
+                "ResumableDistributedSampler",
+            ],
         )
-        for name in registered_names:
-            assert name in hlds.SAMPLER_REGISTRY
+
+    def test_sampler_create(self, check_create_function) -> None:
+        check_create_function(hlds.SAMPLER_REGISTRY, hlds.create_sampler)
+
+    def test_dataset_registry(self, check_registry) -> None:
+        check_registry(
+            data.DATASET_REGISTRY,
+            [
+                "RandomDataset",
+                "SequentialDataset",
+            ],
+        )
+
+    def test_dataset_create(self, check_create_function) -> None:
+        check_create_function(data.DATASET_REGISTRY, data.create_dataset)
+
+    def test_collate_fn_registry(self, check_registry) -> None:
+        check_registry(
+            data.COLLATE_FN_REGISTRY,
+            [
+                "default_collate",
+            ],
+        )
+
+    def test_collate_fn_create(self, check_create_function) -> None:
+        check_create_function(data.COLLATE_FN_REGISTRY, data.create_collate_fn)
 
     def test_dataset_getters(self) -> None:
         datamodule = SampleDataModule()
