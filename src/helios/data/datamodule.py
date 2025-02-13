@@ -40,8 +40,28 @@ Example:
         hld.DATASET_REGISTRY.register(MyDataset)
 """
 
+COLLATE_FN_REGISTRY = core.Registry("collate_fn")
+"""
+Global instance of the registry for collate functions.
 
-def create_dataset(type_name: str, *args: typing.Any, **kwargs: typing.Any):
+Example:
+    .. code-block:: python
+
+        import helios.data as hld
+
+        # This automatically registers your collate function.
+        @hld.COLLATE_FN_REGISTRY
+        def my_collate_fn():
+            ...
+
+        # Alternatively you can manually register a collate function like this:
+        hld.COLLATE_FN_REGISTRY.register(my_collate_fn)
+"""
+
+
+def create_dataset(
+    type_name: str, *args: typing.Any, **kwargs: typing.Any
+) -> tud.Dataset:
     """
     Create a dataset of the given type.
 
@@ -57,6 +77,26 @@ def create_dataset(type_name: str, *args: typing.Any, **kwargs: typing.Any):
         The constructed dataset.
     """
     return DATASET_REGISTRY.get(type_name)(*args, **kwargs)
+
+
+def create_collate_fn(
+    type_name: str, *args: typing.Any, **kwargs: typing.Any
+) -> typing.Callable:
+    """
+    Create a collate function of the given type.
+
+    This uses ``COLLATE_FN_REGISTRY`` to look-up function types, so ensure that your
+    functions have been registered before using this function.
+
+    Args:
+        type_name: the type of the function to create.
+        args: positional arguments to pass into the function.
+        kwargs: keyword arguments to pass into the function.
+
+    Returns:
+        The constructed function.
+    """
+    return COLLATE_FN_REGISTRY.get(type_name)(*args, **kwargs)
 
 
 class DatasetSplit(enum.Enum):
