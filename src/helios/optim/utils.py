@@ -1,6 +1,6 @@
 import typing
 
-from torch import nn, optim
+from torch import optim
 
 from helios import core
 

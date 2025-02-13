@@ -1,6 +1,5 @@
 import typing
 
-from torch import nn
 from torch.optim import lr_scheduler
 
 from helios import core
