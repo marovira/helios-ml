@@ -14,7 +14,33 @@ class SampleLoss(losses.WeightedLoss):
 
 class TestLosses:
     def test_registry(self, check_registry) -> None:
-        check_registry(losses.LOSS_REGISTRY, ["SampleLoss"])
+        check_registry(
+            losses.LOSS_REGISTRY,
+            [
+                # PyTorch losses
+                "L1Loss",
+                "MSELoss",
+                "CrossEntropyLoss",
+                "CTCLoss",
+                "NLLLoss",
+                "PoissonNLLLoss",
+                "GaussianNLLLoss",
+                "KLDivLoss",
+                "BCELoss",
+                "BCEWithLogitsLoss",
+                "MarginRankingLoss",
+                "HingeEmbeddingLoss",
+                "MultiLabelMarginLoss",
+                "HuberLoss",
+                "SmoothL1Loss",
+                "SoftMarginLoss",
+                "MultiLabelMarginLoss",
+                "CosineEmbeddingLoss",
+                "MultiMarginLoss",
+                "TripletMarginLoss",
+                "TripletMarginWithDistanceLoss",
+            ],
+        )
 
     def test_create(self, check_create_function) -> None:
         check_create_function(losses.LOSS_REGISTRY, losses.create_loss)
