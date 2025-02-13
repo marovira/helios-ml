@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.model.model - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,18 +299,18 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.model.model</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">from</span> <span class="nn">helios</span> <span class="kn">import</span> <span class="n">core</span>
-<span class="kn">from</span> <span class="nn">helios.core</span> <span class="kn">import</span> <span class="n">distributed</span> <span class="k">as</span> <span class="n">dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">distributed</span> <span class="k">as</span> <span class="n">dist</span>
 
 <span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">..trainer</span> <span class="kn">import</span> <span class="n">Trainer</span><span class="p">,</span> <span class="n">TrainingState</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..trainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trainer</span><span class="p">,</span> <span class="n">TrainingState</span>
 
 
 <span class="c1"># Tell Ruff to ignore the empty-method-without-abstract-decorator check, since a lot of</span>
@@ -320,7 +320,7 @@
 
 <div class="viewcode-block" id="Model">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model">[docs]</a>
-<span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Model</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class that groups together the functionality needed to train networks.</span>
 
@@ -378,7 +378,7 @@
 <span class="sd">            saved.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the model.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">save_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span><span class="p">:</span> <span class="n">Trainer</span> <span class="o">|</span> <span class="kc">None</span>
@@ -394,64 +394,64 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_scores</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">save_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The name of the model used for saving checkpoints and final networks.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_save_name</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Flag controlling whether distributed training is being used or not.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span>
 
     <span class="nd">@is_distributed</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">map_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The location to map loaded weights from a checkpoint or pre-trained file.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_loc</span>
 
     <span class="nd">@map_loc</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">map_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_map_loc</span> <span class="o">=</span> <span class="n">loc</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The device on which the tensors of the model are mapped to.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
 
     <span class="nd">@device</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">dev</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The local rank (device id) that the model is running on.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span>
 
     <span class="nd">@rank</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">r</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trainer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trainer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reference to the trainer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span><span class="p">)</span>
 
     <span class="nd">@trainer</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span> <span class="o">=</span> <span class="n">t</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The metric table for the model.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="Model.setup">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.setup">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize all the state necessary for training.</span>
 
@@ -469,7 +469,7 @@
 
 <div class="viewcode-block" id="Model.load_for_testing">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.load_for_testing">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_for_testing</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_for_testing</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the network(s) used for testing.</span>
 
@@ -482,7 +482,7 @@
 
 <div class="viewcode-block" id="Model.load_state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.load_state_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_state_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -503,7 +503,7 @@
 
 <div class="viewcode-block" id="Model.state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.state_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the state dictionary of the model.</span>
 
@@ -517,7 +517,7 @@
 
 <div class="viewcode-block" id="Model.trained_state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.trained_state_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">trained_state_dict</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trained_state_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -539,7 +539,7 @@
 
 <div class="viewcode-block" id="Model.append_metadata_to_chkpt_name">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.append_metadata_to_chkpt_name">[docs]</a>
-    <span class="k">def</span> <span class="nf">append_metadata_to_chkpt_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chkpt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_metadata_to_chkpt_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chkpt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Append additional data to the checkpoint filename.</span>
 
@@ -561,7 +561,7 @@
 
 <div class="viewcode-block" id="Model.append_to_banner">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.append_to_banner">[docs]</a>
-    <span class="k">def</span> <span class="nf">append_to_banner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">banner</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_to_banner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">banner</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Append additional information to the main banner printed on start-up.</span>
 
@@ -577,13 +577,13 @@
 
 <div class="viewcode-block" id="Model.train">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.train">[docs]</a>
-    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Switch the model to training mode.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Model.on_training_start">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_training_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when training starts.</span>
 
@@ -593,7 +593,7 @@
 
 <div class="viewcode-block" id="Model.on_training_epoch_start">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_epoch_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_training_epoch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_epoch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when a training epoch is started.</span>
 
@@ -607,7 +607,7 @@
 
 <div class="viewcode-block" id="Model.on_training_batch_start">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_batch_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_training_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any actions when a training batch is started.</span>
 
@@ -623,7 +623,7 @@
 
 <div class="viewcode-block" id="Model.train_step">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.train_step">[docs]</a>
-    <span class="k">def</span> <span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a single training step.</span>
 
@@ -645,7 +645,7 @@
 
 <div class="viewcode-block" id="Model.on_training_batch_end">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_batch_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_training_batch_end</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_batch_end</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">,</span> <span class="n">should_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -675,7 +675,7 @@
 
 <div class="viewcode-block" id="Model.on_training_epoch_end">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_epoch_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_training_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_epoch</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when a training epoch ends.</span>
 
@@ -689,7 +689,7 @@
 
 <div class="viewcode-block" id="Model.on_training_end">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_training_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when training ends.</span>
 
@@ -700,13 +700,13 @@
 
 <div class="viewcode-block" id="Model.eval">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.eval">[docs]</a>
-    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Switch the model to evaluation mode.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Model.on_validation_start">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_validation_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_validation_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when validation starts.</span>
 
@@ -721,7 +721,7 @@
 
 <div class="viewcode-block" id="Model.on_validation_batch_start">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_validation_batch_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_validation_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any actions when a validation batch is started.</span>
 
@@ -735,7 +735,7 @@
 
 <div class="viewcode-block" id="Model.valid_step">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.valid_step">[docs]</a>
-    <span class="k">def</span> <span class="nf">valid_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">valid_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a single validation step.</span>
 
@@ -751,7 +751,7 @@
 
 <div class="viewcode-block" id="Model.on_validation_batch_end">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_validation_batch_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_validation_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any actions when a validation batch ends.</span>
 
@@ -765,7 +765,7 @@
 
 <div class="viewcode-block" id="Model.on_validation_end">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_validation_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when validation ends.</span>
 
@@ -780,7 +780,7 @@
 
 <div class="viewcode-block" id="Model.have_metrics_improved">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.have_metrics_improved">[docs]</a>
-    <span class="k">def</span> <span class="nf">have_metrics_improved</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">have_metrics_improved</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine whether the current validation results are an improvement or not.</span>
 
@@ -796,7 +796,7 @@
 
 <div class="viewcode-block" id="Model.should_training_stop">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.should_training_stop">[docs]</a>
-    <span class="k">def</span> <span class="nf">should_training_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_training_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine whether training should stop or continue.</span>
 
@@ -825,7 +825,7 @@
 
 <div class="viewcode-block" id="Model.on_testing_start">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_testing_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_testing_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_testing_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when testing starts.</span>
 
@@ -837,7 +837,7 @@
 
 <div class="viewcode-block" id="Model.on_testing_batch_start">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_testing_batch_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_testing_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_testing_batch_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any actions when a testing batch is started.</span>
 
@@ -851,7 +851,7 @@
 
 <div class="viewcode-block" id="Model.test_step">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.test_step">[docs]</a>
-    <span class="k">def</span> <span class="nf">test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform a single testing step.</span>
 
@@ -867,7 +867,7 @@
 
 <div class="viewcode-block" id="Model.on_testing_batch_end">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_testing_batch_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_testing_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_testing_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any actions when a testing batch ends.</span>
 
@@ -881,7 +881,7 @@
 
 <div class="viewcode-block" id="Model.on_testing_end">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_testing_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_testing_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_testing_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when testing ends.</span>
 

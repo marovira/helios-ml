@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.scheduler.schedulers - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,16 +299,16 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.scheduler.schedulers</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">collections</span> <span class="k">as</span> <span class="nn">col</span>
-<span class="kn">import</span> <span class="nn">math</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">col</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">optim</span>
-<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">lr_scheduler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">optim</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.optim</span><span class="w"> </span><span class="kn">import</span> <span class="n">lr_scheduler</span>
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">SCHEDULER_REGISTRY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCHEDULER_REGISTRY</span>
 
 
-<span class="k">def</span> <span class="nf">_get_position_from_periods</span><span class="p">(</span><span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cummulative_period</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_position_from_periods</span><span class="p">(</span><span class="n">iteration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cummulative_period</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get position from a period list.</span>
 
@@ -335,7 +335,7 @@
 <div class="viewcode-block" id="CosineAnnealingRestartLR">
 <a class="viewcode-back" href="../../../autoapi/helios/scheduler/schedulers/index.html#helios.scheduler.schedulers.CosineAnnealingRestartLR">[docs]</a>
 <span class="nd">@SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span>
-<span class="k">class</span> <span class="nc">CosineAnnealingRestartLR</span><span class="p">(</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CosineAnnealingRestartLR</span><span class="p">(</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A cosine annealing with restarts LR scheduler.</span>
 
@@ -359,7 +359,7 @@
 <span class="sd">        last_epoch: Used in _LRScheduler. Defaults to -1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">optimizer</span><span class="p">:</span> <span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
         <span class="n">periods</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -384,7 +384,7 @@
 
 <div class="viewcode-block" id="CosineAnnealingRestartLR.get_lr">
 <a class="viewcode-back" href="../../../autoapi/helios/scheduler/schedulers/index.html#helios.scheduler.schedulers.CosineAnnealingRestartLR.get_lr">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current learning rate.&quot;&quot;&quot;</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">_get_position_from_periods</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_epoch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cumulative_period</span><span class="p">)</span>
         <span class="n">current_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restart_weights</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
@@ -411,7 +411,7 @@
 <div class="viewcode-block" id="MultiStepRestartLR">
 <a class="viewcode-back" href="../../../autoapi/helios/scheduler/schedulers/index.html#helios.scheduler.schedulers.MultiStepRestartLR">[docs]</a>
 <span class="nd">@SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span>
-<span class="k">class</span> <span class="nc">MultiStepRestartLR</span><span class="p">(</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MultiStepRestartLR</span><span class="p">(</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">LRScheduler</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Multi-step with restarts LR scheduler.</span>
 
@@ -424,7 +424,7 @@
 <span class="sd">        last_epoch: used in _LRScheduler. Defaults to -1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">optimizer</span><span class="p">:</span> <span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
         <span class="n">milestones</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -450,7 +450,7 @@
 
 <div class="viewcode-block" id="MultiStepRestartLR.get_lr">
 <a class="viewcode-back" href="../../../autoapi/helios/scheduler/schedulers/index.html#helios.scheduler.schedulers.MultiStepRestartLR.get_lr">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_lr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current learning rate.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_epoch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restarts</span><span class="p">:</span>
             <span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restart_weights</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_restarts</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_epoch</span><span class="p">)]</span>

@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.plugins.optuna - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -463,10 +463,10 @@ following functionality:</p>
 then <code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code> is raised.</p>
 </div>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.plugins</span> <span class="k">as</span> <span class="nn">hlp</span>
-<span class="kn">import</span> <span class="nn">optuna</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">optuna</span>
 
-<span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="n">datamodule</span> <span class="o">=</span> <span class="o">...</span>
     <span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
     <span class="n">plugin</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">optuna</span><span class="o">.</span><span class="n">OptunaPlugin</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">)</span>
@@ -484,7 +484,7 @@ then <code class="xref py py-exc docutils literal notranslate"><span class="pre"
     <span class="n">plugin</span><span class="o">.</span><span class="n">check_pruned</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span>
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="c1"># Note that the plug-in requires the storage to be persistent.</span>
     <span class="n">study</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">create_study</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="s2">&quot;sqlite:///example.db&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
     <span class="n">study</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
@@ -579,10 +579,10 @@ wrapper.</p>
 <p>You can find the exact arguments for each function <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html">here</a>.</p>
 </div>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.plugin</span> <span class="k">as</span> <span class="nn">hlp</span>
-<span class="kn">import</span> <span class="nn">optuna</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugin</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">optuna</span>
 
-<span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="n">plugin</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">optuna</span><span class="o">.</span><span class="n">OptunaPlugin</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">)</span>
     <span class="c1"># ... configure model and trainer.</span>
 
@@ -623,12 +623,12 @@ wrapper.</p>
 <p>This function should be called from the model once the corresponding metrics have
 been saved into the <a class="reference internal" href="../../model/model/index.html#helios.model.model.Model.metrics" title="helios.model.model.Model.metrics"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metrics</span></code></a> table.</p>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.model</span> <span class="k">as</span> <span class="nn">hlm</span>
-<span class="kn">import</span> <span class="nn">helios.plugins.optuna</span> <span class="k">as</span> <span class="nn">hlpo</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins.optuna</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlpo</span>
 
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
     <span class="o">...</span>
-    <span class="k">def</span> <span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Compute metrics</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
 

@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.losses.utils - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -337,12 +337,88 @@
 <dt class="sig sig-object py" id="helios.losses.utils.LOSS_REGISTRY">
 <span class="sig-prename descclassname"><span class="pre">helios.losses.utils.</span></span><span class="sig-name descname"><span class="pre">LOSS_REGISTRY</span></span><a class="headerlink" href="#helios.losses.utils.LOSS_REGISTRY" title="Link to this definition">¶</a></dt>
 <dd><p>Global instance of the registry for loss functions.</p>
+<p>By default, the registry contains the following losses:</p>
+<div class="table-wrapper docutils container" id="id1">
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Optimizers</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Loss</p></th>
+<th class="head"><p>Name</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.L1Loss</span></code></p></td>
+<td><p>L1Loss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.MSELoss</span></code></p></td>
+<td><p>MSELoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.CrossEntropyLoss</span></code></p></td>
+<td><p>CrossEntropyLoss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.CTCLoss</span></code></p></td>
+<td><p>CTCLoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.NLLLoss</span></code></p></td>
+<td><p>NLLLoss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.PoissonNLLLoss</span></code></p></td>
+<td><p>PoissonNLLLoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.GaussianNLLLoss</span></code></p></td>
+<td><p>GaussianNLLLoss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.KLDivLoss</span></code></p></td>
+<td><p>KLDivLoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.BCELoss</span></code></p></td>
+<td><p>BCELoss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.BCEWithLogitsLoss</span></code></p></td>
+<td><p>BCEWithLogitsLoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.MarginRankingLoss</span></code></p></td>
+<td><p>MarginRankingLoss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.HingeEmbeddingLoss</span></code></p></td>
+<td><p>HingeEmbeddingLoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.MultiLabelMarginLoss</span></code></p></td>
+<td><p>MultiLabelMarginLoss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.HuberLoss</span></code></p></td>
+<td><p>HuberLoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.SmoothL1Loss</span></code></p></td>
+<td><p>SmoothL1Loss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.SoftMarginLoss</span></code></p></td>
+<td><p>SoftMarginLoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.MultiLabelMarginLoss</span></code></p></td>
+<td><p>MultiLabelMarginLoss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.CosineEmbeddingLoss</span></code></p></td>
+<td><p>CosineEmbeddingLoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.MultiMarginLoss</span></code></p></td>
+<td><p>MultiMarginLoss</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.TripletMarginLoss</span></code></p></td>
+<td><p>TripletMarginLoss</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">torch.nn.TripletMarginWithDistanceLoss</span></code></p></td>
+<td><p>TripletMarginWithDistanceLoss</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.losses</span> <span class="k">as</span> <span class="nn">hll</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.losses</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hll</span>
 
 <span class="c1"># This automatically registers your loss function.</span>
 <span class="nd">@hll</span><span class="o">.</span><span class="n">LOSS_REGISTRY</span><span class="o">.</span><span class="n">register</span>
-<span class="k">class</span> <span class="nc">MyLoss</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyLoss</span><span class="p">:</span>
     <span class="o">...</span>
 
 <span class="c1"># Alternatively you can manually register a loss function like this:</span>

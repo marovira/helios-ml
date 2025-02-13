@@ -82,7 +82,7 @@ Module Contents
        # Alternatively you can manually register a scheduler. like this:
        hls.SCHEDULER_REGISTRY.register(MyScheduler)
 
-.. py:function:: create_scheduler(type_name: str, *args: Any, **kwargs: Any) -> torch.nn.Module
+.. py:function:: create_scheduler(type_name: str, *args: Any, **kwargs: Any) -> torch.optim.lr_scheduler.LRScheduler
 
    Create the scheduler for the given type.
 

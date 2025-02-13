@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.metrics.functional - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,16 +299,16 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.metrics.functional</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">cv2</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
 
-<span class="kn">from</span> <span class="nn">helios.data</span> <span class="kn">import</span> <span class="n">functional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">functional</span>
 
 
-<span class="k">def</span> <span class="nf">_ssim</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">img2</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ssim</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">img2</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SSIM implementation function. See calculate_ssim for details.</span>
 
@@ -340,7 +340,7 @@
     <span class="k">return</span> <span class="n">ssim_map</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_ssim_torch</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">img2</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ssim_torch</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">img2</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SSIM Torch implementation function. See :py:func:`.calculate_ssim_torch` for details.</span>
 
@@ -384,7 +384,7 @@
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">ssim_map</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span>
 
 
-<span class="k">def</span> <span class="nf">_average_precision</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_average_precision</span><span class="p">(</span>
     <span class="n">output</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">target</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -416,7 +416,7 @@
     <span class="k">return</span> <span class="n">precision_at_i</span>
 
 
-<span class="k">def</span> <span class="nf">_mae</span><span class="p">(</span><span class="n">pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">gt</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mae</span><span class="p">(</span><span class="n">pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">gt</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MAE implementation. See :py:func:`.calculate_mae` for details.</span>
 
@@ -434,7 +434,7 @@
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">mae_error</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_mae_torch</span><span class="p">(</span><span class="n">pred</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">gt</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_mae_torch</span><span class="p">(</span><span class="n">pred</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">gt</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    MAE Torch implementation. See :py:func:`.calculate_mae_torch` for details.</span>
 
@@ -454,7 +454,7 @@
 
 <div class="viewcode-block" id="calculate_psnr">
 <a class="viewcode-back" href="../../../autoapi/helios/metrics/functional/index.html#helios.metrics.functional.calculate_psnr">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate_psnr</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_psnr</span><span class="p">(</span>
     <span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">img2</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">crop_border</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -504,7 +504,7 @@
 
 <div class="viewcode-block" id="calculate_psnr_torch">
 <a class="viewcode-back" href="../../../autoapi/helios/metrics/functional/index.html#helios.metrics.functional.calculate_psnr_torch">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate_psnr_torch</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_psnr_torch</span><span class="p">(</span>
     <span class="n">img</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">img2</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">crop_border</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -547,7 +547,7 @@
 
 <div class="viewcode-block" id="calculate_ssim">
 <a class="viewcode-back" href="../../../autoapi/helios/metrics/functional/index.html#helios.metrics.functional.calculate_ssim">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate_ssim</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_ssim</span><span class="p">(</span>
     <span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">img2</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span>
     <span class="n">crop_border</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -601,7 +601,7 @@
 
 <div class="viewcode-block" id="calculate_ssim_torch">
 <a class="viewcode-back" href="../../../autoapi/helios/metrics/functional/index.html#helios.metrics.functional.calculate_ssim_torch">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate_ssim_torch</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_ssim_torch</span><span class="p">(</span>
     <span class="n">img</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">img2</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">crop_border</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -648,7 +648,7 @@
 
 <div class="viewcode-block" id="calculate_mAP">
 <a class="viewcode-back" href="../../../autoapi/helios/metrics/functional/index.html#helios.metrics.functional.calculate_mAP">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate_mAP</span><span class="p">(</span><span class="n">targs</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">preds</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_mAP</span><span class="p">(</span><span class="n">targs</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">preds</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the mAP (Mean Average Precision).</span>
 
@@ -681,7 +681,7 @@
 
 <div class="viewcode-block" id="calculate_mae">
 <a class="viewcode-back" href="../../../autoapi/helios/metrics/functional/index.html#helios.metrics.functional.calculate_mae">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate_mae</span><span class="p">(</span><span class="n">pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">gt</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_mae</span><span class="p">(</span><span class="n">pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">gt</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the MAE (Mean-Average Precision) score.</span>
 
@@ -706,7 +706,7 @@
 
 <div class="viewcode-block" id="calculate_mae_torch">
 <a class="viewcode-back" href="../../../autoapi/helios/metrics/functional/index.html#helios.metrics.functional.calculate_mae_torch">[docs]</a>
-<span class="k">def</span> <span class="nf">calculate_mae_torch</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_mae_torch</span><span class="p">(</span>
     <span class="n">pred</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">gt</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>

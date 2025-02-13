@@ -27,6 +27,56 @@ Module Contents
 
    Global instance of the registry for loss functions.
 
+   By default, the registry contains the following losses:
+
+   .. list-table:: Optimizers
+       :header-rows: 1
+
+       * - Loss
+         - Name
+       * - ``torch.nn.L1Loss``
+         - L1Loss
+       * - ``torch.nn.MSELoss``
+         - MSELoss
+       * - ``torch.nn.CrossEntropyLoss``
+         - CrossEntropyLoss
+       * - ``torch.nn.CTCLoss``
+         - CTCLoss
+       * - ``torch.nn.NLLLoss``
+         - NLLLoss
+       * - ``torch.nn.PoissonNLLLoss``
+         - PoissonNLLLoss
+       * - ``torch.nn.GaussianNLLLoss``
+         - GaussianNLLLoss
+       * - ``torch.nn.KLDivLoss``
+         - KLDivLoss
+       * - ``torch.nn.BCELoss``
+         - BCELoss
+       * - ``torch.nn.BCEWithLogitsLoss``
+         - BCEWithLogitsLoss
+       * - ``torch.nn.MarginRankingLoss``
+         - MarginRankingLoss
+       * - ``torch.nn.HingeEmbeddingLoss``
+         - HingeEmbeddingLoss
+       * - ``torch.nn.MultiLabelMarginLoss``
+         - MultiLabelMarginLoss
+       * - ``torch.nn.HuberLoss``
+         - HuberLoss
+       * - ``torch.nn.SmoothL1Loss``
+         - SmoothL1Loss
+       * - ``torch.nn.SoftMarginLoss``
+         - SoftMarginLoss
+       * - ``torch.nn.MultiLabelMarginLoss``
+         - MultiLabelMarginLoss
+       * - ``torch.nn.CosineEmbeddingLoss``
+         - CosineEmbeddingLoss
+       * - ``torch.nn.MultiMarginLoss``
+         - MultiMarginLoss
+       * - ``torch.nn.TripletMarginLoss``
+         - TripletMarginLoss
+       * - ``torch.nn.TripletMarginWithDistanceLoss``
+         - TripletMarginWithDistanceLoss
+
    .. rubric:: Example
 
    .. code-block:: python

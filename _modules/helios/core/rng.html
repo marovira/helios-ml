@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.core.rng - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,21 +299,21 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.core.rng</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">abc</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">random</span> <span class="k">as</span> <span class="n">npr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span> <span class="k">as</span> <span class="n">npr</span>
 
 <span class="n">_DEFAULT_RNG_SEED</span> <span class="o">=</span> <span class="mi">6691</span>
 
 
 <div class="viewcode-block" id="get_default_seed">
 <a class="viewcode-back" href="../../../autoapi/helios/core/rng/index.html#helios.core.rng.get_default_seed">[docs]</a>
-<span class="k">def</span> <span class="nf">get_default_seed</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_default_seed</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the default seed.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_DEFAULT_RNG_SEED</span></div>
 
@@ -321,7 +321,7 @@
 
 <div class="viewcode-block" id="DefaultNumpyRNG">
 <a class="viewcode-back" href="../../../autoapi/helios/core/rng/index.html#helios.core.rng.DefaultNumpyRNG">[docs]</a>
-<span class="k">class</span> <span class="nc">DefaultNumpyRNG</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DefaultNumpyRNG</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Default RNG from Numpy.</span>
 
@@ -333,18 +333,18 @@
 <span class="sd">        seed: (optional) the initial seed to use.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the default RNG.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generator</span> <span class="o">=</span> <span class="n">npr</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npr</span><span class="o">.</span><span class="n">Generator</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npr</span><span class="o">.</span><span class="n">Generator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the Numpy Generator instance.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator</span>
 
 <div class="viewcode-block" id="DefaultNumpyRNG.state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/core/rng/index.html#helios.core.rng.DefaultNumpyRNG.state_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a dictionary containing the RNG state.</span>
 
@@ -356,7 +356,7 @@
 
 <div class="viewcode-block" id="DefaultNumpyRNG.load_state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/core/rng/index.html#helios.core.rng.DefaultNumpyRNG.load_state_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="n">abc</span><span class="o">.</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Restore the RNG from the given state dictionary.</span>
 
@@ -371,7 +371,7 @@
 <span class="n">_DEFAULT_RNG</span><span class="p">:</span> <span class="n">DefaultNumpyRNG</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">_get_safe_default_rng</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DefaultNumpyRNG</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_safe_default_rng</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DefaultNumpyRNG</span><span class="p">:</span>
     <span class="k">global</span> <span class="n">_DEFAULT_RNG</span>
     <span class="k">if</span> <span class="n">_DEFAULT_RNG</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
@@ -383,7 +383,7 @@
 
 <div class="viewcode-block" id="create_default_numpy_rng">
 <a class="viewcode-back" href="../../../autoapi/helios/core/rng/index.html#helios.core.rng.create_default_numpy_rng">[docs]</a>
-<span class="k">def</span> <span class="nf">create_default_numpy_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_default_numpy_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Initialize the default RNG with the given seed.</span>
 
@@ -397,7 +397,7 @@
 
 <div class="viewcode-block" id="get_default_numpy_rng">
 <a class="viewcode-back" href="../../../autoapi/helios/core/rng/index.html#helios.core.rng.get_default_numpy_rng">[docs]</a>
-<span class="k">def</span> <span class="nf">get_default_numpy_rng</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DefaultNumpyRNG</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_default_numpy_rng</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DefaultNumpyRNG</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the default RNG.</span>
 
@@ -413,7 +413,7 @@
 
 <div class="viewcode-block" id="seed_rngs">
 <a class="viewcode-back" href="../../../autoapi/helios/core/rng/index.html#helios.core.rng.seed_rngs">[docs]</a>
-<span class="k">def</span> <span class="nf">seed_rngs</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_torch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">seed_rngs</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_torch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Seed the default RNGs with the given seed.</span>
 
@@ -441,7 +441,7 @@
 
 <div class="viewcode-block" id="get_rng_state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/core/rng/index.html#helios.core.rng.get_rng_state_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">get_rng_state_dict</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_rng_state_dict</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the state dict for the default RNGs.</span>
 
@@ -465,7 +465,7 @@
 
 <div class="viewcode-block" id="load_rng_state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/core/rng/index.html#helios.core.rng.load_rng_state_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">load_rng_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_rng_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Restore the default RNGs from the given state dict.</span>
 

@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>Plug-Ins - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -336,7 +336,7 @@ like this:</p>
 functions. This is to allow the plug-ins to override the model if necessary or to set
 state that can be later accessed by the model. The model (and the dataloader) can access
 the plug-ins through the reference to the trainer:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_step</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">train_step</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
    <span class="n">model</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="c1"># &lt;- Access plug-in with name &quot;foo&quot;</span>
 </pre></div>
 </div>
@@ -354,7 +354,7 @@ testing). Instead, the plug-ins have 3 equivalent functions:</p>
 be used for a variety of tasks such as moving tensors to a given device, filtering batch
 entries, converting values, etc. For example, suppose we wanted to reduce the training
 batch size by removing elements. We could do this as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_training_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_training_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
     <span class="k">return</span> <span class="n">batch</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="c1"># &lt;- Take the first two elements of the batch.</span>
 </pre></div>
 </div>
@@ -369,14 +369,14 @@ to act as the key with which it will be added to the table. In addition, it prov
 function that automatically registers the plug-in itself into the plug-in table. The
 function can be easily invoked from the
 <a class="reference internal" href="autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.configure_trainer" title="helios.plugins.plugin.Plugin.configure_trainer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">configure_trainer()</span></code></a> function as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.plugins</span> <span class="k">as</span> <span class="nn">hlp</span>
-<span class="kn">import</span> <span class="nn">helios.trainer</span> <span class="k">as</span> <span class="nn">hlt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">helios.trainer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlt</span>
 
-<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyPlugin</span><span class="p">(</span><span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_plugin&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">configure_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">hlt</span><span class="o">.</span><span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">hlt</span><span class="o">.</span><span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_register_in_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span> <span class="c1"># &lt;- Automatically registers the plug-in.</span>
 </pre></div>
 </div>
@@ -386,13 +386,13 @@ function can be easily invoked from the
 variable that can be used to easily access them from the trainer table. You are
 <em>encouraged</em> to always use this instead of manually typing in the key. For example,
 with the <a class="reference internal" href="autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.CUDAPlugin" title="helios.plugins.plugin.CUDAPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CUDAPlugin</span></code></a>, you could access it like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.plugins</span> <span class="k">as</span> <span class="nn">hlp</span>
-<span class="kn">import</span> <span class="nn">helios.trainer</span> <span class="k">as</span> <span class="nn">hlt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">helios.trainer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlt</span>
 
 <span class="n">trainer</span> <span class="o">=</span> <span class="n">hlt</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">plugin</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">CUDAPlugin</span><span class="p">()</span>
 <span class="n">plugin</span><span class="o">.</span><span class="n">configure_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
-<span class="n">trainer</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="n">CUDAPlugin</span><span class="o">.</span><span class="n">plugin_id</span><span class="p">]</span> <span class="c1"># &lt;- Access the plug-in like this.</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="n">hlp</span><span class="o">.</span><span class="n">CUDAPlugin</span><span class="o">.</span><span class="n">plugin_id</span><span class="p">]</span> <span class="c1"># &lt;- Access the plug-in like this.</span>
 </pre></div>
 </div>
 </div>
@@ -408,19 +408,19 @@ plug-in has a copy found under <a class="reference internal" href="autoapi/helio
 and <em>must</em> be filled in with the corresponding information for each plug-in.</p>
 <p>For example, suppose we want to build a new plug-in that can modify the training batch and
 cause training to stop early. We would then set the structure as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.plugins</span> <span class="k">as</span> <span class="nn">hlp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
 
-<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyPlugin</span><span class="p">(</span><span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;my_plugin&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">unique_overrides</span><span class="o">.</span><span class="n">training_batch</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unique_overrides</span><span class="o">.</span><span class="n">should_training_stop</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">process_training_batch</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_training_batch</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
         <span class="o">...</span>
 
-    <span class="k">def</span> <span class="nf">should_training_stop</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_training_stop</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
         <span class="o">...</span>
 </pre></div>
 </div>
@@ -477,12 +477,12 @@ recognise the tensors contained in the arrays and move them.</p>
 <p>In the event that your batch requires special handling, you can easily derive the class
 and override the function that moves the tensors to the device. For example, suppose that
 our batch consists of a dictionary of arrays of tensors. Then we would do the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.plugins</span> <span class="k">as</span> <span class="nn">hlp</span>
-<span class="kn">import</span> <span class="nn">torch</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="k">class</span> <span class="nc">MyCUDAPlugin</span><span class="p">(</span><span class="n">hlp</span><span class="o">.</span><span class="n">CUDAPlugin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyCUDAPlugin</span><span class="p">(</span><span class="n">hlp</span><span class="o">.</span><span class="n">CUDAPlugin</span><span class="p">):</span>
     <span class="c1"># Only need to override this function. Everything else will work automatically.</span>
-    <span class="k">def</span> <span class="nf">_move_collection_to_device</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_move_collection_to_device</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]]:</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -529,8 +529,8 @@ example, so we will only focus on the necessary code to use the plug-in.</p>
 <p>After the creation of the <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>,
 <a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule" title="helios.data.datamodule.DataModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataModule</span></code></a>, and the
 <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a>, we can create the plug-in and do the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.plugins.optuna</span> <span class="k">as</span> <span class="nn">hlpo</span>
-<span class="kn">import</span> <span class="nn">optuna</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins.optuna</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlpo</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">optuna</span>
 </pre></div>
 </div>
 <dl>
@@ -561,7 +561,7 @@ handle this yourself if it makes sense for your use-case.</p>
 <p>The trial instance is held by the plugin and can be easily accessed through the trainer.
 For example, we can use it to configure the layers in the classifier network within the
 <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.setup" title="helios.model.model.Model.setup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setup()</span></code></a> function like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">OptunaPlugin</span><span class="p">)</span>
 
@@ -606,7 +606,7 @@ metric is correctly synced across processess (if applicable).</p>
 </div>
 <p>For example, we can report the metrics at the end of
 <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_validation_end" title="helios.model.model.Model.on_validation_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_validation_end()</span></code></a> like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
      <span class="o">...</span>
      <span class="n">plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="n">OptunaPlugin</span><span class="o">.</span><span class="n">plugin_id</span><span class="p">]</span>
      <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">OptunaPlugin</span><span class="p">)</span>
@@ -631,7 +631,7 @@ normal execution flow occurs when training is terminated early. Once the code ex
 corresponding exception is correctly raised.</p></li>
 </ul>
 <p>In code, this can be handled as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
      <span class="o">...</span>
      <span class="n">plugin</span><span class="o">.</span><span class="n">configure_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
      <span class="n">plugin</span><span class="o">.</span><span class="n">configure_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -646,7 +646,7 @@ model needs to do a bit more work to ensure things get synchronized correctly. F
 example, we will place the synchronization of the metrics on
 <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_end" title="helios.model.model.Model.on_training_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_end()</span></code></a>, but you may place it elsewhere if
 it’s convenient for you:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_training_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_training_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="o">...</span>
     <span class="c1"># Push the metrics we want to save into the multi-processing queue.</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_distributed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -659,7 +659,7 @@ it’s convenient for you:</p>
 <p>The <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.queue" title="helios.trainer.Trainer.queue"><code class="xref py py-attr docutils literal notranslate"><span class="pre">queue</span></code></a> ensures that the values get transferred to
 the primary process. Once that’s done, we just need to add the following to our
 <code class="docutils literal notranslate"><span class="pre">objective</span></code> function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
      <span class="o">...</span>
      <span class="n">plugin</span><span class="o">.</span><span class="n">configure_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
      <span class="n">plugin</span><span class="o">.</span><span class="n">configure_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -682,7 +682,7 @@ the suggestion of parameters to be controlled by an outside source (such as comm
 arguments or a config file). The goal is to allow code re-usability by not having the
 parameters be hard-coded. The function is called
 <a class="reference internal" href="autoapi/helios/plugins/optuna/index.html#helios.plugins.optuna.OptunaPlugin.suggest" title="helios.plugins.optuna.OptunaPlugin.suggest"><code class="xref py py-meth docutils literal notranslate"><span class="pre">suggest()</span></code></a> and can be used as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
      <span class="n">val1</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">suggest</span><span class="p">(</span><span class="s2">&quot;categorical&quot;</span><span class="p">,</span> <span class="s2">&quot;val1&quot;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
      <span class="n">val2</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">suggest</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;val2&quot;</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -695,7 +695,7 @@ parameters be hard-coded. The function is called
 </section>
 <section id="resuming-optuna-studies">
 <h4>Resuming Optuna Studies<a class="headerlink" href="#resuming-optuna-studies" title="Link to this heading">¶</a></h4>
-<p>Similar to the ability of the :py:class`~helios.trainer.Trainer` to resume training in the
+<p>Similar to the ability of the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> to resume training in the
 event of a failure or cancellation, Helios ships with a system to allow Optuna studies to
 resume. The system is split into two halves: restoring the state of the samplers and
 restoring trials that failed while preserving trials that completed. Let’s start by
@@ -709,7 +709,7 @@ reproducible is to:</p>
 <p>Seeding of samplers is left to the user, though the use of
 <a class="reference internal" href="autoapi/helios/core/rng/index.html#helios.core.rng.get_default_seed" title="helios.core.rng.get_default_seed"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_default_seed()</span></code></a> is recommended to ensure consistency. To
 checkpoint the samplers, you can add do:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
      <span class="n">checkpoint_sampler</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
 </pre></div>
 </div>

@@ -75,7 +75,7 @@ Module Contents
        # Alternatively you can manually register a optimizer like this:
        hlo.OPTIMIZER_REGISTRY.register(MyOptimizer)
 
-.. py:function:: create_optimizer(type_name: str, *args: Any, **kwargs: Any) -> torch.nn.Module
+.. py:function:: create_optimizer(type_name: str, *args: Any, **kwargs: Any) -> torch.optim.Optimizer
 
    Create the optimizer for the given type.
 

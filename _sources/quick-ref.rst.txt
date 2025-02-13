@@ -343,7 +343,7 @@ you, which results in the following data being stored in the
 
 * :py:attr:`~helios.trainer.TrainingState.current_iteration` is the *real* iteration count
   that accounts for gradient accumulation. In our example, this number would only increase
-  every *second* iteration, and is it used to determine when training should stop.
+  every *second* iteration, and it is used to determine when training should stop.
 * :py:attr:`~helios.trainer.TrainingState.global_iteration`: is the *total* number of
   iterations that have been performed. In our example, this would be twice the value
   of the current iteration.
@@ -465,11 +465,11 @@ These are:
 * ``enable_file_logging`` which is paired with ``log_path``, and
 * ``enable_progress_bar``.
 
-The ``_path`` arguments determine the root directories where the corresponding logs will
+The ``*_path`` arguments determine the root directories where the corresponding logs will
 be saved.
 
 .. warning::
-   If a flat is paired with a path, then you **must** provide the corresponding path if
+   If a flag is paired with a path, then you **must** provide the corresponding path if
    the flag is enabled. In other words, if you set ``enable_tensorboard``, then you must
    also provide ``run_path``.
 
@@ -482,10 +482,11 @@ The way the names for logs is determined as follows:
 
    <run-name>_<current-date/time>
 
-Where ``<run-name>`` is the value assigned to the ``run_name`` argument and
-``<current-date/time>`` is the string representation of the current date and time with the
-format ``MonthDay_Hour-Minute-Second``. This allows multiple training runs with the same
-names to save to different logs, which can be useful when tweaking hyper-parameters.
+Where ``<run-name>`` is the value assigned to the ``run_name`` argument of the
+:py:class:`~helios.trainer.Trainer` and ``<current-date/time>`` is the string
+representation of the current date and time with the format
+``MonthDay_Hour-Minute-Second``. This allows multiple training runs with the same names to
+save to different logs, which can be useful when tweaking hyper-parameters.
 
 The ``enable_progress_bar`` flag determines whether a progress bar is shown on the screen
 while training is ongoing. The progress bar is *only* shown on the screen and does not
@@ -617,10 +618,9 @@ Exception Handling
 
 By default, the main functions of :py:class:`~helios.trainer.Trainer` (those being
 :py:meth:`~helios.trainer.Trainer.fit` and :py:meth:`~helios.trainer.Trainer.test`) will
-automatically catch any unhandled exceptions and re-raise them as
-:py:class:`RuntimeError`. Depending on the situation, it may be desirable for certain
-exceptions to be passed through untouched. In order to accommodate this, the trainer has
-two sets of lists of exception types:
+automatically catch any unhandled exceptions and re-raise them. Depending on the
+situation, it may be desirable for certain exceptions to be passed through untouched. In
+order to accommodate this, the trainer has two sets of lists of exception types:
 
 * :py:attr:`~helios.trainer.Trainer.train_exceptions` and
 * :py:attr:`~helios.trainer.Trainer.test_exceptions`.
@@ -639,7 +639,7 @@ We would then do the following:
    import helios.trainer as hlt
 
    trainer = hlt.Trainer(...)
-   trainer.train_esceptions.append(MyException)
+   trainer.train_exceptions.append(MyException)
 
    try:
        trainer.fit(...)

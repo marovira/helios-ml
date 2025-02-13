@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.data.datamodule - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,29 +299,34 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.data.datamodule</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">dataclasses</span> <span class="k">as</span> <span class="nn">dc</span>
-<span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.utils.data</span> <span class="k">as</span> <span class="nn">tud</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tud</span>
 
-<span class="kn">from</span> <span class="nn">helios</span> <span class="kn">import</span> <span class="n">core</span>
-<span class="kn">from</span> <span class="nn">helios.core</span> <span class="kn">import</span> <span class="n">rng</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">rng</span>
 
 <span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">..trainer</span> <span class="kn">import</span> <span class="n">Trainer</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..trainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trainer</span>
 
-<span class="kn">from</span> <span class="nn">.samplers</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.samplers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ResumableDistributedSampler</span><span class="p">,</span>
     <span class="n">ResumableRandomSampler</span><span class="p">,</span>
     <span class="n">ResumableSamplerType</span><span class="p">,</span>
     <span class="n">ResumableSequentialSampler</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_register_default_collate</span><span class="p">(</span><span class="n">registry</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">Registry</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">tud</span><span class="o">.</span><span class="n">default_collate</span><span class="p">)</span>
+
 
 <span class="n">DATASET_REGISTRY</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Registry</span><span class="p">(</span><span class="s2">&quot;dataset&quot;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -341,10 +346,32 @@
 <span class="sd">        hld.DATASET_REGISTRY.register(MyDataset)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="n">COLLATE_FN_REGISTRY</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Registry</span><span class="p">(</span><span class="s2">&quot;collate_fn&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Global instance of the registry for collate functions.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        import helios.data as hld</span>
+
+<span class="sd">        # This automatically registers your collate function.</span>
+<span class="sd">        @hld.COLLATE_FN_REGISTRY</span>
+<span class="sd">        def my_collate_fn():</span>
+<span class="sd">            ...</span>
+
+<span class="sd">        # Alternatively you can manually register a collate function like this:</span>
+<span class="sd">        hld.COLLATE_FN_REGISTRY.register(my_collate_fn)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">_register_default_collate</span><span class="p">(</span><span class="n">COLLATE_FN_REGISTRY</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="create_dataset">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.create_dataset">[docs]</a>
-<span class="k">def</span> <span class="nf">create_dataset</span><span class="p">(</span><span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_dataset</span><span class="p">(</span>
+    <span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a dataset of the given type.</span>
 
@@ -363,9 +390,32 @@
 
 
 
+<div class="viewcode-block" id="create_collate_fn">
+<a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.create_collate_fn">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_collate_fn</span><span class="p">(</span>
+    <span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a collate function of the given type.</span>
+
+<span class="sd">    This uses ``COLLATE_FN_REGISTRY`` to look-up function types, so ensure that your</span>
+<span class="sd">    functions have been registered before using this function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        type_name: the type of the function to create.</span>
+<span class="sd">        args: positional arguments to pass into the function.</span>
+<span class="sd">        kwargs: keyword arguments to pass into the function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The constructed function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">COLLATE_FN_REGISTRY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">type_name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="DatasetSplit">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DatasetSplit">[docs]</a>
-<span class="k">class</span> <span class="nc">DatasetSplit</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatasetSplit</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The different dataset splits.&quot;&quot;&quot;</span>
 
     <span class="n">TRAIN</span> <span class="o">=</span> <span class="mi">0</span>
@@ -375,7 +425,7 @@
 <div class="viewcode-block" id="DatasetSplit.from_str">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DatasetSplit.from_str">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_str</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetSplit</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_str</span><span class="p">(</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DatasetSplit</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the given string to the corresponding enum value.</span>
 
@@ -405,14 +455,14 @@
 
 
 
-<span class="k">def</span> <span class="nf">_seed_worker</span><span class="p">(</span><span class="n">worker_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_seed_worker</span><span class="p">(</span><span class="n">worker_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">worker_seed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">initial_seed</span><span class="p">()</span> <span class="o">%</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span>
     <span class="n">rng</span><span class="o">.</span><span class="n">seed_rngs</span><span class="p">(</span><span class="n">worker_seed</span><span class="p">,</span> <span class="n">skip_torch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="create_dataloader">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.create_dataloader">[docs]</a>
-<span class="k">def</span> <span class="nf">create_dataloader</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_dataloader</span><span class="p">(</span>
     <span class="n">dataset</span><span class="p">:</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
     <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">get_default_seed</span><span class="p">(),</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -511,7 +561,7 @@
 <div class="viewcode-block" id="DataLoaderParams">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataLoaderParams">[docs]</a>
 <span class="nd">@dc</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">DataLoaderParams</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataLoaderParams</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Params used to create the dataloader object.</span>
 
@@ -541,7 +591,7 @@
 
 <div class="viewcode-block" id="DataLoaderParams.to_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataLoaderParams.to_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert the params object to a dictionary using shallow copies.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">dc</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">)}</span></div>
 
@@ -549,7 +599,7 @@
 <div class="viewcode-block" id="DataLoaderParams.from_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataLoaderParams.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">table</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new params object from the given table.&quot;&quot;&quot;</span>
         <span class="n">params</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">dc</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">params</span><span class="p">)]</span>
@@ -567,7 +617,7 @@
 <div class="viewcode-block" id="Dataset">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.Dataset">[docs]</a>
 <span class="nd">@dc</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dataset</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The dataset and corresponding data loader params.</span>
 
@@ -581,7 +631,7 @@
 
 <div class="viewcode-block" id="Dataset.dict">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.Dataset.dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert to a dictionary.&quot;&quot;&quot;</span>
         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
         <span class="n">res</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span>
@@ -592,7 +642,7 @@
 
 <div class="viewcode-block" id="DataModule">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule">[docs]</a>
-<span class="k">class</span> <span class="nc">DataModule</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DataModule</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class that groups together the creation of the main training datasets.</span>
 
@@ -636,7 +686,7 @@
 <span class="sd">                    # training is done.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the data module.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_train_dataset</span><span class="p">:</span> <span class="n">Dataset</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -645,39 +695,39 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span><span class="p">:</span> <span class="n">Trainer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Flag controlling whether distributed training is being used or not.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span>
 
     <span class="nd">@is_distributed</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trainer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trainer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reference to the trainer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span><span class="p">)</span>
 
     <span class="nd">@trainer</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span> <span class="o">=</span> <span class="n">t</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">train_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The training dataset (if available).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_dataset</span><span class="o">.</span><span class="n">dataset</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">valid_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">valid_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The validation dataset (if available).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_dataset</span><span class="o">.</span><span class="n">dataset</span>
         <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">test_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The testing dataset (if available).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span><span class="o">.</span><span class="n">dataset</span>
@@ -685,7 +735,7 @@
 
 <div class="viewcode-block" id="DataModule.prepare_data">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.prepare_data">[docs]</a>
-    <span class="k">def</span> <span class="nf">prepare_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: B027</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">prepare_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: B027</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare data for training.</span>
 
@@ -699,13 +749,13 @@
 <div class="viewcode-block" id="DataModule.setup">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.setup">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct all required datasets.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="DataModule.train_dataloader">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.train_dataloader">[docs]</a>
-    <span class="k">def</span> <span class="nf">train_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tud</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">ResumableSamplerType</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tud</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">ResumableSamplerType</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the train dataloader (if available).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -714,7 +764,7 @@
 
 <div class="viewcode-block" id="DataModule.valid_dataloader">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.valid_dataloader">[docs]</a>
-    <span class="k">def</span> <span class="nf">valid_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tud</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">ResumableSamplerType</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">valid_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tud</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">ResumableSamplerType</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the valid dataloader (if available).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_valid_dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -723,7 +773,7 @@
 
 <div class="viewcode-block" id="DataModule.test_dataloader">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.test_dataloader">[docs]</a>
-    <span class="k">def</span> <span class="nf">test_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tud</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">ResumableSamplerType</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_dataloader</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tud</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">ResumableSamplerType</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the test dataloader (if available).&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -732,11 +782,11 @@
 
 <div class="viewcode-block" id="DataModule.teardown">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.teardown">[docs]</a>
-    <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: B027</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: B027</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean up any state after training is over.&quot;&quot;&quot;</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_create_dataset</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">DataLoaderParams</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -761,7 +811,7 @@
             <span class="k">else</span> <span class="n">DataLoaderParams</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_create_dataloader</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_dataloader</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tud</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">ResumableSamplerType</span><span class="p">]:</span>
         <span class="c1"># Only override the distributed flag if it hasn&#39;t been set by the user.</span>

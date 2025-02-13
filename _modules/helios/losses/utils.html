@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.losses.utils - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,15 +299,98 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.losses.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
 
-<span class="kn">from</span> <span class="nn">helios</span> <span class="kn">import</span> <span class="n">core</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_register_default_losses</span><span class="p">(</span><span class="n">registry</span><span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">Registry</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Register the Torch default loss functions.</span>
+
+<span class="sd">    List was obtained from https://pytorch.org/docs/stable/nn.html#loss-functions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        registry: the loss registry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">L1Loss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">CTCLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">NLLLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">PoissonNLLLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">GaussianNLLLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">KLDivLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BCELoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">MarginRankingLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">HingeEmbeddingLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">MultiLabelMarginLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">HuberLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">SmoothL1Loss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">SoftMarginLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">MultiLabelSoftMarginLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">CosineEmbeddingLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">MultiMarginLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">TripletMarginLoss</span><span class="p">)</span>
+    <span class="n">registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">TripletMarginWithDistanceLoss</span><span class="p">)</span>
+
 
 <span class="n">LOSS_REGISTRY</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Registry</span><span class="p">(</span><span class="s2">&quot;loss&quot;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Global instance of the registry for loss functions.</span>
+
+<span class="sd">By default, the registry contains the following losses:</span>
+
+<span class="sd">.. list-table:: Optimizers</span>
+<span class="sd">    :header-rows: 1</span>
+
+<span class="sd">    * - Loss</span>
+<span class="sd">      - Name</span>
+<span class="sd">    * - ``torch.nn.L1Loss``</span>
+<span class="sd">      - L1Loss</span>
+<span class="sd">    * - ``torch.nn.MSELoss``</span>
+<span class="sd">      - MSELoss</span>
+<span class="sd">    * - ``torch.nn.CrossEntropyLoss``</span>
+<span class="sd">      - CrossEntropyLoss</span>
+<span class="sd">    * - ``torch.nn.CTCLoss``</span>
+<span class="sd">      - CTCLoss</span>
+<span class="sd">    * - ``torch.nn.NLLLoss``</span>
+<span class="sd">      - NLLLoss</span>
+<span class="sd">    * - ``torch.nn.PoissonNLLLoss``</span>
+<span class="sd">      - PoissonNLLLoss</span>
+<span class="sd">    * - ``torch.nn.GaussianNLLLoss``</span>
+<span class="sd">      - GaussianNLLLoss</span>
+<span class="sd">    * - ``torch.nn.KLDivLoss``</span>
+<span class="sd">      - KLDivLoss</span>
+<span class="sd">    * - ``torch.nn.BCELoss``</span>
+<span class="sd">      - BCELoss</span>
+<span class="sd">    * - ``torch.nn.BCEWithLogitsLoss``</span>
+<span class="sd">      - BCEWithLogitsLoss</span>
+<span class="sd">    * - ``torch.nn.MarginRankingLoss``</span>
+<span class="sd">      - MarginRankingLoss</span>
+<span class="sd">    * - ``torch.nn.HingeEmbeddingLoss``</span>
+<span class="sd">      - HingeEmbeddingLoss</span>
+<span class="sd">    * - ``torch.nn.MultiLabelMarginLoss``</span>
+<span class="sd">      - MultiLabelMarginLoss</span>
+<span class="sd">    * - ``torch.nn.HuberLoss``</span>
+<span class="sd">      - HuberLoss</span>
+<span class="sd">    * - ``torch.nn.SmoothL1Loss``</span>
+<span class="sd">      - SmoothL1Loss</span>
+<span class="sd">    * - ``torch.nn.SoftMarginLoss``</span>
+<span class="sd">      - SoftMarginLoss</span>
+<span class="sd">    * - ``torch.nn.MultiLabelMarginLoss``</span>
+<span class="sd">      - MultiLabelMarginLoss</span>
+<span class="sd">    * - ``torch.nn.CosineEmbeddingLoss``</span>
+<span class="sd">      - CosineEmbeddingLoss</span>
+<span class="sd">    * - ``torch.nn.MultiMarginLoss``</span>
+<span class="sd">      - MultiMarginLoss</span>
+<span class="sd">    * - ``torch.nn.TripletMarginLoss``</span>
+<span class="sd">      - TripletMarginLoss</span>
+<span class="sd">    * - ``torch.nn.TripletMarginWithDistanceLoss``</span>
+<span class="sd">      - TripletMarginWithDistanceLoss</span>
 
 <span class="sd">Example:</span>
 <span class="sd">    .. code-block:: python</span>
@@ -322,11 +405,12 @@
 <span class="sd">        # Alternatively you can manually register a loss function like this:</span>
 <span class="sd">        hll.LOSS_REGISTRY.register(MyLoss)</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="n">_register_default_losses</span><span class="p">(</span><span class="n">LOSS_REGISTRY</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="create_loss">
 <a class="viewcode-back" href="../../../autoapi/helios/losses/utils/index.html#helios.losses.utils.create_loss">[docs]</a>
-<span class="k">def</span> <span class="nf">create_loss</span><span class="p">(</span><span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_loss</span><span class="p">(</span><span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create the loss function for the given type.</span>
 

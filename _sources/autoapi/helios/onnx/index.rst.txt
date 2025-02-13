@@ -15,7 +15,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:function:: export_to_onnx(net: torch.nn.Module, net_args: torch.Tensor, out_path: pathlib.Path, validate_output: bool = False, rtol: float = 0.001, atol: float = 1e-05, **kwargs) -> None
+.. py:function:: export_to_onnx(net: torch.nn.Module, net_args: torch.Tensor, out_path: pathlib.Path, validate_output: bool = False, save_on_validation_fail: bool = True, rtol: float = 0.001, atol: float = 1e-05, **kwargs) -> None
 
    Export the given network to ONNX format.
 
@@ -23,11 +23,17 @@ Module Contents
    valid. If you wish to validate the traced outputs to ensure they're the same, set
    ``validate_output`` to true and change ``rtol``/``atol`` as needed.
 
+   .. warning::
+       This function assumes that the given network takes a single tensor as input and
+       produces a single tensor as output.
+
    :param net: the network to convert.
    :param net_args: the input tensor for tracing.
    :param out_path: the path to save the exported network to.
    :param validate_output: if true, validation is performed to ensure correctness. Defaults
                            to false.
+   :param save_on_validation_fail: if true, the ONNX network is saved regardless of whether
+                                   validation succeeds. If false, the ONNX network is deleted. Defaults to true.
    :param rtol: relative tolerance threshold. Defaults to ``1e-3``.
    :param atol: absolute tolerance threshold. Defaults to ``1e-5``.
    :param kwargs: additional keyword arguments to ``torch.onnx.export``.

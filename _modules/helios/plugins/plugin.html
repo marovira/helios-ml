@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.plugins.plugin - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,19 +299,19 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.plugins.plugin</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">abc</span>
-<span class="kn">import</span> <span class="nn">dataclasses</span> <span class="k">as</span> <span class="nn">dc</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
-<span class="kn">from</span> <span class="nn">helios</span> <span class="kn">import</span> <span class="n">core</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span>
 
 <span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">..model</span> <span class="kn">import</span> <span class="n">Model</span>
-    <span class="kn">from</span> <span class="nn">..trainer</span> <span class="kn">import</span> <span class="n">Trainer</span><span class="p">,</span> <span class="n">TrainingState</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..trainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trainer</span><span class="p">,</span> <span class="n">TrainingState</span>
 
 <span class="c1"># ruff: noqa: B027</span>
 
@@ -319,7 +319,7 @@
 <div class="viewcode-block" id="UniquePluginOverrides">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.UniquePluginOverrides">[docs]</a>
 <span class="nd">@dc</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">UniquePluginOverrides</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UniquePluginOverrides</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set of flags that determine the unique overrides a plug-in can have.</span>
 
@@ -381,7 +381,7 @@
 
 <div class="viewcode-block" id="create_plugin">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.create_plugin">[docs]</a>
-<span class="k">def</span> <span class="nf">create_plugin</span><span class="p">(</span><span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plugin</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_plugin</span><span class="p">(</span><span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plugin</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create the plug-in for the given type.</span>
 
@@ -399,7 +399,7 @@
 
 <div class="viewcode-block" id="Plugin">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin">[docs]</a>
-<span class="k">class</span> <span class="nc">Plugin</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Plugin</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for plug-ins that extend the functionality of the Helios trainer.</span>
 
@@ -415,7 +415,7 @@
 <span class="sd">            plug-in table.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plug_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plug_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the plug-in.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span><span class="p">:</span> <span class="n">Trainer</span> <span class="o">|</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plug_id</span> <span class="o">=</span> <span class="n">plug_id</span>
@@ -427,58 +427,58 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span> <span class="o">=</span> <span class="n">UniquePluginOverrides</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">unique_overrides</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniquePluginOverrides</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unique_overrides</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniquePluginOverrides</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The set of unique overrides the plug-in uses.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_overrides</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Flag controlling whether distributed training is being used or not.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span>
 
     <span class="nd">@is_distributed</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">map_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The location to map loaded weights from a checkpoint or pre-trained file.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_loc</span>
 
     <span class="nd">@map_loc</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">map_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">map_loc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_map_loc</span> <span class="o">=</span> <span class="n">loc</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The device on which the plug-in is running.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
 
     <span class="nd">@device</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_device</span> <span class="o">=</span> <span class="n">dev</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The local rank (device id) that the plug-in is running on.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span>
 
     <span class="nd">@rank</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">r</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trainer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trainer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reference to the trainer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span><span class="p">)</span>
 
     <span class="nd">@trainer</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span> <span class="o">=</span> <span class="n">t</span>
 
 <div class="viewcode-block" id="Plugin.configure_trainer">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.configure_trainer">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Configure the trainer before training or testing.</span>
 
@@ -493,7 +493,7 @@
 
 <div class="viewcode-block" id="Plugin.configure_model">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.configure_model">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Configure the model before training or testing.</span>
 
@@ -505,19 +505,19 @@
 <div class="viewcode-block" id="Plugin.setup">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.setup">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Construct all required state for the plug-in.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Plugin.on_training_start">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.on_training_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_training_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform any necessary actions when training starts.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Plugin.process_training_batch">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.process_training_batch">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_training_batch</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_training_batch</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -537,13 +537,13 @@
 
 <div class="viewcode-block" id="Plugin.on_training_end">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.on_training_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_training_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform any necessary actions when training ends.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Plugin.on_validation_start">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.on_validation_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_validation_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when validation starts.</span>
 
@@ -554,7 +554,7 @@
 
 <div class="viewcode-block" id="Plugin.process_validation_batch">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.process_validation_batch">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_validation_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_validation_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process the validation batch.</span>
 
@@ -572,7 +572,7 @@
 
 <div class="viewcode-block" id="Plugin.on_validation_end">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.on_validation_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform any necessary actions when validation ends.</span>
 
@@ -583,7 +583,7 @@
 
 <div class="viewcode-block" id="Plugin.should_training_stop">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.should_training_stop">[docs]</a>
-    <span class="k">def</span> <span class="nf">should_training_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_training_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine whether training should stop or continue.</span>
 
@@ -595,7 +595,7 @@
 
 <div class="viewcode-block" id="Plugin.load_state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.load_state_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the plug-in state from the given state dictionary.</span>
 
@@ -608,7 +608,7 @@
 
 <div class="viewcode-block" id="Plugin.state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.state_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the state dictionary of the plug-in.</span>
 
@@ -622,13 +622,13 @@
 
 <div class="viewcode-block" id="Plugin.on_testing_start">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.on_testing_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_testing_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_testing_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform any actions when testing starts.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Plugin.process_testing_batch">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.process_testing_batch">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_testing_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_testing_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process the testing batch.</span>
 
@@ -646,11 +646,11 @@
 
 <div class="viewcode-block" id="Plugin.on_testing_end">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.Plugin.on_testing_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">on_testing_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_testing_end</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform any necessary actions when testing ends.&quot;&quot;&quot;</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_append_train_exceptions</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_append_train_exceptions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]],</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">Trainer</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -663,7 +663,7 @@
         <span class="n">exc</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">convert_to_list</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
         <span class="n">trainer</span><span class="o">.</span><span class="n">train_exceptions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
 
-    <span class="k">def</span> <span class="nf">_append_test_exceptions</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_append_test_exceptions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]],</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">Trainer</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -676,7 +676,7 @@
         <span class="n">exc</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">convert_to_list</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
         <span class="n">trainer</span><span class="o">.</span><span class="n">test_exceptions</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
 
-    <span class="k">def</span> <span class="nf">_register_in_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_in_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register the plug-in instance in the trainer table.</span>
 
@@ -701,7 +701,7 @@
 <div class="viewcode-block" id="CUDAPlugin">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.CUDAPlugin">[docs]</a>
 <span class="nd">@PLUGIN_REGISTRY</span><span class="o">.</span><span class="n">register</span>
-<span class="k">class</span> <span class="nc">CUDAPlugin</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CUDAPlugin</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Plug-in to move elements of a training batch to a GPU.</span>
 
@@ -747,7 +747,7 @@
 
     <span class="n">plugin_id</span> <span class="o">=</span> <span class="s2">&quot;cuda&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the plug-in.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plugin_id</span><span class="p">)</span>
         <span class="n">core</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">requires_cuda_support</span><span class="p">()</span>
@@ -759,13 +759,13 @@
 
 <div class="viewcode-block" id="CUDAPlugin.setup">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.CUDAPlugin.setup">[docs]</a>
-    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;No-op setup function.&quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="CUDAPlugin.configure_trainer">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.CUDAPlugin.configure_trainer">[docs]</a>
-    <span class="k">def</span> <span class="nf">configure_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">configure_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="n">Trainer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register the plug-in instance into the trainer.</span>
 
@@ -777,7 +777,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_register_in_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_move_collection_to_device</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_move_collection_to_device</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">tuple</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">dict</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
@@ -804,7 +804,7 @@
 
 <div class="viewcode-block" id="CUDAPlugin.process_training_batch">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.CUDAPlugin.process_training_batch">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_training_batch</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_training_batch</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -819,7 +819,7 @@
 
 <div class="viewcode-block" id="CUDAPlugin.process_validation_batch">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.CUDAPlugin.process_validation_batch">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_validation_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_validation_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Move the validation batch to the GPU.</span>
 
@@ -832,7 +832,7 @@
 
 <div class="viewcode-block" id="CUDAPlugin.process_testing_batch">
 <a class="viewcode-back" href="../../../autoapi/helios/plugins/plugin/index.html#helios.plugins.plugin.CUDAPlugin.process_testing_batch">[docs]</a>
-    <span class="k">def</span> <span class="nf">process_testing_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">process_testing_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Move the testing batch to the GPU.</span>
 

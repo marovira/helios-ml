@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.data.functional - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,18 +299,18 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.data.functional</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pathlib</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
 
-<span class="kn">import</span> <span class="nn">cv2</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
-<span class="kn">import</span> <span class="nn">PIL</span>
-<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">PIL</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 
 
 <div class="viewcode-block" id="load_image">
 <a class="viewcode-back" href="../../../autoapi/helios/data/functional/index.html#helios.data.functional.load_image">[docs]</a>
-<span class="k">def</span> <span class="nf">load_image</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_image</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">flags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">IMREAD_COLOR</span><span class="p">,</span> <span class="n">as_rgb</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -359,7 +359,7 @@
 
 <div class="viewcode-block" id="load_image_pil">
 <a class="viewcode-back" href="../../../autoapi/helios/data/functional/index.html#helios.data.functional.load_image_pil">[docs]</a>
-<span class="k">def</span> <span class="nf">load_image_pil</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_image_pil</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">out_fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">as_numpy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span> <span class="o">|</span> <span class="n">PIL</span><span class="o">.</span><span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -392,7 +392,7 @@
 
 <div class="viewcode-block" id="tensor_to_numpy">
 <a class="viewcode-back" href="../../../autoapi/helios/data/functional/index.html#helios.data.functional.tensor_to_numpy">[docs]</a>
-<span class="k">def</span> <span class="nf">tensor_to_numpy</span><span class="p">(</span><span class="n">tens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">as_float</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tensor_to_numpy</span><span class="p">(</span><span class="n">tens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">as_float</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the given tensor to a numpy array.</span>
 
@@ -416,7 +416,7 @@
 
 <div class="viewcode-block" id="show_tensor">
 <a class="viewcode-back" href="../../../autoapi/helios/data/functional/index.html#helios.data.functional.show_tensor">[docs]</a>
-<span class="k">def</span> <span class="nf">show_tensor</span><span class="p">(</span><span class="n">tens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;debug window&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_tensor</span><span class="p">(</span><span class="n">tens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;debug window&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Display the image held by the tensor. Useful for debugging purposes.</span>
 
@@ -433,7 +433,7 @@
 
 <div class="viewcode-block" id="show_tensors">
 <a class="viewcode-back" href="../../../autoapi/helios/data/functional/index.html#helios.data.functional.show_tensors">[docs]</a>
-<span class="k">def</span> <span class="nf">show_tensors</span><span class="p">(</span><span class="n">tens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">show_tensors</span><span class="p">(</span><span class="n">tens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Show batches of tensors.</span>
 
@@ -451,7 +451,7 @@
 
 <div class="viewcode-block" id="convert_to_hwc">
 <a class="viewcode-back" href="../../../autoapi/helios/data/functional/index.html#helios.data.functional.convert_to_hwc">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_to_hwc</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">input_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;HWC&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_to_hwc</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">input_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;HWC&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Change the order of the input image channels so the result is in (h, w, c) order.</span>
 
@@ -477,7 +477,7 @@
 
 <div class="viewcode-block" id="to_y_channel">
 <a class="viewcode-back" href="../../../autoapi/helios/data/functional/index.html#helios.data.functional.to_y_channel">[docs]</a>
-<span class="k">def</span> <span class="nf">to_y_channel</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">to_y_channel</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Y (luma) channel of a YCbCr image.</span>
 
@@ -497,7 +497,7 @@
 
 <div class="viewcode-block" id="bgr2ycbcr">
 <a class="viewcode-back" href="../../../autoapi/helios/data/functional/index.html#helios.data.functional.bgr2ycbcr">[docs]</a>
-<span class="k">def</span> <span class="nf">bgr2ycbcr</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">only_y</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bgr2ycbcr</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">only_y</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the given numpy image array from BGR to YCBCR.</span>
 
@@ -537,7 +537,7 @@
 
 <div class="viewcode-block" id="rgb2ycbcr_torch">
 <a class="viewcode-back" href="../../../autoapi/helios/data/functional/index.html#helios.data.functional.rgb2ycbcr_torch">[docs]</a>
-<span class="k">def</span> <span class="nf">rgb2ycbcr_torch</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">only_y</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rgb2ycbcr_torch</span><span class="p">(</span><span class="n">img</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">only_y</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the given torch Tensor image array from RGB to YCBCR.</span>
 

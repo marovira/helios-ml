@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.trainer - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,36 +299,36 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.trainer</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">dataclasses</span> <span class="k">as</span> <span class="nn">dc</span>
-<span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">packaging.version</span> <span class="k">as</span> <span class="nn">pv</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
-<span class="kn">import</span> <span class="nn">torch.utils.data</span> <span class="k">as</span> <span class="nn">tud</span>
-<span class="kn">import</span> <span class="nn">tqdm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">packaging.version</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tud</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tqdm</span>
 
-<span class="kn">import</span> <span class="nn">helios.model</span> <span class="k">as</span> <span class="nn">hlm</span>
-<span class="kn">import</span> <span class="nn">helios.plugins</span> <span class="k">as</span> <span class="nn">hlp</span>
-<span class="kn">from</span> <span class="nn">helios</span> <span class="kn">import</span> <span class="n">core</span><span class="p">,</span> <span class="n">data</span>
-<span class="kn">from</span> <span class="nn">helios.core</span> <span class="kn">import</span> <span class="n">distributed</span> <span class="k">as</span> <span class="n">dist</span>
-<span class="kn">from</span> <span class="nn">helios.core</span> <span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">rng</span>
-<span class="kn">from</span> <span class="nn">helios.data.samplers</span> <span class="kn">import</span> <span class="n">ResumableSamplerType</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">helios.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span><span class="p">,</span> <span class="n">data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">distributed</span> <span class="k">as</span> <span class="n">dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">rng</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios.data.samplers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResumableSamplerType</span>
 
-<span class="kn">from</span> <span class="nn">._version</span> <span class="kn">import</span> <span class="n">__version__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
 
 
 <div class="viewcode-block" id="TrainingUnit">
 <a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.TrainingUnit">[docs]</a>
-<span class="k">class</span> <span class="nc">TrainingUnit</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainingUnit</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines the types of units for training steps.&quot;&quot;&quot;</span>
 
     <span class="n">ITERATION</span> <span class="o">=</span> <span class="mi">0</span>
@@ -337,7 +337,7 @@
 <div class="viewcode-block" id="TrainingUnit.from_str">
 <a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.TrainingUnit.from_str">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainingUnit</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainingUnit</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert the given string to the corresponding enum value.</span>
 
@@ -365,7 +365,7 @@
 
 
 
-<span class="k">class</span> <span class="nc">_TrainerMode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_TrainerMode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Defines the types of actions that the trainer can do.</span>
 
@@ -378,7 +378,7 @@
 
 
 <span class="nd">@dc</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">_DistributedErrorState</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_DistributedErrorState</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Holds the state necessary to correctly handle errors in distributed training.</span>
 
@@ -395,7 +395,7 @@
 <div class="viewcode-block" id="TrainingState">
 <a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.TrainingState">[docs]</a>
 <span class="nd">@dc</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">TrainingState</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainingState</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The training state.</span>
 
@@ -428,7 +428,9 @@
 
 <div class="viewcode-block" id="get_trainer_safe_types_for_load">
 <a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.get_trainer_safe_types_for_load">[docs]</a>
-<span class="k">def</span> <span class="nf">get_trainer_safe_types_for_load</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_trainer_safe_types_for_load</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">(</span>
+    <span class="nb">list</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Callable</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the list of safe types for loading needed by the trainer.</span>
 
@@ -441,7 +443,7 @@
 
 <div class="viewcode-block" id="register_trainer_types_for_safe_load">
 <a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.register_trainer_types_for_safe_load">[docs]</a>
-<span class="k">def</span> <span class="nf">register_trainer_types_for_safe_load</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">register_trainer_types_for_safe_load</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Register trainer types for safe loading.&quot;&quot;&quot;</span>
     <span class="n">torch</span><span class="o">.</span><span class="n">serialization</span><span class="o">.</span><span class="n">add_safe_globals</span><span class="p">(</span><span class="n">get_trainer_safe_types_for_load</span><span class="p">())</span></div>
 
@@ -449,7 +451,7 @@
 
 <div class="viewcode-block" id="find_last_checkpoint">
 <a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.find_last_checkpoint">[docs]</a>
-<span class="k">def</span> <span class="nf">find_last_checkpoint</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_last_checkpoint</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the last saved checkpoint (if available).</span>
 
@@ -491,7 +493,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_spawn_handler</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_spawn_handler</span><span class="p">(</span>
     <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">world_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">trainer</span><span class="p">:</span> <span class="n">Trainer</span><span class="p">,</span>
@@ -536,7 +538,7 @@
 
 <div class="viewcode-block" id="Trainer">
 <a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.Trainer">[docs]</a>
-<span class="k">class</span> <span class="nc">Trainer</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Trainer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Automates the training, validation, and testing code.</span>
 
@@ -575,7 +577,7 @@
 <span class="sd">            Defaults to true.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">run_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">train_unit</span><span class="p">:</span> <span class="n">TrainingUnit</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">TrainingUnit</span><span class="o">.</span><span class="n">EPOCH</span><span class="p">,</span>
@@ -653,77 +655,77 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_device_flags</span><span class="p">(</span><span class="n">use_cpu</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">)</span>
 
     <span class="nd">@model</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">model</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">datamodule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">datamodule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the datamodule.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datamodule</span><span class="p">)</span>
 
     <span class="nd">@datamodule</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">datamodule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datamodule</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">datamodule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datamodule</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_datamodule</span> <span class="o">=</span> <span class="n">datamodule</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">local_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">local_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the local rank of the trainer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_rank</span>
 
     <span class="nd">@local_rank</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">local_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">local_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_local_rank</span> <span class="o">=</span> <span class="n">r</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_cpu</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_active_gpu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gpu_ids</span><span class="p">[</span><span class="n">r</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the global rank of the trainer.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span>
 
     <span class="nd">@rank</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">r</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">gpu_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">gpu_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the list of GPU IDs to use for training.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gpu_ids</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">train_exceptions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_exceptions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the list of valid exceptions for training.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_exceptions</span>
 
     <span class="nd">@train_exceptions</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">train_exceptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_exceptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_train_exceptions</span> <span class="o">=</span> <span class="n">exc</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">test_exceptions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_exceptions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the list of valid exceptions for testing.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_exceptions</span>
 
     <span class="nd">@test_exceptions</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">test_exceptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test_exceptions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_exceptions</span> <span class="o">=</span> <span class="n">exc</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the list of plug-ins.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span>
 
     <span class="nd">@plugins</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span> <span class="o">=</span> <span class="n">plugs</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">queue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">queue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the multi-processing queue instance.</span>
 
@@ -734,12 +736,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span>
 
     <span class="nd">@queue</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">queue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">queue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_queue</span> <span class="o">=</span> <span class="n">q</span>
 
 <div class="viewcode-block" id="Trainer.fit">
 <a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.Trainer.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> <span class="n">datamodule</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> <span class="n">datamodule</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the full training routine.</span>
 
@@ -762,7 +764,7 @@
 
 <div class="viewcode-block" id="Trainer.test">
 <a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.Trainer.test">[docs]</a>
-    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> <span class="n">datamodule</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> <span class="n">datamodule</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the full testing routine.</span>
 
@@ -783,7 +785,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_handle_exception</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">_TrainerMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_handle_exception</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">_TrainerMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Exception handler.</span>
 
@@ -809,7 +811,7 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">close_default_loggers</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_configure_env_for_distributed_error_handling</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_env_for_distributed_error_handling</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_error_queue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_error_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
             <span class="k">return</span>
@@ -819,12 +821,12 @@
             <span class="n">logging</span><span class="o">.</span><span class="n">create_default_loggers</span><span class="p">(</span><span class="n">enable_tensorboard</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">restore_default_loggers</span><span class="p">(</span><span class="n">log_path</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_push_distributed_error_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">_DistributedErrorState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_push_distributed_error_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">_DistributedErrorState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_error_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_error_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_launch</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_launch</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> <span class="n">datamodule</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">_TrainerMode</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -886,7 +888,7 @@
 
         <span class="n">logging</span><span class="o">.</span><span class="n">close_default_loggers</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Train the model.</span>
 
@@ -923,7 +925,7 @@
         <span class="c1"># If we&#39;re distributed, ensure that all processes are caught up before we exit.</span>
         <span class="n">dist</span><span class="o">.</span><span class="n">safe_barrier</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_test</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the model.</span>
 
@@ -994,7 +996,7 @@
 
         <span class="n">dist</span><span class="o">.</span><span class="n">safe_barrier</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_configure_env</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_configure_env</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Configure the training environment.</span>
 
@@ -1020,13 +1022,13 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_src_root</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">import_prefix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_import_prefix</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_datamodule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_datamodule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Finish setting up the datamodule.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">is_distributed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">trainer</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_setup_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finish setting up the model.</span>
 
@@ -1040,7 +1042,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">trainer</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">fast_init</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Finish setting up the plug-ins.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">plugin</span><span class="o">.</span><span class="n">is_distributed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span>
@@ -1050,7 +1052,7 @@
             <span class="n">plugin</span><span class="o">.</span><span class="n">trainer</span> <span class="o">=</span> <span class="bp">self</span>
             <span class="n">plugin</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_prepare_roots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mkdir</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_roots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mkdir</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare the training roots.&quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">save_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_chkpt_root</span> <span class="o">=</span> <span class="p">(</span>
@@ -1065,7 +1067,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_run_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_print_header</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_print_header</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">chkpt_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">for_training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the Helios header with system info to the logs.&quot;&quot;&quot;</span>
@@ -1093,7 +1095,7 @@
             <span class="n">root_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="n">dist</span><span class="o">.</span><span class="n">global_print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_validate_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_cpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_cpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Ensure that all the settings and flags are valid.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_steps</span> <span class="o">!=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -1145,7 +1147,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;error: source root must be a directory&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_device_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_cpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_device_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_cpu</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Configure the device state.</span>
 
@@ -1200,7 +1202,7 @@
             <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;WORLD_SIZE&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_validate_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensure the state table is valid.</span>
 
@@ -1224,7 +1226,7 @@
         <span class="n">chkpt_ver</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">chkpt_ver</span> <span class="o">&lt;=</span> <span class="n">cur_ver</span>
 
-    <span class="k">def</span> <span class="nf">_save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save the current training state to a checkpoint.</span>
 
@@ -1264,7 +1266,7 @@
 
         <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">chkpt_root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_load_checkpoint</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_checkpoint</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">chkpt_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">skip_rng</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1306,7 +1308,7 @@
 
         <span class="k">return</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;training_state&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">_train_on_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_train_on_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the main loop for iteration-based training.</span>
 
@@ -1436,7 +1438,7 @@
                 <span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">epoch_start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_train_on_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_train_on_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the main loop for epoch-based training.</span>
 
@@ -1558,7 +1560,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_should_training_stop</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">should_training_stop</span><span class="p">():</span>
                 <span class="n">training_done</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the validation loop.</span>
 
@@ -1606,7 +1608,7 @@
 
         <span class="n">dist</span><span class="o">.</span><span class="n">safe_barrier</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_validate_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">seen_overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">fields</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">hlp</span><span class="o">.</span><span class="n">UniquePluginOverrides</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1621,12 +1623,12 @@
                             <span class="sa">f</span><span class="s2">&quot;by </span><span class="si">{</span><span class="n">seen_overrides</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_execute_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_execute_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">func_name</span><span class="p">)</span>
             <span class="n">func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_plugins_process_batch</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plugins_process_batch</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
         <span class="n">func_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;process_</span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">_batch&quot;</span>
@@ -1638,7 +1640,7 @@
 
         <span class="k">return</span> <span class="n">batch</span>
 
-    <span class="k">def</span> <span class="nf">_plugins_should_training_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plugins_should_training_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">plugin</span><span class="o">.</span><span class="n">should_training_stop</span><span class="p">()</span> <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
 
 </pre></div>

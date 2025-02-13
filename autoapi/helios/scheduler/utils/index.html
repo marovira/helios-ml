@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.scheduler.utils - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -324,7 +324,7 @@
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#helios.scheduler.utils.create_scheduler" title="helios.scheduler.utils.create_scheduler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_scheduler</span></code></a>(→ torch.nn.Module)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.scheduler.utils.create_scheduler" title="helios.scheduler.utils.create_scheduler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_scheduler</span></code></a>(→ torch.optim.lr_scheduler.LRScheduler)</p></td>
 <td><p>Create the scheduler for the given type.</p></td>
 </tr>
 </tbody>
@@ -399,12 +399,12 @@
 </table>
 </div>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.optim</span> <span class="k">as</span> <span class="nn">hlo</span>
-<span class="kn">import</span> <span class="nn">helios.scheduler</span> <span class="k">as</span> <span class="nn">hls</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.optim</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlo</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">helios.scheduler</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hls</span>
 
 <span class="c1"># This automatically registers your optimizer.</span>
 <span class="nd">@hls</span><span class="o">.</span><span class="n">SCHEDULER_REGISTRY</span><span class="o">.</span><span class="n">register</span>
-<span class="k">class</span> <span class="nc">MyScheduler</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyScheduler</span><span class="p">:</span>
     <span class="o">...</span>
 
 <span class="c1"># Alternatively you can manually register a scheduler. like this:</span>
@@ -415,7 +415,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helios.scheduler.utils.create_scheduler">
-<span class="sig-prename descclassname"><span class="pre">helios.scheduler.utils.</span></span><span class="sig-name descname"><span class="pre">create_scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.nn.Module</span></span></span><a class="reference internal" href="../../../../_modules/helios/scheduler/utils.html#create_scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.scheduler.utils.create_scheduler" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">helios.scheduler.utils.</span></span><span class="sig-name descname"><span class="pre">create_scheduler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.optim.lr_scheduler.LRScheduler</span></span></span><a class="reference internal" href="../../../../_modules/helios/scheduler/utils.html#create_scheduler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.scheduler.utils.create_scheduler" title="Link to this definition">¶</a></dt>
 <dd><p>Create the scheduler for the given type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

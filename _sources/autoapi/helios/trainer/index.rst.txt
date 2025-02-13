@@ -129,7 +129,7 @@ Module Contents
    .. py:attribute:: dict
 
 
-.. py:function:: get_trainer_safe_types_for_load() -> list[type]
+.. py:function:: get_trainer_safe_types_for_load() -> list[Callable | tuple[Callable, str]]
 
    Return the list of safe types for loading needed by the trainer.
 

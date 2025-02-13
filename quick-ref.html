@@ -7,7 +7,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>Quick Reference - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -352,7 +352,7 @@ NumPY generators, Helios provides a wrapper class called
 trainer and initialised with the default seed (unless a different seed is specified).
 The generator can be accessed through <a class="reference internal" href="autoapi/helios/core/rng/index.html#helios.core.rng.get_default_numpy_rng" title="helios.core.rng.get_default_numpy_rng"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_default_numpy_rng()</span></code></a> as
 seen below:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">helios.core</span> <span class="kn">import</span> <span class="n">rng</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">helios.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">rng</span>
 
 <span class="n">generator</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">get_default_numpy_rng</span><span class="p">()</span><span class="o">.</span><span class="n">generator</span>
 
@@ -380,7 +380,7 @@ This is split into two sets: the worker processes and the way datasets are sampl
 <p>When the dataloader for a dataset is created, Helios passes in a custom function to seed
 each worker process so the random sequences remain the same. The code is adapted from the
 official PyTorch documentation as shown here:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_seed_worker</span><span class="p">(</span><span class="n">worker_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_seed_worker</span><span class="p">(</span><span class="n">worker_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">worker_seed</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">initial_seed</span><span class="p">()</span> <span class="o">%</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span>
     <span class="n">rng</span><span class="o">.</span><span class="n">seed_rngs</span><span class="p">(</span><span class="n">worker_seed</span><span class="p">,</span> <span class="n">skip_torch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -604,7 +604,7 @@ number.</p></li>
 <p>Lets suppose that we want to perform the backward pass in the
 <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_batch_end" title="helios.model.model.Model.on_training_batch_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_batch_end()</span></code></a> function of the model. Then we
 would do something like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_training_batch_end</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_training_batch_end</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">,</span> <span class="n">should_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Suppose that our loss tensor is stored in self._loss_items and the number of</span>
@@ -637,7 +637,7 @@ you, which results in the following data being stored in the
 <ul class="simple">
 <li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState.current_iteration" title="helios.trainer.TrainingState.current_iteration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">current_iteration</span></code></a> is the <em>real</em> iteration count
 that accounts for gradient accumulation. In our example, this number would only increase
-every <em>second</em> iteration, and is it used to determine when training should stop.</p></li>
+every <em>second</em> iteration, and it is used to determine when training should stop.</p></li>
 <li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState.global_iteration" title="helios.trainer.TrainingState.global_iteration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">global_iteration</span></code></a>: is the <em>total</em> number of
 iterations that have been performed. In our example, this would be twice the value
 of the current iteration.</p></li>
@@ -646,7 +646,7 @@ of the current iteration.</p></li>
 <p>Like before, suppose that we want to perform the backward pass in the
 <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.on_training_batch_end" title="helios.model.model.Model.on_training_batch_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_batch_end()</span></code></a> function of the model. Then we
 would do something like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">on_training_batch_end</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_training_batch_end</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">,</span> <span class="n">should_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Suppose that our loss tensor is stored in self._loss_items and the number of</span>
@@ -702,7 +702,7 @@ information to the checkpoint name for easier identification later on. This data
 retrieved from the <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.append_metadata_to_chkpt_name" title="helios.model.model.Model.append_metadata_to_chkpt_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">append_metadata_to_chkpt_name()</span></code></a>
 function from the model. For example, suppose we want to add the value of the accuracy
 metric we computed for validation. Then we would do something like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">append_metadata_to_chkpt_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chkpt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">append_metadata_to_chkpt_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chkpt_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="c1"># Suppose the accuracy is stored in self._val_scores</span>
     <span class="n">accuracy</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span>
     <span class="k">return</span> <span class="s2">&quot;accuracy_</span><span class="si">{accuracy}</span><span class="s2">&quot;</span>
@@ -748,11 +748,11 @@ These are:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">enable_file_logging</span></code> which is paired with <code class="docutils literal notranslate"><span class="pre">log_path</span></code>, and</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">enable_progress_bar</span></code>.</p></li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">_path</span></code> arguments determine the root directories where the corresponding logs will
+<p>The <code class="docutils literal notranslate"><span class="pre">*_path</span></code> arguments determine the root directories where the corresponding logs will
 be saved.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>If a flat is paired with a path, then you <strong>must</strong> provide the corresponding path if
+<p>If a flag is paired with a path, then you <strong>must</strong> provide the corresponding path if
 the flag is enabled. In other words, if you set <code class="docutils literal notranslate"><span class="pre">enable_tensorboard</span></code>, then you must
 also provide <code class="docutils literal notranslate"><span class="pre">run_path</span></code>.</p>
 </div>
@@ -764,10 +764,11 @@ also provide <code class="docutils literal notranslate"><span class="pre">run_pa
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;run-name&gt;_&lt;current-date/time&gt;
 </pre></div>
 </div>
-<p>Where <code class="docutils literal notranslate"><span class="pre">&lt;run-name&gt;</span></code> is the value assigned to the <code class="docutils literal notranslate"><span class="pre">run_name</span></code> argument and
-<code class="docutils literal notranslate"><span class="pre">&lt;current-date/time&gt;</span></code> is the string representation of the current date and time with the
-format <code class="docutils literal notranslate"><span class="pre">MonthDay_Hour-Minute-Second</span></code>. This allows multiple training runs with the same
-names to save to different logs, which can be useful when tweaking hyper-parameters.</p>
+<p>Where <code class="docutils literal notranslate"><span class="pre">&lt;run-name&gt;</span></code> is the value assigned to the <code class="docutils literal notranslate"><span class="pre">run_name</span></code> argument of the
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> and <code class="docutils literal notranslate"><span class="pre">&lt;current-date/time&gt;</span></code> is the string
+representation of the current date and time with the format
+<code class="docutils literal notranslate"><span class="pre">MonthDay_Hour-Minute-Second</span></code>. This allows multiple training runs with the same names to
+save to different logs, which can be useful when tweaking hyper-parameters.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">enable_progress_bar</span></code> flag determines whether a progress bar is shown on the screen
 while training is ongoing. The progress bar is <em>only</em> shown on the screen and does not
 appear in the file log (if enabled). The behaviour of the progress bar depends on the
@@ -895,10 +896,9 @@ following code:</p>
 <h2>Exception Handling<a class="headerlink" href="#exception-handling" title="Link to this heading">¶</a></h2>
 <p>By default, the main functions of <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> (those being
 <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.fit" title="helios.trainer.Trainer.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a> and <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.test" title="helios.trainer.Trainer.test"><code class="xref py py-meth docutils literal notranslate"><span class="pre">test()</span></code></a>) will
-automatically catch any unhandled exceptions and re-raise them as
-<code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code>. Depending on the situation, it may be desirable for certain
-exceptions to be passed through untouched. In order to accommodate this, the trainer has
-two sets of lists of exception types:</p>
+automatically catch any unhandled exceptions and re-raise them. Depending on the
+situation, it may be desirable for certain exceptions to be passed through untouched. In
+order to accommodate this, the trainer has two sets of lists of exception types:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.train_exceptions" title="helios.trainer.Trainer.train_exceptions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">train_exceptions</span></code></a> and</p></li>
 <li><p><a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.test_exceptions" title="helios.trainer.Trainer.test_exceptions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">test_exceptions</span></code></a>.</p></li>
@@ -910,10 +910,10 @@ Any other exceptions use the default behaviour.</p>
 <p>For example, suppose we had a custom exception called <code class="docutils literal notranslate"><span class="pre">MyException</span></code> and we wanted that
 exception to be passed through when training because we’re going to handle it ourselves.
 We would then do the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">helios.trainer</span> <span class="k">as</span> <span class="nn">hlt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.trainer</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlt</span>
 
 <span class="n">trainer</span> <span class="o">=</span> <span class="n">hlt</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">trainer</span><span class="o">.</span><span class="n">train_esceptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MyException</span><span class="p">)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">train_exceptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MyException</span><span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>

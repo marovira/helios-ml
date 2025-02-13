@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.core.distributed - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,17 +299,17 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.core.distributed</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">dataclasses</span> <span class="k">as</span> <span class="nn">dc</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">typing</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.distributed</span> <span class="k">as</span> <span class="nn">dist</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.distributed</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
 
 
 <div class="viewcode-block" id="is_using_torchrun">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.is_using_torchrun">[docs]</a>
-<span class="k">def</span> <span class="nf">is_using_torchrun</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_using_torchrun</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the current process was launched from ``torchrun``.</span>
 
@@ -343,7 +343,7 @@
 
 <div class="viewcode-block" id="init_dist">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.init_dist">[docs]</a>
-<span class="k">def</span> <span class="nf">init_dist</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">init_dist</span><span class="p">(</span>
     <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;nccl&quot;</span><span class="p">,</span> <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">world_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -381,7 +381,7 @@
 
 <div class="viewcode-block" id="shutdown_dist">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.shutdown_dist">[docs]</a>
-<span class="k">def</span> <span class="nf">shutdown_dist</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">shutdown_dist</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Shutdown the distributed process group.&quot;&quot;&quot;</span>
     <span class="n">dist</span><span class="o">.</span><span class="n">destroy_process_group</span><span class="p">()</span></div>
 
@@ -389,7 +389,7 @@
 
 <div class="viewcode-block" id="is_dist_active">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.is_dist_active">[docs]</a>
-<span class="k">def</span> <span class="nf">is_dist_active</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_dist_active</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if torch.distributed is active.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="ow">and</span> <span class="n">dist</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span></div>
 
@@ -398,7 +398,7 @@
 <div class="viewcode-block" id="DistributedInfo">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.DistributedInfo">[docs]</a>
 <span class="nd">@dc</span><span class="o">.</span><span class="n">dataclass</span>
-<span class="k">class</span> <span class="nc">DistributedInfo</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DistributedInfo</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Bundle information regarding distributed state.</span>
 
@@ -427,7 +427,7 @@
 
 <div class="viewcode-block" id="get_dist_info">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.get_dist_info">[docs]</a>
-<span class="k">def</span> <span class="nf">get_dist_info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DistributedInfo</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_dist_info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">DistributedInfo</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the distributed state of the current run.</span>
 
@@ -450,7 +450,7 @@
 
 <div class="viewcode-block" id="get_local_rank">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.get_local_rank">[docs]</a>
-<span class="k">def</span> <span class="nf">get_local_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_local_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the local rank of the device the process is running on.</span>
 
@@ -465,7 +465,7 @@
 
 <div class="viewcode-block" id="get_global_rank">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.get_global_rank">[docs]</a>
-<span class="k">def</span> <span class="nf">get_global_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_global_rank</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the global rank of the device the process is running on.</span>
 
@@ -480,7 +480,7 @@
 
 <div class="viewcode-block" id="gather_into_tensor">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.gather_into_tensor">[docs]</a>
-<span class="k">def</span> <span class="nf">gather_into_tensor</span><span class="p">(</span><span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gather_into_tensor</span><span class="p">(</span><span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gathers the tensors across all processes and merges them into a single tensor.</span>
 
@@ -506,7 +506,7 @@
 
 <div class="viewcode-block" id="all_reduce_tensors">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.all_reduce_tensors">[docs]</a>
-<span class="k">def</span> <span class="nf">all_reduce_tensors</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">all_reduce_tensors</span><span class="p">(</span>
     <span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -532,7 +532,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_dist_print_wrapper</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_dist_print_wrapper</span><span class="p">(</span>
     <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">rank_check</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[[],</span> <span class="nb">bool</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dist_active</span><span class="p">():</span>
@@ -544,7 +544,7 @@
 
 <div class="viewcode-block" id="global_print">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.global_print">[docs]</a>
-<span class="k">def</span> <span class="nf">global_print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">global_rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">global_print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">global_rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print wrapper that only prints on the specified global rank.</span>
 
@@ -561,7 +561,7 @@
 
 <div class="viewcode-block" id="local_print">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.local_print">[docs]</a>
-<span class="k">def</span> <span class="nf">local_print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">local_rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">local_print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">local_rank</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print wrapper that only prints on the specified local rank.</span>
 
@@ -578,7 +578,7 @@
 
 <div class="viewcode-block" id="safe_barrier">
 <a class="viewcode-back" href="../../../autoapi/helios/core/distributed/index.html#helios.core.distributed.safe_barrier">[docs]</a>
-<span class="k">def</span> <span class="nf">safe_barrier</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_barrier</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Safe wrapper for torch.distributed.barrier.</span>
 

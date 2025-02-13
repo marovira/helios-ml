@@ -6,7 +6,7 @@
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>helios.onnx - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
@@ -299,23 +299,24 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for helios.onnx</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">pathlib</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">onnx</span>
-<span class="kn">import</span> <span class="nn">onnxruntime</span>  <span class="c1"># type: ignore[import-untyped]</span>
-<span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.onnx</span>
-<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">onnx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">onnxruntime</span>  <span class="c1"># type: ignore[import-untyped]</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.onnx</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
 
 
 <div class="viewcode-block" id="export_to_onnx">
 <a class="viewcode-back" href="../../autoapi/helios/onnx/index.html#helios.onnx.export_to_onnx">[docs]</a>
-<span class="k">def</span> <span class="nf">export_to_onnx</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">export_to_onnx</span><span class="p">(</span>
     <span class="n">net</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
     <span class="n">net_args</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
     <span class="n">out_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
     <span class="n">validate_output</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">save_on_validation_fail</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
     <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
@@ -327,12 +328,18 @@
 <span class="sd">    valid. If you wish to validate the traced outputs to ensure they&#39;re the same, set</span>
 <span class="sd">    ``validate_output`` to true and change ``rtol``/``atol`` as needed.</span>
 
+<span class="sd">    .. warning::</span>
+<span class="sd">        This function assumes that the given network takes a single tensor as input and</span>
+<span class="sd">        produces a single tensor as output.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        net: the network to convert.</span>
 <span class="sd">        net_args: the input tensor for tracing.</span>
 <span class="sd">        out_path: the path to save the exported network to.</span>
 <span class="sd">        validate_output: if true, validation is performed to ensure correctness. Defaults</span>
 <span class="sd">            to false.</span>
+<span class="sd">        save_on_validation_fail: if true, the ONNX network is saved regardless of whether</span>
+<span class="sd">            validation succeeds. If false, the ONNX network is deleted. Defaults to true.</span>
 <span class="sd">        rtol: relative tolerance threshold. Defaults to ``1e-3``.</span>
 <span class="sd">        atol: absolute tolerance threshold. Defaults to ``1e-5``.</span>
 <span class="sd">        kwargs: additional keyword arguments to ``torch.onnx.export``.</span>
@@ -341,24 +348,28 @@
     <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">net</span><span class="p">(</span><span class="n">net_args</span><span class="p">)</span>
 
-    <span class="n">torch</span><span class="o">.</span><span class="n">onnx</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">net_args</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">onnx</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">net</span><span class="p">,</span> <span class="n">net_args</span><span class="p">,</span> <span class="n">out_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
 
-    <span class="n">onnx_model</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
-    <span class="n">onnx</span><span class="o">.</span><span class="n">checker</span><span class="o">.</span><span class="n">check_model</span><span class="p">(</span><span class="n">onnx_model</span><span class="p">)</span>
+    <span class="n">onnx</span><span class="o">.</span><span class="n">checker</span><span class="o">.</span><span class="n">check_model</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">validate_output</span><span class="p">:</span>
         <span class="n">ort_session</span> <span class="o">=</span> <span class="n">onnxruntime</span><span class="o">.</span><span class="n">InferenceSession</span><span class="p">(</span>
             <span class="n">out_path</span><span class="p">,</span> <span class="n">providers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;CPUExecutionProvider&quot;</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">to_numpy</span><span class="p">(</span><span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">to_numpy</span><span class="p">(</span><span class="n">tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">tensor</span><span class="o">.</span><span class="n">requires_grad</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">tensor</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">tensor</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
 
         <span class="n">ort_inputs</span> <span class="o">=</span> <span class="p">{</span><span class="n">ort_session</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">to_numpy</span><span class="p">(</span><span class="n">net_args</span><span class="p">)}</span>
         <span class="n">ort_outs</span> <span class="o">=</span> <span class="n">ort_session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ort_inputs</span><span class="p">)</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="n">ort_outs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">to_numpy</span><span class="p">(</span><span class="n">out</span><span class="p">),</span> <span class="n">ort_outs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">save_on_validation_fail</span><span class="p">:</span>
+                <span class="n">out_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">missing_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span></div>
 
 </pre></div>
         </article>
