@@ -95,7 +95,7 @@ _register_default_schedulers(SCHEDULER_REGISTRY)
 
 def create_scheduler(
     type_name: str, *args: typing.Any, **kwargs: typing.Any
-) -> nn.Module:
+) -> lr_scheduler.LRScheduler:
     """
     Create the scheduler for the given type.
 

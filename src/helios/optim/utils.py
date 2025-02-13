@@ -13,7 +13,7 @@ def _register_default_optimizers(registry: core.Registry) -> None:
     https://pytorch.org/docs/stable/optim.html#algorithms
 
     Args:
-        registry (Registry): the optimizer registry.
+        registry: the optimizer registry.
     """
     registry.register(optim.Adadelta)
     registry.register(optim.Adagrad)
@@ -86,7 +86,7 @@ _register_default_optimizers(OPTIMIZER_REGISTRY)
 
 def create_optimizer(
     type_name: str, *args: typing.Any, **kwargs: typing.Any
-) -> nn.Module:
+) -> optim.Optimizer:
     """
     Create the optimizer for the given type.
 
