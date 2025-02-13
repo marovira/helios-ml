@@ -99,7 +99,7 @@ function can be easily invoked from the
        trainer = hlt.Trainer(...)
        plugin = hlp.CUDAPlugin()
        plugin.configure_trainer(trainer)
-       trainer.plugins[CUDAPlugin.plugin_id] # <- Access the plug-in like this.
+       trainer.plugins[hlp.CUDAPlugin.plugin_id] # <- Access the plug-in like this.
 
 Unique Traits
 -------------
@@ -419,7 +419,7 @@ The exact arguments for each ``suggest_`` function can be found `here
 Resuming Optuna Studies
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Similar to the ability of the :py:class`~helios.trainer.Trainer` to resume training in the
+Similar to the ability of the :py:class:`~helios.trainer.Trainer` to resume training in the
 event of a failure or cancellation, Helios ships with a system to allow Optuna studies to
 resume. The system is split into two halves: restoring the state of the samplers and
 restoring trials that failed while preserving trials that completed. Let's start by
