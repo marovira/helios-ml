@@ -22,14 +22,14 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          version: "0.6.0"
           enable-cache: true
+          prune-cache: false
           cache-dependency-glob: "uv.lock"
-          cache-suffix: "ubuntu-latest"
 
-      - name: Setup Python
-        run: |
-          uv python install
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
 
       - name: Install dependencies
         run: |
