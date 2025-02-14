@@ -13,14 +13,11 @@ repos:
       - id: check-added-large-files
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.4
+    rev: v0.9.6
     hooks:
       - id: ruff-format
 
-  - repo: local
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.15.0
     hooks:
-      - id: generate_requirements.py
-        name: generate_requirements.py
-        language: system
-        entry: python tools/generate_requirements.py
-        files: "pyproject.toml|requirements/.*\\.txt|tools/generate_requirements.py"
+      - id: mypy

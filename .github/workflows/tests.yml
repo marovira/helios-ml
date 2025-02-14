@@ -28,59 +28,35 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        id: setup_python
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
+          version: "0.6.0"
           python-version: ${{ matrix.python-version }}
-
-      - name: Cache virtualenv
-        uses: actions/cache@v4
-        with:
-          key: venv_${{ matrix.os }}_py-${{ steps.setup_python.outputs.python-version }}_${{ hashFiles('requirements/ci.txt') }}
-          path: venv
-
-      - name: Install dependencies
-        shell: bash
-        env:
-          RUNNER: ${{ matrix.os }}
-        run: |
-          python -m venv venv
-          if [[ "$RUNNER" == "windows-latest" ]]; then
-           source venv/Scripts/activate
-          else
-            source venv/bin/activate
-          fi
-
-          python -m pip install -r requirements/ci.txt
-
-          if [[ "$RUNNER" == "windows-latest" ]]; then
-            echo "$VIRTUAL_ENV/Scripts" >> $GITHUB_PATH
-          else
-            echo "$VIRTUAL_ENV/bin" >> $GITHUB_PATH
-          fi
-          echo "VIRTUAL_ENV=$VIRTUAL_ENV" >> $GITHUB_ENV
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+          cache-suffix: ${{ matrix.os }}
 
       - name: Install Helios
         shell: bash
         run: |
-          pip install .
+          uv sync --group ci
 
       - name: Ruff
         shell: bash
         run: |
-          ruff check src/helios
-          ruff check test
-          ruff check examples
+          uv run ruff check src/helios
+          uv run ruff check test
+          uv run ruff check examples
 
       - name: Mypy
         shell: bash
         run: |
-          mypy src/helios
-          mypy test
-          mypy examples
+          uv run mypy src/helios
+          uv run mypy test
+          uv run mypy examples
 
       - name: Pytest
         shell: bash
         run: |
-          python -m pytest
+          uv run python -m pytest
