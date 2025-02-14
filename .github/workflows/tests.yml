@@ -25,7 +25,7 @@ jobs:
         os: ["ubuntu-latest", "windows-latest"]
         python-version: ["3.11", "3.12"]
     env:
-      UV_PYTHON: ${{ python.version }}
+      UV_PYTHON: ${{ matrix.python-version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
