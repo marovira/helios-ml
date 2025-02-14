@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --group ci
+          uv sync --group ci --no-editable --frozen
 
       - name: Build Docs
         shell: bash
