@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          uv sync --group ci --no-editable --frozen
+          uv sync --group ci --no-editable --locked
 
       - name: Build Helios
         run: |

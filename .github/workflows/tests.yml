@@ -41,7 +41,7 @@ jobs:
       - name: Install Dependencies/Helios
         shell: bash
         run: |
-          uv sync --group ci --no-editable --frozen
+          uv sync --group ci --no-editable --locked
 
       - name: Ruff
         shell: bash
