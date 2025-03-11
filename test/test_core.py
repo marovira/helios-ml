@@ -12,6 +12,7 @@ import numpy.typing as npt
 import pytest
 import torch
 
+import helios.core.distributed as dist
 from helios import core
 from helios.core import cuda, rng
 
@@ -192,3 +193,16 @@ class TestRNG:
         self.check_torch(exp.torch_vals[5:], torch.randint(10, [5]))
         self.check_rand(exp.rand_vals[5:], [random.randint(0, 9) for _ in range(5)])
         self.check_np(exp.np_vals[5:], np_gen.integers(0, 10, 5))
+
+
+class TestDistributed:
+    def check_backend(self, expected: str, *args, **kwargs) -> None:
+        backend = dist.get_distributed_backend(*args, **kwargs)
+        assert backend == expected
+
+    def test_distributed_backend(self) -> None:
+        self.check_backend("gloo", device_type="cpu")
+        self.check_backend("nccl", device_type="cuda")
+        self.check_backend(
+            "cuda:nccl,cpu:gloo", device_type="cuda", offload_ops_to_cpu=True
+        )

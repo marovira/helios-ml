@@ -37,6 +37,40 @@ def is_using_torchrun() -> bool:
     )
 
 
+def get_distributed_backend(device_type: str, offload_ops_to_cpu: bool = False) -> str:
+    """
+    Get the PyTorch distributed backend based on device type.
+
+    Args:
+        device_type: device type to get the backend for.
+        offload_ops_to_cpu: (optional) if true, then operations will be offloaded to CPU.
+
+    Example:
+        .. code-block:: python
+
+            import helios.core.distributed as hlcd
+
+            # Backend type is nccl
+            backend = hlcd.get_distributed_backend("cuda")
+
+            # Backend type is gloo
+            backend = hlcd.get_distributed_backend("cpu")
+
+            # Backend type is "cuda:nccl,cpu:gloo"
+            backend = hlcd.get_distributed_backend("cuda", offload_ops_to_cpu=True)
+
+    Returns:
+        The name of the backend to use.
+    """
+    default_device_backend_map = dist.Backend.default_device_backend_map
+    backend = "nccl"
+    if device_type in default_device_backend_map:
+        backend = default_device_backend_map[device_type]
+    if offload_ops_to_cpu:
+        backend = f"{device_type}:{backend},cpu:gloo"
+    return backend
+
+
 def init_dist(
     backend: str = "nccl", rank: int | None = None, world_size: int | None = None
 ) -> None:
@@ -170,7 +204,7 @@ def gather_into_tensor(tensor: torch.Tensor, size: tuple[int]) -> torch.Tensor:
     if not dist.is_initialized():
         raise RuntimeError("error: default process group has not been initialized")
 
-    device = torch.device(f"cuda:{get_local_rank()}")
+    device = torch.device(f"{tensor.device.type}:{get_local_rank()}")
     out = torch.zeros(size, device=device, dtype=tensor.dtype)
     dist.all_gather_into_tensor(out, tensor)
     return out
@@ -196,7 +230,8 @@ def all_reduce_tensors(
     if not dist.is_initialized():
         raise RuntimeError("error: default process group has not been initialized")
 
-    value_tensor = torch.tensor(tensor).cuda() if isinstance(tensor, list) else tensor
+    device = tensor[0].device if isinstance(tensor, list) else tensor.device
+    value_tensor = torch.tensor(tensor).to(device) if isinstance(tensor, list) else tensor
     dist.all_reduce(value_tensor, **kwargs)
     return value_tensor
 
