@@ -116,9 +116,9 @@ class TrainingState:
     dict = dc.asdict
 
 
-def get_trainer_safe_types_for_load() -> (
-    list[typing.Callable | tuple[typing.Callable, str]]
-):
+def get_trainer_safe_types_for_load() -> list[
+    typing.Callable | tuple[typing.Callable, str]
+]:
     """
     Return the list of safe types for loading needed by the trainer.
 
@@ -175,6 +175,7 @@ def find_last_checkpoint(root: pathlib.Path | None) -> pathlib.Path | None:
 
 
 def _spawn_handler(
+    backend: str,
     rank: int,
     world_size: int,
     trainer: Trainer,
@@ -195,7 +196,7 @@ def _spawn_handler(
         model: the model to use.
         mode: determines which operation needs to be performed.
     """
-    dist.init_dist(rank=rank, world_size=world_size)
+    dist.init_dist(backend=backend, rank=rank, world_size=world_size)
 
     trainer.model = model
     trainer.datamodule = datamodule
@@ -226,10 +227,10 @@ class Trainer:
     any clean up afterwards.
 
     Args:
-        run_name: name of the current run. Defaults to empty.
-        train_unit: the unit used for training. Defaults to
+        run_name: (optional) name of the current run. Defaults to empty.
+        train_unit: (optional) the unit used for training. Defaults to
             :py:attr:`TrainingUnit.ITERATION`.
-        total_steps: the total number of steps to train for. Defaults to 0.
+        total_steps: (optional) the total number of steps to train for. Defaults to 0.
         valid_frequency: (optional) frequency with which to perform validation.
         chkpt_frequency: (optional) frequency with which to save checkpoints.
         print_frequency: (optional) frequency with which to log.
@@ -240,6 +241,8 @@ class Trainer:
             no improvement is seen during validation.
         use_cpu: (optional) if true, CPU will be used.
         gpus: (optional) IDs of GPUs to use.
+        offload_ops_to_cpu: (optional) if true and training is distributed with CUDA, then
+            operations will be offloaded to the CPU. Defaults to false.
         random_seed: (optional) the seed to use for RNGs.
         enable_tensorboard: enable/disable Tensorboard logging. Defaults to false.
         enable_file_logging: enable/disable file logging. Defaults to false.
@@ -250,10 +253,11 @@ class Trainer:
         src_root: (optional) root folder where the code is located. This is used to
             automatically populate the registries using
             :py:func:`~helios.core.utils.update_all_registries`.
-        import_prefix: prefix to use when importing modules. See
-            :py:func:`~helios.core.utils.update_all_registries` for details.
-        print_banner: if true, the Helios banner with system info will be printed.
-            Defaults to true.
+        import_prefix: (optional) prefix to use when importing modules. See
+            :py:func:`~helios.core.utils.update_all_registries` for details. Defaults to
+            empty.
+        print_banner: (optional) if true, the Helios banner with system info will be
+            printed. Defaults to true.
     """
 
     def __init__(
@@ -270,6 +274,7 @@ class Trainer:
         early_stop_cycles: int | None = None,
         use_cpu: bool | None = None,
         gpus: list[int] | None = None,
+        offload_ops_to_cpu: bool = False,
         random_seed: int | None = None,
         enable_tensorboard: bool = False,
         enable_file_logging: bool = False,
@@ -293,6 +298,8 @@ class Trainer:
         self._gpu_ids: list[int] = [] if gpus is None else gpus
         self._active_gpu: int = 0
         self._is_distributed: bool = False
+        self._dist_backend: str = ""
+        self._offload_ops_to_cpu = offload_ops_to_cpu
         self._is_torchrun: bool = dist.is_using_torchrun()
 
         if isinstance(train_unit, str):
@@ -525,6 +532,7 @@ class Trainer:
                 mp.spawn(
                     _spawn_handler,
                     args=(
+                        self._dist_backend,
                         world_size,
                         self,
                         datamodule,
@@ -545,7 +553,7 @@ class Trainer:
             return
 
         if self._is_torchrun and self._is_distributed:
-            dist.init_dist()
+            dist.init_dist(backend=self._dist_backend)
 
         self.model = model
         self.datamodule = datamodule
@@ -842,7 +850,11 @@ class Trainer:
             self._device = torch.device("cpu")
             self._map_loc = {"cuda:0": "cpu"}
             self._gpu_ids = []
-            self._is_distributed = False
+
+            # Assume that the only way for training distributed on CPU is through
+            # torchrun.
+            self._is_distributed = self._is_torchrun
+            self._dist_backend = dist.get_distributed_backend("cpu")
             return
 
         if not torch.cuda.is_available():
@@ -873,6 +885,10 @@ class Trainer:
             len(self._gpu_ids) > 1
             if not self._is_torchrun
             else int(os.environ["WORLD_SIZE"]) > 1
+        )
+
+        self._dist_backend = dist.get_distributed_backend(
+            "cuda", self._offload_ops_to_cpu
         )
 
     def _validate_state_dict(self, state_dict: dict[str, typing.Any]) -> bool:
