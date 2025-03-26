@@ -416,7 +416,7 @@ class Trainer:
         Return the multi-processing queue instance.
 
         .. note::
-            If training isn't distributed or if `torchrun`, then `None` is returned
+            If training isn't distributed or if ``torchrun``, then ``None`` is returned
             instead.
         """
         return self._queue
@@ -424,6 +424,23 @@ class Trainer:
     @queue.setter
     def queue(self, q: mp.Queue) -> None:
         self._queue = q
+
+    @property
+    def offload_ops_to_cpu(self) -> bool:
+        """Return if training operations will be offloaded to the cpu."""
+        return self._offload_ops_to_cpu
+
+    @property
+    def distributed_backend(self) -> str | None:
+        """
+        Return the distributed backend used for training.
+
+        .. note::
+            If training isn't distributed, then ``None`` is returned instead.
+        """
+        if self._dist_backend == "":
+            return None
+        return self._dist_backend
 
     def fit(self, model: hlm.Model, datamodule: data.DataModule) -> bool:
         """
