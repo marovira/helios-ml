@@ -17,6 +17,7 @@ Submodules
 .. toctree::
    :maxdepth: 1
 
+   /autoapi/helios/nn/layers/index
    /autoapi/helios/nn/swa_utils/index
    /autoapi/helios/nn/utils/index
 

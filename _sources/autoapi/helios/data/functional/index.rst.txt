@@ -67,12 +67,20 @@ Module Contents
    :returns: The loaded image.
 
 
-.. py:function:: tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> numpy.typing.NDArray
+.. py:function:: tensor_to_numpy(x: torch.Tensor, squeeze: bool = True, clamp: tuple[float, float] | None = (0, 1), transpose: bool = True, dtype: torch.dtype | None = torch.float, as_uint8: bool = True) -> numpy.typing.NDArray
 
    Convert the given tensor to a numpy array.
 
-   :param tens: the tensor to convert in the range :math:`[0, 1]`
-   :param as_float: whether to leave the output as float or convert to int.
+   :param x: the tensor to convert.
+   :param squeeze: if true, squeeze to remove all dimensions of size 1. Defaults to true.
+   :param clamp: tuple containing min/max values to clamp the tensor to. Can be ``None`` if
+                 no clamping is desired. Defaults to ``(0, 1)``.
+   :param transpose: if true, transpose the tensor so the dimensions are :math:`H \times W
+                     \times C` or :math:`B \times H \times W \times C`. Defaults to true.
+   :param dtype: the type to convert the tensor to. Can be set to ``None`` if no conversion
+                 is desired. Defaults to ``torch.float``.
+   :param as_uint8: if true, convert the final array to be of type uint8 and in the range
+                    :math:`[0, 255]`. Defaults to true.
 
    :returns: The converted array.
 

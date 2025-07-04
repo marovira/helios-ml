@@ -1,0 +1,47 @@
+helios.nn.layers.pool
+=====================
+
+.. py:module:: helios.nn.layers.pool
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.nn.layers.pool.AdaptiveAvgPool2d
+
+
+Module Contents
+---------------
+
+.. py:class:: AdaptiveAvgPool2d(output_size: int | tuple[int | None, int | None])
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Applies a 2D adaptive average pooling over an input signal composed of several input planes.
+
+   The output is of size :math:`H \times W`, for any input size. The number of output
+   features is equal to the number of input planes.
+
+   .. note::
+       This class is a re-implementation of ``torch.nn.AdaptiveAvgPool2d`` that can be
+       exported to ONNX and serves as a drop-in replacement for torch's version.
+
+   :param output_size: the target output size of the image of the form :math:`H \times W`.
+                       Can be a tuple ``(H, W)`` or a single ``H`` for a square image :math:`H \times
+                       H`. ``H`` and ``W`` can be either a ``int``, or ``None`` which means the size
+                       will be the same as that of the input.
+
+
+   .. py:method:: forward(x: torch.Tensor) -> torch.Tensor
+
+      Evaluate the adaptive average pool on the input.
+
+      :param x: the input tensor.
+
+      :returns: The pooled tensor.
+
+
+
