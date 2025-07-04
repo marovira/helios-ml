@@ -1,4 +1,5 @@
 import pathlib
+import typing
 
 import cv2
 import numpy as np
@@ -246,11 +247,109 @@ class TestFunctional:
         diff = PIL.ImageChops.difference(as_pil, ret)  # type: ignore[attr-defined]
         assert diff.getbbox() is None
 
-    def test_tensor_to_numpy(self):
-        tens = torch.randn((3, 32, 32))
-        ret = hldf.tensor_to_numpy(tens)
+
+class TestTensorToNumpy:
+    def get_default_tensor_args(self) -> dict[str, typing.Any]:
+        return {
+            "squeeze": False,
+            "clamp": None,
+            "transpose": False,
+            "dtype": None,
+            "as_uint8": False,
+        }
+
+    def test_clamp(self) -> None:
+        # Base case: no clamping.
+        args = self.get_default_tensor_args()
+        x = torch.FloatTensor([0.0, 1.0])
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert np.max(ret) == 1.0
+        assert np.min(ret) == 0.0
+
+        # Clamp to 0.5
+        args["clamp"] = (0, 0.5)
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert np.max(ret) == 0.5
+        assert np.min(ret) == 0.0
+
+    def test_squeeze(self) -> None:
+        # Base case: no squeezing
+        args = self.get_default_tensor_args()
+        x = torch.randn((1, 32, 1, 32))
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert ret.shape == (1, 32, 1, 32)
+
+        # Squeeze
+        args["squeeze"] = True
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert ret.shape == (32, 32)
+
+    def test_transpose(self) -> None:
+        # Base case: no transposition
+        args = self.get_default_tensor_args()
+        x = torch.randn((1, 3, 32, 32))
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert ret.shape == (1, 3, 32, 32)
+
+        # Transpose (3 dimensions)
+        args["transpose"] = True
+        x = torch.randn((3, 32, 32))
+        ret = hldf.tensor_to_numpy(x, **args)
         assert isinstance(ret, np.ndarray)
         assert ret.shape == (32, 32, 3)
+
+        # Transpose (4 dimensions)
+        x = torch.randn((1, 3, 32, 32))
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert ret.shape == (1, 32, 32, 3)
+
+    def test_dtype(self) -> None:
+        # Base case: no change.
+        args = self.get_default_tensor_args()
+        x = torch.randint(0, 10, (32, 32), dtype=torch.int32)
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert ret.dtype == np.int32
+
+        # Convert
+        args["dtype"] = torch.int32
+        x = torch.randn((32, 32), dtype=torch.float)
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert ret.dtype == np.int32
+
+    def test_as_uint8(self) -> None:
+        # Base case: no change.
+        args = self.get_default_tensor_args()
+        x = torch.FloatTensor((0.0, 1.0))
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert ret.dtype == np.float32
+        assert np.max(ret) == 1.0
+        assert np.min(ret) == 0.0
+
+        # Change to uint8
+        args["as_uint8"] = True
+        ret = hldf.tensor_to_numpy(x, **args)
+        assert isinstance(ret, np.ndarray)
+        assert ret.dtype == np.uint8
+        assert np.max(ret) == 255
+        assert np.min(ret) == 0
+
+    def test_defaults(self) -> None:
+        x = torch.rand(1, 3, 32, 32)
+        ret = hldf.tensor_to_numpy(x)
+        assert isinstance(ret, np.ndarray)
+        assert ret.dtype == np.uint8
+        assert ret.shape == (32, 32, 3)
+        assert np.min(ret) == 0
+        assert np.max(ret) <= 255
 
 
 class TestDataModule:

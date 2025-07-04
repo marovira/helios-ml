@@ -83,7 +83,7 @@ def load_image_pil(
         return out
 
 
-def tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> npt.NDArray:
+def _tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> npt.NDArray:
     """
     Convert the given tensor to a numpy array.
 
@@ -101,6 +101,54 @@ def tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> npt.NDArray:
     if not as_float:
         as_np = np.uint8((as_np * 255.0).round())  # type: ignore[assignment]
 
+    return as_np
+
+
+def tensor_to_numpy(
+    x: torch.Tensor,
+    squeeze: bool = True,
+    clamp: tuple[float, float] | None = (0, 1),
+    transpose: bool = True,
+    dtype: torch.dtype | None = torch.float,
+    as_uint8: bool = True,
+) -> npt.NDArray:
+    r"""
+    Convert the given tensor to a numpy array.
+
+    Args:
+        x: the tensor to convert.
+        squeeze: if true, squeeze to remove all dimensions of size 1. Defaults to true.
+        clamp: tuple containing min/max values to clamp the tensor to. Can be ``None`` if
+            no clamping is desired. Defaults to ``(0, 1)``.
+        transpose: if true, transpose the tensor so the dimensions are :math:`H \times W
+            \times C` or :math:`B \times H \times W \times C`. Defaults to true.
+        dtype: the type to convert the tensor to. Can be set to ``None`` if no conversion
+            is desired. Defaults to ``torch.float``.
+        as_uint8: if true, convert the final array to be of type uint8 and in the range
+            :math:`[0, 255]`. Defaults to true.
+
+    Returns:
+        The converted array.
+    """
+    if squeeze:
+        x.squeeze_()
+    if clamp is not None:
+        x.clamp_(min=clamp[0], max=clamp[1])
+    if dtype is not None:
+        x = x.to(dtype)
+    as_np = x.cpu().detach().numpy()
+
+    if transpose:
+        as_np = (
+            np.transpose(as_np, (1, 2, 0))
+            if as_np.ndim == 3
+            else np.transpose(as_np, (0, 2, 3, 1))
+            if as_np.ndim == 4
+            else as_np
+        )
+
+    if as_uint8:
+        as_np = np.uint8((as_np * 255.0).round())  # type: ignore[assignment]
     return as_np
 
 
