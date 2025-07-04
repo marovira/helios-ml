@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "helios-ml"
 authors = [{name = "Mauricio A. Rovira Galvez", email = "maroviragalvez@outlook.com"}]
 readme = "README.rst"
-license = {text = "BSD-3-Clause"}
+license = "BSD-3-Clause"
 description = "A light-weight system for training AI networks using PyTorch"
 classifiers = [
     "Intended Audience :: Science/Research",
