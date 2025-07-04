@@ -83,27 +83,6 @@ def load_image_pil(
         return out
 
 
-def _tensor_to_numpy(tens: torch.Tensor, as_float: bool = False) -> npt.NDArray:
-    """
-    Convert the given tensor to a numpy array.
-
-    Args:
-        tens: the tensor to convert in the range :math:`[0, 1]`
-        as_float: whether to leave the output as float or convert to int.
-
-    Returns:
-        The converted array.
-    """
-    as_np = tens.squeeze().float().clamp_(0, 1).cpu().detach().numpy()
-    if as_np.ndim == 3:
-        as_np = np.transpose(as_np, (1, 2, 0))
-
-    if not as_float:
-        as_np = np.uint8((as_np * 255.0).round())  # type: ignore[assignment]
-
-    return as_np
-
-
 def tensor_to_numpy(
     x: torch.Tensor,
     squeeze: bool = True,
