@@ -151,7 +151,7 @@ addopts = [
 ]
 
 [tool.uv]
-required-version = ">=0.6.0"
+required-version = ">=0.7"
 
 [tool.uv.sources]
 torch = [
