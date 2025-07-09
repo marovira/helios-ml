@@ -261,11 +261,11 @@ class TestTensorToNumpy:
     def test_clamp(self) -> None:
         # Base case: no clamping.
         args = self.get_default_tensor_args()
-        x = torch.FloatTensor([0.0, 1.0])
+        x = torch.FloatTensor([-1.0, 1.0])
         ret = hldf.tensor_to_numpy(x, **args)
         assert isinstance(ret, np.ndarray)
         assert np.max(ret) == 1.0
-        assert np.min(ret) == 0.0
+        assert np.min(ret) == -1.0
 
         # Clamp to 0.5
         args["clamp"] = (0, 0.5)
