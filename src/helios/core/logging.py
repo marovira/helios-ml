@@ -23,10 +23,12 @@ class RootLogger:
 
     Args:
         log_file: path to the log file.
+        capture_warnings: if true, output of ``warnings.warn`` is captured in the log.
     """
 
-    def __init__(self: "RootLogger"):
+    def __init__(self: "RootLogger", capture_warnings: bool):
         """Create the root logger with stream output as default."""
+        logging.captureWarnings(capture_warnings)
         self._logger = logging.getLogger("helios")
         self._rank = get_global_rank()
         self._format_str = "[%(asctime)s] [%(levelname)s]: %(message)s"
@@ -422,7 +424,9 @@ def get_default_log_name(run_name: str) -> str:
     return run_name + f"_{current_time}"
 
 
-def create_default_loggers(enable_tensorboard: bool = True) -> None:
+def create_default_loggers(
+    enable_tensorboard: bool = True, capture_warnings: bool = True
+) -> None:
     """
     Construct the ``RootLogger`` and ``TensorboardWriter`` instances.
 
@@ -434,7 +438,7 @@ def create_default_loggers(enable_tensorboard: bool = True) -> None:
     """
     # Root logger is always created.
     if "root" not in _ACTIVE_LOGGERS:
-        _ACTIVE_LOGGERS["root"] = RootLogger()
+        _ACTIVE_LOGGERS["root"] = RootLogger(capture_warnings=capture_warnings)
 
     if enable_tensorboard and "tensorboard" not in _ACTIVE_LOGGERS:
         _ACTIVE_LOGGERS["tensorboard"] = TensorboardWriter()
@@ -515,7 +519,7 @@ def get_root_logger() -> RootLogger:
     if "root" not in _ACTIVE_LOGGERS:
         raise KeyError(
             "error: root logger has not been created. Did you forget to call "
-            "create_base_loggers?"
+            "create_default_loggers?"
         )
     return typing.cast(RootLogger, _ACTIVE_LOGGERS["root"])
 

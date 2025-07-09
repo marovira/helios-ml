@@ -116,9 +116,9 @@ class TrainingState:
     dict = dc.asdict
 
 
-def get_trainer_safe_types_for_load() -> (
-    list[typing.Callable | tuple[typing.Callable, str]]
-):
+def get_trainer_safe_types_for_load() -> list[
+    typing.Callable | tuple[typing.Callable, str]
+]:
     """
     Return the list of safe types for loading needed by the trainer.
 
@@ -243,6 +243,7 @@ class Trainer:
         random_seed: (optional) the seed to use for RNGs.
         enable_tensorboard: enable/disable Tensorboard logging. Defaults to false.
         enable_file_logging: enable/disable file logging. Defaults to false.
+        capture_warnings: enable/disable warnings capture in the log. Defaults to true.
         enable_progress_bar: enable/disable the progress bar(s). Defaults to false.
         chkpt_root: (optional) root folder in which checkpoints will be placed.
         log_path: (optional) root folder in which logs will be saved.
@@ -273,6 +274,7 @@ class Trainer:
         random_seed: int | None = None,
         enable_tensorboard: bool = False,
         enable_file_logging: bool = False,
+        capture_warnings: bool = False,
         enable_progress_bar: bool = False,
         chkpt_root: pathlib.Path | None = None,
         log_path: pathlib.Path | None = None,
@@ -308,6 +310,7 @@ class Trainer:
         self._enable_deterministic = enable_deterministic
         self._early_stop_cycles = early_stop_cycles
         self._enable_tensorboard = enable_tensorboard
+        self._capture_warnings = capture_warnings
         self._enable_file_logging = enable_file_logging
         self._random_seed = rng.get_default_seed() if random_seed is None else random_seed
         self._enable_progress_bar = enable_progress_bar
@@ -491,7 +494,9 @@ class Trainer:
 
         state: _DistributedErrorState = self._distributed_error_queue.get_nowait()
         if self._enable_file_logging and state.log_path is not None:
-            logging.create_default_loggers(enable_tensorboard=False)
+            logging.create_default_loggers(
+                enable_tensorboard=False, capture_warnings=True
+            )
             logging.restore_default_loggers(log_path=state.log_path)
 
     def _push_distributed_error_state(self, state: _DistributedErrorState) -> None:
@@ -688,7 +693,9 @@ class Trainer:
             torch.backends.cudnn.benchmark = self._enable_cudnn_benchmark
             torch.cuda.set_device(self._device)
 
-        logging.create_default_loggers(self._enable_tensorboard)
+        logging.create_default_loggers(
+            self._enable_tensorboard, capture_warnings=self._capture_warnings
+        )
 
         if self._src_root is not None:
             core.update_all_registries(
