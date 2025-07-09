@@ -69,7 +69,11 @@ def init_dist(
     os.environ["MASTER_ADDR"] = "localhost"
     os.environ["MASTER_PORT"] = "12355"
 
-    dist.init_process_group(backend, rank=rank, world_size=world_size)
+    device: torch.device | None = None
+    if backend == "nccl":
+        device = torch.device("cuda", rank)
+
+    dist.init_process_group(backend, rank=rank, world_size=world_size, device_id=device)
 
 
 def shutdown_dist() -> None:
