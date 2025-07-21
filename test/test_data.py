@@ -345,6 +345,7 @@ class TestTensorToNumpy:
     def test_defaults(self) -> None:
         x = torch.rand(1, 3, 32, 32)
         ret = hldf.tensor_to_numpy(x)
+        assert x.shape == (1, 3, 32, 32)
         assert isinstance(ret, np.ndarray)
         assert ret.dtype == np.uint8
         assert ret.shape == (32, 32, 3)

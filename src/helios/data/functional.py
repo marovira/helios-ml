@@ -109,6 +109,7 @@ def tensor_to_numpy(
     Returns:
         The converted array.
     """
+    x = x.clone()
     if squeeze:
         x.squeeze_()
     if clamp is not None:
