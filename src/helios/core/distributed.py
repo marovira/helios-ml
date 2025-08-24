@@ -157,13 +157,16 @@ def get_global_rank() -> int:
     return get_dist_info().rank
 
 
-def gather_into_tensor(tensor: torch.Tensor, size: tuple[int]) -> torch.Tensor:
+def gather_into_tensor(
+    tensor: torch.Tensor, size: tuple[int, ...], **kwargs
+) -> torch.Tensor:
     """
     Gathers the tensors across all processes and merges them into a single tensor.
 
     Args:
         tensor: the tensor to merge
         size: the dimensions of the output tensor.
+        kwargs: additional options ``torch.distributed.all_gather_into_tensor``
 
     Returns:
         The resulting tensor containing all gathered tensors.
@@ -176,7 +179,7 @@ def gather_into_tensor(tensor: torch.Tensor, size: tuple[int]) -> torch.Tensor:
 
     device = torch.device(f"cuda:{get_local_rank()}")
     out = torch.zeros(size, device=device, dtype=tensor.dtype)
-    dist.all_gather_into_tensor(out, tensor)
+    dist.all_gather_into_tensor(out, tensor, **kwargs)
     return out
 
 
@@ -189,7 +192,7 @@ def all_reduce_tensors(
     Args:
         tensor: the input tensor(s) to reduce. If the input is a list of tensors, they
             will be concatenated into a single tensor.
-        kwargs: additional options for torch.distributed.all_reduce
+        kwargs: additional options for ``torch.distributed.all_reduce``
 
     Returns:
         The reduced tensor.
