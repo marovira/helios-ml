@@ -157,6 +157,37 @@ def get_global_rank() -> int:
     return get_dist_info().rank
 
 
+def get_local_world_size() -> int:
+    """
+    Get the local world size of the distributed run.
+
+    This number represents the total number of nodes that the run is being performed on.
+    For example, the local world size for the following cases would be:
+        * 2 nodes, 4 GPUs: local world size is 2.
+        * 1 node, 2 GPUs: local world size is 1.
+
+    Returns:
+        The local world size.
+    """
+    return get_dist_info().local_world_size
+
+
+def get_world_size() -> int:
+    """
+    Get the world size of the distributed run.
+
+    This number represents the total number of nodes multiplied by the total number of
+    processes per node. In general, this second number equals the number of GPUs but this
+    need not be the case. For instance, here are the world sizes for the following setups:
+        * 2 nodes, 4 GPUs: world size is 8.
+        * 1 node, 2 GPUs: world size is 2.
+
+    Returns:
+        The global world size.
+    """
+    return get_dist_info().world_size
+
+
 def gather_into_tensor(
     tensor: torch.Tensor, size: tuple[int, ...], **kwargs
 ) -> torch.Tensor:
