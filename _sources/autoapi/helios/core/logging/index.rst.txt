@@ -32,13 +32,14 @@ Functions
 Module Contents
 ---------------
 
-.. py:class:: RootLogger
+.. py:class:: RootLogger(capture_warnings: bool)
 
    Logger used to log while training to a file.
 
    The log file will be placed in the logs folder as determined by the given path.
 
    :param log_file: path to the log file.
+   :param capture_warnings: if true, output of ``warnings.warn`` is captured in the log.
 
 
    .. py:method:: setup(log_file: pathlib.Path | None = None) -> None
@@ -286,7 +287,7 @@ Module Contents
    :returns: The string with the default name.
 
 
-.. py:function:: create_default_loggers(enable_tensorboard: bool = True) -> None
+.. py:function:: create_default_loggers(enable_tensorboard: bool = True, capture_warnings: bool = True) -> None
 
    Construct the ``RootLogger`` and ``TensorboardWriter`` instances.
 

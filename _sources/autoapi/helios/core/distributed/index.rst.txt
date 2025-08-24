@@ -24,6 +24,8 @@ Functions
    helios.core.distributed.get_dist_info
    helios.core.distributed.get_local_rank
    helios.core.distributed.get_global_rank
+   helios.core.distributed.get_local_world_size
+   helios.core.distributed.get_world_size
    helios.core.distributed.gather_into_tensor
    helios.core.distributed.all_reduce_tensors
    helios.core.distributed.global_print
@@ -143,12 +145,38 @@ Module Contents
    :returns: The global rank of the current device.
 
 
-.. py:function:: gather_into_tensor(tensor: torch.Tensor, size: tuple[int]) -> torch.Tensor
+.. py:function:: get_local_world_size() -> int
+
+   Get the local world size of the distributed run.
+
+   This number represents the total number of nodes that the run is being performed on.
+   For example, the local world size for the following cases would be:
+       * 2 nodes, 4 GPUs: local world size is 2.
+       * 1 node, 2 GPUs: local world size is 1.
+
+   :returns: The local world size.
+
+
+.. py:function:: get_world_size() -> int
+
+   Get the world size of the distributed run.
+
+   This number represents the total number of nodes multiplied by the total number of
+   processes per node. In general, this second number equals the number of GPUs but this
+   need not be the case. For instance, here are the world sizes for the following setups:
+       * 2 nodes, 4 GPUs: world size is 8.
+       * 1 node, 2 GPUs: world size is 2.
+
+   :returns: The global world size.
+
+
+.. py:function:: gather_into_tensor(tensor: torch.Tensor, size: tuple[int, Ellipsis], **kwargs) -> torch.Tensor
 
    Gathers the tensors across all processes and merges them into a single tensor.
 
    :param tensor: the tensor to merge
    :param size: the dimensions of the output tensor.
+   :param kwargs: additional options ``torch.distributed.all_gather_into_tensor``
 
    :returns: The resulting tensor containing all gathered tensors.
 
@@ -161,7 +189,7 @@ Module Contents
 
    :param tensor: the input tensor(s) to reduce. If the input is a list of tensors, they
                   will be concatenated into a single tensor.
-   :param kwargs: additional options for torch.distributed.all_reduce
+   :param kwargs: additional options for ``torch.distributed.all_reduce``
 
    :returns: The reduced tensor.
 

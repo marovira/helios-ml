@@ -194,6 +194,17 @@ Module Contents
 
 
 
+   .. py:method:: types_for_safe_load() -> list[Callable | tuple[Callable, str]]
+
+      Get additional types to safely load checkpoints.
+
+      These types are appended to the global list of types from Helios and are sent to
+      ``torch.serialization.add_safe_globals`` so checkpoints can be safely loaded.
+
+      :returns: The list of safe types to load.
+
+
+
    .. py:method:: append_metadata_to_chkpt_name(chkpt_name: str) -> str
 
       Append additional data to the checkpoint filename.

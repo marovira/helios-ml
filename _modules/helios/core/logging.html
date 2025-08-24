@@ -330,10 +330,12 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        log_file: path to the log file.</span>
+<span class="sd">        capture_warnings: if true, output of ``warnings.warn`` is captured in the log.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;RootLogger&quot;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="s2">&quot;RootLogger&quot;</span><span class="p">,</span> <span class="n">capture_warnings</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the root logger with stream output as default.&quot;&quot;&quot;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">captureWarnings</span><span class="p">(</span><span class="n">capture_warnings</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;helios&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rank</span> <span class="o">=</span> <span class="n">get_global_rank</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_format_str</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="si">%(asctime)s</span><span class="s2">] [</span><span class="si">%(levelname)s</span><span class="s2">]: </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
@@ -795,7 +797,9 @@
 
 <div class="viewcode-block" id="create_default_loggers">
 <a class="viewcode-back" href="../../../autoapi/helios/core/logging/index.html#helios.core.logging.create_default_loggers">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">create_default_loggers</span><span class="p">(</span><span class="n">enable_tensorboard</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_default_loggers</span><span class="p">(</span>
+    <span class="n">enable_tensorboard</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">capture_warnings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct the ``RootLogger`` and ``TensorboardWriter`` instances.</span>
 
@@ -807,7 +811,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Root logger is always created.</span>
     <span class="k">if</span> <span class="s2">&quot;root&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_ACTIVE_LOGGERS</span><span class="p">:</span>
-        <span class="n">_ACTIVE_LOGGERS</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RootLogger</span><span class="p">()</span>
+        <span class="n">_ACTIVE_LOGGERS</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">RootLogger</span><span class="p">(</span><span class="n">capture_warnings</span><span class="o">=</span><span class="n">capture_warnings</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">enable_tensorboard</span> <span class="ow">and</span> <span class="s2">&quot;tensorboard&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_ACTIVE_LOGGERS</span><span class="p">:</span>
         <span class="n">_ACTIVE_LOGGERS</span><span class="p">[</span><span class="s2">&quot;tensorboard&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TensorboardWriter</span><span class="p">()</span></div>
@@ -903,7 +907,7 @@
     <span class="k">if</span> <span class="s2">&quot;root&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_ACTIVE_LOGGERS</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
             <span class="s2">&quot;error: root logger has not been created. Did you forget to call &quot;</span>
-            <span class="s2">&quot;create_base_loggers?&quot;</span>
+            <span class="s2">&quot;create_default_loggers?&quot;</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">typing</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">RootLogger</span><span class="p">,</span> <span class="n">_ACTIVE_LOGGERS</span><span class="p">[</span><span class="s2">&quot;root&quot;</span><span class="p">])</span></div>
 

@@ -499,6 +499,19 @@ network(s) along with any additional data you require.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="helios.model.model.Model.types_for_safe_load">
+<span class="sig-name descname"><span class="pre">types_for_safe_load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/helios/model/model.html#Model.types_for_safe_load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.model.model.Model.types_for_safe_load" title="Link to this definition">¶</a></dt>
+<dd><p>Get additional types to safely load checkpoints.</p>
+<p>These types are appended to the global list of types from Helios and are sent to
+<code class="docutils literal notranslate"><span class="pre">torch.serialization.add_safe_globals</span></code> so checkpoints can be safely loaded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The list of safe types to load.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="helios.model.model.Model.append_metadata_to_chkpt_name">
 <span class="sig-name descname"><span class="pre">append_metadata_to_chkpt_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chkpt_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../../../_modules/helios/model/model.html#Model.append_metadata_to_chkpt_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.model.model.Model.append_metadata_to_chkpt_name" title="Link to this definition">¶</a></dt>
 <dd><p>Append additional data to the checkpoint filename.</p>
@@ -889,6 +902,7 @@ them.</p>
 <li><a class="reference internal" href="#helios.model.model.Model.load_state_dict"><code class="docutils literal notranslate"><span class="pre">Model.load_state_dict()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.state_dict"><code class="docutils literal notranslate"><span class="pre">Model.state_dict()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.trained_state_dict"><code class="docutils literal notranslate"><span class="pre">Model.trained_state_dict()</span></code></a></li>
+<li><a class="reference internal" href="#helios.model.model.Model.types_for_safe_load"><code class="docutils literal notranslate"><span class="pre">Model.types_for_safe_load()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.append_metadata_to_chkpt_name"><code class="docutils literal notranslate"><span class="pre">Model.append_metadata_to_chkpt_name()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.append_to_banner"><code class="docutils literal notranslate"><span class="pre">Model.append_to_banner()</span></code></a></li>
 <li><a class="reference internal" href="#helios.model.model.Model.train"><code class="docutils literal notranslate"><span class="pre">Model.train()</span></code></a></li>

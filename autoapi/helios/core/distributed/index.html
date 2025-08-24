@@ -349,6 +349,12 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#helios.core.distributed.get_global_rank" title="helios.core.distributed.get_global_rank"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_global_rank</span></code></a>(→ int)</p></td>
 <td><p>Get the global rank of the device the process is running on.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#helios.core.distributed.get_local_world_size" title="helios.core.distributed.get_local_world_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_local_world_size</span></code></a>(→ int)</p></td>
+<td><p>Get the local world size of the distributed run.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#helios.core.distributed.get_world_size" title="helios.core.distributed.get_world_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_world_size</span></code></a>(→ int)</p></td>
+<td><p>Get the world size of the distributed run.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#helios.core.distributed.gather_into_tensor" title="helios.core.distributed.gather_into_tensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gather_into_tensor</span></code></a>(→ torch.Tensor)</p></td>
 <td><p>Gathers the tensors across all processes and merges them into a single tensor.</p></td>
 </tr>
@@ -500,14 +506,54 @@ are set to 1.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="helios.core.distributed.get_local_world_size">
+<span class="sig-prename descclassname"><span class="pre">helios.core.distributed.</span></span><span class="sig-name descname"><span class="pre">get_local_world_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../../../_modules/helios/core/distributed.html#get_local_world_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.core.distributed.get_local_world_size" title="Link to this definition">¶</a></dt>
+<dd><p>Get the local world size of the distributed run.</p>
+<p>This number represents the total number of nodes that the run is being performed on.
+For example, the local world size for the following cases would be:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>2 nodes, 4 GPUs: local world size is 2.</p></li>
+<li><p>1 node, 2 GPUs: local world size is 1.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The local world size.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helios.core.distributed.get_world_size">
+<span class="sig-prename descclassname"><span class="pre">helios.core.distributed.</span></span><span class="sig-name descname"><span class="pre">get_world_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../../../_modules/helios/core/distributed.html#get_world_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.core.distributed.get_world_size" title="Link to this definition">¶</a></dt>
+<dd><p>Get the world size of the distributed run.</p>
+<p>This number represents the total number of nodes multiplied by the total number of
+processes per node. In general, this second number equals the number of GPUs but this
+need not be the case. For instance, here are the world sizes for the following setups:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>2 nodes, 4 GPUs: world size is 8.</p></li>
+<li><p>1 node, 2 GPUs: world size is 2.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The global world size.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="helios.core.distributed.gather_into_tensor">
-<span class="sig-prename descclassname"><span class="pre">helios.core.distributed.</span></span><span class="sig-name descname"><span class="pre">gather_into_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="../../../../_modules/helios/core/distributed.html#gather_into_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.core.distributed.gather_into_tensor" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">helios.core.distributed.</span></span><span class="sig-name descname"><span class="pre">gather_into_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Ellipsis</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="reference internal" href="../../../../_modules/helios/core/distributed.html#gather_into_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.core.distributed.gather_into_tensor" title="Link to this definition">¶</a></dt>
 <dd><p>Gathers the tensors across all processes and merges them into a single tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tensor</strong> – the tensor to merge</p></li>
 <li><p><strong>size</strong> – the dimensions of the output tensor.</p></li>
+<li><p><strong>kwargs</strong> – additional options <code class="docutils literal notranslate"><span class="pre">torch.distributed.all_gather_into_tensor</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -528,7 +574,7 @@ are set to 1.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>tensor</strong> – the input tensor(s) to reduce. If the input is a list of tensors, they
 will be concatenated into a single tensor.</p></li>
-<li><p><strong>kwargs</strong> – additional options for torch.distributed.all_reduce</p></li>
+<li><p><strong>kwargs</strong> – additional options for <code class="docutils literal notranslate"><span class="pre">torch.distributed.all_reduce</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -659,6 +705,8 @@ of whether the code is currently using distributed training or not.</p>
 <li><a class="reference internal" href="#helios.core.distributed.get_dist_info"><code class="docutils literal notranslate"><span class="pre">get_dist_info()</span></code></a></li>
 <li><a class="reference internal" href="#helios.core.distributed.get_local_rank"><code class="docutils literal notranslate"><span class="pre">get_local_rank()</span></code></a></li>
 <li><a class="reference internal" href="#helios.core.distributed.get_global_rank"><code class="docutils literal notranslate"><span class="pre">get_global_rank()</span></code></a></li>
+<li><a class="reference internal" href="#helios.core.distributed.get_local_world_size"><code class="docutils literal notranslate"><span class="pre">get_local_world_size()</span></code></a></li>
+<li><a class="reference internal" href="#helios.core.distributed.get_world_size"><code class="docutils literal notranslate"><span class="pre">get_world_size()</span></code></a></li>
 <li><a class="reference internal" href="#helios.core.distributed.gather_into_tensor"><code class="docutils literal notranslate"><span class="pre">gather_into_tensor()</span></code></a></li>
 <li><a class="reference internal" href="#helios.core.distributed.all_reduce_tensors"><code class="docutils literal notranslate"><span class="pre">all_reduce_tensors()</span></code></a></li>
 <li><a class="reference internal" href="#helios.core.distributed.global_print"><code class="docutils literal notranslate"><span class="pre">global_print()</span></code></a></li>

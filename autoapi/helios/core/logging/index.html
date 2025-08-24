@@ -366,12 +366,15 @@
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="helios.core.logging.RootLogger">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.core.logging.</span></span><span class="sig-name descname"><span class="pre">RootLogger</span></span><a class="reference internal" href="../../../../_modules/helios/core/logging.html#RootLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.core.logging.RootLogger" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.core.logging.</span></span><span class="sig-name descname"><span class="pre">RootLogger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">capture_warnings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/helios/core/logging.html#RootLogger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.core.logging.RootLogger" title="Link to this definition">¶</a></dt>
 <dd><p>Logger used to log while training to a file.</p>
 <p>The log file will be placed in the logs folder as determined by the given path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>log_file</strong> – path to the log file.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_file</strong> – path to the log file.</p></li>
+<li><p><strong>capture_warnings</strong> – if true, output of <code class="docutils literal notranslate"><span class="pre">warnings.warn</span></code> is captured in the log.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -692,7 +695,7 @@ unique in the Tensorboard record.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helios.core.logging.create_default_loggers">
-<span class="sig-prename descclassname"><span class="pre">helios.core.logging.</span></span><span class="sig-name descname"><span class="pre">create_default_loggers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable_tensorboard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/core/logging.html#create_default_loggers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.core.logging.create_default_loggers" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">helios.core.logging.</span></span><span class="sig-name descname"><span class="pre">create_default_loggers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable_tensorboard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capture_warnings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/core/logging.html#create_default_loggers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.core.logging.create_default_loggers" title="Link to this definition">¶</a></dt>
 <dd><p>Construct the <code class="docutils literal notranslate"><span class="pre">RootLogger</span></code> and <code class="docutils literal notranslate"><span class="pre">TensorboardWriter</span></code> instances.</p>
 <p>In distributed training, this function should be called AFTER the processes have been
 created to ensure each process gets a copy of the loggers.</p>

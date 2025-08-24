@@ -154,7 +154,7 @@ Module Contents
    :returns: The path to the last checkpoint (if any).
 
 
-.. py:class:: Trainer(run_name: str = '', train_unit: TrainingUnit | str = TrainingUnit.EPOCH, total_steps: int | float = 0, valid_frequency: int | None = None, chkpt_frequency: int | None = None, print_frequency: int | None = None, accumulation_steps: int = 1, enable_cudnn_benchmark: bool = False, enable_deterministic: bool = False, early_stop_cycles: int | None = None, use_cpu: bool | None = None, gpus: list[int] | None = None, random_seed: int | None = None, enable_tensorboard: bool = False, enable_file_logging: bool = False, enable_progress_bar: bool = False, chkpt_root: pathlib.Path | None = None, log_path: pathlib.Path | None = None, run_path: pathlib.Path | None = None, src_root: pathlib.Path | None = None, import_prefix: str = '', print_banner: bool = True)
+.. py:class:: Trainer(run_name: str = '', train_unit: TrainingUnit | str = TrainingUnit.EPOCH, total_steps: int | float = 0, valid_frequency: int | None = None, chkpt_frequency: int | None = None, print_frequency: int | None = None, accumulation_steps: int = 1, enable_cudnn_benchmark: bool = False, enable_deterministic: bool = False, early_stop_cycles: int | None = None, use_cpu: bool | None = None, gpus: list[int] | None = None, random_seed: int | None = None, enable_tensorboard: bool = False, enable_file_logging: bool = False, capture_warnings: bool = False, enable_progress_bar: bool = False, chkpt_root: pathlib.Path | None = None, log_path: pathlib.Path | None = None, run_path: pathlib.Path | None = None, src_root: pathlib.Path | None = None, import_prefix: str = '', print_banner: bool = True)
 
    Automates the training, validation, and testing code.
 
@@ -179,6 +179,7 @@ Module Contents
    :param random_seed: (optional) the seed to use for RNGs.
    :param enable_tensorboard: enable/disable Tensorboard logging. Defaults to false.
    :param enable_file_logging: enable/disable file logging. Defaults to false.
+   :param capture_warnings: enable/disable warnings capture in the log. Defaults to false.
    :param enable_progress_bar: enable/disable the progress bar(s). Defaults to false.
    :param chkpt_root: (optional) root folder in which checkpoints will be placed.
    :param log_path: (optional) root folder in which logs will be saved.
