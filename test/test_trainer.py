@@ -1,4 +1,5 @@
 import copy
+import enum
 import pathlib
 import pickle
 import typing
@@ -197,6 +198,11 @@ class RestartModel(hlm.Model):
         self.batches.append(as_np)
 
 
+class Values(enum.Enum):
+    A = enum.auto()
+    B = enum.auto()
+
+
 class CheckpointModel(hlm.Model):
     def __init__(self) -> None:
         super().__init__("test-checkpoint")
@@ -205,10 +211,14 @@ class CheckpointModel(hlm.Model):
             "a": 1,
             "b": 2.0,
             "c": "x",
+            "value": Values.A,
         }
 
     def setup(self, fast_init: bool = False) -> None:
         pass
+
+    def types_for_safe_load(self) -> list[typing.Callable | tuple[typing.Callable, str]]:
+        return [Values]
 
     def state_dict(self) -> dict[str, typing.Any]:
         return self._state
@@ -251,6 +261,14 @@ class ExceptionModel(hlm.Model):
 
     def on_testing_start(self) -> None:
         raise self._exc_type("error")
+
+
+class EmptyModel(hlm.Model):
+    def __init__(self) -> None:
+        super().__init__("empty")
+
+    def setup(self, fast_init: bool = False) -> None:
+        pass
 
 
 class EmptyPlugin(hlp.Plugin):
@@ -523,6 +541,7 @@ class TestTrainer:
         torch.save(net.state_dict(), out_path)
 
         t = hlt.Trainer(**train_args)
+        t.model = EmptyModel()
         t._configure_env()
         net = SimpleNet().to(t._device)
         data = hlc.safe_torch_load(out_path, map_location=t._map_loc)
@@ -837,6 +856,9 @@ class TestTrainer:
         )
         plugin.configure_trainer(trainer)
         assert trainer.fit(model, datamodule)
+        safe_globals = torch.serialization.get_safe_globals()
+        for t in model.types_for_safe_load():
+            assert t in safe_globals
 
         chkpt_root = tmp_path / model._save_name
         chkpts = list(chkpt_root.glob("*.pth"))

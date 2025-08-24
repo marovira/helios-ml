@@ -683,7 +683,9 @@ class Trainer:
         the registries from being empty if distributed training is launched through spawn
         (note that ``torchrun`` doesn't have this problem).
         """
-        register_trainer_types_for_safe_load()
+        safe_types = get_trainer_safe_types_for_load()
+        safe_types.extend(self.model.types_for_safe_load())
+        torch.serialization.add_safe_globals(safe_types)
         rng.seed_rngs(self._random_seed)
         torch.use_deterministic_algorithms(self._enable_deterministic)
 

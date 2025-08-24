@@ -219,6 +219,18 @@ class Model(abc.ABC):
         """
         return {}
 
+    def types_for_safe_load(self) -> list[typing.Callable | tuple[typing.Callable, str]]:
+        """
+        Get additional types to safely load checkpoints.
+
+        These types are appended to the global list of types from Helios and are sent to
+        ``torch.serialization.add_safe_globals`` so checkpoints can be safely loaded.
+
+        Returns:
+            The list of safe types to load.
+        """
+        return []
+
     def append_metadata_to_chkpt_name(self, chkpt_name: str) -> str:
         """
         Append additional data to the checkpoint filename.
