@@ -243,7 +243,7 @@ class Trainer:
         random_seed: (optional) the seed to use for RNGs.
         enable_tensorboard: enable/disable Tensorboard logging. Defaults to false.
         enable_file_logging: enable/disable file logging. Defaults to false.
-        capture_warnings: enable/disable warnings capture in the log. Defaults to true.
+        capture_warnings: enable/disable warnings capture in the log. Defaults to false.
         enable_progress_bar: enable/disable the progress bar(s). Defaults to false.
         chkpt_root: (optional) root folder in which checkpoints will be placed.
         log_path: (optional) root folder in which logs will be saved.
