@@ -66,7 +66,7 @@ def resume_study(
         This function **requires** the following conditions to be true:
             #. It is called **before** the trials are started.
             #. The study uses ``RDBStorage`` as the storage argument for
-            ``optuna.create_study``.
+                ``optuna.create_study``.
             #. ``load_if_exists`` is set to True in ``study_args``.
             #. ``TrialState.PRUNED`` **cannot** be in the list of ``failed_states``.
 
@@ -96,6 +96,9 @@ def resume_study(
             be re-enqueued.
         backup_study: if True, the original study is backed up so it can be re-used later
             on.
+
+    Returns:
+        The study with the failed trials enqueued.
     """
     if "storage" not in study_args:
         raise TypeError("error: RDB storage is required for resuming studies")
@@ -161,6 +164,105 @@ def resume_study(
 
     # Once everything's done, clean up the temp storage.
     tmp_storage.unlink()
+
+    return study
+
+
+def resume_study_from(
+    study_args: dict[str, typing.Any],
+    last_trial_number: int,
+    backup_study: bool = True,
+    sampler_root: pathlib.Path | None = None,
+) -> optuna.Study:
+    """
+    Resume a study from a specific trial number.
+
+    The goal of this function is to allow studies to resume from a specific trial number,
+    effectively discarding all trials after that point. This can be used to recover from
+    certain types of unexpected errors that result in trials being invalid but still
+    marked as completed, thereby making :py:func:`~helios.plugins.optuna.resume_study`
+    unable to properly resume. To accomplish this, the function will do the following:
+
+    #. Grab all the trials from the study created by the given ``study_args`` and grab all
+        trials whose numbers are *less than or equal to* ``last_trial_number``.
+    #. Create a new study with the same name and storage. This new study will get all of
+        the trials that were obtained in the previous step.
+
+    .. note::
+        Trials are 0-indexed. This means that trial ``N`` maps to index ``N - 1``.
+        Therefore, if we want to resume from study ``N``, then we need to keep all trials
+        up to ``N - 1``, which corresponds to index ``N - 2``.
+
+    .. warning::
+        This function **requires** the following conditions to be true:
+            #. It is called **before** the trials are started.
+            #. The study uses ``RDBStorage`` as the storage argument for
+                ``optuna.create_study``.
+            #. ``load_if_exists`` is set to True in ``study_args``.
+
+    By default, the original study (assuming there is one) will be backed up with the name
+    ``<study-name>_backup-#`` where ``<study-name>`` is the name of the database of the
+    original study and ``#`` is an incremental number starting at 0. This behaviour can be
+    disabled by setting ``backup_study`` to False.
+
+    In addition, this function can also remove the saved samplers from the discarded
+    trials if ``sampler_root`` is provided.
+
+    Args:
+        study_args: dictionary of arguments for ``optuna.create_study``.
+        last_trial_number: the index of the last trial from which the study should resume.
+        backup_study: if True, the original study is backed up so it can be re-used later
+            on.
+
+    Returns:
+        The study with trials up to ``last_trial_number``.
+    """
+    if "storage" not in study_args:
+        raise TypeError("error: RDB storage is required for resuming studies")
+    if "load_if_exists" not in study_args or not study_args["load_if_exists"]:
+        raise KeyError("error: study must be created with 'load_if_exists' set to True")
+
+    storage_str: str = study_args["storage"]
+    if not isinstance(storage_str, str):
+        raise TypeError("error: only strings are supported for 'storage'")
+
+    storage = pathlib.Path(storage_str.removeprefix("sqlite:///")).resolve()
+    if backup_study:
+        _backup_study(storage)
+
+    study = optuna.create_study(**study_args)
+
+    if len(study.trials) == 0:
+        return study
+
+    valid_trials: list[optuna.trial.FrozenTrial] = []
+    for trial in study.trials:
+        if trial.number <= last_trial_number:
+            valid_trials.append(trial)
+
+    del study
+    gc.collect()
+
+    tmp_storage = storage.parent / (storage.stem + "_tmp" + storage.suffix)
+    storage.rename(tmp_storage)
+    study = optuna.create_study(**study_args)
+
+    for trial in valid_trials:
+        study.add_trial(trial)
+
+    tmp_storage.unlink()
+
+    if sampler_root is not None:
+
+        def key(path: pathlib.Path) -> int:
+            return int(path.stem.split("-")[-1])
+
+        chkpts = list(sampler_root.glob("*.pkl"))
+        chkpts.sort(key=key)
+        for i, path in enumerate(chkpts):
+            if i <= last_trial_number:
+                continue
+            path.unlink()
 
     return study
 
