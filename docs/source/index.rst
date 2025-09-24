@@ -14,6 +14,7 @@ Welcome to Helios's documentation!
    tutorial
    quick-ref
    plugins
+   optuna
 
 
 .. include:: ../../README.rst
