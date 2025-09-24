@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.12' and sys_platform == 'darwin'",
@@ -551,16 +551,16 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "matplotlib", specifier = ">=3.10.0" },
-    { name = "numpy", specifier = ">=2.2.2" },
-    { name = "onnx", specifier = ">=1.17.0" },
-    { name = "onnxruntime", specifier = ">=1.20.1" },
-    { name = "opencv-python", specifier = ">=4.11.0.86" },
-    { name = "optuna", marker = "extra == 'tune'", specifier = ">=4.2.0" },
-    { name = "tensorboard", specifier = ">=2.18.0" },
-    { name = "torch", specifier = ">=2.6.0" },
-    { name = "torchvision", specifier = ">=0.21.0" },
-    { name = "tqdm", specifier = ">=4.67.1" },
+    { name = "matplotlib", specifier = ">=3.9.2" },
+    { name = "numpy", specifier = ">=2.1.0" },
+    { name = "onnx", specifier = ">=1.16.0" },
+    { name = "onnxruntime", specifier = ">=1.19.0" },
+    { name = "opencv-python", specifier = ">=4.10.0.84" },
+    { name = "optuna", marker = "extra == 'tune'", specifier = ">=4.0.0" },
+    { name = "tensorboard", specifier = ">=2.17.0" },
+    { name = "torch", specifier = ">=2.5.0" },
+    { name = "torchvision", specifier = ">=0.20.0" },
+    { name = "tqdm", specifier = ">=4.66.0" },
 ]
 provides-extras = ["tune"]
 
