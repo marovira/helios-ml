@@ -24,15 +24,15 @@
    :target: https://opensource.org/license/bsd-3-clause
 
 .. |PythonMinVersion| replace:: 3.11
-.. |TQDMMinVersion| replace:: 4.67.1
-.. |OpenCVMinVersion| replace:: 4.11.0.86
-.. |TensorboardMinVersion| replace:: 2.18.0
-.. |TorchMinVersion| replace:: 2.6.0
-.. |TorchvisionMinVersion| replace:: 0.21.0
-.. |ONNXMinVersion| replace:: 1.17.1
-.. |ORTMinVersion| replace:: 1.20.1
-.. |PLTMinVersion| replace:: 3.10.0
-.. |NumpyMinVersion| replace:: 2.2.2
+.. |TQDMMinVersion| replace:: 4.66.0
+.. |OpenCVMinVersion| replace:: 4.10.0.84
+.. |TensorboardMinVersion| replace:: 2.17.0
+.. |TorchMinVersion| replace:: 2.5.0
+.. |TorchvisionMinVersion| replace:: 0.20.0
+.. |ONNXMinVersion| replace:: 1.16.0
+.. |ORTMinVersion| replace:: 1.19.0
+.. |PLTMinVersion| replace:: 3.9.2
+.. |NumpyMinVersion| replace:: 2.1.0
 
 .. what_is_helios
 
