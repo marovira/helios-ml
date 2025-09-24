@@ -2,10 +2,12 @@
 <html class="no-js" lang="en" data-content_root="./">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API Reference" href="autoapi/index.html" /><link rel="prev" title="Plug-Ins" href="plugins.html" />
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 --><title>Python Module Index - Helios documentation</title>
-<link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>Optuna Integartion - Helios documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
@@ -177,7 +179,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -200,12 +202,12 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick-ref.html">Quick Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins.html">Plug-Ins</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optuna.html">Optuna Integartion</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Optuna Integartion</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/helios/index.html">helios</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/helios/chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
@@ -291,7 +293,13 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/optuna.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -300,268 +308,202 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          
-<section class="domainindex-section">
-  <h1>Python Module Index</h1>
-  <div class="domainindex-jumpbox"><a href="#cap-h"><strong>h</strong></a></div>
+          <section id="optuna-integartion">
+<h1>Optuna Integartion<a class="headerlink" href="#optuna-integartion" title="Link to this heading">¶</a></h1>
+<p>Helios ships with first-class integration for <a class="reference external" href="https://optuna.readthedocs.io/en/stable/">optuna</a>. The integration is split into two blocks:</p>
+<ul class="simple">
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">OptunaPlugin</span></code>.</p></li>
+<li><p>The system to create and resume studies.</p></li>
+</ul>
+<p>This page will focus on the latter.</p>
+<section id="sampler-checkpoints">
+<h2>Sampler Checkpoints<a class="headerlink" href="#sampler-checkpoints" title="Link to this heading">¶</a></h2>
+<p>Similar to the ability of the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> to resume training in
+the event of a failure or cancellation, Helios ships with a system to allow Optuna studies
+to resume. The system is split into two halves: restoring the state of the samplers and
+resuming studies. Let’s start by looking at how we can recover samplers.</p>
+<p>Per the official Optuna documentation, the recommended way of ensuring samplers are
+reproducible is to:</p>
+<ol class="arabic simple">
+<li><p>Seed them,</p></li>
+<li><p>Save them periodically to ensure they can be restored.</p></li>
+</ol>
+<p>The seeding of samplers is left to the user, though the use of
+<a class="reference internal" href="autoapi/helios/core/rng/index.html#helios.core.rng.get_default_seed" title="helios.core.rng.get_default_seed"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_default_seed()</span></code></a> is recommended to ensure consistency. To
+checkpoint samplers you can do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+     <span class="n">checkpoint_sampler</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will create a checkpoint stored in the folder specified by <code class="docutils literal notranslate"><span class="pre">root</span></code>. It is
+recommended that this function be called at the start and end of the <code class="docutils literal notranslate"><span class="pre">objective</span></code>
+function. The reasoning is to allow recovery in the following two cases:</p>
+<ol class="arabic simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">objective</span></code> function fails before reaching the end. If the study is then resumed,
+the sampler can be restored to the state <em>before</em> values were obtained from it, thereby
+guaranteeing that the same values are obtained upon resuming.</p></li>
+<li><p>The study is stopped (either cancelled or natural termination) and we wish to resume
+with a new trial. This ensures the sampler can be restored and that the values obtained
+by the new trial match those that would’ve been obtained if the study hadn’t stopped.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a checkpoint is created, it will overwrite an existing checkpoint with the same
+name. Therefore the recommendation stated above will result in a single checkpoint
+being stored per trial.</p>
+</div>
+<p>If you wish to manually restore the sampler, you can do so by calling
+<a class="reference internal" href="autoapi/helios/plugins/optuna/utils/index.html#helios.plugins.optuna.utils.restore_sampler" title="helios.plugins.optuna.utils.restore_sampler"><code class="xref py py-func docutils literal notranslate"><span class="pre">restore_sampler()</span></code></a> like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># In your setup code.</span>
+<span class="n">sampler</span> <span class="o">=</span> <span class="n">restore_sampler</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function <strong>must</strong> be called before the creation of the study so the sampler can be
+passed in.</p>
+</div>
+<p>Note that <a class="reference internal" href="autoapi/helios/plugins/optuna/utils/index.html#helios.plugins.optuna.utils.restore_sampler" title="helios.plugins.optuna.utils.restore_sampler"><code class="xref py py-func docutils literal notranslate"><span class="pre">restore_sampler()</span></code></a> can return <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+no sampler is found.</p>
 </section>
-<table class="domainindex-table">
-  <tr class="pcap">
-    <td></td><td>&#160;</td><td></td>
-  </tr>
-  <tr class="cap" id="cap-h">
-    <td></td><td><strong>h</strong></td><td></td>
-  </tr>
-  <tr>
-    <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-    <td>
-        <a href="autoapi/helios/index.html#module-helios"><code class="xref">helios</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/chkpt_migrator/index.html#module-helios.chkpt_migrator"><code class="xref">helios.chkpt_migrator</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/core/index.html#module-helios.core"><code class="xref">helios.core</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/core/cuda/index.html#module-helios.core.cuda"><code class="xref">helios.core.cuda</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/core/distributed/index.html#module-helios.core.distributed"><code class="xref">helios.core.distributed</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/core/logging/index.html#module-helios.core.logging"><code class="xref">helios.core.logging</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/core/rng/index.html#module-helios.core.rng"><code class="xref">helios.core.rng</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/core/utils/index.html#module-helios.core.utils"><code class="xref">helios.core.utils</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/data/index.html#module-helios.data"><code class="xref">helios.data</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/data/datamodule/index.html#module-helios.data.datamodule"><code class="xref">helios.data.datamodule</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/data/functional/index.html#module-helios.data.functional"><code class="xref">helios.data.functional</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/data/samplers/index.html#module-helios.data.samplers"><code class="xref">helios.data.samplers</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/data/transforms/index.html#module-helios.data.transforms"><code class="xref">helios.data.transforms</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/losses/index.html#module-helios.losses"><code class="xref">helios.losses</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/losses/utils/index.html#module-helios.losses.utils"><code class="xref">helios.losses.utils</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/losses/weighted_loss/index.html#module-helios.losses.weighted_loss"><code class="xref">helios.losses.weighted_loss</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/metrics/index.html#module-helios.metrics"><code class="xref">helios.metrics</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/metrics/functional/index.html#module-helios.metrics.functional"><code class="xref">helios.metrics.functional</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/metrics/metrics/index.html#module-helios.metrics.metrics"><code class="xref">helios.metrics.metrics</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/model/index.html#module-helios.model"><code class="xref">helios.model</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/model/model/index.html#module-helios.model.model"><code class="xref">helios.model.model</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/model/utils/index.html#module-helios.model.utils"><code class="xref">helios.model.utils</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/nn/index.html#module-helios.nn"><code class="xref">helios.nn</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/nn/layers/index.html#module-helios.nn.layers"><code class="xref">helios.nn.layers</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/nn/layers/pool/index.html#module-helios.nn.layers.pool"><code class="xref">helios.nn.layers.pool</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/nn/swa_utils/index.html#module-helios.nn.swa_utils"><code class="xref">helios.nn.swa_utils</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/nn/utils/index.html#module-helios.nn.utils"><code class="xref">helios.nn.utils</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/onnx/index.html#module-helios.onnx"><code class="xref">helios.onnx</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/optim/index.html#module-helios.optim"><code class="xref">helios.optim</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/optim/utils/index.html#module-helios.optim.utils"><code class="xref">helios.optim.utils</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/plugins/index.html#module-helios.plugins"><code class="xref">helios.plugins</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/plugins/optuna/index.html#module-helios.plugins.optuna"><code class="xref">helios.plugins.optuna</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/plugins/optuna/plugin/index.html#module-helios.plugins.optuna.plugin"><code class="xref">helios.plugins.optuna.plugin</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/plugins/optuna/utils/index.html#module-helios.plugins.optuna.utils"><code class="xref">helios.plugins.optuna.utils</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/plugins/plugin/index.html#module-helios.plugins.plugin"><code class="xref">helios.plugins.plugin</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/scheduler/index.html#module-helios.scheduler"><code class="xref">helios.scheduler</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/scheduler/schedulers/index.html#module-helios.scheduler.schedulers"><code class="xref">helios.scheduler.schedulers</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/scheduler/utils/index.html#module-helios.scheduler.utils"><code class="xref">helios.scheduler.utils</code></a></td><td>
-    <em></em></td>
-  </tr>
-  <tr class="cg-1">
-    <td></td>
-    <td>&#160;&#160;&#160;
-        <a href="autoapi/helios/trainer/index.html#module-helios.trainer"><code class="xref">helios.trainer</code></a></td><td>
-    <em></em></td>
-  </tr>
-</table>
+<section id="creating-and-restarting-studies">
+<h2>Creating and Restarting Studies<a class="headerlink" href="#creating-and-restarting-studies" title="Link to this heading">¶</a></h2>
+<p>Helios offers two ways of creating studies:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="autoapi/helios/plugins/optuna/utils/index.html#helios.plugins.optuna.utils.create_or_load_study" title="helios.plugins.optuna.utils.create_or_load_study"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_or_load_study()</span></code></a></p></li>
+<li><p><a class="reference internal" href="autoapi/helios/plugins/optuna/utils/index.html#helios.plugins.optuna.utils.create_study_starting_from_trial" title="helios.plugins.optuna.utils.create_study_starting_from_trial"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_study_starting_from_trial()</span></code></a></p></li>
+</ol>
+<p>The choice of function depends on the desired behaviour. That said, both functions
+<strong>require</strong> that the following conditions are met:</p>
+<ol class="arabic simple">
+<li><p>The study uses a string that starts with <code class="docutils literal notranslate"><span class="pre">sqlite:///</span></code> to specify <code class="docutils literal notranslate"><span class="pre">RDBStorage</span></code> as an
+argument to <code class="docutils literal notranslate"><span class="pre">storage</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">load_if_exists</span></code> flag is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ol>
+<p>You can find more details of these arguments in the
+<a class="reference internal" href="autoapi/helios/plugins/optuna/utils/index.html#helios.plugins.optuna.utils.StudyArgs" title="helios.plugins.optuna.utils.StudyArgs"><code class="xref py py-class docutils literal notranslate"><span class="pre">StudyArgs</span></code></a> or in the official <a class="reference external" href="https://optuna.readthedocs.io/en/latest/reference/generated/optuna.create_study.html">docs</a>.</p>
+<section id="creating-or-reloading-studies">
+<h3>Creating or Reloading Studies<a class="headerlink" href="#creating-or-reloading-studies" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="autoapi/helios/plugins/optuna/utils/index.html#helios.plugins.optuna.utils.create_or_load_study" title="helios.plugins.optuna.utils.create_or_load_study"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_or_load_study()</span></code></a> function can be used in
+the following cases:</p>
+<ol class="arabic simple">
+<li><p>You wish to create a study that is configured so it can be resumed.</p></li>
+<li><p>You wish to continue a study that has stopped.</p></li>
+</ol>
+<p>In order to use this function, it is recommended that you:</p>
+<ol class="arabic simple">
+<li><p>Pass in <code class="docutils literal notranslate"><span class="pre">sampler_path</span></code> so samplers can be saved/restored.</p></li>
+<li><p>Ensure that you use the checkpoint functions for samplers as described above.</p></li>
+</ol>
+<p>If you wish to resume a study, you can also pass in <code class="docutils literal notranslate"><span class="pre">backup_study</span></code> and
+<code class="docutils literal notranslate"><span class="pre">backup_samplers</span></code> to create backups of the original study and checkpoints.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function will not try to re-run failed trials. It will simply continue the study
+with a new blank trial.</p>
+</div>
+<p>To use this function, you can do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins.optuna</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlpo</span>
+
+<span class="n">args</span><span class="p">:</span> <span class="n">hlpo</span><span class="o">.</span><span class="n">StudyArgs</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">args</span><span class="p">[</span><span class="s2">&quot;storage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sqlite:///test.db&quot;</span>
+<span class="n">args</span><span class="p">[</span><span class="s2">&quot;load_if_exists&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># Remaining arguments can go here.</span>
+
+<span class="n">study</span> <span class="o">=</span> <span class="n">hlpo</span><span class="o">.</span><span class="n">create_or_load_study</span><span class="p">(</span><span class="n">sampler_path</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+<span class="c1"># Later on, if we wish to resume the study, we can do:</span>
+<span class="n">study</span> <span class="o">=</span> <span class="n">hlpo</span><span class="o">.</span><span class="n">create_or_load_study</span><span class="p">(</span><span class="n">sampler_path</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The function will automatically restore the sampler for you (if it exists) so you don’t
+have to specify it manually.</p>
+</section>
+<section id="restarting-a-study-from-a-given-trial">
+<h3>Restarting a Study from a Given Trial<a class="headerlink" href="#restarting-a-study-from-a-given-trial" title="Link to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="autoapi/helios/plugins/optuna/utils/index.html#helios.plugins.optuna.utils.create_study_starting_from_trial" title="helios.plugins.optuna.utils.create_study_starting_from_trial"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_study_starting_from_trial()</span></code></a> can be used
+to restart a study by specifying the trial number of the next trial that should be run.
+This is particularly useful in the event that a study fails in an unexpected way and you
+wish to continue the study prior to the failure while ensuring the results remain
+reproducible. To better explain this, let’s suppose that we have a study that is meant to
+run for 10 trials and we encounter a failure at trial 5 which stops the study. What we’d
+want to do is to restart the study such that trial 5 is re-run. Assuming we have been
+creating checkpoints for samplers, then we can do the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins.optuna</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlpo</span>
+
+ <span class="n">args</span><span class="p">:</span> <span class="n">hlpo</span><span class="o">.</span><span class="n">StudyArgs</span> <span class="o">=</span> <span class="p">{}</span>
+ <span class="n">args</span><span class="p">[</span><span class="s2">&quot;storage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;sqlite:///study.db&quot;</span>
+ <span class="n">args</span><span class="p">[</span><span class="s2">&quot;load_if_exists&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+ <span class="n">args</span><span class="p">[</span><span class="s2">&quot;study_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;study&quot;</span>
+
+ <span class="n">study</span> <span class="o">=</span> <span class="n">hlpo</span><span class="o">.</span><span class="n">create_or_load_study</span><span class="p">(</span><span class="n">sampler_path</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+ <span class="n">study</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="o">...</span><span class="p">)</span> <span class="c1"># This call fails.</span>
+
+ <span class="c1"># We want to re-run trial 5, which maps to index 4:</span>
+ <span class="n">study</span> <span class="o">=</span> <span class="n">hlpo</span><span class="o">.</span><span class="n">create_study_starting_from_trial</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">sampler_path</span><span class="o">=</span><span class="n">sampler_path</span><span class="p">,</span> <span class="o">**</span><span class="n">args</span><span class="p">)</span>
+
+ <span class="c1"># We can now resume from trial 5.</span>
+</pre></div>
+</div>
+<p>The way the function works is as follows:</p>
+<ol class="arabic simple">
+<li><p>It will first (by default) backup the study and the sampler checkpoints in case
+something goes wrong so they can be restored.</p></li>
+<li><p>It loads the study and grabs all the trials whose number is less than the given index
+(in our example, all trials whose number is less than 4).</p></li>
+<li><p>If the sampler path was given, then it will also delete all sampler checkpoints
+corresponding to trials whose number is greater than or equal to the given number. This
+ensures that if the study succeeds, the sampler checkpoints are left in a valid state.</p></li>
+<li><p>It will then create a new study and transfer all of the trials it grabbed in step 2 so
+the new study can start on the given trial number.</p></li>
+</ol>
+<p>If you wish to skip the backups (not recommended), then you can set <code class="docutils literal notranslate"><span class="pre">backup_study</span></code> and
+<code class="docutils literal notranslate"><span class="pre">backup_samplers</span></code> to false.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While it isn’t a requirement, it is <em>highly</em> recommended that you backup your samplers
+to ensure reproducibility.</p>
+</div>
+<p>Once the study is returned, you can then run the <code class="docutils literal notranslate"><span class="pre">optimize</span></code> function and continue the
+study as usual. If you are using the checkpoint system from
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code>, then the trial can be restarted from the last saved
+checkpoint.</p>
+</section>
+</section>
+</section>
 
         </article>
       </div>
       <footer>
         
         <div class="related-pages">
-          
-          
+          <a class="next-page" href="autoapi/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">API Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="plugins.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Plug-Ins</div>
+                
+              </div>
+            </a>
         </div>
         <div class="bottom-of-page">
           <div class="left-details">
@@ -580,8 +522,32 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Optuna Integartion</a><ul>
+<li><a class="reference internal" href="#sampler-checkpoints">Sampler Checkpoints</a></li>
+<li><a class="reference internal" href="#creating-and-restarting-studies">Creating and Restarting Studies</a><ul>
+<li><a class="reference internal" href="#creating-or-reloading-studies">Creating or Reloading Studies</a></li>
+<li><a class="reference internal" href="#restarting-a-study-from-a-given-trial">Restarting a Study from a Given Trial</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

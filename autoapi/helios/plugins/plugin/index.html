@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="helios.scheduler" href="../../scheduler/index.html" /><link rel="prev" title="helios.plugins.optuna" href="../optuna/index.html" />
+<link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="helios.scheduler" href="../../scheduler/index.html" /><link rel="prev" title="helios.plugins.optuna.utils" href="../optuna/utils/index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>helios.plugins.plugin - Helios documentation</title>
@@ -207,6 +207,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quick-ref.html">Quick Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../plugins.html">Plug-Ins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../optuna.html">Optuna Integartion</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">helios</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
@@ -255,11 +256,15 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">helios.plugins</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../optuna/index.html">helios.plugins.optuna</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../optuna/index.html">helios.plugins.optuna</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of helios.plugins.optuna</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../optuna/plugin/index.html">helios.plugins.optuna.plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../optuna/utils/index.html">helios.plugins.optuna.utils</a></li>
+</ul>
+</li>
 <li class="toctree-l4 current current-page"><a class="current reference internal" href="#">helios.plugins.plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -414,7 +419,7 @@ batch.</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="#helios.plugins.plugin.CUDAPlugin" title="helios.plugins.plugin.CUDAPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">helios.plugins.plugin.CUDAPlugin</span></code></a></p></td>
 <td><p>CUDAPlugin</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../optuna/index.html#helios.plugins.optuna.OptunaPlugin" title="helios.plugins.optuna.OptunaPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">helios.plugins.optuna.OptunaPlugin</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">helios.plugins.optuna.OptunaPlugin</span></code></p></td>
 <td><p>OptunaPlugin</p></td>
 </tr>
 </tbody>
@@ -422,7 +427,7 @@ batch.</p></li>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <a class="reference internal" href="../optuna/index.html#helios.plugins.optuna.OptunaPlugin" title="helios.plugins.optuna.OptunaPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OptunaPlugin</span></code></a> is only registered if the module
+<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">OptunaPlugin</span></code> is only registered if the module
 is imported somewhere in the code. Otherwise it won’t be registered.</p>
 </div>
 <p class="rubric">Example</p>
@@ -806,14 +811,14 @@ behaviour of the plug-in by deriving from it. See the example below for details.
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../optuna/index.html">
+          <a class="prev-page" href="../optuna/utils/index.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">helios.plugins.optuna</div>
+                <div class="title">helios.plugins.optuna.utils</div>
                 
               </div>
             </a>

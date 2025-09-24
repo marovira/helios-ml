@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="helios.plugins.plugin" href="../plugin/index.html" /><link rel="prev" title="helios.plugins" href="../index.html" />
+<link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" /><link rel="next" title="helios.plugins.optuna.plugin" href="plugin/index.html" /><link rel="prev" title="helios.plugins" href="../index.html" />
 
     <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>helios.plugins.optuna - Helios documentation</title>
@@ -207,6 +207,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quick-ref.html">Quick Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../plugins.html">Plug-Ins</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../optuna.html">Optuna Integartion</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../../../index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current has-children"><a class="reference internal" href="../../index.html">helios</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
@@ -255,11 +256,15 @@
 </ul>
 </li>
 <li class="toctree-l3 current has-children"><a class="reference internal" href="../index.html">helios.plugins</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">helios.plugins.optuna</a></li>
+<li class="toctree-l4 current has-children current-page"><a class="current reference internal" href="#">helios.plugins.optuna</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of helios.plugins.optuna</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="plugin/index.html">helios.plugins.optuna.plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="utils/index.html">helios.plugins.optuna.utils</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../plugin/index.html">helios.plugins.plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -311,411 +316,20 @@
         <article role="main" id="furo-main-content">
           <section id="module-helios.plugins.optuna">
 <span id="helios-plugins-optuna"></span><h1>helios.plugins.optuna<a class="headerlink" href="#module-helios.plugins.optuna" title="Link to this heading">¶</a></h1>
-<section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin" title="helios.plugins.optuna.OptunaPlugin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptunaPlugin</span></code></a></p></td>
-<td><p>Plug-in to do hyper-parameter tuning with Optuna.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#helios.plugins.optuna.resume_study" title="helios.plugins.optuna.resume_study"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resume_study</span></code></a>(, backup_study)</p></td>
-<td><p>Resume a study that stopped because of a failure.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#helios.plugins.optuna.checkpoint_sampler" title="helios.plugins.optuna.checkpoint_sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">checkpoint_sampler</span></code></a>(→ None)</p></td>
-<td><p>Create a checkpoint with the state of the sampler.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#helios.plugins.optuna.restore_sampler" title="helios.plugins.optuna.restore_sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore_sampler</span></code></a>(→ optuna.samplers.BaseSampler | None)</p></td>
-<td><p>Restore the sampler from a previously saved checkpoint.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="module-contents">
-<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="helios.plugins.optuna.resume_study">
-<span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">resume_study</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">study_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(optuna.trial.TrialState.FAIL,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backup_study</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">optuna.Study</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#resume_study"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.resume_study" title="Link to this definition">¶</a></dt>
-<dd><p>Resume a study that stopped because of a failure.</p>
-<p>The goal of this function is to allow studies that failed due to an error (either an
-exception, system error etc.) to continue utilising the built-in checkpoint system
-from Helios. To accomplish this, the function will do the following:</p>
-<ol class="arabic simple">
-<li><dl class="simple">
-<dt>Grab all the trials from the study created by the given <code class="docutils literal notranslate"><span class="pre">study_args</span></code>, splitting</dt><dd><p>them into three groups: completed/pruned, failed, and failed but completed.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Create a new study with the same name and storage. This new study will get all of</dt><dd><p>the completed trials of the original, and will have the failed trials re-enqueued.</p>
-</dd>
-</dl>
-</li>
-</ol>
+<p>Optuna module for Helios.</p>
+<p>This contains the classes and utilities related to the Optuna integration.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<dl>
-<dt>This function <strong>requires</strong> the following conditions to be true:</dt><dd><ol class="arabic simple">
-<li><p>It is called <strong>before</strong> the trials are started.</p></li>
-</ol>
-<p>#. The study uses <code class="docutils literal notranslate"><span class="pre">RDBStorage</span></code> as the storage argument for
-<code class="docutils literal notranslate"><span class="pre">optuna.create_study</span></code>.
-#. <code class="docutils literal notranslate"><span class="pre">load_if_exists</span></code> is set to True in <code class="docutils literal notranslate"><span class="pre">study_args</span></code>.
-#. <code class="docutils literal notranslate"><span class="pre">TrialState.PRUNED</span></code> <strong>cannot</strong> be in the list of <code class="docutils literal notranslate"><span class="pre">failed_states</span></code>.</p>
-</dd>
-</dl>
+<p>This module <strong>requires</strong> that Optuna be installed.</p>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">failed_states</span></code> argument can be used to set additional trial states to be
-considered as “failures”. This can be useful when dealing with special cases where
-trials were either completed or pruned but need to be re-run.</p>
-<p>By default, the original study (assuming there is one) will be backed up with the name
-<code class="docutils literal notranslate"><span class="pre">&lt;study-name&gt;_backup-#</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;study-name&gt;</span></code> is the name of the database of the
-original study, and <code class="docutils literal notranslate"><span class="pre">#</span></code> is an incremental number starting at 0. This behaviour can
-be disabled by setting <code class="docutils literal notranslate"><span class="pre">backup_study</span></code> to False.</p>
-<p>This function works in tandem with
-<a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_model" title="helios.plugins.optuna.OptunaPlugin.configure_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">configure_model()</span></code></a> to ensure that when
-the failed trial is re-run, the original save name is restored so any saved
-checkpoints can be re-used so the trial can continue instead of starting from
-scratch.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Only trials that fail but haven’t been completed will be enqueued by this
-function. If a trial fails and is completed later on, it will be treated as if it
-had finished successfully.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>study_args</strong> – dictionary of arguments for <code class="docutils literal notranslate"><span class="pre">optuna.create_study</span></code>.</p></li>
-<li><p><strong>failed_states</strong> – the trial states that are considered to be failures and should
-be re-enqueued.</p></li>
-<li><p><strong>backup_study</strong> – if True, the original study is backed up so it can be re-used later
-on.</p></li>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plugin/index.html">helios.plugins.optuna.plugin</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">helios.plugins.optuna.utils</a></li>
 </ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="helios.plugins.optuna.checkpoint_sampler">
-<span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">checkpoint_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.Trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chkpt_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#checkpoint_sampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.checkpoint_sampler" title="Link to this definition">¶</a></dt>
-<dd><p>Create a checkpoint with the state of the sampler.</p>
-<p>This function can be used to ensure that if a study is restarted, the state of the
-sampler is recovered so trials can be reproducible. The function will automatically
-create a checkpoint using <code class="docutils literal notranslate"><span class="pre">torch.save</span></code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It is recommended that this function be called at the start of the objective
-function to ensure the checkpoint is made correctly, but it can be called at any
-time.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>trial</strong> – the current trial.</p></li>
-<li><p><strong>chkpt_root</strong> – the root where the checkpoints will be saved.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="helios.plugins.optuna.restore_sampler">
-<span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">restore_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chkpt_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pathlib.Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">optuna.samplers.BaseSampler</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#restore_sampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.restore_sampler" title="Link to this definition">¶</a></dt>
-<dd><p>Restore the sampler from a previously saved checkpoint.</p>
-<p>This function can be used in tandem with
-<a class="reference internal" href="#helios.plugins.optuna.checkpoint_sampler" title="helios.plugins.optuna.checkpoint_sampler"><code class="xref py py-func docutils literal notranslate"><span class="pre">checkpoint_sampler()</span></code></a> to ensure that the last
-checkpoint is loaded and the correct state is restored for the sampler. This function
-<strong>needs</strong> to be called before <code class="docutils literal notranslate"><span class="pre">optuna.create_study</span></code> is called.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>chkpt_root</strong> – the root where the checkpoints are stored.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The restored sampler.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helios.plugins.optuna.</span></span><span class="sig-name descname"><span class="pre">OptunaPlugin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">optuna.Trial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">helios.plugins.Plugin</span></code></p>
-<p>Plug-in to do hyper-parameter tuning with Optuna.</p>
-<p>This plug-in integrates <a class="reference external" href="https://optuna.readthedocs.io/en/stable/">Optuna</a> into the
-training system in order to provide hyper-parameter tuning. The plug-in provides the
-following functionality:</p>
-<ol class="arabic simple">
-<li><p>Automatic handling of trial pruning.</p></li>
-<li><p>Automatic reporting of metrics.</p></li>
-<li><p>Exception registration for trial pruning.</p></li>
-<li><p>Easy integration with Helios’ checkpoint system to continue stopped trials.</p></li>
-</ol>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This plug-in <strong>requires</strong> Optuna to be installed before being used. If it isn’t,
-then <code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code> is raised.</p>
-</div>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">optuna</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="n">datamodule</span> <span class="o">=</span> <span class="o">...</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="o">...</span>
-    <span class="n">plugin</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">optuna</span><span class="o">.</span><span class="n">OptunaPlugin</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">)</span>
-
-    <span class="n">trainer</span> <span class="o">=</span> <span class="o">...</span>
-
-    <span class="c1"># Automatically registers the plug-in with the trainer.</span>
-    <span class="n">plugin</span><span class="o">.</span><span class="n">configure_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
-
-    <span class="c1"># This can be skipped if you don&#39;t want the auto-resume functionality or</span>
-    <span class="c1"># if you wish to manage it yourself.</span>
-    <span class="n">plugin</span><span class="o">.</span><span class="n">configure_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-
-    <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">datamodule</span><span class="p">)</span>
-    <span class="n">plugin</span><span class="o">.</span><span class="n">check_pruned</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-    <span class="c1"># Note that the plug-in requires the storage to be persistent.</span>
-    <span class="n">study</span> <span class="o">=</span> <span class="n">optuna</span><span class="o">.</span><span class="n">create_study</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="s2">&quot;sqlite:///example.db&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-    <span class="n">study</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">objective</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>trial</strong> – the Optuna trial.</p></li>
-<li><p><strong>metric_name</strong> – the name of the metric to monitor. This assumes the name will be
-present in the <a class="reference internal" href="../../model/model/index.html#helios.model.model.Model.metrics" title="helios.model.model.Model.metrics"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metrics</span></code></a> table.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.plugin_id">
-<span class="sig-name descname"><span class="pre">plugin_id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'optuna'</span></em><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.plugin_id" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.trial">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trial</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">optuna.Trial</span></em><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.trial" title="Link to this definition">¶</a></dt>
-<dd><p>Return the trial.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.configure_trainer">
-<span class="sig-name descname"><span class="pre">configure_trainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><span class="pre">helios.trainer.Trainer</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.configure_trainer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.configure_trainer" title="Link to this definition">¶</a></dt>
-<dd><p>Configure the trainer with the required settings.</p>
-<p>This will do two things:</p>
-<ol class="arabic simple">
-<li><p>Register the plug-in itself with the trainer.</p></li>
-<li><p>Append the trial pruned exception to the trainer.</p></li>
-</ol>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>trainer</strong> – the trainer instance.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.configure_model">
-<span class="sig-name descname"><span class="pre">configure_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">helios.model.Model</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.configure_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.configure_model" title="Link to this definition">¶</a></dt>
-<dd><p>Configure the model to set the trial number into the save name.</p>
-<p>This will alter the <a class="reference internal" href="../../model/model/index.html#helios.model.model.Model.save_name" title="helios.model.model.Model.save_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">save_name</span></code></a> property of the
-model by appending <code class="code docutils literal notranslate"><span class="pre">_trial-&lt;trial-numer&gt;</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>model</strong> – the model instance.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.suggest">
-<span class="sig-name descname"><span class="pre">suggest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.suggest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.suggest" title="Link to this definition">¶</a></dt>
-<dd><p>Generically Wrap the <code class="docutils literal notranslate"><span class="pre">suggest_</span></code> family of functions of the optuna trial.</p>
-<p>This function can be used to easily invoke the corresponding <code class="docutils literal notranslate"><span class="pre">suggest_</span></code> function
-from the Optuna trial held by the plug-in without having to manually type each
-individual function. This lets you write generic code that can be controlled by an
-external source (such as command line arguments or a config table). The function
-wraps the following functions:</p>
-<div class="table-wrapper docutils container" id="id1">
-<table class="docutils align-default" id="id1">
-<caption><span class="caption-text">Suggestion Functions</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
-<thead>
-<tr class="row-odd"><th class="head"><p>Function</p></th>
-<th class="head"><p>Name</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">optuna.Trial.suggest_categorical</span></code></p></td>
-<td><p>categorical</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">optuna.Trial.suggest_int</span></code></p></td>
-<td><p>int</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">optuna.Trial.suggest_float</span></code></p></td>
-<td><p>float</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Functions that are marked as deprecated by Optuna are <em>not</em> included in this
-wrapper.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You can find the exact arguments for each function <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html">here</a>.</p>
-</div>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugin</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">optuna</span>
-
-<span class="k">def</span><span class="w"> </span><span class="nf">objective</span><span class="p">(</span><span class="n">trial</span><span class="p">:</span> <span class="n">optuna</span><span class="o">.</span><span class="n">Trial</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="n">plugin</span> <span class="o">=</span> <span class="n">hlp</span><span class="o">.</span><span class="n">optuna</span><span class="o">.</span><span class="n">OptunaPlugin</span><span class="p">(</span><span class="n">trial</span><span class="p">,</span> <span class="s2">&quot;accuracy&quot;</span><span class="p">)</span>
-    <span class="c1"># ... configure model and trainer.</span>
-
-    <span class="n">val1</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">suggest</span><span class="p">(</span><span class="s2">&quot;categorical&quot;</span><span class="p">,</span> <span class="s2">&quot;val1&quot;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-    <span class="n">val2</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">suggest</span><span class="p">(</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;val2&quot;</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-    <span class="n">val3</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">suggest</span><span class="p">(</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;val3&quot;</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>type_name</strong> – the name of the type to suggest from.</p></li>
-<li><p><strong>name</strong> – a parameter name</p></li>
-<li><p><strong>**kwargs</strong> – keyword arguments to the corresponding suggest function.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>KeyError</strong> – if the value passed in to <code class="docutils literal notranslate"><span class="pre">type_name</span></code> is not recognised.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.setup">
-<span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.setup" title="Link to this definition">¶</a></dt>
-<dd><p>Configure the plug-in.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – if the study wasn’t created with persistent storage.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.report_metrics">
-<span class="sig-name descname"><span class="pre">report_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validation_cycle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.report_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.report_metrics" title="Link to this definition">¶</a></dt>
-<dd><p>Report metrics to the trial.</p>
-<p>This function should be called from the model once the corresponding metrics have
-been saved into the <a class="reference internal" href="../../model/model/index.html#helios.model.model.Model.metrics" title="helios.model.model.Model.metrics"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metrics</span></code></a> table.</p>
-<p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlm</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins.optuna</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlpo</span>
-
-<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="o">...</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">on_validation_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">validation_cycle</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># Compute metrics</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
-
-        <span class="n">plugin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">plugins</span><span class="p">[</span><span class="n">hlpo</span><span class="o">.</span><span class="n">OptunaPlugin</span><span class="o">.</span><span class="n">plugin_id</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plugin</span> <span class="n">hlpo</span><span class="o">.</span><span class="n">OptunaPlugin</span><span class="p">)</span>
-        <span class="n">plugin</span><span class="o">.</span><span class="n">report_metrics</span><span class="p">(</span><span class="n">validation_cycle</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In distributed training, only rank 0 will report the metrics to the trial.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>validation_cycle</strong> – the current validation cycle.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.should_training_stop">
-<span class="sig-name descname"><span class="pre">should_training_stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.should_training_stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.should_training_stop" title="Link to this definition">¶</a></dt>
-<dd><p>Handle trial pruning.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>True if the trial should be pruned, false otherwise.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.on_training_end">
-<span class="sig-name descname"><span class="pre">on_training_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.on_training_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.on_training_end" title="Link to this definition">¶</a></dt>
-<dd><p>Clean-up on training end.</p>
-<p>If training is non-distributed and the trial was pruned, then this function will
-do the following:</p>
-<ol class="arabic simple">
-<li><p>Call <a class="reference internal" href="../../model/model/index.html#helios.model.model.Model.on_training_end" title="helios.model.model.Model.on_training_end"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_training_end()</span></code></a> to ensure metrics are
-correctly logged (if using).</p></li>
-<li><p>Raise <code class="xref py py-exc docutils literal notranslate"><span class="pre">optuna.TrialPruned</span></code> exception to signal the trial was pruned.</p></li>
-</ol>
-<p>If training is distributed, this function does nothing.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TrialPruned</strong> – if the trial was pruned.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.check_pruned">
-<span class="sig-name descname"><span class="pre">check_pruned</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.check_pruned"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.check_pruned" title="Link to this definition">¶</a></dt>
-<dd><p>Ensure pruned distributed trials are correctly handled.</p>
-<p>Due to the way distributed training works, we can’t raise an exception within the
-distributed processes, so we have to do it after we return to the main process.
-If the trial was pruned, this function will raise <code class="xref py py-exc docutils literal notranslate"><span class="pre">optuna.TrialPruned</span></code>. If
-distributed training wasn’t used, this function does nothing.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>You <em>must</em> ensure this function is called after
-<a class="reference internal" href="../../trainer/index.html#helios.trainer.Trainer.fit" title="helios.trainer.Trainer.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a> to ensure pruning works correctly.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>TrialPruned</strong> – if the trial was pruned.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="helios.plugins.optuna.OptunaPlugin.state_dict">
-<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../../_modules/helios/plugins/optuna.html#OptunaPlugin.state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.plugins.optuna.OptunaPlugin.state_dict" title="Link to this definition">¶</a></dt>
-<dd><p>Get the state of the current trial.</p>
-<p>This will return the parameters to be optimised for the current trial.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The parameters of the trial.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 </section>
 
@@ -724,12 +338,12 @@ distributed training wasn’t used, this function does nothing.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../plugin/index.html">
+          <a class="next-page" href="plugin/index.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">helios.plugins.plugin</div>
+                <div class="title">helios.plugins.optuna.plugin</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -775,28 +389,7 @@ distributed training wasn’t used, this function does nothing.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">helios.plugins.optuna</a><ul>
-<li><a class="reference internal" href="#classes">Classes</a></li>
-<li><a class="reference internal" href="#functions">Functions</a></li>
-<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
-<li><a class="reference internal" href="#helios.plugins.optuna.resume_study"><code class="docutils literal notranslate"><span class="pre">resume_study()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.checkpoint_sampler"><code class="docutils literal notranslate"><span class="pre">checkpoint_sampler()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.restore_sampler"><code class="docutils literal notranslate"><span class="pre">restore_sampler()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin</span></code></a><ul>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.plugin_id"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.plugin_id</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.trial"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.trial</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_trainer"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.configure_trainer()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.configure_model"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.configure_model()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.suggest"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.suggest()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.setup"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.setup()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.report_metrics"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.report_metrics()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.should_training_stop"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.should_training_stop()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.on_training_end"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.on_training_end()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.check_pruned"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.check_pruned()</span></code></a></li>
-<li><a class="reference internal" href="#helios.plugins.optuna.OptunaPlugin.state_dict"><code class="docutils literal notranslate"><span class="pre">OptunaPlugin.state_dict()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
 </ul>
 </li>
 </ul>

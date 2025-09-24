@@ -151,8 +151,8 @@ Module Contents
 
    This number represents the total number of nodes that the run is being performed on.
    For example, the local world size for the following cases would be:
-       * 2 nodes, 4 GPUs: local world size is 2.
-       * 1 node, 2 GPUs: local world size is 1.
+   * 2 nodes, 4 GPUs: local world size is 2.
+   * 1 node, 2 GPUs: local world size is 1.
 
    :returns: The local world size.
 
@@ -164,8 +164,8 @@ Module Contents
    This number represents the total number of nodes multiplied by the total number of
    processes per node. In general, this second number equals the number of GPUs but this
    need not be the case. For instance, here are the world sizes for the following setups:
-       * 2 nodes, 4 GPUs: world size is 8.
-       * 1 node, 2 GPUs: world size is 2.
+   * 2 nodes, 4 GPUs: world size is 8.
+   * 1 node, 2 GPUs: world size is 2.
 
    :returns: The global world size.
 
