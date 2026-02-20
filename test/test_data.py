@@ -74,6 +74,10 @@ class SampleDataModule(data.DataModule):
         self._test_dataset = self._create_dataset(SequentialDataset(), params)
 
 
+def dummy_collate_fn(a: int) -> int:
+    return a + 1
+
+
 class TestTransforms:
     def check_type(self, x, exp_type: type) -> None:
         assert isinstance(x, exp_type)
@@ -525,7 +529,10 @@ class TestDataModule:
         )
 
     def test_collate_fn_create(self, check_create_function) -> None:
-        check_create_function(data.COLLATE_FN_REGISTRY, data.create_collate_fn)
+        data.COLLATE_FN_REGISTRY.register(dummy_collate_fn)
+        ret = data.COLLATE_FN_REGISTRY.get("dummy_collate_fn")
+        val = ret(1)
+        assert val == 2
 
     def test_dataset_getters(self) -> None:
         datamodule = SampleDataModule()

@@ -86,9 +86,7 @@ def create_dataset(
     return DATASET_REGISTRY.get(type_name)(*args, **kwargs)
 
 
-def create_collate_fn(
-    type_name: str, *args: typing.Any, **kwargs: typing.Any
-) -> typing.Callable:
+def create_collate_fn(type_name: str) -> typing.Callable:
     """
     Create a collate function of the given type.
 
@@ -97,13 +95,11 @@ def create_collate_fn(
 
     Args:
         type_name: the type of the function to create.
-        args: positional arguments to pass into the function.
-        kwargs: keyword arguments to pass into the function.
 
     Returns:
-        The constructed function.
+        The function
     """
-    return COLLATE_FN_REGISTRY.get(type_name)(*args, **kwargs)
+    return COLLATE_FN_REGISTRY.get(type_name)
 
 
 class DatasetSplit(enum.Enum):
