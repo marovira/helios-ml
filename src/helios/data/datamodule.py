@@ -4,6 +4,7 @@ import abc
 import copy
 import dataclasses as dc
 import enum
+import types
 import typing
 
 import torch
@@ -86,20 +87,35 @@ def create_dataset(
     return DATASET_REGISTRY.get(type_name)(*args, **kwargs)
 
 
-def create_collate_fn(type_name: str) -> typing.Callable:
+def create_collate_fn(
+    type_name: str, *args: typing.Any, **kwargs: typing.Any
+) -> typing.Callable:
     """
     Create a collate function of the given type.
 
-    This uses ``COLLATE_FN_REGISTRY`` to look-up function types, so ensure that your
+    This uses ``COLLATE_FN_REGISTRY`` to look-up collate functions, so ensure that your
     functions have been registered before using this function.
+    In order to support regular functions as well as callable objects, this function
+    behaves as follows:
+
+    #. If ``type_name`` refers to a function-type, then ``args`` and ``kwargs`` are
+        ignored.
+    #. If ``type_name`` refers to an actual type (i.e. a class), then ``args`` and
+        ``kwargs`` are forwarded upon instantiation.
 
     Args:
         type_name: the type of the function to create.
+        args: positional arguments to pass into the collate class
+        kwargs: keyword arguments to pass into the collate class
 
     Returns:
         The function
     """
-    return COLLATE_FN_REGISTRY.get(type_name)
+    fn_type = COLLATE_FN_REGISTRY.get(type_name)
+    if isinstance(fn_type, types.FunctionType):
+        return fn_type
+    assert isinstance(fn_type, type), f"Expected a type but found {type(fn_type)}"
+    return fn_type(*args, **kwargs)
 
 
 class DatasetSplit(enum.Enum):

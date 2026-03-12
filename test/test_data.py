@@ -78,6 +78,15 @@ def dummy_collate_fn(a: int) -> int:
     return a + 1
 
 
+@data.COLLATE_FN_REGISTRY.register
+class SampleCollateFn:
+    def __init__(self, seed: int) -> None:
+        self.seed = seed
+
+    def __call__(self) -> int:
+        return self.seed + 1
+
+
 class TestTransforms:
     def check_type(self, x, exp_type: type) -> None:
         assert isinstance(x, exp_type)
@@ -530,9 +539,16 @@ class TestDataModule:
 
     def test_collate_fn_create(self, check_create_function) -> None:
         data.COLLATE_FN_REGISTRY.register(dummy_collate_fn)
-        ret = data.COLLATE_FN_REGISTRY.get("dummy_collate_fn")
+        ret = data.create_collate_fn("dummy_collate_fn")
         val = ret(1)
         assert val == 2
+
+        # Ignore additional arguments when creating functions
+        data.create_collate_fn("dummy_collate_fn", a=1)
+
+        # Ensure arguments are forwarded when creating a type
+        ret = data.create_collate_fn("SampleCollateFn", seed=1)
+        assert ret() == 2
 
     def test_dataset_getters(self) -> None:
         datamodule = SampleDataModule()
