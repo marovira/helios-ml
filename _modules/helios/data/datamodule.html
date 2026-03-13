@@ -314,6 +314,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
@@ -407,18 +408,29 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a collate function of the given type.</span>
 
-<span class="sd">    This uses ``COLLATE_FN_REGISTRY`` to look-up function types, so ensure that your</span>
+<span class="sd">    This uses ``COLLATE_FN_REGISTRY`` to look-up collate functions, so ensure that your</span>
 <span class="sd">    functions have been registered before using this function.</span>
+<span class="sd">    In order to support regular functions as well as callable objects, this function</span>
+<span class="sd">    behaves as follows:</span>
+
+<span class="sd">    #. If ``type_name`` refers to a function-type, then ``args`` and ``kwargs`` are</span>
+<span class="sd">        ignored.</span>
+<span class="sd">    #. If ``type_name`` refers to an actual type (i.e. a class), then ``args`` and</span>
+<span class="sd">        ``kwargs`` are forwarded upon instantiation.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        type_name: the type of the function to create.</span>
-<span class="sd">        args: positional arguments to pass into the function.</span>
-<span class="sd">        kwargs: keyword arguments to pass into the function.</span>
+<span class="sd">        args: positional arguments to pass into the collate class</span>
+<span class="sd">        kwargs: keyword arguments to pass into the collate class</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The constructed function.</span>
+<span class="sd">        The function</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">COLLATE_FN_REGISTRY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">type_name</span><span class="p">)(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="n">fn_type</span> <span class="o">=</span> <span class="n">COLLATE_FN_REGISTRY</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">type_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn_type</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">FunctionType</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">fn_type</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn_type</span><span class="p">,</span> <span class="nb">type</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expected a type but found </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">fn_type</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">fn_type</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 

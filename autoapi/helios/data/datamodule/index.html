@@ -432,18 +432,32 @@ have been registered before using this function.</p>
 <dt class="sig sig-object py" id="helios.data.datamodule.create_collate_fn">
 <span class="sig-prename descclassname"><span class="pre">helios.data.datamodule.</span></span><span class="sig-name descname"><span class="pre">create_collate_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="reference internal" href="../../../../_modules/helios/data/datamodule.html#create_collate_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#helios.data.datamodule.create_collate_fn" title="Link to this definition">¶</a></dt>
 <dd><p>Create a collate function of the given type.</p>
-<p>This uses <code class="docutils literal notranslate"><span class="pre">COLLATE_FN_REGISTRY</span></code> to look-up function types, so ensure that your
-functions have been registered before using this function.</p>
+<p>This uses <code class="docutils literal notranslate"><span class="pre">COLLATE_FN_REGISTRY</span></code> to look-up collate functions, so ensure that your
+functions have been registered before using this function.
+In order to support regular functions as well as callable objects, this function
+behaves as follows:</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>If <code class="docutils literal notranslate"><span class="pre">type_name</span></code> refers to a function-type, then <code class="docutils literal notranslate"><span class="pre">args</span></code> and <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are</dt><dd><p>ignored.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>If <code class="docutils literal notranslate"><span class="pre">type_name</span></code> refers to an actual type (i.e. a class), then <code class="docutils literal notranslate"><span class="pre">args</span></code> and</dt><dd><p><code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are forwarded upon instantiation.</p>
+</dd>
+</dl>
+</li>
+</ol>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>type_name</strong> – the type of the function to create.</p></li>
-<li><p><strong>args</strong> – positional arguments to pass into the function.</p></li>
-<li><p><strong>kwargs</strong> – keyword arguments to pass into the function.</p></li>
+<li><p><strong>args</strong> – positional arguments to pass into the collate class</p></li>
+<li><p><strong>kwargs</strong> – keyword arguments to pass into the collate class</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The constructed function.</p>
+<dd class="field-even"><p>The function</p>
 </dd>
 </dl>
 </dd></dl>

@@ -91,14 +91,21 @@ Module Contents
 
    Create a collate function of the given type.
 
-   This uses ``COLLATE_FN_REGISTRY`` to look-up function types, so ensure that your
+   This uses ``COLLATE_FN_REGISTRY`` to look-up collate functions, so ensure that your
    functions have been registered before using this function.
+   In order to support regular functions as well as callable objects, this function
+   behaves as follows:
+
+   #. If ``type_name`` refers to a function-type, then ``args`` and ``kwargs`` are
+       ignored.
+   #. If ``type_name`` refers to an actual type (i.e. a class), then ``args`` and
+       ``kwargs`` are forwarded upon instantiation.
 
    :param type_name: the type of the function to create.
-   :param args: positional arguments to pass into the function.
-   :param kwargs: keyword arguments to pass into the function.
+   :param args: positional arguments to pass into the collate class
+   :param kwargs: keyword arguments to pass into the collate class
 
-   :returns: The constructed function.
+   :returns: The function
 
 
 .. py:class:: DatasetSplit(*args, **kwds)
