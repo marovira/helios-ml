@@ -24,6 +24,7 @@ dependencies = [
     "numpy>=2.1.0",
     "onnx>=1.21.0",
     "onnxruntime>=1.19.0",
+    "onnxscript>=0.1.0",
     "opencv-python>=4.10.0.84",
     "tensorboard>=2.17.0",
     "torch>=2.7.1",
