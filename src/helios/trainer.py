@@ -574,6 +574,9 @@ class Trainer:
         appropriate training loop for the given training unit.
         """
         self._configure_env()
+        self._push_distributed_error_state(
+            _DistributedErrorState(log_path=logging.get_root_logger().log_file)
+        )
         self._setup_plugins()
         self._setup_datamodule()
         self._setup_model()
@@ -581,9 +584,6 @@ class Trainer:
 
         chkpt_path = find_last_checkpoint(self._chkpt_root)
         training_state = self._load_checkpoint(chkpt_path)
-
-        log_path = logging.get_root_logger().log_file
-        self._push_distributed_error_state(_DistributedErrorState(log_path=log_path))
 
         self._print_header(chkpt_path)
 
@@ -614,6 +614,9 @@ class Trainer:
         the correct state internally.
         """
         self._configure_env()
+        self._push_distributed_error_state(
+            _DistributedErrorState(log_path=logging.get_root_logger().log_file)
+        )
         self._setup_plugins()
         self._setup_datamodule()
         self._setup_model(fast_init=True)
@@ -631,9 +634,6 @@ class Trainer:
         # We failed to load the last checkpoint, so tell the model to load its state.
         if self._chkpt_root is None or not loaded:
             self.model.load_for_testing()
-
-        log_path = logging.get_root_logger().log_file
-        self._push_distributed_error_state(_DistributedErrorState(log_path=log_path))
 
         self._print_header(chkpt_path, for_training=False)
 
