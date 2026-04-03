@@ -203,19 +203,19 @@ class AverageTimer:
 
     def start(self) -> None:
         """Start the timer."""
-        self._current_time = time.time()
+        self._current_time = time.perf_counter()
 
     def record(self) -> None:
         """Record a new step in the timer."""
         self._step_count += 1
-        self._time_sum += time.time() - self._current_time
+        self._time_sum += time.perf_counter() - self._current_time
         self._avg_time = self._time_sum / self._step_count
 
         if self._step_count > self._sliding_window:
             self._step_count = 0
             self._time_sum = 0
 
-        self._current_time = time.time()
+        self._current_time = time.perf_counter()
 
     def get_average_time(self) -> float:
         """Return the moving average over the current step count."""
@@ -267,9 +267,9 @@ class Registry:
         if isinstance(suffix, str):
             name = name + "_" + suffix
 
-        assert (
-            name not in self._obj_map
-        ), f"error: an object named '{name}' already exists in the "
+        assert name not in self._obj_map, (
+            f"error: an object named '{name}' already exists in the "
+        )
         f"'{self._name}' registry"
 
         self._obj_map[name] = obj

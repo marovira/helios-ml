@@ -1035,7 +1035,7 @@ class Trainer:
             state.global_epoch += 1
             root_logger.info(f"Starting epoch {epoch + 1}")
             sampler.set_epoch(epoch)
-            epoch_start = time.time()
+            epoch_start = time.perf_counter()
             self.model.on_training_epoch_start(state.global_epoch)
 
             iter_timer.start()
@@ -1117,7 +1117,7 @@ class Trainer:
             self.model.on_training_epoch_end(state.global_epoch)
 
             root_logger.info(
-                f"Epoch {epoch + 1} completed in {time.time() - epoch_start:.2f}s"
+                f"Epoch {epoch + 1} completed in {time.perf_counter() - epoch_start:.2f}s"
             )
 
     def _train_on_epoch(self, state: TrainingState) -> None:
@@ -1172,7 +1172,7 @@ class Trainer:
 
             root_logger.info(f"Starting epoch {epoch + 1}")
             sampler.set_epoch(epoch)
-            epoch_start = time.time()
+            epoch_start = time.perf_counter()
             self.model.on_training_epoch_start(state.global_epoch)
             iter_timer.start()
             with tqdm.tqdm(
@@ -1230,7 +1230,7 @@ class Trainer:
 
             self.model.on_training_epoch_end(state.global_epoch)
             root_logger.info(
-                f"Epoch {epoch + 1} completed in {time.time() - epoch_start:.2f}s"
+                f"Epoch {epoch + 1} completed in {time.perf_counter() - epoch_start:.2f}s"
             )
             pbar.update()
             if (
