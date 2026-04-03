@@ -22,7 +22,7 @@ requires-python = ">=3.11"
 dependencies = [
     "matplotlib>=3.9.2",
     "numpy>=2.1.0",
-    "onnx>=1.16.0",
+    "onnx>=1.21.0",
     "onnxruntime>=1.19.0",
     "opencv-python>=4.10.0.84",
     "tensorboard>=2.17.0",
@@ -151,6 +151,19 @@ addopts = [
 
 [tool.uv]
 required-version = ">=0.7"
+constraint-dependencies = [
+    # Security fixes for transitive dependencies (Dependabot alerts)
+    "cryptography>=46.0.6",
+    "filelock>=3.20.3",
+    "fonttools>=4.60.2",
+    "pillow>=12.1.1",
+    "protobuf>=6.33.5",
+    "Pygments>=2.20.0",
+    "requests>=2.33.0",
+    "urllib3>=2.6.3",
+    "virtualenv>=20.36.1",
+    "werkzeug>=3.1.6",
+]
 
 [tool.uv.sources]
 torch = [
