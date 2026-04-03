@@ -37,6 +37,7 @@ jobs:
           path: docs/build/html/
 
       - name: Deploy
+        if: github.event_name == 'workflow_call'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
