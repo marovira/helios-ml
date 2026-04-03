@@ -174,9 +174,9 @@ def calculate_psnr(
     Returns:
         PSNR value.
     """
-    assert (
-        img.shape == img2.shape
-    ), f"Image shapes are different: {img.shape}, {img2.shape}."
+    assert img.shape == img2.shape, (
+        f"Image shapes are different: {img.shape}, {img2.shape}."
+    )
 
     img = functional.convert_to_hwc(img, input_order=input_order)
     img2 = functional.convert_to_hwc(img2, input_order=input_order)
@@ -219,9 +219,9 @@ def calculate_psnr_torch(
     Returns:
         PSNR value.
     """
-    assert (
-        img.shape == img2.shape
-    ), f"Image shapes are different: {img.shape}, {img2.shape}."
+    assert img.shape == img2.shape, (
+        f"Image shapes are different: {img.shape}, {img2.shape}."
+    )
 
     if crop_border != 0:
         img = img[:, :, crop_border:-crop_border, crop_border:-crop_border]
@@ -265,9 +265,9 @@ def calculate_ssim(
     Returns:
         SSIM.
     """
-    assert (
-        img.shape == img2.shape
-    ), f"Image shapes are different: {img.shape}, {img2.shape}."
+    assert img.shape == img2.shape, (
+        f"Image shapes are different: {img.shape}, {img2.shape}."
+    )
 
     img = functional.convert_to_hwc(img, input_order=input_order)
     img2 = functional.convert_to_hwc(img2, input_order=input_order)
@@ -314,9 +314,9 @@ def calculate_ssim_torch(
     Returns:
         SSIM.
     """
-    assert (
-        img.shape == img2.shape
-    ), f"Image shapes are different: {img.shape}, {img2.shape}."
+    assert img.shape == img2.shape, (
+        f"Image shapes are different: {img.shape}, {img2.shape}."
+    )
 
     if crop_border != 0:
         img = img[:, :, crop_border:-crop_border, crop_border:-crop_border]

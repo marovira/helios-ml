@@ -71,9 +71,9 @@ class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
         self._periods = periods
         self._restart_weights = restart_weights
         self._eta_min = eta_min
-        assert len(self._periods) == len(
-            self._restart_weights
-        ), "periods and restart_weights should have the same length."
+        assert len(self._periods) == len(self._restart_weights), (
+            "periods and restart_weights should have the same length."
+        )
         self._cumulative_period = [
             sum(self._periods[0 : i + 1]) for i in range(len(self._periods))
         ]
@@ -134,9 +134,9 @@ class MultiStepRestartLR(lr_scheduler.LRScheduler):
         self._gamma = gamma
         self._restarts = restarts
         self._restart_weights = restart_weights
-        assert len(self._restarts) == len(
-            self._restart_weights
-        ), "restarts and their weights do not match."
+        assert len(self._restarts) == len(self._restart_weights), (
+            "restarts and their weights do not match."
+        )
         super().__init__(optimizer, last_epoch)
 
     def get_lr(self):
