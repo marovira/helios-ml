@@ -13,7 +13,7 @@ import pytest
 import torch
 
 from helios import core
-from helios.core import cuda, rng
+from helios.core import cuda, distributed, rng
 
 
 @dc.dataclass
@@ -114,6 +114,65 @@ class TestUtils:
 
 def sample_fun() -> int:
     return 1
+
+
+class TestDistributed:
+    _TORCHRUN_ENV_VARS = [
+        "LOCAL_RANK",
+        "RANK",
+        "GROUP_RANK",
+        "ROLE_RANK",
+        "LOCAL_WORLD_SIZE",
+        "WORLD_SIZE",
+        "ROLE_WORLD_SIZE",
+        "MASTER_ADDR",
+        "MASTER_PORT",
+        "TORCHELASTIC_RESTART_COUNT",
+        "TORCHELASTIC_RUN_ID",
+    ]
+
+    def test_is_using_torchrun_false(self) -> None:
+        assert not distributed.is_using_torchrun()
+
+    def test_is_using_torchrun_true(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        for key in self._TORCHRUN_ENV_VARS:
+            monkeypatch.setenv(key, "0")
+        assert distributed.is_using_torchrun()
+
+    def test_is_dist_active_false(self) -> None:
+        assert not distributed.is_dist_active()
+
+    def test_get_dist_info_defaults(self) -> None:
+        info = distributed.get_dist_info()
+        assert info.rank == 0
+        assert info.world_size == 1
+        assert info.local_rank == 0
+        assert info.local_world_size == 1
+
+    def test_get_local_rank(self) -> None:
+        assert distributed.get_local_rank() == 0
+
+    def test_get_global_rank(self) -> None:
+        assert distributed.get_global_rank() == 0
+
+    def test_get_local_world_size(self) -> None:
+        assert distributed.get_local_world_size() == 1
+
+    def test_get_world_size(self) -> None:
+        assert distributed.get_world_size() == 1
+
+    def test_safe_barrier(self) -> None:
+        distributed.safe_barrier()
+
+    def test_global_print_rank0(self, capsys: pytest.CaptureFixture) -> None:
+        distributed.global_print("hello global")
+        captured = capsys.readouterr()
+        assert "hello global" in captured.out
+
+    def test_local_print_rank0(self, capsys: pytest.CaptureFixture) -> None:
+        distributed.local_print("hello local")
+        captured = capsys.readouterr()
+        assert "hello local" in captured.out
 
 
 class TestCUDA:

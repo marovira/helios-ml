@@ -260,6 +260,58 @@ class TestFunctional:
         diff = PIL.ImageChops.difference(as_pil, ret)  # type: ignore[attr-defined]
         assert diff.getbbox() is None
 
+    def test_convert_to_hwc_from_chw(self) -> None:
+        img = np.zeros((3, 4, 5), dtype=np.uint8)
+        result = hldf.convert_to_hwc(img, "CHW")
+        assert result.shape == (4, 5, 3)
+
+    def test_convert_to_hwc_from_hwc(self) -> None:
+        img = np.zeros((4, 5, 3), dtype=np.uint8)
+        result = hldf.convert_to_hwc(img, "HWC")
+        assert result.shape == (4, 5, 3)
+
+    def test_convert_to_hwc_from_hw(self) -> None:
+        img = np.zeros((4, 5), dtype=np.uint8)
+        result = hldf.convert_to_hwc(img)
+        assert result.shape == (4, 5, 1)
+
+    def test_to_y_channel(self) -> None:
+        img = np.full((8, 8, 3), 128, dtype=np.uint8)
+        result = hldf.to_y_channel(img)
+        assert result.shape == (8, 8, 1)
+        assert float(result.min()) >= 0.0
+        assert float(result.max()) <= 255.0
+
+    def test_bgr2ycbcr_full(self) -> None:
+        img = np.zeros((4, 4, 3), dtype=np.uint8)
+        result = hldf.bgr2ycbcr(img)
+        assert result.shape == (4, 4, 3)
+        assert result.dtype == np.uint8
+
+    def test_bgr2ycbcr_only_y(self) -> None:
+        img = np.zeros((4, 4, 3), dtype=np.uint8)
+        result = hldf.bgr2ycbcr(img, only_y=True)
+        assert result.ndim == 2
+        assert result.shape == (4, 4)
+
+    def test_bgr2ycbcr_float_input(self) -> None:
+        img = np.full((4, 4, 3), 0.5, dtype=np.float32)
+        result = hldf.bgr2ycbcr(img)
+        assert result.shape == (4, 4, 3)
+        assert result.dtype == np.float32
+
+    def test_rgb2ycbcr_torch_full(self) -> None:
+        img = torch.zeros(2, 3, 8, 8)
+        result = hldf.rgb2ycbcr_torch(img)
+        assert result.shape == (2, 3, 8, 8)
+        assert isinstance(result, torch.Tensor)
+
+    def test_rgb2ycbcr_torch_only_y(self) -> None:
+        img = torch.zeros(2, 3, 8, 8)
+        result = hldf.rgb2ycbcr_torch(img, only_y=True)
+        assert result.shape == (2, 1, 8, 8)
+        assert isinstance(result, torch.Tensor)
+
 
 class TestTensorToNumpy:
     def get_default_tensor_args(self) -> dict[str, typing.Any]:

@@ -1,5 +1,7 @@
+import pathlib
 import typing
 
+import pytest
 import torch
 
 import helios.model as hlm
@@ -84,3 +86,35 @@ class TestModel:
     def test_create(self, check_registry) -> None:
         check_registry(hlm.MODEL_REGISTRY, ["MockModel"])
         hlm.create_model("MockModel")
+
+
+class TestModelUtils:
+    def test_find_pretrained_file_found(self, tmp_path: pathlib.Path) -> None:
+        models_dir = tmp_path / "mymodel"
+        models_dir.mkdir()
+        expected = models_dir / "mymodel_resnet50_epoch10.pth"
+        expected.touch()
+        result = hlm.find_pretrained_file(models_dir, "resnet50")
+        assert result == expected
+
+    def test_find_pretrained_file_not_found(self, tmp_path: pathlib.Path) -> None:
+        models_dir = tmp_path / "mymodel"
+        models_dir.mkdir()
+        with pytest.raises(RuntimeError):
+            hlm.find_pretrained_file(models_dir, "resnet50")
+
+    def test_find_pretrained_file_multiple_matches(self, tmp_path: pathlib.Path) -> None:
+        models_dir = tmp_path / "mymodel"
+        models_dir.mkdir()
+        (models_dir / "mymodel_resnet50_epoch1.pth").touch()
+        (models_dir / "mymodel_resnet50_epoch10.pth").touch()
+        result = hlm.find_pretrained_file(models_dir, "resnet50")
+        assert result.suffix == ".pth"
+        assert "resnet50" in result.stem
+
+    def test_find_pretrained_file_no_match_in_dir(self, tmp_path: pathlib.Path) -> None:
+        models_dir = tmp_path / "mymodel"
+        models_dir.mkdir()
+        (models_dir / "mymodel_vgg_epoch5.pth").touch()
+        with pytest.raises(RuntimeError):
+            hlm.find_pretrained_file(models_dir, "resnet50")

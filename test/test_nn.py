@@ -46,6 +46,47 @@ class TestNewtorks:
         assert net != n
 
 
+class TestNNUtils:
+    def test_default_init_weights_conv(self) -> None:
+        conv = nn.Conv2d(3, 16, 3)
+        hln.default_init_weights(conv)
+        assert not torch.any(torch.isnan(conv.weight))
+        assert conv.bias is not None
+        assert torch.all(conv.bias == 0)
+
+    def test_default_init_weights_linear(self) -> None:
+        linear = nn.Linear(4, 4)
+        hln.default_init_weights(linear)
+        assert not torch.any(torch.isnan(linear.weight))
+        assert linear.bias is not None
+        assert torch.all(linear.bias == 0)
+
+    def test_default_init_weights_scale(self) -> None:
+        conv = nn.Conv2d(3, 16, 3)
+        hln.default_init_weights(conv, scale=0.1)
+        assert not torch.any(torch.isnan(conv.weight))
+        assert float(conv.weight.abs().max()) < 1.0
+
+    def test_default_init_weights_bias_fill(self) -> None:
+        conv = nn.Conv2d(3, 16, 3)
+        hln.default_init_weights(conv, bias_fill=1.0)
+        assert conv.bias is not None
+        assert torch.all(conv.bias == 1.0)
+
+    def test_default_init_weights_list(self) -> None:
+        modules: list[nn.Module] = [nn.Conv2d(1, 4, 3), nn.Linear(4, 4)]
+        hln.default_init_weights(modules)
+        for m in modules:
+            assert not torch.any(torch.isnan(m.weight))  # type: ignore[union-attr]
+
+    def test_default_init_weights_batchnorm(self) -> None:
+        bn = nn.BatchNorm2d(16)
+        hln.default_init_weights(bn)
+        assert torch.all(bn.weight == 1)
+        assert bn.bias is not None
+        assert torch.all(bn.bias == 0)
+
+
 class TestAdaptiveAvgPool2D:
     def check_input_exception(self, *args) -> None:
         with pytest.raises(RuntimeError):
