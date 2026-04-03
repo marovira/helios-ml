@@ -77,7 +77,8 @@ class TestNNUtils:
         modules: list[nn.Module] = [nn.Conv2d(1, 4, 3), nn.Linear(4, 4)]
         hln.default_init_weights(modules)
         for m in modules:
-            assert not torch.any(torch.isnan(m.weight))  # type: ignore[union-attr]
+            assert isinstance(m.weight, torch.Tensor)
+            assert not torch.any(torch.isnan(m.weight))
 
     def test_default_init_weights_batchnorm(self) -> None:
         bn = nn.BatchNorm2d(16)
