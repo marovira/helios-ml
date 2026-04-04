@@ -286,6 +286,89 @@ class TestStateDicts:
         assert model2.amp_context is not None
 
 
+class TestBatchToDevice:
+    def test_tensor(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        t = torch.tensor([1.0, 2.0])
+        result = model.batch_to_device(t, hlm.BatchPhase.TRAIN)
+        assert isinstance(result, torch.Tensor)
+        assert result.device == model.device
+
+    def test_list_of_tensors(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        batch = [torch.tensor(1.0), torch.tensor(2.0)]
+        result = model.batch_to_device(batch, hlm.BatchPhase.TRAIN)
+        assert isinstance(result, list)
+        assert all(t.device == model.device for t in result)
+
+    def test_tuple_of_tensors(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        batch = (torch.tensor(1.0), torch.tensor(2.0))
+        result = model.batch_to_device(batch, hlm.BatchPhase.TRAIN)
+        assert isinstance(result, tuple)
+        assert all(t.device == model.device for t in result)
+
+    def test_dict_of_tensors(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        batch = {"a": torch.tensor(1.0), "b": torch.tensor(2.0)}
+        result = model.batch_to_device(batch, hlm.BatchPhase.TRAIN)
+        assert isinstance(result, dict)
+        assert all(v.device == model.device for v in result.values())
+
+    def test_non_tensor_leaf_passthrough(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        batch = [torch.tensor(1.0), "label", 42]
+        result = model.batch_to_device(batch, hlm.BatchPhase.TRAIN)
+        assert result[0].device == model.device
+        assert result[1] == "label"
+        assert result[2] == 42
+
+    def test_nested_structure(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        batch = {"inputs": [torch.tensor(1.0), torch.tensor(2.0)], "label": "cat"}
+        result = model.batch_to_device(batch, hlm.BatchPhase.VALID)
+        assert isinstance(result["inputs"], list)
+        assert all(t.device == model.device for t in result["inputs"])
+        assert result["label"] == "cat"
+
+    def test_all_phases(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        t = torch.tensor(1.0)
+        for phase in hlm.BatchPhase:
+            result = model.batch_to_device(t, phase)
+            assert result.device == model.device
+
+    def test_phase_override(self) -> None:
+        seen_phases: list[hlm.BatchPhase] = []
+
+        @hlm.MODEL_REGISTRY.register
+        class PhaseCaptureModel(hlm.Model):
+            def __init__(self) -> None:
+                super().__init__("phase-capture")
+
+            def setup(self, fast_init: bool = False) -> None:
+                pass
+
+            def batch_to_device(
+                self, batch: typing.Any, phase: hlm.BatchPhase
+            ) -> typing.Any:
+                seen_phases.append(phase)
+                return batch
+
+        pm = PhaseCaptureModel()
+        pm.device = torch.device("cpu")
+        pm.batch_to_device("x", hlm.BatchPhase.TRAIN)
+        pm.batch_to_device("x", hlm.BatchPhase.TEST)
+        assert seen_phases == [hlm.BatchPhase.TRAIN, hlm.BatchPhase.TEST]
+
+
 class TestModelUtils:
     def test_find_pretrained_file_found(self, tmp_path: pathlib.Path) -> None:
         models_dir = tmp_path / "mymodel"

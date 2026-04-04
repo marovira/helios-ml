@@ -62,6 +62,7 @@ class CheckFunModel(hlm.Model):
             "train": False,
             "on_training_start": False,
             "on_training_epoch_start": False,
+            "batch_to_device_train": False,
             "on_training_batch_start": False,
             "train_step": False,
             "on_training_batch_end": False,
@@ -69,6 +70,7 @@ class CheckFunModel(hlm.Model):
             "on_training_end": False,
             "eval": False,
             "on_validation_start": False,
+            "batch_to_device_valid": False,
             "on_validation_batch_start": False,
             "valid_step": False,
             "on_validation_batch_end": False,
@@ -81,6 +83,7 @@ class CheckFunModel(hlm.Model):
             "load_for_testing": False,
             "eval": False,
             "on_testing_start": False,
+            "batch_to_device": False,
             "on_testing_batch_start": False,
             "test_step": False,
             "on_testing_batch_end": False,
@@ -105,8 +108,18 @@ class CheckFunModel(hlm.Model):
         assert self.called_train_funs["on_training_start"]
         self.called_train_funs["on_training_epoch_start"] = True
 
+    def batch_to_device(self, batch: typing.Any, phase: hlm.BatchPhase) -> typing.Any:
+        if phase == hlm.BatchPhase.TRAIN:
+            self.called_train_funs["batch_to_device_train"] = True
+        elif phase == hlm.BatchPhase.VALID:
+            self.called_train_funs["batch_to_device_valid"] = True
+        else:
+            self.called_test_funs["batch_to_device"] = True
+        return super().batch_to_device(batch, phase)
+
     def on_training_batch_start(self, state) -> None:
         assert self.called_train_funs["on_training_epoch_start"]
+        assert self.called_train_funs["batch_to_device_train"]
         self.called_train_funs["on_training_batch_start"] = True
 
     def train_step(self, batch, state) -> None:
@@ -136,6 +149,7 @@ class CheckFunModel(hlm.Model):
     def on_validation_batch_start(self, step) -> None:
         assert self.called_train_funs["eval"]
         assert self.called_train_funs["on_validation_start"]
+        assert self.called_train_funs["batch_to_device_valid"]
         self.called_train_funs["on_validation_batch_start"] = True
 
     def valid_step(self, batch, step) -> None:
@@ -165,6 +179,7 @@ class CheckFunModel(hlm.Model):
     def on_testing_batch_start(self, step) -> None:
         assert self.called_test_funs["eval"]
         assert self.called_test_funs["on_testing_start"]
+        assert self.called_test_funs["batch_to_device"]
         self.called_test_funs["on_testing_batch_start"] = True
 
     def test_step(self, batch, step) -> None:

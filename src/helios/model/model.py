@@ -3,6 +3,7 @@ from __future__ import annotations
 import abc
 import contextlib
 import dataclasses as dc
+import enum
 import typing
 
 import torch
@@ -42,6 +43,14 @@ class AMPContext:
 
     scaler: torch.amp.GradScaler
     dtype: torch.dtype = torch.float16
+
+
+class BatchPhase(enum.Enum):
+    """Identifies which phase a batch originates from."""
+
+    TRAIN = 0
+    VALID = 1
+    TEST = 2
 
 
 # Tell Ruff to ignore the empty-method-without-abstract-decorator check, since a lot of
@@ -490,6 +499,39 @@ class Model(abc.ABC):
         """
         self._loss_items.clear()
 
+    def batch_to_device(self, batch: typing.Any, phase: BatchPhase) -> typing.Any:
+        """
+        Move the batch to the model's device.
+
+        This function is called before the following functions are called:
+            * :py:meth:`train_step`,
+            * :py:meth:`valid_step`, and
+            * :py:meth:`test_step`.
+        Thereby ensuring that the batch has already been moved before the ``_step``
+        functions are called. By default, this function will recursively look through the
+        batch and move any tensors it can find to the model's device. Non-tensor elements
+        are left as is.
+
+        If you require special logic for handling your batches, you can override this
+        function and use the provided ``phase`` argument to differentiate between
+        training, validation, and testing batches as needed.
+
+        Args:
+            batch: the batch data returned from the dataloader.
+            phase: the phase the batch originates from.
+
+        Returns:
+            The batch with all tensors moved to :py:attr:`device`.
+        """
+        if isinstance(batch, torch.Tensor):
+            return batch.to(self.device)
+        if isinstance(batch, dict):
+            return {k: self.batch_to_device(v, phase) for k, v in batch.items()}
+        if isinstance(batch, list | tuple):
+            converted = [self.batch_to_device(item, phase) for item in batch]
+            return type(batch)(converted)
+        return batch
+
     def train_step(self, batch: typing.Any, state: TrainingState) -> None:
         """
         Perform a single training step.
@@ -499,10 +541,6 @@ class Model(abc.ABC):
         network(s). If you use schedulers, they should be updated here as well. Note that
         you do not have to clear the losses or gather them. This will be handled
         automatically for you.
-
-        .. warning::
-            The contents of the batch **are not** moved to any devices prior to this call.
-            It is your responsibility to move them (if necessary).
 
         Args:
             batch: the batch data returned from the dataset.

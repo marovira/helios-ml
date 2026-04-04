@@ -663,6 +663,7 @@ class Trainer:
             self.model.eval()
             with torch.no_grad():
                 for idx, batch in enumerate(dataloader):
+                    batch = self.model.batch_to_device(batch, hlm.BatchPhase.TEST)
                     batch = self._plugins_process_batch("testing", batch, step=idx)
                     self.model.on_testing_batch_start(idx)
                     self.model.test_step(batch, idx)
@@ -1048,6 +1049,7 @@ class Trainer:
                 else:
                     current_iteration_changed = False
 
+                batch = self.model.batch_to_device(batch, hlm.BatchPhase.TRAIN)
                 batch = self._plugins_process_batch("training", batch, state=state)
                 self.model.on_training_batch_start(state)
                 self.model.train_step(batch, state)
@@ -1187,6 +1189,7 @@ class Trainer:
                     state.current_iteration += 1
                     state.running_iter += 1
 
+                    batch = self.model.batch_to_device(batch, hlm.BatchPhase.TRAIN)
                     batch = self._plugins_process_batch("training", batch, state=state)
                     self.model.on_training_batch_start(state)
                     self.model.train_step(batch, state)
@@ -1274,6 +1277,7 @@ class Trainer:
             self.model.on_validation_start(val_cycle)
             with torch.no_grad():
                 for idx, batch in enumerate(dataloader):
+                    batch = self.model.batch_to_device(batch, hlm.BatchPhase.VALID)
                     batch = self._plugins_process_batch("validation", batch, step=idx)
                     self.model.on_validation_batch_start(idx)
                     self.model.valid_step(batch, idx)
