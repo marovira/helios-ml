@@ -55,6 +55,7 @@ class TestModel:
 
         assert model.save_name == "mock-model"
         assert model.state_dict() == {}
+        assert model.user_state_dict() == {}
         assert model.trained_state_dict() == {}
 
         chkpt_name = "chkpt"

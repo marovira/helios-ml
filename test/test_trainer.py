@@ -220,10 +220,10 @@ class CheckpointModel(hlm.Model):
     def types_for_safe_load(self) -> list[typing.Callable | tuple[typing.Callable, str]]:
         return [Values]
 
-    def state_dict(self) -> dict[str, typing.Any]:
+    def user_state_dict(self) -> dict[str, typing.Any]:
         return self._state
 
-    def load_state_dict(
+    def load_user_state_dict(
         self, state_dict: dict[str, typing.Any], fast_init: bool = False
     ) -> None:
         assert self._state == state_dict

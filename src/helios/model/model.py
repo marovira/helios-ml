@@ -177,8 +177,27 @@ class Model(abc.ABC):
         """
         Load the model state from the given state dictionary.
 
+        Restores the state from the dictionary in the following order:
+            1. Internal state
+            1. User-state
+        Note that any weights will have been automatically mapped to the correct device.
+        Also note that internal state is only loaded if ``fast_init`` is set to False.
+
+        Args:
+            state_dict: the state dictionary to load from.
+            fast_init: if True, only networks need to be loaded.
+        """
+        user_dict = {k: v for k, v in state_dict.items() if "_helios_" not in k}
+        self.load_user_state_dict(user_dict, fast_init)
+
+    def load_user_state_dict(
+        self, state_dict: dict[str, typing.Any], fast_init: bool
+    ) -> None:
+        """
+        Load the user-defined model state from the given state dictionary.
+
         Use this function to restore any training state from a checkpoint. Note that any
-        weights will have been automatically mapped to the correct device.
+        weights will have already been automatically mapped to the correct device.
 
         The ``fast_init`` flag is used to indicate that the model should **not** load any
         training state. This can be used for testing or for other purposes. As such, you
@@ -186,17 +205,50 @@ class Model(abc.ABC):
 
         Args:
             state_dict: the state dictionary to load from.
-            fast_init: if True, only networks need to be loaded.
+            fast_init: if True, only networks need be loaded
         """
 
     def state_dict(self) -> dict[str, typing.Any]:
         """
-        Get the state dictionary of the model.
+        Get the full state dictionary of the model.
 
-        Use this function to save any state that you require for checkpoints.
+        The full dictionary is assembled like this:
+            1. Call :py:meth:`user_state_dict` to gather any user state.
+            1. Ensure that none of the keys are reserved.
+            1. Add the model internal state.
+
+        Reserved keys are prefixed with ``_helios_`` to avoid conflicts with user-keys. If
+        a reserved key is found in the user-returned dictionary, then an error will be
+        raised.
 
         Returns:
             The state dictionary of the model.
+
+        Raises:
+            KeyError: if :py:meth:`user_state_dict` contains a reserved key.
+        """
+        state = self.user_state_dict()
+        reserved_keys: tuple[str, ...] = ()
+        conflicts = [k for k in reserved_keys if k in state]
+        if len(conflicts) > 0:
+            raise KeyError(
+                "user_state_dict() contains the following reserved keys: "
+                f"{conflicts}. Reserved keys are for internal use only"
+            )
+        return state
+
+    def user_state_dict(self) -> dict[str, typing.Any]:
+        """
+        Get the user-defined state dictionary of the model.
+
+        Use this  function to save any state that you require for checkpoints.
+
+        .. warning::
+            Do **not** use any keys that begin with ``_helios_`` as these are reserved for
+            internal use.
+
+        Returns:
+            The user-defined state dictionary of the model.
         """
         return {}
 
