@@ -61,6 +61,7 @@ class TestNNUtils:
         assert linear.bias is not None
         assert torch.all(linear.bias == 0)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_default_init_weights_scale(self) -> None:
         conv = nn.Conv2d(3, 16, 3)
         hln.default_init_weights(conv, scale=0.1)
@@ -143,7 +144,7 @@ class TestAdaptiveAvgPool2D:
         onnx.export_to_onnx(model, x, out_path, validate_output=True)
         assert out_path.exists()
 
-    @pytest.mark.filterwarnings("ignore:Converting")
+    @pytest.mark.filterwarnings("ignore::FutureWarning")
     def test_export(self, tmp_path: pathlib.Path) -> None:
         self.check_export(
             hlnl.AdaptiveAvgPool2d((5, 7)),
