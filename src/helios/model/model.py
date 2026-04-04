@@ -248,6 +248,51 @@ class Model(abc.ABC):
             )
         return contextlib.nullcontext()
 
+    def clip_gradients(
+        self,
+        parameters: torch.Tensor | typing.Iterable[torch.Tensor],
+        optimizer: torch.optim.Optimizer,
+        max_norm: float,
+        **kwargs: typing.Any,
+    ) -> None:
+        """
+        Clip gradient norms, handling AMP unscaling automatically.
+
+        When AMP is active, gradients must be unscaled before clipping or the norm
+        is computed on scaled values, producing incorrect results.
+        This function performs the following steps:
+            1. Call :py:meth:`torch.amp.GradScaler.unscale_` if AMP is active.
+            1. Call :py:func:`torch.nn.utils.clip_grad_norm_`.
+        If AMP is not acitve, then :py:func:`torch.nn.utils.clip_grad_norm_` is called
+        directly.
+
+        Call this between the backward pass and the optimizer step:
+
+        .. code-block:: python
+
+            if self.amp_state.enabled:
+                scaler = self.amp_state.scaler
+                scaler.scale(loss).backward()
+                self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
+                scaler.step(self._optimizer)
+                scaler.update()
+            else:
+                loss.backward()
+                self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
+                self._optimizer.step()
+
+        Args:
+            parameters: the parameters whose gradients will be clipped.
+            optimizer: the optimizer associated with the parameters. Only used when AMP
+                is enabled to perform gradient unscaling.
+            max_norm: the maximum norm of the gradients.
+            kwargs: additional keyword arguments forwarded to
+                :py:func:`torch.nn.utils.clip_grad_norm_`.
+        """
+        if self.amp_state.enabled and self.amp_state.scaler is not None:
+            self.amp_state.scaler.unscale_(optimizer)
+        torch.nn.utils.clip_grad_norm_(parameters, max_norm, **kwargs)
+
     def load_for_testing(self) -> None:
         """
         Load the network(s) used for testing.

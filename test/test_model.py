@@ -137,6 +137,66 @@ class TestAMPHelpers:
         assert model.amp_state.dtype == torch.bfloat16
 
 
+class TestClipGradients:
+    def test_clip_gradients_without_amp(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        params = list(torch.nn.Linear(2, 2).parameters())
+        optimizer = unittest.mock.MagicMock(spec=torch.optim.Optimizer)
+
+        with unittest.mock.patch("torch.nn.utils.clip_grad_norm_") as mock_clip:
+            model.clip_gradients(params, optimizer, max_norm=1.0)
+
+        mock_clip.assert_called_once_with(params, 1.0)
+        optimizer.assert_not_called()
+
+    def test_clip_gradients_with_amp(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        model.amp_state.enabled = True
+        mock_scaler = unittest.mock.MagicMock(spec=torch.amp.GradScaler)
+        model.amp_state.scaler = mock_scaler
+
+        params = list(torch.nn.Linear(2, 2).parameters())
+        optimizer = unittest.mock.MagicMock(spec=torch.optim.Optimizer)
+
+        call_order: list[str] = []
+        mock_scaler.unscale_.side_effect = lambda _: call_order.append("unscale")
+
+        with unittest.mock.patch("torch.nn.utils.clip_grad_norm_") as mock_clip:
+            mock_clip.side_effect = lambda _p, _n, **_kw: call_order.append("clip")
+            model.clip_gradients(params, optimizer, max_norm=1.0)
+
+        mock_scaler.unscale_.assert_called_once_with(optimizer)
+        mock_clip.assert_called_once_with(params, 1.0)
+        assert call_order == ["unscale", "clip"]
+
+    def test_clip_gradients_forwards_kwargs(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        params = list(torch.nn.Linear(2, 2).parameters())
+        optimizer = unittest.mock.MagicMock(spec=torch.optim.Optimizer)
+
+        with unittest.mock.patch("torch.nn.utils.clip_grad_norm_") as mock_clip:
+            model.clip_gradients(params, optimizer, max_norm=1.0, norm_type=1.0)
+
+        mock_clip.assert_called_once_with(params, 1.0, norm_type=1.0)
+
+    def test_clip_gradients_amp_enabled_but_no_scaler(self) -> None:
+        model = MockModel()
+        model.device = torch.device("cpu")
+        model.amp_state.enabled = True
+        # scaler is None (e.g. on a non-CUDA device that still set enabled)
+        params = list(torch.nn.Linear(2, 2).parameters())
+        optimizer = unittest.mock.MagicMock(spec=torch.optim.Optimizer)
+
+        with unittest.mock.patch("torch.nn.utils.clip_grad_norm_") as mock_clip:
+            model.clip_gradients(params, optimizer, max_norm=0.5)
+
+        mock_clip.assert_called_once_with(params, 0.5)
+        optimizer.assert_not_called()
+
+
 class TestStateDicts:
     def test_state_dict_empty_without_scaler(self) -> None:
         model = MockModel()
