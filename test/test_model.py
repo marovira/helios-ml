@@ -101,7 +101,9 @@ class TestAMPHelpers:
     def test_autocast_enabled(self) -> None:
         model = MockModel()
         model.device = torch.device("cpu")
-        model.amp_state.enabled = True
+        model.amp_context = hlm.AMPContext(
+            scaler=unittest.mock.MagicMock(spec=torch.amp.GradScaler)
+        )
         ctx = model.autocast()
         assert isinstance(ctx, torch.amp.autocast)
 
@@ -109,14 +111,12 @@ class TestAMPHelpers:
         model = MockModel()
         model.device = torch.device("cpu")
         model.create_scaler()
-        assert model.amp_state.scaler is None
-        assert not model.amp_state.enabled
+        assert model.amp_context is None
 
     def test_create_scaler_noop_when_device_unset(self) -> None:
         model = MockModel()
         model.create_scaler()
-        assert model.amp_state.scaler is None
-        assert not model.amp_state.enabled
+        assert model.amp_context is None
 
     def test_create_scaler_cuda(self) -> None:
         if not torch.cuda.is_available():
@@ -124,9 +124,8 @@ class TestAMPHelpers:
         model = MockModel()
         model.device = torch.device("cuda:0")
         model.create_scaler()
-        assert model.amp_state.scaler is not None
-        assert model.amp_state.enabled
-        assert model.amp_state.dtype == torch.float16
+        assert model.amp_context is not None
+        assert model.amp_context.dtype == torch.float16
 
     def test_create_scaler_cuda_custom_dtype(self) -> None:
         if not torch.cuda.is_available():
@@ -134,7 +133,8 @@ class TestAMPHelpers:
         model = MockModel()
         model.device = torch.device("cuda:0")
         model.create_scaler(dtype=torch.bfloat16)
-        assert model.amp_state.dtype == torch.bfloat16
+        assert model.amp_context is not None
+        assert model.amp_context.dtype == torch.bfloat16
 
 
 class TestClipGradients:
@@ -153,9 +153,8 @@ class TestClipGradients:
     def test_clip_gradients_with_amp(self) -> None:
         model = MockModel()
         model.device = torch.device("cpu")
-        model.amp_state.enabled = True
         mock_scaler = unittest.mock.MagicMock(spec=torch.amp.GradScaler)
-        model.amp_state.scaler = mock_scaler
+        model.amp_context = hlm.AMPContext(scaler=mock_scaler)
 
         params = list(torch.nn.Linear(2, 2).parameters())
         optimizer = unittest.mock.MagicMock(spec=torch.optim.Optimizer)
@@ -182,20 +181,6 @@ class TestClipGradients:
 
         mock_clip.assert_called_once_with(params, 1.0, norm_type=1.0)
 
-    def test_clip_gradients_amp_enabled_but_no_scaler(self) -> None:
-        model = MockModel()
-        model.device = torch.device("cpu")
-        model.amp_state.enabled = True
-        # scaler is None (e.g. on a non-CUDA device that still set enabled)
-        params = list(torch.nn.Linear(2, 2).parameters())
-        optimizer = unittest.mock.MagicMock(spec=torch.optim.Optimizer)
-
-        with unittest.mock.patch("torch.nn.utils.clip_grad_norm_") as mock_clip:
-            model.clip_gradients(params, optimizer, max_norm=0.5)
-
-        mock_clip.assert_called_once_with(params, 0.5)
-        optimizer.assert_not_called()
-
 
 class TestStateDicts:
     def test_state_dict_empty_without_scaler(self) -> None:
@@ -206,7 +191,7 @@ class TestStateDicts:
         model = MockModel()
         mock_scaler = unittest.mock.MagicMock(spec=torch.amp.GradScaler)
         mock_scaler.state_dict.return_value = {"scale": 65536.0}
-        model.amp_state.scaler = mock_scaler
+        model.amp_context = hlm.AMPContext(scaler=mock_scaler)
 
         sd = model.state_dict()
         assert "_helios_amp_scaler" in sd
@@ -225,7 +210,9 @@ class TestStateDicts:
                 return {"_helios_amp_scaler": "oops"}
 
         model = ConflictingModel()
-        model.amp_state.scaler = unittest.mock.MagicMock(spec=torch.amp.GradScaler)
+        model.amp_context = hlm.AMPContext(
+            scaler=unittest.mock.MagicMock(spec=torch.amp.GradScaler)
+        )
         with pytest.raises(KeyError, match="_helios_amp_scaler"):
             model.state_dict()
 
@@ -252,7 +239,7 @@ class TestStateDicts:
     def test_load_state_dict_restores_scaler(self) -> None:
         model = MockModel()
         mock_scaler = unittest.mock.MagicMock(spec=torch.amp.GradScaler)
-        model.amp_state.scaler = mock_scaler
+        model.amp_context = hlm.AMPContext(scaler=mock_scaler)
 
         model.load_state_dict({"_helios_amp_scaler": {"scale": 65536.0}, "x": 1})
 
@@ -276,18 +263,18 @@ class TestStateDicts:
 
         model = StrippingModel()
         mock_scaler = unittest.mock.MagicMock(spec=torch.amp.GradScaler)
-        model.amp_state.scaler = mock_scaler
+        model.amp_context = hlm.AMPContext(scaler=mock_scaler)
         model.load_state_dict({"_helios_amp_scaler": {"scale": 65536.0}, "x": 1})
         assert "_helios_amp_scaler" not in received
         assert received == {"x": 1}
 
-    def test_amp_state_dict_round_trip(self) -> None:
+    def test_amp_context_dict_round_trip(self) -> None:
         if not torch.cuda.is_available():
             pytest.skip("CUDA not available")
         model = MockModel()
         model.device = torch.device("cuda:0")
         model.create_scaler()
-        assert model.amp_state.scaler is not None
+        assert model.amp_context is not None
 
         sd = model.state_dict()
         assert "_helios_amp_scaler" in sd
@@ -296,7 +283,7 @@ class TestStateDicts:
         model2.device = torch.device("cuda:0")
         model2.create_scaler()
         model2.load_state_dict(sd)
-        assert model2.amp_state.scaler is not None
+        assert model2.amp_context is not None
 
 
 class TestModelUtils:

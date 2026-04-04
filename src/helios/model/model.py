@@ -15,7 +15,7 @@ if typing.TYPE_CHECKING:
 
 
 @dc.dataclass
-class AMPState:
+class AMPContext:
     """
     The AMP scaler state.
 
@@ -30,20 +30,17 @@ class AMPState:
                     loss = ...
 
                 # Now scale the loss
-                if self.amp_state.enabled:
-                    scaler = self.amp_state.scaler
-                    assert scaler is not None
+                if self.amp_context is not None:
+                    scaler = self.amp_context.scaler
                     scaler.scale(loss).backward()
                     scaler.step(optimizer)
 
     Args:
-        enabled: if True, then the scaler is enabled.
         scaler: the :py:class:`torch.amp.GradScaler` (if enabled).
         dtype: the :py:class:`torch.dtype` of the scaler.
     """
 
-    enabled: bool = False
-    scaler: torch.amp.GradScaler | None = None
+    scaler: torch.amp.GradScaler
     dtype: torch.dtype = torch.float16
 
 
@@ -125,7 +122,7 @@ class Model(abc.ABC):
         self._val_scores: dict[str, typing.Any] = {}
         self._test_scores: dict[str, typing.Any] = {}
 
-        self._amp_state = AMPState()
+        self._amp_context: AMPContext | None = None
 
     @property
     def save_name(self) -> str:
@@ -183,9 +180,13 @@ class Model(abc.ABC):
         return {}
 
     @property
-    def amp_state(self) -> AMPState:
+    def amp_context(self) -> AMPContext | None:
         """The AMP state of the model."""
-        return self._amp_state
+        return self._amp_context
+
+    @amp_context.setter
+    def amp_context(self, state: AMPContext) -> None:
+        self._amp_context = state
 
     @abc.abstractmethod
     def setup(self, fast_init: bool = False) -> None:
@@ -228,9 +229,9 @@ class Model(abc.ABC):
         if "device" in kwargs:
             kwargs.pop("device")
 
-        self.amp_state.enabled = True
-        self.amp_state.dtype = dtype
-        self.amp_state.scaler = torch.amp.GradScaler(device=self.device.type, **kwargs)
+        self.amp_context = AMPContext(
+            scaler=torch.amp.GradScaler(device=self.device.type, **kwargs), dtype=dtype
+        )
 
     def autocast(self) -> contextlib.AbstractContextManager:
         """
@@ -242,9 +243,9 @@ class Model(abc.ABC):
         Returns:
             The context manager.
         """
-        if self.amp_state.enabled:
+        if self.amp_context is not None:
             return torch.amp.autocast(
-                device_type=self.device.type, dtype=self.amp_state.dtype
+                device_type=self.device.type, dtype=self.amp_context.dtype
             )
         return contextlib.nullcontext()
 
@@ -270,8 +271,8 @@ class Model(abc.ABC):
 
         .. code-block:: python
 
-            if self.amp_state.enabled:
-                scaler = self.amp_state.scaler
+            if self.amp_context.enabled:
+                scaler = self.amp_context.scaler
                 scaler.scale(loss).backward()
                 self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
                 scaler.step(self._optimizer)
@@ -289,8 +290,8 @@ class Model(abc.ABC):
             kwargs: additional keyword arguments forwarded to
                 :py:func:`torch.nn.utils.clip_grad_norm_`.
         """
-        if self.amp_state.enabled and self.amp_state.scaler is not None:
-            self.amp_state.scaler.unscale_(optimizer)
+        if self.amp_context is not None:
+            self.amp_context.scaler.unscale_(optimizer)
         torch.nn.utils.clip_grad_norm_(parameters, max_norm, **kwargs)
 
     def load_for_testing(self) -> None:
@@ -321,10 +322,10 @@ class Model(abc.ABC):
         """
         if (
             not fast_init
-            and self.amp_state.scaler is not None
+            and self.amp_context is not None
             and "_helios_amp_scaler" in state_dict
         ):
-            self.amp_state.scaler.load_state_dict(state_dict["_helios_amp_scaler"])
+            self.amp_context.scaler.load_state_dict(state_dict["_helios_amp_scaler"])
         user_dict = {k: v for k, v in state_dict.items() if "_helios_" not in k}
         self.load_user_state_dict(user_dict, fast_init)
 
@@ -373,8 +374,8 @@ class Model(abc.ABC):
                 "user_state_dict() contains the following reserved keys: "
                 f"{conflicts}. Reserved keys are for internal use only"
             )
-        if self.amp_state.scaler is not None:
-            state["_helios_amp_scaler"] = self.amp_state.scaler.state_dict()
+        if self.amp_context is not None:
+            state["_helios_amp_scaler"] = self.amp_context.scaler.state_dict()
         return state
 
     def user_state_dict(self) -> dict[str, typing.Any]:
