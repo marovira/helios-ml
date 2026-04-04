@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import abc
+import contextlib
+import dataclasses as dc
 import typing
 
 import torch
@@ -10,6 +12,39 @@ from helios.core import distributed as dist
 
 if typing.TYPE_CHECKING:
     from ..trainer import Trainer, TrainingState
+
+
+@dc.dataclass
+class AMPState:
+    """
+    The AMP scaler state.
+
+    You can use this class to gain access to the AMP state of the model. For example, you
+    can do this:
+
+    .. code-block:: python
+
+        Class MyModel(helios.model.Model):
+            def train_step(self, batch: typing.Any, state: TrainingState) -> None:
+                with self.autocast():
+                    loss = ...
+
+                # Now scale the loss
+                if self.amp_state.enabled:
+                    scaler = self.amp_state.scaler
+                    assert scaler is not None
+                    scaler.scale(loss).backward()
+                    scaler.step(optimizer)
+
+    Args:
+        enabled: if True, then the scaler is enabled.
+        scaler: the :py:class:`torch.amp.GradScaler` (if enabled).
+        dtype: the :py:class:`torch.dtype` of the scaler.
+    """
+
+    enabled: bool = False
+    scaler: torch.amp.GradScaler | None = None
+    dtype: torch.dtype = torch.float16
 
 
 # Tell Ruff to ignore the empty-method-without-abstract-decorator check, since a lot of
@@ -90,6 +125,8 @@ class Model(abc.ABC):
         self._val_scores: dict[str, typing.Any] = {}
         self._test_scores: dict[str, typing.Any] = {}
 
+        self._amp_state = AMPState()
+
     @property
     def save_name(self) -> str:
         """The name of the model used for saving checkpoints and final networks."""
@@ -145,6 +182,11 @@ class Model(abc.ABC):
         """The metric table for the model."""
         return {}
 
+    @property
+    def amp_state(self) -> AMPState:
+        """The AMP state of the model."""
+        return self._amp_state
+
     @abc.abstractmethod
     def setup(self, fast_init: bool = False) -> None:
         """
@@ -160,6 +202,51 @@ class Model(abc.ABC):
         Args:
             fast_init: if True, only networks are loaded.
         """
+
+    def create_scaler(
+        self, dtype: torch.dtype = torch.float16, **kwargs: typing.Any
+    ) -> None:
+        """
+        Create the :py:class:`torch.amp.GradScaler` for AMP training.
+
+        This should be called in your :py:meth:`setup` function to enable Automatic Mixed
+        Precision. Note that if the current device is not CUDA, then this function is a
+        no-op.
+
+        .. note::
+            There is no need to pass in the "device" argument to
+            :py:class:`torch.amp.GradScaler`. This is already handled internally. If the
+            keyword is passed in, it will be removed.
+
+        Args:
+            dtype: the dtype to use for :py:func:`torch.amp.autocast`. Defaults to
+                ``torch.float16``.
+            kwargs: additional keyword arguments for :py:class:`torch.amp.GradScaler`.
+        """
+        if self._device is None or self.device.type != "cuda":
+            return
+        if "device" in kwargs:
+            kwargs.pop("device")
+
+        self.amp_state.enabled = True
+        self.amp_state.dtype = dtype
+        self.amp_state.scaler = torch.amp.GradScaler(device=self.device.type, **kwargs)
+
+    def autocast(self) -> contextlib.AbstractContextManager:
+        """
+        Return a context manager for Automatic Mixed Precision.
+
+        Return :py:class:`torch.amp.autocast` configured with the AMP dtype if AMP is
+        enabled, otherwise returns a null context.
+
+        Returns:
+            The context manager.
+        """
+        if self.amp_state.enabled:
+            return torch.amp.autocast(
+                device_type=self.device.type, dtype=self.amp_state.dtype
+            )
+        return contextlib.nullcontext()
 
     def load_for_testing(self) -> None:
         """
@@ -187,6 +274,12 @@ class Model(abc.ABC):
             state_dict: the state dictionary to load from.
             fast_init: if True, only networks need to be loaded.
         """
+        if (
+            not fast_init
+            and self.amp_state.scaler is not None
+            and "_helios_amp_scaler" in state_dict
+        ):
+            self.amp_state.scaler.load_state_dict(state_dict["_helios_amp_scaler"])
         user_dict = {k: v for k, v in state_dict.items() if "_helios_" not in k}
         self.load_user_state_dict(user_dict, fast_init)
 
@@ -228,13 +321,15 @@ class Model(abc.ABC):
             KeyError: if :py:meth:`user_state_dict` contains a reserved key.
         """
         state = self.user_state_dict()
-        reserved_keys: tuple[str, ...] = ()
+        reserved_keys = ("_helios_amp_scaler",)
         conflicts = [k for k in reserved_keys if k in state]
         if len(conflicts) > 0:
             raise KeyError(
                 "user_state_dict() contains the following reserved keys: "
                 f"{conflicts}. Reserved keys are for internal use only"
             )
+        if self.amp_state.scaler is not None:
+            state["_helios_amp_scaler"] = self.amp_state.scaler.state_dict()
         return state
 
     def user_state_dict(self) -> dict[str, typing.Any]:
