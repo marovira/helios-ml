@@ -4,7 +4,7 @@ Core package for Helios.
 Holds all of the core functions and classes used throughout the package.
 """
 
-from . import cuda, distributed, loggers, logging, rng
+from . import cuda, distributed, loggers, rng
 from .utils import (
     AverageTimer,
     ChdirContext,
@@ -20,7 +20,6 @@ __all__ = [
     "cuda",
     "distributed",
     "loggers",
-    "logging",
     "rng",
     "AverageTimer",
     "ChdirContext",
