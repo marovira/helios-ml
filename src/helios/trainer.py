@@ -19,7 +19,7 @@ import helios.model as hlm
 import helios.plugins as hlp
 from helios import core, data
 from helios.core import distributed as dist
-from helios.core import logging, rng
+from helios.core import loggers, rng
 from helios.data.samplers import ResumableSamplerType
 
 from ._version import __version__
@@ -79,10 +79,11 @@ class _DistributedErrorState:
     process when an error occurs to ensure the exception is handled correctly.
 
     Args:
-        log_path: the path used by the root logger (if using).
+        loggers_state: state dicts from all active loggers at the time of the
+            push, used to resume file logging on error recovery.
     """
 
-    log_path: pathlib.Path | None = None
+    loggers_state: dict[str, typing.Any] = dc.field(default_factory=dict)
 
 
 @dc.dataclass
@@ -246,8 +247,9 @@ class Trainer:
         capture_warnings: enable/disable warnings capture in the log. Defaults to false.
         enable_progress_bar: enable/disable the progress bar(s). Defaults to false.
         chkpt_root: (optional) root folder in which checkpoints will be placed.
-        log_path: (optional) root folder in which logs will be saved.
-        run_path: (optional) root folder in which Tensorboard runs will be saved.
+        log_root: (optional) root folder under which each active logger creates
+            its own subfolder.  Required when ``enable_file_logging`` or
+            ``enable_tensorboard`` is ``True``.
         src_root: (optional) root folder where the code is located. This is used to
             automatically populate the registries using
             :py:func:`~helios.core.utils.update_all_registries`.
@@ -277,8 +279,7 @@ class Trainer:
         capture_warnings: bool = False,
         enable_progress_bar: bool = False,
         chkpt_root: pathlib.Path | None = None,
-        log_path: pathlib.Path | None = None,
-        run_path: pathlib.Path | None = None,
+        log_root: pathlib.Path | None = None,
         src_root: pathlib.Path | None = None,
         import_prefix: str = "",
         print_banner: bool = True,
@@ -316,8 +317,7 @@ class Trainer:
         self._enable_progress_bar = enable_progress_bar
 
         self._chkpt_root = chkpt_root
-        self._log_path = log_path
-        self._run_path = run_path
+        self._log_root = log_root
 
         self._src_root = src_root
         self._import_prefix = import_prefix
@@ -478,13 +478,13 @@ class Trainer:
             else self._test_exceptions
         )
         if any(isinstance(e, exc) for exc in exc_list):
-            logging.close_default_loggers()
+            loggers.close_loggers()
             return False
 
-        if logging.is_root_logger_active():
-            root_logger = logging.get_root_logger()
+        if loggers.is_root_logger_active():
+            root_logger = loggers.get_root_logger()
             root_logger.exception("error: uncaught exception")
-            logging.close_default_loggers()
+            loggers.close_loggers()
         return True
 
     def _configure_env_for_distributed_error_handling(self) -> None:
@@ -493,11 +493,9 @@ class Trainer:
             return
 
         state: _DistributedErrorState = self._distributed_error_queue.get_nowait()
-        if self._enable_file_logging and state.log_path is not None:
-            logging.create_default_loggers(
-                enable_tensorboard=False, capture_warnings=True
-            )
-            logging.restore_default_loggers(log_path=state.log_path)
+        if self._enable_file_logging:
+            loggers.create_loggers(enable_tensorboard=False, capture_warnings=True)
+            loggers.restore_loggers(self._run_name, self._log_root, state.loggers_state)
 
     def _push_distributed_error_state(self, state: _DistributedErrorState) -> None:
         if self._distributed_error_queue is None:
@@ -564,7 +562,7 @@ class Trainer:
         if self._is_torchrun and self._is_distributed:
             dist.shutdown_dist()
 
-        logging.close_default_loggers()
+        loggers.close_loggers()
 
     def _train(self) -> None:
         """
@@ -575,7 +573,7 @@ class Trainer:
         """
         self._configure_env()
         self._push_distributed_error_state(
-            _DistributedErrorState(log_path=logging.get_root_logger().log_file)
+            _DistributedErrorState(loggers_state=loggers.get_logger_state_dicts())
         )
         self._setup_plugins()
         self._setup_datamodule()
@@ -597,8 +595,8 @@ class Trainer:
         self._execute_plugins("on_training_end")
         self.model.on_training_end()
 
-        logging.flush_default_loggers()
-        logging.close_default_loggers()
+        loggers.flush_loggers()
+        loggers.close_loggers()
 
         # If we're distributed, ensure that all processes are caught up before we exit.
         dist.safe_barrier()
@@ -615,7 +613,7 @@ class Trainer:
         """
         self._configure_env()
         self._push_distributed_error_state(
-            _DistributedErrorState(log_path=logging.get_root_logger().log_file)
+            _DistributedErrorState(loggers_state=loggers.get_logger_state_dicts())
         )
         self._setup_plugins()
         self._setup_datamodule()
@@ -696,8 +694,9 @@ class Trainer:
             torch.backends.cudnn.benchmark = self._enable_cudnn_benchmark
             torch.cuda.set_device(self._device)
 
-        logging.create_default_loggers(
-            self._enable_tensorboard, capture_warnings=self._capture_warnings
+        loggers.create_loggers(
+            enable_tensorboard=self._enable_tensorboard,
+            capture_warnings=self._capture_warnings,
         )
 
         if self._src_root is not None:
@@ -745,16 +744,14 @@ class Trainer:
             if self._chkpt_root is not None:
                 self._chkpt_root.mkdir(parents=True, exist_ok=True)
 
-            if self._log_path is not None:
-                self._log_path.mkdir(parents=True, exist_ok=True)
-            if self._run_path is not None:
-                self._run_path.mkdir(parents=True, exist_ok=True)
+            if self._log_root is not None:
+                self._log_root.mkdir(parents=True, exist_ok=True)
 
     def _print_header(
         self, chkpt_path: pathlib.Path | None, for_training: bool = True
     ) -> None:
         """Print the Helios header with system info to the logs."""
-        root_logger = logging.get_root_logger()
+        root_logger = loggers.get_root_logger()
         model = core.get_from_optional(self._model)
         banner = model.append_to_banner(core.get_env_info_str())
 
@@ -809,23 +806,14 @@ class Trainer:
                 "'early_stop_cycles' must be non-zero"
             )
 
-        if self._enable_tensorboard:
-            if self._run_path is None:
+        if self._enable_tensorboard or self._enable_file_logging:
+            if self._log_root is None:
                 raise ValueError(
-                    "error: Tensorboard requested but no run directory was given"
+                    "error: logging requested but no log root directory was given"
                 )
 
-            if self._run_path.exists() and not self._run_path.is_dir():
-                raise ValueError("error: run path must be a directory")
-
-        if self._enable_file_logging:
-            if self._log_path is None:
-                raise ValueError(
-                    "error: file logging requested but no log directory was given"
-                )
-
-            if self._log_path.exists() and not self._log_path.is_dir():
-                raise ValueError("error: log path must be a directory")
+            if self._log_root.exists() and not self._log_root.is_dir():
+                raise ValueError("error: log root must be a directory")
 
         if self._src_root is not None and not self._src_root.is_dir():
             raise ValueError("error: source root must be a directory")
@@ -932,13 +920,7 @@ class Trainer:
         state_dict["training_state"] = state
         state_dict["model"] = self.model.state_dict()
         state_dict["rng"] = rng.get_rng_state_dict()
-
-        if self._enable_file_logging:
-            state_dict["log_path"] = logging.get_root_logger().log_file
-
-        if self._enable_tensorboard:
-            writer = core.get_from_optional(logging.get_tensorboard_writer())
-            state_dict["run_path"] = writer.run_path
+        state_dict["loggers"] = loggers.get_logger_state_dicts()
 
         # Add the plug-ins (if using)
         for plug_id, plugin in self._plugins.items():
@@ -969,7 +951,7 @@ class Trainer:
                 ``False``.
         """
         if chkpt_path is None:
-            logging.setup_default_loggers(self._run_name, self._log_path, self._run_path)
+            loggers.setup_loggers(self._run_name, self._log_root)
             return TrainingState()
 
         state_dict = core.safe_torch_load(chkpt_path, map_location=self._map_loc)
@@ -978,8 +960,8 @@ class Trainer:
                 f"error: the checkpoint found at {str(chkpt_path)} is not a "
                 "valid checkpoint generated by Helios"
             )
-        logging.restore_default_loggers(
-            state_dict.get("log_path", None), state_dict.get("run_path", None)
+        loggers.restore_loggers(
+            self._run_name, self._log_root, state_dict.get("loggers", {})
         )
         if not skip_rng:
             rng.load_rng_state_dict(state_dict["rng"])
@@ -1008,7 +990,7 @@ class Trainer:
 
         current_iteration_changed: bool = True
         training_done: bool = False
-        root_logger = logging.get_root_logger()
+        root_logger = loggers.get_root_logger()
         iter_timer = core.AverageTimer()
 
         pbar_disabled = (
@@ -1137,7 +1119,7 @@ class Trainer:
         early_stop_cycles = self._early_stop_cycles
 
         training_done: bool = False
-        root_logger = logging.get_root_logger()
+        root_logger = loggers.get_root_logger()
         iter_timer = core.AverageTimer()
 
         pbar_disabled = (

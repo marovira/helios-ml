@@ -519,10 +519,10 @@ class TestTrainer:
         self.check_trainer_flags(valid_frequency=0)
         self.check_trainer_flags(enable_deterministic=True, enable_cudnn_benchmark=True)
         self.check_trainer_flags(total_steps=float("inf"), early_stop_cycles=0)
-        self.check_trainer_flags(enable_tensorboard=True, run_path=None)
-        self.check_trainer_flags(enable_tensorboard=True, run_path=invalid_root)
-        self.check_trainer_flags(enable_file_logging=True, log_path=None)
-        self.check_trainer_flags(enable_file_logging=True, log_path=invalid_root)
+        self.check_trainer_flags(enable_tensorboard=True)
+        self.check_trainer_flags(enable_tensorboard=True, log_root=invalid_root)
+        self.check_trainer_flags(enable_file_logging=True)
+        self.check_trainer_flags(enable_file_logging=True, log_root=invalid_root)
         self.check_trainer_flags(use_cpu=True, gpus=[1])
 
     def test_trainer_device_flags(self) -> None:
