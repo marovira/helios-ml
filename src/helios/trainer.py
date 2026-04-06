@@ -248,8 +248,11 @@ class Trainer:
         enable_progress_bar: enable/disable the progress bar(s). Defaults to false.
         chkpt_root: (optional) root folder in which checkpoints will be placed.
         log_root: (optional) root folder under which each active logger creates
-            its own subfolder.  Required when ``enable_file_logging`` or
-            ``enable_tensorboard`` is ``True``.
+            its own subfolder.  Required when ``enable_file_logging``,
+            ``enable_tensorboard``, or ``wandb_args`` is set.
+        wandb_args: (optional) W&B configuration.  Setting this enables W&B
+            logging and requires ``log_root`` to be set.  See
+            :py:class:`~helios.core.loggers.WandbArgs` for the available keys.
         src_root: (optional) root folder where the code is located. This is used to
             automatically populate the registries using
             :py:func:`~helios.core.utils.update_all_registries`.
@@ -280,6 +283,7 @@ class Trainer:
         enable_progress_bar: bool = False,
         chkpt_root: pathlib.Path | None = None,
         log_root: pathlib.Path | None = None,
+        wandb_args: loggers.WandbArgs | None = None,
         src_root: pathlib.Path | None = None,
         import_prefix: str = "",
         print_banner: bool = True,
@@ -318,6 +322,7 @@ class Trainer:
 
         self._chkpt_root = chkpt_root
         self._log_root = log_root
+        self._wandb_args = wandb_args
 
         self._src_root = src_root
         self._import_prefix = import_prefix
@@ -697,6 +702,7 @@ class Trainer:
         loggers.create_loggers(
             enable_tensorboard=self._enable_tensorboard,
             capture_warnings=self._capture_warnings,
+            wandb_args=self._wandb_args,
         )
 
         if self._src_root is not None:
@@ -806,7 +812,11 @@ class Trainer:
                 "'early_stop_cycles' must be non-zero"
             )
 
-        if self._enable_tensorboard or self._enable_file_logging:
+        if (
+            self._enable_tensorboard
+            or self._enable_file_logging
+            or self._wandb_args is not None
+        ):
             if self._log_root is None:
                 raise ValueError(
                     "error: logging requested but no log root directory was given"

@@ -40,6 +40,9 @@ tune = [
 tensorboard = [
     "tensorboard>=2.17.0",
 ]
+wandb = [
+    "wandb>=0.18.0",
+]
 
 [project.urls]
 homepage = "https://github.com/marovira/helios-ml"
@@ -97,6 +100,10 @@ check_untyped_defs = true
 
 [[tool.mypy.overrides]]
 module = "torchvision.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "wandb.*"
 ignore_missing_imports = true
 
 [tool.ruff]

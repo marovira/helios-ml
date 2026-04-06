@@ -1,6 +1,7 @@
 import logging as stdlib_logging
 import pathlib
 import typing
+import unittest.mock
 
 import pytest
 
@@ -27,10 +28,14 @@ class TestLoggerBase:
     def test_logger_type_tensorboard_value(self) -> None:
         assert LoggerType.TENSORBOARD.value == "tensorboard"
 
+    def test_logger_type_wandb_value(self) -> None:
+        assert LoggerType.WANDB.value == "wandb"
+
     def test_logger_type_members(self) -> None:
         members = {t.name for t in LoggerType}
         assert "ROOT" in members
         assert "TENSORBOARD" in members
+        assert "WANDB" in members
 
 
 class TestRootLogger:
@@ -369,3 +374,209 @@ class TestLogging:
         hllog.create_loggers(enable_tensorboard=True)
         writer = hllog.get_tensorboard_writer()
         assert isinstance(writer, hllog.TensorboardWriter)
+
+    def test_create_with_wandb_writer(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "test-run-id"
+        with (
+            unittest.mock.patch("helios.core.loggers.wandb._WANDB_AVAILABLE", True),
+            unittest.mock.patch(
+                "helios.core.loggers.wandb.wandb_sdk", create=True
+            ) as mock_wandb,
+        ):
+            mock_wandb.init.return_value = mock_run
+            hllog.create_loggers(
+                enable_tensorboard=False, wandb_args={"project": "test-project"}
+            )
+            writer = hllog.get_logger(LoggerType.WANDB)
+            assert isinstance(writer, hllog.WandbWriter)
+
+    def test_create_without_wandb_raises_on_get(self) -> None:
+        hllog.create_loggers(enable_tensorboard=False)
+        with pytest.raises(KeyError):
+            hllog.get_logger(LoggerType.WANDB)
+
+    def test_get_logger_state_dicts_contains_wandb(self, tmp_path: pathlib.Path) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "saved-run-id"
+        with (
+            unittest.mock.patch("helios.core.loggers.wandb._WANDB_AVAILABLE", True),
+            unittest.mock.patch(
+                "helios.core.loggers.wandb.wandb_sdk", create=True
+            ) as mock_wandb,
+        ):
+            mock_wandb.init.return_value = mock_run
+            hllog.create_loggers(
+                enable_tensorboard=False, wandb_args={"project": "test-project"}
+            )
+            hllog.setup_loggers("myrun", tmp_path)
+            state = hllog.get_logger_state_dicts()
+            assert "wandb" in state
+            assert state["wandb"]["run_id"] == "saved-run-id"
+
+
+class _WandbCtx:
+    """Context manager that fakes both the availability flag and the W&B SDK."""
+
+    def __init__(self, mock_run: unittest.mock.MagicMock) -> None:
+        self._mock_run = mock_run
+        self._patches: list[typing.Any] = [
+            unittest.mock.patch("helios.core.loggers.wandb._WANDB_AVAILABLE", True),
+            unittest.mock.patch(
+                "helios.core.loggers.wandb.wandb_sdk",
+                create=True,
+            ),
+        ]
+        self.wandb_sdk: unittest.mock.MagicMock | None = None
+
+    def __enter__(self) -> "unittest.mock.MagicMock":
+        self._patches[0].__enter__()
+        mock_sdk: unittest.mock.MagicMock = self._patches[1].__enter__()
+        mock_sdk.init.return_value = self._mock_run
+        self.wandb_sdk = mock_sdk
+        return mock_sdk
+
+    def __exit__(self, *args: typing.Any) -> None:
+        self._patches[1].__exit__(*args)
+        self._patches[0].__exit__(*args)
+
+
+def _wandb_ctx(mock_run: unittest.mock.MagicMock) -> _WandbCtx:
+    """Return a context that fakes both the availability flag and the W&B SDK."""
+    return _WandbCtx(mock_run)
+
+
+class TestWandbWriter:
+    def setup_method(self) -> None:
+        hllog.close_loggers()
+
+    def teardown_method(self) -> None:
+        hllog.close_loggers()
+
+    def test_is_logger_subclass(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run):
+            writer = hllog.WandbWriter(project="test-project")
+            assert isinstance(writer, Logger)
+
+    def test_raises_when_wandb_unavailable(self) -> None:
+        with (
+            unittest.mock.patch("helios.core.loggers.wandb._WANDB_AVAILABLE", False),
+            pytest.raises(ImportError),
+        ):
+            hllog.WandbWriter(project="test-project")
+
+    def test_setup_without_log_root(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run) as mock_sdk:
+            writer = hllog.WandbWriter(project="test-project")
+            writer.setup("myrun", None, is_resume=False)
+            mock_sdk.init.assert_called_once()
+            call_kwargs = mock_sdk.init.call_args.kwargs
+            assert call_kwargs["dir"] is None
+
+    def test_setup_creates_wandb_subfolder(self, tmp_path: pathlib.Path) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run):
+            writer = hllog.WandbWriter(project="test-project")
+            writer.setup("myrun", tmp_path, is_resume=False)
+            assert (tmp_path / "wandb").is_dir()
+
+    def test_setup_uses_run_name_as_display_name(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run) as mock_sdk:
+            writer = hllog.WandbWriter(project="test-project")
+            writer.setup("myrun", None, is_resume=False)
+            call_kwargs = mock_sdk.init.call_args.kwargs
+            assert call_kwargs["name"] == "myrun"
+
+    def test_setup_uses_explicit_name_over_run_name(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run) as mock_sdk:
+            writer = hllog.WandbWriter(project="test-project", name="custom-name")
+            writer.setup("myrun", None, is_resume=False)
+            call_kwargs = mock_sdk.init.call_args.kwargs
+            assert call_kwargs["name"] == "custom-name"
+
+    def test_state_dict_contains_run_id(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "abc123"
+        with _wandb_ctx(mock_run):
+            writer = hllog.WandbWriter(project="test-project")
+            writer.setup("myrun", None, is_resume=False)
+            state = writer.state_dict()
+            assert state["run_id"] == "abc123"
+
+    def test_state_dict_no_setup(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run):
+            writer = hllog.WandbWriter(project="test-project")
+            state = writer.state_dict()
+            assert state["run_id"] is None
+
+    def test_resume_reuses_saved_run_id(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "original-id"
+        with _wandb_ctx(mock_run) as mock_sdk:
+            writer = hllog.WandbWriter(project="test-project")
+            writer.setup("myrun", None, is_resume=False)
+            state = writer.state_dict()
+
+            writer2 = hllog.WandbWriter(project="test-project")
+            writer2.load_state_dict(state)
+            writer2.setup("myrun", None, is_resume=True)
+            call_kwargs = mock_sdk.init.call_args.kwargs
+            assert call_kwargs["id"] == "original-id"
+            assert call_kwargs["resume"] == "allow"
+
+    def test_fresh_resume_without_saved_id(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "new-id"
+        with _wandb_ctx(mock_run) as mock_sdk:
+            writer = hllog.WandbWriter(project="test-project")
+            writer.setup("myrun", None, is_resume=True)
+            call_kwargs = mock_sdk.init.call_args.kwargs
+            assert call_kwargs["id"] is None
+            assert call_kwargs["resume"] is None
+
+    def test_close_calls_finish(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run):
+            writer = hllog.WandbWriter(project="test-project")
+            writer.setup("myrun", None, is_resume=False)
+            writer.close()
+            mock_run.finish.assert_called_once()
+
+    def test_close_without_setup(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run):
+            writer = hllog.WandbWriter(project="test-project")
+            writer.close()  # should not raise
+
+    def test_flush_is_noop(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run):
+            writer = hllog.WandbWriter(project="test-project")
+            writer.flush()  # should not raise
+
+    def test_extra_args_forwarded_to_wandb_init(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "run-id"
+        with _wandb_ctx(mock_run) as mock_sdk:
+            writer = hllog.WandbWriter(
+                project="test-project",
+                extra_args={"mode": "offline", "tags": ["a", "b"]},
+            )
+            writer.setup("myrun", None, is_resume=False)
+            call_kwargs = mock_sdk.init.call_args.kwargs
+            assert call_kwargs["mode"] == "offline"
+            assert call_kwargs["tags"] == ["a", "b"]

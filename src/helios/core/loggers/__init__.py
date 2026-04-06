@@ -11,6 +11,7 @@ import typing
 from .base import Logger, get_default_log_name
 from .root import RootLogger
 from .tensorboard import TensorboardWriter
+from .wandb import WandbArgs, WandbWriter
 
 
 class LoggerType(enum.Enum):
@@ -18,6 +19,7 @@ class LoggerType(enum.Enum):
 
     ROOT = "root"
     TENSORBOARD = "tensorboard"
+    WANDB = "wandb"
 
 
 _ACTIVE_LOGGERS: dict[LoggerType, Logger] = {}
@@ -26,6 +28,7 @@ _ACTIVE_LOGGERS: dict[LoggerType, Logger] = {}
 def create_loggers(
     enable_tensorboard: bool = True,
     capture_warnings: bool = True,
+    wandb_args: WandbArgs | None = None,
 ) -> None:
     """
     Construct the logger instances and add them to the active table.
@@ -42,12 +45,17 @@ def create_loggers(
             ``True``.
         capture_warnings: if ``True``, :py:func:`warnings.warn` output is
             captured by the root logger.  Defaults to ``True``.
+        wandb_writer: an already-constructed :py:class:`WandbWriter` instance to
+            register, or ``None`` to skip W&B logging.  Defaults to ``None``.
     """
     if LoggerType.ROOT not in _ACTIVE_LOGGERS:
         _ACTIVE_LOGGERS[LoggerType.ROOT] = RootLogger(capture_warnings=capture_warnings)
 
     if enable_tensorboard and LoggerType.TENSORBOARD not in _ACTIVE_LOGGERS:
         _ACTIVE_LOGGERS[LoggerType.TENSORBOARD] = TensorboardWriter()
+
+    if wandb_args is not None and LoggerType.WANDB not in _ACTIVE_LOGGERS:
+        _ACTIVE_LOGGERS[LoggerType.WANDB] = WandbWriter(**wandb_args)
 
 
 def setup_loggers(
@@ -187,6 +195,8 @@ __all__ = [
     "LoggerType",
     "RootLogger",
     "TensorboardWriter",
+    "WandbArgs",
+    "WandbWriter",
     "get_default_log_name",
     "create_loggers",
     "setup_loggers",
