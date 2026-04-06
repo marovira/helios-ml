@@ -178,9 +178,9 @@ def get_root_logger() -> RootLogger:
 
 def get_tensorboard_writer() -> TensorboardWriter | None:
     """
-    Return the Tensorboard writter.
+    Return the Tensorboard writer.
 
-    If Tensorboard is disabled, this function will return ``None``
+    If Tensorboard is disabled, this function will return ``None``.
 
     Returns:
         The Tensorboard logger, or ``None`` if it doesn't exist.
@@ -188,6 +188,20 @@ def get_tensorboard_writer() -> TensorboardWriter | None:
     if LoggerType.TENSORBOARD not in _ACTIVE_LOGGERS:
         return None
     return typing.cast(TensorboardWriter, _ACTIVE_LOGGERS[LoggerType.TENSORBOARD])
+
+
+def get_wandb_writer() -> WandbWriter | None:
+    """
+    Return the WandbWriter.
+
+    If Wandb is disabled, this function will return ``None``.
+
+    Returns:
+        The Wandb logger, or ``None`` if it doesn't exist.
+    """
+    if LoggerType.WANDB not in _ACTIVE_LOGGERS:
+        return None
+    return typing.cast(WandbWriter, _ACTIVE_LOGGERS[LoggerType.WANDB])
 
 
 __all__ = [
@@ -208,4 +222,5 @@ __all__ = [
     "is_root_logger_active",
     "get_root_logger",
     "get_tensorboard_writer",
+    "get_wandb_writer",
 ]

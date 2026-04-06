@@ -375,6 +375,26 @@ class TestLogging:
         writer = hllog.get_tensorboard_writer()
         assert isinstance(writer, hllog.TensorboardWriter)
 
+    def test_get_wandb_writer_returns_none_when_disabled(self) -> None:
+        hllog.create_loggers(enable_tensorboard=False)
+        assert hllog.get_wandb_writer() is None
+
+    def test_get_wandb_writer_returns_instance_when_enabled(self) -> None:
+        mock_run = unittest.mock.MagicMock()
+        mock_run.id = "test-run-id"
+        with (
+            unittest.mock.patch("helios.core.loggers.wandb._WANDB_AVAILABLE", True),
+            unittest.mock.patch(
+                "helios.core.loggers.wandb.wandb_sdk", create=True
+            ) as mock_wandb,
+        ):
+            mock_wandb.init.return_value = mock_run
+            hllog.create_loggers(
+                enable_tensorboard=False, wandb_args={"project": "test-project"}
+            )
+            writer = hllog.get_wandb_writer()
+            assert isinstance(writer, hllog.WandbWriter)
+
     def test_create_with_wandb_writer(self) -> None:
         mock_run = unittest.mock.MagicMock()
         mock_run.id = "test-run-id"
