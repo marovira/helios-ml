@@ -26,7 +26,6 @@ dependencies = [
     "onnxruntime>=1.19.0",
     "onnxscript>=0.1.0",
     "opencv-python>=4.10.0.84",
-    "tensorboard>=2.17.0",
     "torch>=2.7.1",
     "torchvision>=0.20.0",
     "tqdm>=4.66.0",
@@ -37,6 +36,9 @@ dynamic = ["version"]
 [project.optional-dependencies]
 tune = [
     "optuna>=4.0.0",
+]
+tensorboard = [
+    "tensorboard>=2.17.0",
 ]
 
 [project.urls]
@@ -61,6 +63,7 @@ dev = [
     "ruff>=0.9.6",
     "sphinx-autoapi>=3.5.0",
     "sphinx>=8.1.3",
+    "tensorboard>=2.17.0",
     "twine>=6.1.0",
     "types-Pillow>=10.2.0.20240822",
     "types-tqdm>=4.66.0.20241221",
@@ -75,6 +78,7 @@ ci = [
     "ruff>=0.9.6",
     "sphinx-autoapi>=3.5.0",
     "sphinx>=8.1.3",
+    "tensorboard>=2.17.0",
     "types-Pillow>=10.2.0.20240822",
     "types-tqdm>=4.66.0.20241221",
 ]

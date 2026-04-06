@@ -5,7 +5,13 @@ import typing
 import matplotlib.pyplot as plt
 import numpy.typing as npt
 import torch
-import torch.utils.tensorboard as tb
+
+try:
+    import torch.utils.tensorboard as tb
+
+    _TENSORBOARD_AVAILABLE = True
+except ImportError:
+    _TENSORBOARD_AVAILABLE = False
 
 from ..distributed import get_global_rank
 from ..utils import get_from_optional
@@ -18,12 +24,26 @@ class TensorboardWriter(Logger):
 
     Data for the logger will be placed under ``log_root/tensorboard``. When resuming, the
     original run directory is restored and new data is appended to it.
+
+    Requires the ``tensorboard`` package.  Install it with::
+
+        pip install tensorboard
     """
 
     def __init__(self) -> None:
-        """Create the Tensorboard writer."""
+        """
+        Create the Tensorboard writer.
+
+        Raises:
+            ImportError: if ``tensorboard`` is not installed.
+        """
+        if not _TENSORBOARD_AVAILABLE:
+            raise ImportError(
+                "tensorboard is required to use the TensorboardWriter. "
+                "Install it with: pip install tensorboard"
+            )
         self._rank = get_global_rank()
-        self._writer: tb.SummaryWriter | None = None
+        self._writer: typing.Any = None
         self._run_path: pathlib.Path | None = None
         self._saved_run_path: pathlib.Path | None = None
 
