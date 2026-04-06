@@ -264,12 +264,14 @@ class AccumulationModel(hlm.Model):
 
 
 class ExceptionModel(hlm.Model):
-    def __init__(self, exc_type: type[Exception]) -> None:
+    def __init__(self, exc_type: type[Exception], raise_in_setup: bool) -> None:
         super().__init__("test-exception")
         self._exc_type = exc_type
+        self._raise_in_setup = raise_in_setup
 
     def setup(self, fast_init: bool = False) -> None:
-        pass
+        if self._raise_in_setup:
+            raise self._exc_type("error")
 
     def on_training_start(self) -> None:
         raise self._exc_type("error")
@@ -756,9 +758,10 @@ class TestTrainer:
         trainer: hlt.Trainer,
         fit: bool,
         raised_as_runtime: bool = False,
+        raise_in_setup: bool = False,
     ) -> None:
         datamodule = RandomDatamodule()
-        model = ExceptionModel(exc_type)
+        model = ExceptionModel(exc_type, raise_in_setup)
 
         if not raised_as_runtime:
             with pytest.raises(exc_type):
@@ -772,7 +775,33 @@ class TestTrainer:
             else:
                 assert not trainer.test(model, datamodule)
 
-    def test_trainer_exceptions(self) -> None:
+    def test_trainer_exceptions_in_setup(self) -> None:
+        exception_types = [ValueError, RuntimeError, KeyError]
+        trainer = hlt.Trainer()
+        trainer.train_exceptions = exception_types[:2]
+        for exc_type in trainer.train_exceptions:
+            self.check_exception(exc_type, trainer, fit=True, raise_in_setup=True)
+        self.check_exception(
+            exception_types[-1],
+            trainer,
+            fit=True,
+            raised_as_runtime=True,
+            raise_in_setup=True,
+        )
+
+        trainer.train_exceptions = []
+        trainer.test_exceptions = exception_types[:2]
+        for exc_type in trainer.test_exceptions:
+            self.check_exception(exc_type, trainer, fit=False, raise_in_setup=True)
+        self.check_exception(
+            exception_types[-1],
+            trainer,
+            fit=False,
+            raised_as_runtime=True,
+            raise_in_setup=True,
+        )
+
+    def test_trainer_exceptions_post_setup(self) -> None:
         exception_types = [ValueError, RuntimeError, KeyError]
         trainer = hlt.Trainer()
         trainer.train_exceptions = exception_types[:2]
