@@ -1,5 +1,6 @@
 import pathlib
 
+import pytest
 import torch
 from torch import nn
 
@@ -26,6 +27,7 @@ class MLPModel(nn.Module):
 
 
 class TestONNX:
+    @pytest.mark.filterwarnings("ignore::FutureWarning")
     def test_jit(self, tmp_path: pathlib.Path) -> None:
         model = MLPModel()
         tensor_x = torch.rand((97, 8), dtype=torch.float32)
