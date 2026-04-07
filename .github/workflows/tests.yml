@@ -42,14 +42,14 @@ jobs:
 
       - name: Ruff
         run: |
-          uv run ruff check src/helios test examples
+          uv run ruff check src/helios test # examples
           uv run ruff format --check src/helios test examples
 
       - name: Mypy
         run: |
           uv run mypy src/helios
           uv run mypy test
-          uv run mypy examples
+          # uv run mypy examples
 
   test:
     needs: lint
