@@ -52,7 +52,7 @@ class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
     Args:
         optimizer: the optimizer.
         periods: period for each cosine annealing cycle.
-        restart_weights: (optional) restarts weights at each restart iteration.
+        restart_weights: (optional) restart weights at each restart iteration.
         eta_min: The minimum lr. Defaults to 0
         last_epoch: Used in _LRScheduler. Defaults to -1.
     """
@@ -61,7 +61,7 @@ class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
         self,
         optimizer: optim.Optimizer,
         periods: list[int],
-        restart_weights: list[int] | None = None,
+        restart_weights: list[float] | None = None,
         eta_min: float = 0,
         last_epoch: int = -1,
     ):
@@ -80,7 +80,7 @@ class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
         ]
         super().__init__(optimizer, last_epoch)
 
-    def get_lr(self):
+    def get_lr(self) -> list[float | torch.Tensor]:
         """Return the current learning rate."""
         idx = _get_position_from_periods(self.last_epoch, self._cumulative_period)
         current_weight = self._restart_weights[idx]
@@ -171,7 +171,7 @@ class MultiStepRestartLR(lr_scheduler.LRScheduler):
         milestones: list[int],
         gamma: float = 0.1,
         restarts: list[int] | None = None,
-        restart_weights: list[int] | None = None,
+        restart_weights: list[float] | None = None,
         last_epoch: int = -1,
     ):
         """Create the scheduler."""
@@ -189,7 +189,7 @@ class MultiStepRestartLR(lr_scheduler.LRScheduler):
         )
         super().__init__(optimizer, last_epoch)
 
-    def get_lr(self):
+    def get_lr(self) -> list[float | torch.Tensor]:
         """Return the current learning rate."""
         if self.last_epoch in self._restarts:
             weight = self._restart_weights[self._restarts.index(self.last_epoch)]
