@@ -407,3 +407,128 @@ def calculate_mae_torch(
         The MAE score.
     """
     return _mae_torch(pred, gt, scale)
+
+
+def calculate_accuracy(
+    predictions: torch.Tensor, targets: torch.Tensor, top_k: int = 1
+) -> float:
+    """
+    Calculate top-k accuracy.
+
+    Implementation follows:
+    `<https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)>`__.
+
+    Args:
+        predictions: predicted logits or scores of shape :math:`(N, C)` where :math:`C`
+            is the number of classes.
+        targets: ground-truth class indices of shape :math:`(N,)`.
+        top_k: number of top predictions to consider. Defaults to 1.
+
+    Returns:
+        Top-k accuracy in :math:`[0, 1]`.
+    """
+    batch_size = targets.size(0)
+    _, pred = predictions.topk(top_k, dim=1, largest=True, sorted=True)
+    pred = pred.t()
+    correct = pred.eq(targets.view(1, -1).expand_as(pred))
+    correct_k = correct[:top_k].reshape(-1).float().sum()
+    return float(correct_k / batch_size)
+
+
+def calculate_precision(predictions: torch.Tensor, targets: torch.Tensor) -> float:
+    """
+    Calculate macro-averaged precision across classes.
+
+    Implementation follows:
+    `<https://en.wikipedia.org/wiki/Precision_and_recall>`__.
+
+    Args:
+        predictions: predicted logits or scores of shape :math:`(N, C)`, or predicted
+            class indices of shape :math:`(N,)`.
+        targets: ground-truth class indices of shape :math:`(N,)`.
+
+    Returns:
+        Macro-averaged precision in range :math:`[0, 1]`.
+    """
+    if predictions.ndim > 1:
+        num_classes = predictions.size(1)
+        predictions = predictions.argmax(dim=1)
+    else:
+        num_classes = int(max(predictions.max().item(), targets.max().item())) + 1
+
+    precision_sum = 0.0
+    for c in range(num_classes):
+        tp = float(((predictions == c) & (targets == c)).sum())
+        fp = float(((predictions == c) & (targets != c)).sum())
+        if tp + fp > 0:
+            precision_sum += tp / (tp + fp)
+    return precision_sum / num_classes
+
+
+def calculate_recall(predictions: torch.Tensor, targets: torch.Tensor) -> float:
+    """
+    Calculate macro-averaged recall across classes.
+
+    Implementation follows:
+    `<https://en.wikipedia.org/wiki/Precision_and_recall>`__.
+
+    Args:
+        predictions: predicted logits or scores of shape :math:`(N, C)`, or predicted
+            class indices of shape :math:`(N,)`.
+        targets: ground-truth class indices of shape :math:`(N,)`.
+
+    Returns:
+        Macro-averaged recall in range :math:`[0, 1]`.
+    """
+    if predictions.ndim > 1:
+        num_classes = predictions.size(1)
+        predictions = predictions.argmax(dim=1)
+    else:
+        num_classes = int(max(predictions.max().item(), targets.max().item())) + 1
+
+    recall_sum = 0.0
+    for c in range(num_classes):
+        tp = float(((predictions == c) & (targets == c)).sum())
+        fn = float(((predictions != c) & (targets == c)).sum())
+        if tp + fn > 0:
+            recall_sum += tp / (tp + fn)
+    return recall_sum / num_classes
+
+
+def calculate_f1(predictions: torch.Tensor, targets: torch.Tensor) -> float:
+    """
+    Calculate macro-averaged F1 score.
+
+    Computed from the macro precision and recall. Implementation follows:
+    `<https://en.wikipedia.org/wiki/F-score>`__.
+
+    Args:
+        predictions: predicted logits or scores of shape :math:`(N, C)`, or predicted
+            class indices of shape :math:`(N,)`.
+        targets: ground-truth class indices of shape :math:`(N,)`.
+
+    Returns:
+        Macro-averaged F1 score in range :math:`[0, 1]`.
+    """
+    precision = calculate_precision(predictions, targets)
+    recall = calculate_recall(predictions, targets)
+    if precision + recall == 0:
+        return 0.0
+    return 2 * precision * recall / (precision + recall)
+
+
+def calculate_rmse(predictions: torch.Tensor, targets: torch.Tensor) -> float:
+    """
+    Calculate root mean squared error (RMSE).
+
+    Implementation follows:
+    `<https://en.wikipedia.org/wiki/Root_mean_square_deviation>`__.
+
+    Args:
+        predictions: predicted values tensor.
+        targets: ground-truth values tensor.
+
+    Returns:
+        RMSE score.
+    """
+    return float(torch.sqrt(torch.mean((predictions.float() - targets.float()) ** 2)))

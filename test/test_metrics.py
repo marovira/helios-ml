@@ -16,6 +16,11 @@ class TestMetrics:
                 "CalculateSSIM",
                 "CalculateMAP",
                 "CalculateMAE",
+                "CalculateAccuracy",
+                "CalculatePrecision",
+                "CalculateRecall",
+                "CalculateF1",
+                "CalculateRMSE",
             ],
         )
 
@@ -80,3 +85,93 @@ class TestMetrics:
     def test_MAE(self) -> None:
         self.check_mae(1.0)
         self.check_mae(255.0)
+
+    def test_accuracy(self) -> None:
+        # 3 samples, 3 classes.
+        # top-1 predictions: [0, 1, 2], targets: [0, 2, 2] → 2 correct → 2/3
+        # top-2 predictions: [[0,1],[1,2],[2,0]], targets: [0, 2, 2] → all correct → 1.0
+        predictions = torch.tensor([[10.0, 5.0, 0.0], [0.0, 10.0, 5.0], [5.0, 0.0, 10.0]])
+        targets = torch.tensor([0, 2, 2])
+
+        self.check_almost_equal(
+            functional.calculate_accuracy(predictions, targets, top_k=1), 2 / 3
+        )
+        self.check_almost_equal(
+            functional.calculate_accuracy(predictions, targets, top_k=2), 1.0
+        )
+
+        acc1 = metrics.CalculateAccuracy(top_k=1)
+        acc2 = metrics.CalculateAccuracy(top_k=2)
+        self.check_almost_equal(acc1(predictions, targets), 2 / 3)
+        self.check_almost_equal(acc2(predictions, targets), 1.0)
+
+    def test_precision(self) -> None:
+        # 4 samples, 2 classes.
+        # predictions (class indices): [0, 0, 1, 1], targets: [0, 1, 0, 1]
+        # class 0: TP=1, FP=1 → precision=0.5
+        # class 1: TP=1, FP=1 → precision=0.5
+        # macro precision = 0.5
+        predictions_1d = torch.tensor([0, 0, 1, 1])
+        predictions_2d = torch.tensor(
+            [[10.0, 0.0], [10.0, 0.0], [0.0, 10.0], [0.0, 10.0]]
+        )
+        targets = torch.tensor([0, 1, 0, 1])
+
+        self.check_almost_equal(
+            functional.calculate_precision(predictions_1d, targets), 0.5
+        )
+        self.check_almost_equal(
+            functional.calculate_precision(predictions_2d, targets), 0.5
+        )
+
+        prec = metrics.CalculatePrecision()
+        self.check_almost_equal(prec(predictions_1d, targets), 0.5)
+        self.check_almost_equal(prec(predictions_2d, targets), 0.5)
+
+    def test_recall(self) -> None:
+        # Same setup as precision test.
+        # class 0: TP=1, FN=1 → recall=0.5
+        # class 1: TP=1, FN=1 → recall=0.5
+        # macro recall = 0.5
+        predictions_1d = torch.tensor([0, 0, 1, 1])
+        predictions_2d = torch.tensor(
+            [[10.0, 0.0], [10.0, 0.0], [0.0, 10.0], [0.0, 10.0]]
+        )
+        targets = torch.tensor([0, 1, 0, 1])
+
+        self.check_almost_equal(functional.calculate_recall(predictions_1d, targets), 0.5)
+        self.check_almost_equal(functional.calculate_recall(predictions_2d, targets), 0.5)
+
+        rec = metrics.CalculateRecall()
+        self.check_almost_equal(rec(predictions_1d, targets), 0.5)
+        self.check_almost_equal(rec(predictions_2d, targets), 0.5)
+
+    def test_f1(self) -> None:
+        # Precision=0.5, recall=0.5 → F1=0.5.
+        predictions_1d = torch.tensor([0, 0, 1, 1])
+        predictions_2d = torch.tensor(
+            [[10.0, 0.0], [10.0, 0.0], [0.0, 10.0], [0.0, 10.0]]
+        )
+        targets = torch.tensor([0, 1, 0, 1])
+
+        self.check_almost_equal(functional.calculate_f1(predictions_1d, targets), 0.5)
+        self.check_almost_equal(functional.calculate_f1(predictions_2d, targets), 0.5)
+
+        f1 = metrics.CalculateF1()
+        self.check_almost_equal(f1(predictions_1d, targets), 0.5)
+        self.check_almost_equal(f1(predictions_2d, targets), 0.5)
+
+    def test_rmse(self) -> None:
+        # Identical tensors → RMSE = 0.
+        predictions = torch.tensor([1.0, 2.0, 3.0])
+        targets = torch.tensor([1.0, 2.0, 3.0])
+        self.check_almost_equal(functional.calculate_rmse(predictions, targets), 0.0)
+
+        # predictions=[0, 0], targets=[1, 0] → MSE=0.5, RMSE=sqrt(0.5).
+        predictions = torch.tensor([0.0, 0.0])
+        targets = torch.tensor([1.0, 0.0])
+        expected = math.sqrt(0.5)
+        self.check_almost_equal(functional.calculate_rmse(predictions, targets), expected)
+
+        rmse = metrics.CalculateRMSE()
+        self.check_almost_equal(rmse(predictions, targets), expected)

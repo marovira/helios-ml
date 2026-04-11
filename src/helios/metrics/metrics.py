@@ -8,11 +8,16 @@ from torch import nn
 from helios import core
 
 from .functional import (
+    calculate_accuracy,
+    calculate_f1,
     calculate_mae,
     calculate_mae_torch,
     calculate_mAP,
+    calculate_precision,
     calculate_psnr,
     calculate_psnr_torch,
+    calculate_recall,
+    calculate_rmse,
     calculate_ssim,
     calculate_ssim_torch,
 )
@@ -212,3 +217,129 @@ class CalculateMAE(nn.Module):
             return calculate_mae_torch(pred, gt, self._scale)
         assert isinstance(pred, np.ndarray) and isinstance(gt, np.ndarray)
         return calculate_mae(pred, gt, self._scale)
+
+
+@METRICS_REGISTRY.register
+class CalculateAccuracy(nn.Module):
+    """
+    Calculate top-k accuracy.
+
+    Implementation follows:
+    `<https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)>`__.
+
+    Args:
+        top_k: number of top predictions to consider. Defaults to 1.
+    """
+
+    def __init__(self, top_k: int = 1):
+        """Construct the accuracy metric."""
+        super().__init__()
+        self._top_k = top_k
+
+    def forward(self, predictions: torch.Tensor, targets: torch.Tensor) -> float:
+        """
+        Calculate top-k accuracy.
+
+        Args:
+            predictions: predicted logits or scores of shape :math:`(N, C)`.
+            targets: ground-truth class indices of shape :math:`(N,)`.
+
+        Returns:
+            Top-k accuracy in range :math:`[0, 1]`.
+        """
+        return calculate_accuracy(predictions, targets, self._top_k)
+
+
+@METRICS_REGISTRY.register
+class CalculatePrecision(nn.Module):
+    """
+    Calculate macro-averaged precision across classes.
+
+    Implementation follows:
+    `<https://en.wikipedia.org/wiki/Precision_and_recall>`__.
+    """
+
+    def forward(self, predictions: torch.Tensor, targets: torch.Tensor) -> float:
+        """
+        Calculate macro-averaged precision.
+
+        Args:
+            predictions: predicted logits or scores of shape :math:`(N, C)`, or
+                predicted class indices of shape :math:`(N,)`.
+            targets: ground-truth class indices of shape :math:`(N,)`.
+
+        Returns:
+            Macro-averaged precision in range :math:`[0, 1]`.
+        """
+        return calculate_precision(predictions, targets)
+
+
+@METRICS_REGISTRY.register
+class CalculateRecall(nn.Module):
+    """
+    Calculate macro-averaged recall across classes.
+
+    Implementation follows:
+    `<https://en.wikipedia.org/wiki/Precision_and_recall>`__.
+    """
+
+    def forward(self, predictions: torch.Tensor, targets: torch.Tensor) -> float:
+        """
+        Calculate macro-averaged recall.
+
+        Args:
+            predictions: predicted logits or scores of shape :math:`(N, C)`, or
+                predicted class indices of shape :math:`(N,)`.
+            targets: ground-truth class indices of shape :math:`(N,)`.
+
+        Returns:
+            Macro-averaged recall in range :math:`[0, 1]`.
+        """
+        return calculate_recall(predictions, targets)
+
+
+@METRICS_REGISTRY.register
+class CalculateF1(nn.Module):
+    """
+    Calculate macro-averaged F1 score.
+
+    Computed from the macro precision and recall. Implementation follows:
+    `<https://en.wikipedia.org/wiki/F-score>`__.
+    """
+
+    def forward(self, predictions: torch.Tensor, targets: torch.Tensor) -> float:
+        """
+        Calculate macro-averaged F1 score.
+
+        Args:
+            predictions: predicted logits or scores of shape :math:`(N, C)`, or
+                predicted class indices of shape :math:`(N,)`.
+            targets: ground-truth class indices of shape :math:`(N,)`.
+
+        Returns:
+            Macro-averaged F1 score in range :math:`[0, 1]`.
+        """
+        return calculate_f1(predictions, targets)
+
+
+@METRICS_REGISTRY.register
+class CalculateRMSE(nn.Module):
+    """
+    Calculate root mean squared error (RMSE).
+
+    Implementation follows:
+    `<https://en.wikipedia.org/wiki/Root_mean_square_deviation>`__.
+    """
+
+    def forward(self, predictions: torch.Tensor, targets: torch.Tensor) -> float:
+        """
+        Calculate RMSE.
+
+        Args:
+            predictions: predicted values tensor.
+            targets: ground-truth values tensor.
+
+        Returns:
+            RMSE score.
+        """
+        return calculate_rmse(predictions, targets)
