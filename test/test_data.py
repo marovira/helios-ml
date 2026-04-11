@@ -614,6 +614,10 @@ class TestDataModule:
         assert isinstance(datamodule.valid_dataset, SequentialDataset)
         assert isinstance(datamodule.test_dataset, SequentialDataset)
 
+    def test_dataloader_params_pin_memory_default(self) -> None:
+        params = data.DataLoaderParams()
+        assert params.pin_memory is False
+
 
 if __name__ == "__main__":
     t = TestDataModule()

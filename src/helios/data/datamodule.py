@@ -165,7 +165,7 @@ def create_dataloader(
     batch_size: int = 1,
     shuffle: bool = False,
     num_workers: int = 0,
-    pin_memory: bool = True,
+    pin_memory: bool = False,
     drop_last: bool = False,
     debug_mode: bool = False,
     is_distributed: bool = False,
@@ -198,7 +198,7 @@ def create_dataloader(
         batch_size: number of samplers per batch. Defaults to 1.
         shuffle: if true, samples are randomly shuffled. Defaults to false.
         num_workers: number of worker processes for loading data. Defaults to 0.
-        pin_memory: if true, use page-locked device memory. Defaults to true.
+        pin_memory: if true, use page-locked device memory. Defaults to false.
         drop_last: if true, remove the final batch. Defaults to false.
         debug_mode: if true, then ``num_workers`` will be set to 0. Defaults to false.
         is_distributed: if true, create the distributed sampler. Defaults to false.
@@ -276,7 +276,7 @@ class DataLoaderParams:
     batch_size: int = 1
     shuffle: bool = False
     num_workers: int = 0
-    pin_memory: bool = True
+    pin_memory: bool = False
     drop_last: bool = False
     debug_mode: bool = False
     is_distributed: bool | None = None
