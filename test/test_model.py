@@ -107,16 +107,18 @@ class TestAMPHelpers:
         ctx = model.autocast()
         assert isinstance(ctx, torch.amp.autocast)
 
-    def test_create_scaler_noop_on_cpu(self) -> None:
+    def test_create_scaler_cpu_invalid_dtype_raises(self) -> None:
         model = MockModel()
         model.device = torch.device("cpu")
-        model.create_scaler()
-        assert model.amp_context is None
+        with pytest.raises(ValueError, match="bfloat16"):
+            model.create_scaler()
 
-    def test_create_scaler_noop_when_device_unset(self) -> None:
+    def test_create_scaler_cpu_bfloat16(self) -> None:
         model = MockModel()
-        model.create_scaler()
-        assert model.amp_context is None
+        model.device = torch.device("cpu")
+        model.create_scaler(dtype=torch.bfloat16)
+        assert model.amp_context is not None
+        assert model.amp_context.dtype == torch.bfloat16
 
     def test_create_scaler_cuda(self) -> None:
         if not torch.cuda.is_available():

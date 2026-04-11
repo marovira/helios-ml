@@ -220,21 +220,27 @@ class Model(abc.ABC):
         Create the :py:class:`torch.amp.GradScaler` for AMP training.
 
         This should be called in your :py:meth:`setup` function to enable Automatic Mixed
-        Precision. Note that if the current device is not CUDA, then this function is a
-        no-op.
+        Precision.
 
         .. note::
             There is no need to pass in the "device" argument to
             :py:class:`torch.amp.GradScaler`. This is already handled internally. If the
             keyword is passed in, it will be removed.
 
+        .. note::
+            On CPU, only ``torch.bfloat16`` is supported. If any other type is passed in
+            when the device is CPU, then a :py:exc:`ValueError` will be raised.
+
         Args:
             dtype: the dtype to use for :py:func:`torch.amp.autocast`. Defaults to
                 ``torch.float16``.
             kwargs: additional keyword arguments for :py:class:`torch.amp.GradScaler`.
+
+        Raises:
+            ValueError: if the device is CPU and ``dtype`` is not ``torch.bfloat16``.
         """
-        if self._device is None or self.device.type != "cuda":
-            return
+        if self.device.type == "cpu" and dtype != torch.bfloat16:
+            raise ValueError("error: only torch.bfloat16 is supported for AMP on CPU")
         if "device" in kwargs:
             kwargs.pop("device")
 
