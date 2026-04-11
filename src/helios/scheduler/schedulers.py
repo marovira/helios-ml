@@ -1,6 +1,7 @@
 import collections as col
 import math
 
+import torch
 from torch import optim
 from torch.optim import lr_scheduler
 
@@ -99,6 +100,55 @@ class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
             )
             for base_lr in self.base_lrs
         ]
+
+
+@SCHEDULER_REGISTRY.register
+class LinearWarmupScheduler(lr_scheduler.LRScheduler):
+    """
+    A linear warmup LR scheduler.
+
+    The scheduler functions as follows:
+        #. During the first ``warmup_steps``, increase the learning rate lineary from
+        ``base_lr * warmup_start_factor`` to ``base_lr``.
+        #. After ``warmup_steps``, switch to the provided ``scheduler``.
+
+    Args:
+        optimizer: the optimizer.
+        warmup_steps: number of warmup steps.
+        scheduler: the post-warmup scheduler.
+        warmup_start_factor: fraction of ``base_lr`` to start from. Defaults to 0.
+        last_epoch: index of the last epoch seen by the scheduler. Defaults to -1.
+    """
+
+    def __init__(
+        self,
+        optimizer: optim.Optimizer,
+        warmup_steps: int,
+        scheduler: lr_scheduler.LRScheduler,
+        warmup_start_factor: float = 0.0,
+        last_epoch: int = -1,
+    ):
+        """Create the scheduler."""
+        self._warmup_steps = warmup_steps
+        self._scheduler = scheduler
+        self._warmup_start_factor = warmup_start_factor
+        super().__init__(optimizer, last_epoch)
+
+    def get_lr(self) -> list[float | torch.Tensor]:
+        """Return the current learning rate."""
+        if self._warmup_steps > 0 and self.last_epoch <= self._warmup_steps:
+            factor = (
+                self._warmup_start_factor
+                + (1.0 - self._warmup_start_factor) * self.last_epoch / self._warmup_steps
+            )
+            return [base_lr * factor for base_lr in self.base_lrs]
+        return [group["lr"] for group in self.optimizer.param_groups]
+
+    def step(self, epoch: int | None = None) -> None:
+        """Advance the scheduler by one step."""
+        super().step(epoch)
+        if self.last_epoch > self._warmup_steps:
+            self._scheduler.step()
 
 
 @SCHEDULER_REGISTRY.register
