@@ -3,10 +3,13 @@
 .. image:: https://raw.githubusercontent.com/marovira/helios-ml/master/data/logo/logo-transparent.png
    :target: https://github.com/marovira/helios-ml
 
-|Test| |CodeFactor| |Ruff| |PythonVersion| |PyPi| |License|
+|Test| |Codecov| |CodeFactor| |Ruff| |PythonVersion| |PyPi| |License|
 
 .. |Test| image:: https://github.com/marovira/helios-ml/actions/workflows/tests.yml/badge.svg
    :target: https://github.com/marovira/helios-ml/actions/workflows/tests.yml
+
+.. |Codecov| image:: https://codecov.io/github/marovira/helios-ml/graph/badge.svg?token=NFC0GBJC6J
+   :target: https://codecov.io/github/marovira/helios-ml
 
 .. |CodeFactor| image:: https://www.codefactor.io/repository/github/marovira/helios-ml/badge
    :target: https://www.codefactor.io/repository/github/marovira/helios-ml
