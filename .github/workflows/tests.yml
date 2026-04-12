@@ -77,4 +77,11 @@ jobs:
 
       - name: Pytest
         run: |
-          uv run python -m pytest
+          uv run python -m pytest --cov --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        if: matrix.python-version == '3.13'
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          fail_ci_if_error: true
