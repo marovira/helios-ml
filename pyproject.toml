@@ -173,7 +173,7 @@ fail_under = 85
 required-version = ">=0.7"
 constraint-dependencies = [
     # Security fixes for transitive dependencies (Dependabot alerts)
-    "cryptography>=46.0.6",
+    "cryptography>=46.0.7",
     "filelock>=3.20.3",
     "fonttools>=4.60.2",
     "pillow>=12.1.1",
