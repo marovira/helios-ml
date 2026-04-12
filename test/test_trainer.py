@@ -77,6 +77,7 @@ class CheckFunModel(hlm.Model):
             "on_validation_end": False,
             "have_metrics_improved": False,
             "should_training_stop": False,
+            "should_save_checkpoint": False,
         }
 
         self.called_test_funs: dict[str, bool] = {
@@ -172,6 +173,10 @@ class CheckFunModel(hlm.Model):
     def should_training_stop(self) -> bool:
         self.called_train_funs["should_training_stop"] = True
         return False
+
+    def should_save_checkpoint(self) -> bool:
+        self.called_train_funs["should_save_checkpoint"] = True
+        return True
 
     def on_testing_start(self) -> None:
         self.called_test_funs["on_testing_start"] = True
@@ -465,6 +470,17 @@ class TestTrainingUnit:
 
         with pytest.raises(ValueError):
             hlt.TrainingUnit.from_str("foo")
+
+
+class SkipCheckpointModel(hlm.Model):
+    def __init__(self) -> None:
+        super().__init__("skip-checkpoint")
+
+    def setup(self, fast_init: bool = False) -> None:
+        pass
+
+    def should_save_checkpoint(self) -> bool:
+        return False
 
 
 class TestTrainer:
@@ -911,3 +927,31 @@ class TestTrainer:
         chkpt = hlc.safe_torch_load(chkpts[0])
         model.load_state_dict(chkpt["model"])
         plugin.load_state_dict(chkpt[plugin._plug_id])
+
+    def test_should_save_checkpoint_iter_skips(self, tmp_path: pathlib.Path) -> None:
+        model = SkipCheckpointModel()
+        trainer = hlt.Trainer(
+            train_unit=hlt.TrainingUnit.ITERATION,
+            total_steps=10,
+            valid_frequency=10,
+            chkpt_root=tmp_path,
+            chkpt_frequency=10,
+            use_cpu=True,
+        )
+        assert trainer.fit(model, RandomDatamodule())
+        chkpt_root = tmp_path / model._save_name
+        assert not chkpt_root.exists() or len(list(chkpt_root.glob("*.pth"))) == 0
+
+    def test_should_save_checkpoint_epoch_skips(self, tmp_path: pathlib.Path) -> None:
+        model = SkipCheckpointModel()
+        trainer = hlt.Trainer(
+            train_unit=hlt.TrainingUnit.EPOCH,
+            total_steps=2,
+            valid_frequency=1,
+            chkpt_root=tmp_path,
+            chkpt_frequency=1,
+            use_cpu=True,
+        )
+        assert trainer.fit(model, RandomDatamodule())
+        chkpt_root = tmp_path / model._save_name
+        assert not chkpt_root.exists() or len(list(chkpt_root.glob("*.pth"))) == 0

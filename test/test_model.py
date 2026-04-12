@@ -80,6 +80,7 @@ class TestModel:
         assert len(model.running_loss) == 0
 
         assert model.have_metrics_improved()
+        assert model.should_save_checkpoint()
 
         model.populate_test_scores()
         assert len(model.test_scores) != 0

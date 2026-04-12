@@ -716,6 +716,20 @@ class Model(abc.ABC):
         """
         return False
 
+    def should_save_checkpoint(self) -> bool:
+        """
+        Determine whether the current checkpoint should be saved or not.
+
+        This is used when only the checkpoint containing the best weights should be saved.
+        You may override this function to only save when the highest metric score is
+        attained, or some other custom logic. This is called every time the trainer has
+        been configured to save a checkpoint.
+
+        Returns:
+            True if a checkpoint should be saved, false otherwise.
+        """
+        return True
+
     def on_testing_start(self) -> None:
         """
         Perform any necessary actions when testing starts.

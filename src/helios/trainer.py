@@ -1086,6 +1086,7 @@ class Trainer:
                     and state.current_iteration % save_freq == 0
                     and self.rank == 0
                     and current_iteration_changed
+                    and self.model.should_save_checkpoint()
                 ):
                     self._save_checkpoint(state)
 
@@ -1220,6 +1221,7 @@ class Trainer:
                 save_freq is not None
                 and state.global_epoch % save_freq == 0
                 and self.rank == 0
+                and self.model.should_save_checkpoint()
             ):
                 self._save_checkpoint(state)
 
