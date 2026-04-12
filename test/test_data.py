@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 import PIL
+import pytest
 import torch
 from torch.utils import data as tud
 
@@ -617,6 +618,22 @@ class TestDataModule:
     def test_dataloader_params_pin_memory_default(self) -> None:
         params = data.DataLoaderParams()
         assert params.pin_memory is False
+
+    def test_get_train_steps_per_epoch(self) -> None:
+        datamodule = SampleDataModule()
+        datamodule.setup()
+        steps = datamodule.get_train_steps_per_epoch()
+        assert steps == DATASET_SIZE // 2  # batch_size=2
+
+    def test_get_train_steps_per_epoch_no_train_dataset(self) -> None:
+        class NoTrainDataModule(data.DataModule):
+            def setup(self) -> None:
+                pass
+
+        datamodule = NoTrainDataModule()
+        datamodule.setup()
+        with pytest.raises(RuntimeError, match="no training dataset"):
+            datamodule.get_train_steps_per_epoch()
 
 
 if __name__ == "__main__":

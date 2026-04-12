@@ -183,6 +183,22 @@ class Model(abc.ABC):
     def trainer(self, t) -> None:
         self._trainer = t
 
+    def get_train_steps_per_epoch(self) -> int:
+        """
+        Return the number of iterations per training epoch.
+
+        This is a convenience wrapper around
+        :py:meth:`~helios.data.datamodule.DataModule.get_train_steps_per_epoch`.
+        Please see that function for more details.
+
+        .. note::
+            This method only applies to the training split.
+
+        Returns:
+            The number of iterations per training epoch.
+        """
+        return self.trainer.datamodule.get_train_steps_per_epoch()
+
     @property
     def metrics(self) -> dict[str, typing.Any]:
         """The metric table for the model."""

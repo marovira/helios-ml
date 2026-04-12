@@ -371,6 +371,21 @@ class TestBatchToDevice:
         assert seen_phases == [hlm.BatchPhase.TRAIN, hlm.BatchPhase.TEST]
 
 
+class TestGetTrainStepsPerEpoch:
+    def test_delegates_to_datamodule(self) -> None:
+        import unittest.mock
+
+        model = MockModel()
+        mock_datamodule = unittest.mock.MagicMock()
+        mock_datamodule.get_train_steps_per_epoch.return_value = 42
+        mock_trainer = unittest.mock.MagicMock()
+        mock_trainer.datamodule = mock_datamodule
+        model.trainer = mock_trainer
+
+        assert model.get_train_steps_per_epoch() == 42
+        mock_datamodule.get_train_steps_per_epoch.assert_called_once()
+
+
 class TestModelUtils:
     def test_find_pretrained_file_found(self, tmp_path: pathlib.Path) -> None:
         models_dir = tmp_path / "mymodel"

@@ -447,6 +447,45 @@ class DataModule(abc.ABC):
     def teardown(self) -> None:  # noqa: B027
         """Clean up any state after training is over."""
 
+    def get_train_steps_per_epoch(self) -> int:
+        """
+        Return the number of iterations per training epoch.
+
+        The number is determined by constructing the training dataloader and returning its
+        length. This function is generally useful for initialising schedulers that need
+        the total number of steps per epoch, so you should call this within
+        :py:meth:`~helios.model.model.Model.steup` or
+        :py:meth:`~helios.plugins.plugin.Plugin.setup` and cache the result.
+
+        This function is equivalent to:
+
+            .. code-block:: python
+
+                import helios.core as hlc
+                # If called from within Model.setup()
+                dataloader, _ = hlc.get_from_optional(
+                        self.trainer.datamodule.train_dataloader())
+                steps = len(dataloader)
+
+        .. note::
+            This function only applies to training datasets. If you need something similar
+            for validation or testing, you can obtain the dataloader directly.
+
+        Returns:
+            The number of iterations per training epoch.
+
+        Raises:
+            RuntimeError: if the training dataloader hasn't been created.
+        """
+        result = self.train_dataloader()
+        if result is None:
+            raise RuntimeError(
+                "get_train_steps_per_epoch() called but no training dataset "
+                "has been configured."
+            )
+        dataloader, _ = result
+        return len(dataloader)
+
     def _create_dataset(
         self, dataset: tud.Dataset, params: DataLoaderParams | dict[str, typing.Any]
     ) -> Dataset:
