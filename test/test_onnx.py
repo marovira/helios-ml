@@ -34,3 +34,6 @@ class TestONNX:
         out_path = tmp_path / "mlp.onnx"
         onnx.export_to_onnx(model, tensor_x, out_path, validate_output=True)
         assert out_path.exists()
+
+        files = [file for file in tmp_path.iterdir() if file.is_file()]
+        assert len(files) == 1

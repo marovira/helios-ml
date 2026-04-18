@@ -3,6 +3,7 @@ import pathlib
 import numpy as np
 import onnx
 import onnxruntime  # type: ignore[import-untyped]
+import packaging.version as pv
 import torch
 import torch.onnx
 from torch import nn
@@ -29,6 +30,13 @@ def export_to_onnx(
         This function assumes that the given network takes a single tensor as input and
         produces a single tensor as output.
 
+    .. note::
+        Starting in torch 2.9.1, ``torch.onnx.export`` defaults to ``dynamo=True``. If
+        dynamo is used (whether by default in torch >= 2.9.1 or by explicitly passing
+        ``dynamo=True`` in ``kwargs``), then the file path is omitted from the arguments
+        to ``torch.onnx.export``, using instead ``program.save()`` to write the file. If
+        dynamo is not used, then it is passed on to ``torch.onnx.export``.
+
     Args:
         net: the network to convert.
         net_args: the input tensor for tracing.
@@ -45,7 +53,15 @@ def export_to_onnx(
     with torch.no_grad():
         out = net(net_args)
 
-    torch.onnx.export(net, net_args, out_path, **kwargs)  # type: ignore[arg-type]
+    _dynamo_default = pv.Version(torch.__version__) >= pv.Version("2.9.1")
+    is_dynamo = kwargs.get("dynamo", _dynamo_default)
+
+    if is_dynamo:
+        program = torch.onnx.export(net, (net_args,), **kwargs)
+        assert program is not None
+        program.save(str(out_path))
+    else:
+        torch.onnx.export(net, net_args, out_path, **kwargs)  # type: ignore[arg-type]
 
     onnx.checker.check_model(out_path)
 
