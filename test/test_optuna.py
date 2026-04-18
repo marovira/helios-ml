@@ -47,9 +47,11 @@ class TestOptunaPlugin:
             plugin = hlpo.OptunaPlugin(trial, "accuracy")
             trainer = hlt.Trainer()
 
-            plugin.configure_trainer(trainer)
+            trainer.register_plugin(plugin)
             assert len(trainer.plugins) == 1
-            assert trainer.plugins["optuna"] == plugin
+            assert trainer.plugins["optuna"] is plugin
+
+            plugin.configure_trainer(trainer)
             assert len(trainer.train_exceptions) == 1
             assert trainer.train_exceptions[0] == optuna.TrialPruned
 

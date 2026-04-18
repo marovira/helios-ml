@@ -1,6 +1,27 @@
+import torch
+from torch.utils import data as tud
+
 import helios.model as hlm
 import helios.plugins as hlp
 import helios.trainer as hlt
+from helios import data
+from helios.core import rng
+
+
+class _TinyDataset(tud.Dataset):
+    def __getitem__(self, index: int) -> torch.Tensor:
+        return torch.zeros(1)
+
+    def __len__(self) -> int:
+        return 4
+
+
+class _SimpleDatamodule(data.DataModule):
+    def setup(self) -> None:
+        params = data.DataLoaderParams(
+            batch_size=1, num_workers=0, random_seed=rng.get_default_seed()
+        )
+        self._train_dataset = self._create_dataset(_TinyDataset(), params)
 
 
 class ExceptionPlugin(hlp.Plugin):
@@ -55,3 +76,31 @@ class TestPlugins:
 
         assert t.train_exceptions == exc_list
         assert t.test_exceptions == exc_list
+
+    def test_configure_called_automatically(self) -> None:
+        class TrackingPlugin(hlp.Plugin):
+            def __init__(self) -> None:
+                super().__init__("tracking")
+                self.configure_trainer_called: bool = False
+                self.configure_model_called: bool = False
+
+            def setup(self) -> None:
+                pass
+
+            def configure_trainer(self, trainer: hlt.Trainer) -> None:
+                self.configure_trainer_called = True
+
+            def configure_model(self, model: hlm.Model) -> None:
+                self.configure_model_called = True
+
+        plugin = TrackingPlugin()
+        trainer = hlt.Trainer(
+            train_unit=hlt.TrainingUnit.EPOCH,
+            total_steps=1,
+            use_cpu=True,
+        )
+        trainer.register_plugin(plugin)
+        trainer.fit(PluginModel("test"), _SimpleDatamodule())
+
+        assert plugin.configure_trainer_called
+        assert plugin.configure_model_called

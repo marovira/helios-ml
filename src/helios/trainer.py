@@ -407,9 +407,36 @@ class Trainer:
         """Return the list of plug-ins."""
         return self._plugins
 
-    @plugins.setter
-    def plugins(self, plugs: dict[str, hlp.Plugin]) -> None:
-        self._plugins = plugs
+    def register_plugin(self, plugin: hlp.Plugin) -> None:
+        """
+        Register a plug-in with the trainer.
+
+        The plug-in is registered using its ``plug_id``.
+
+        .. note::
+            :py:meth:`~helios.plugins.plugin.Plugin.configure_trainer` and
+            :py:meth:`~helios.plugins.plugin.Plugin.configure_model` are called
+            automatically by the trainer before training/testing.
+
+        Args:
+            plugin: the plug-in to register.
+
+        Raises:
+            KeyError: if a plug-in with the same ID is already registered.
+            ValueError: if the plug-in conflicts with an already-registered plug-in's
+                :py:class:`~helios.plugins.plugin.UniquePluginOverrides`.
+        """
+        plug_id = plugin._plug_id  # noqa: SLF001
+        if plug_id in self._plugins:
+            raise KeyError(
+                f"error: a plug-in with id {plug_id} has already been registered"
+            )
+        self._plugins[plug_id] = plugin
+        try:
+            self._validate_plugins()
+        except ValueError:
+            del self._plugins[plug_id]
+            raise
 
     @property
     def queue(self) -> mp.Queue | None:
@@ -522,6 +549,10 @@ class Trainer:
             mode:: the operation to perform.
         """
         datamodule.prepare_data()
+
+        for plugin in self._plugins.values():
+            plugin.configure_trainer(self)
+            plugin.configure_model(model)
 
         if self._is_distributed and not self._is_torchrun:
             if mp.get_start_method(allow_none=True) is None:

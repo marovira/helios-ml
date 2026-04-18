@@ -330,7 +330,7 @@ class CheckpointPlugin(hlp.Plugin):
         pass
 
     def configure_trainer(self, trainer: hlt.Trainer) -> None:
-        self._register_in_trainer(trainer)
+        pass
 
     def state_dict(self) -> dict[str, typing.Any]:
         return self._state
@@ -344,12 +344,13 @@ class CheckpointPlugin(hlp.Plugin):
 class OverrideFlagsPlugin(hlp.Plugin):
     def __init__(
         self,
+        plug_id: str = "override",
         training_batch: bool = False,
         validation_batch: bool = False,
         testing_batch: bool = False,
         should_training_stop: bool = False,
     ):
-        super().__init__("override")
+        super().__init__(plug_id)
         self._overrides.training_batch = training_batch
         self._overrides.validation_batch = validation_batch
         self._overrides.testing_batch = testing_batch
@@ -854,8 +855,7 @@ class TestTrainer:
     def test_append_plugins(self) -> None:
         trainer = hlt.Trainer()
 
-        trainer.plugins["empty"] = EmptyPlugin()
-        trainer._validate_plugins()
+        trainer.register_plugin(EmptyPlugin())
 
         batch_flags = {
             "training_batch": False,
@@ -866,15 +866,17 @@ class TestTrainer:
 
         for flag_name in batch_flags:
             batch_flags[flag_name] = True
-            trainer.plugins[f"override_base_{flag_name}"] = OverrideFlagsPlugin(
-                **batch_flags
+            trainer.register_plugin(
+                OverrideFlagsPlugin(plug_id=f"override_base_{flag_name}", **batch_flags)
             )
 
             with pytest.raises(ValueError):
-                trainer.plugins[f"override_dup_{flag_name}"] = OverrideFlagsPlugin(
-                    **batch_flags
+                trainer.register_plugin(
+                    OverrideFlagsPlugin(
+                        plug_id=f"override_dup_{flag_name}", **batch_flags
+                    )
                 )
-                trainer._validate_plugins()
+            assert f"override_dup_{flag_name}" not in trainer.plugins
 
             batch_flags[flag_name] = False
 
@@ -883,7 +885,7 @@ class TestTrainer:
         model = CheckPluginModel()
 
         name = CheckFunPlugin.name
-        trainer.plugins[name] = CheckFunPlugin()
+        trainer.register_plugin(CheckFunPlugin())
 
         called_funs: dict[str, bool]
         if fit:
@@ -930,7 +932,7 @@ class TestTrainer:
             chkpt_frequency=10,
             use_cpu=True,
         )
-        plugin.configure_trainer(trainer)
+        trainer.register_plugin(plugin)
         assert trainer.fit(model, datamodule)
         safe_globals = torch.serialization.get_safe_globals()
         for t in model.types_for_safe_load():
@@ -987,3 +989,21 @@ class TestTrainer:
         trainer = hlt.Trainer(use_cpu=True)
         assert trainer.test(EmptyModel(), datamodule)
         assert datamodule.teardown_called
+
+    def test_register_plugin(self) -> None:
+        trainer = hlt.Trainer()
+
+        plugin = EmptyPlugin()
+        trainer.register_plugin(plugin)
+        assert "empty" in trainer.plugins
+        assert trainer.plugins["empty"] is plugin
+
+        with pytest.raises(KeyError):
+            trainer.register_plugin(EmptyPlugin())
+
+        trainer.register_plugin(OverrideFlagsPlugin(plug_id="base", training_batch=True))
+        with pytest.raises(ValueError):
+            trainer.register_plugin(
+                OverrideFlagsPlugin(plug_id="dup", training_batch=True)
+            )
+        assert "dup" not in trainer.plugins

@@ -170,8 +170,7 @@ class Plugin(abc.ABC):
         Configure the trainer before training or testing.
 
         This function can be used to set certain properties of the trainer. For example,
-        it can be used to assign valid exceptions that the plug-in requires or to register
-        the plug-in itself in the trainer.
+        it can be used to assign valid exceptions that the plug-in requires.
 
         Args:
             trainer: the trainer instance.
@@ -319,23 +318,3 @@ class Plugin(abc.ABC):
         """
         exc = core.convert_to_list(exc)  # type: ignore[arg-type]
         trainer.test_exceptions.extend(exc)  # type: ignore[arg-type]
-
-    def _register_in_trainer(self, trainer: Trainer) -> None:
-        """
-        Register the plug-in instance in the trainer table.
-
-        The plug-in will be registered with the value provided to ``plug_id``. If another
-        plug-in is found with the same ID, an exception is raised.
-
-        Args:
-            trainer: the trainer instance.
-
-        Raises:
-            KeyError: if another plug-in with the same ID is found.
-        """
-        if self._plug_id in trainer.plugins:
-            raise KeyError(
-                f"error: a plug-in with id {self._plug_id} has already been registered"
-            )
-
-        trainer.plugins[self._plug_id] = self

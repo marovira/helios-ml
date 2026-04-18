@@ -42,12 +42,8 @@ class OptunaPlugin(hlp.Plugin):
 
                 trainer = ...
 
-                # Automatically registers the plug-in with the trainer.
-                plugin.configure_trainer(trainer)
-
-                # This can be skipped if you don't want the auto-resume functionality or
-                # if you wish to manage it yourself.
-                plugin.configure_model(model)
+                # Register the plug-in with the trainer.
+                trainer.register_plugin(plugin)
 
                 trainer.fit(model, datamodule)
                 plugin.check_pruned()
@@ -88,15 +84,11 @@ class OptunaPlugin(hlp.Plugin):
         """
         Configure the trainer with the required settings.
 
-        This will do two things:
-
-        #. Register the plug-in itself with the trainer.
-        #. Append the trial pruned exception to the trainer.
+        This appends the trial pruned exception to the trainer's exception list.
 
         Args:
             trainer: the trainer instance.
         """
-        self._register_in_trainer(trainer)
         self._append_train_exceptions(optuna.TrialPruned, trainer)
 
     def configure_model(self, model: hlm.Model) -> None:
