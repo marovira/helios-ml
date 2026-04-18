@@ -550,6 +550,7 @@ class Trainer:
                 raise e
 
             self.queue = queue
+            datamodule.teardown()
             return
 
         if self._is_torchrun and self._is_distributed:
@@ -567,6 +568,7 @@ class Trainer:
         if self._is_torchrun and self._is_distributed:
             dist.shutdown_dist()
 
+        datamodule.teardown()
         loggers.close_loggers()
 
     def _train(self) -> None:

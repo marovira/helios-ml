@@ -54,6 +54,22 @@ class RandomDatamodule(data.DataModule):
         self._test_dataset = self._create_dataset(RandomDataset(), params)
 
 
+class TeardownDatamodule(data.DataModule):
+    def __init__(self) -> None:
+        super().__init__()
+        self.teardown_called: bool = False
+
+    def setup(self) -> None:
+        params = data.DataLoaderParams(
+            batch_size=1, num_workers=0, random_seed=rng.get_default_seed()
+        )
+        self._train_dataset = self._create_dataset(RandomDataset(), params)
+        self._test_dataset = self._create_dataset(RandomDataset(), params)
+
+    def teardown(self) -> None:
+        self.teardown_called = True
+
+
 class CheckFunModel(hlm.Model):
     def __init__(self) -> None:
         super().__init__("test-model")
@@ -955,3 +971,19 @@ class TestTrainer:
         assert trainer.fit(model, RandomDatamodule())
         chkpt_root = tmp_path / model._save_name
         assert not chkpt_root.exists() or len(list(chkpt_root.glob("*.pth"))) == 0
+
+    def test_teardown_called_after_fit(self) -> None:
+        datamodule = TeardownDatamodule()
+        trainer = hlt.Trainer(
+            train_unit=hlt.TrainingUnit.EPOCH,
+            total_steps=1,
+            use_cpu=True,
+        )
+        assert trainer.fit(EmptyModel(), datamodule)
+        assert datamodule.teardown_called
+
+    def test_teardown_called_after_test(self) -> None:
+        datamodule = TeardownDatamodule()
+        trainer = hlt.Trainer(use_cpu=True)
+        assert trainer.test(EmptyModel(), datamodule)
+        assert datamodule.teardown_called
