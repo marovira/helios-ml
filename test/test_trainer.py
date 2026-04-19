@@ -18,6 +18,7 @@ from helios import data
 from helios import model as hlm
 from helios.core import rng
 from helios.data import functional as F
+from helios.trainer import _CheckpointKeys
 
 # Ignore the use of private members so we can test them correctly.
 # ruff: noqa: SLF001
@@ -662,7 +663,7 @@ class TestTrainer:
                 state_dict.pop("tmp")
 
                 # Remove one of the valid keys
-                state_dict.pop("rng")
+                state_dict.pop(_CheckpointKeys.RNG)
                 assert not trainer._validate_state_dict(state_dict)
 
     def test_fit_iter(self, tmp_path: pathlib.Path) -> None:
@@ -943,7 +944,7 @@ class TestTrainer:
         assert len(chkpts) == 1
 
         chkpt = hlc.safe_torch_load(chkpts[0])
-        model.load_state_dict(chkpt["model"])
+        model.load_state_dict(chkpt[_CheckpointKeys.MODEL])
         plugin.load_state_dict(chkpt[plugin._plug_id])
 
     def test_should_save_checkpoint_iter_skips(self, tmp_path: pathlib.Path) -> None:
