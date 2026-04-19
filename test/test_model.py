@@ -8,6 +8,7 @@ import torch
 
 import helios.model as hlm
 import helios.trainer as hlt
+from helios.model.model import _InternalStateKeys
 
 
 @hlm.MODEL_REGISTRY.register
@@ -56,7 +57,7 @@ class TestModel:
         state = hlt.TrainingState()
 
         assert model.save_name == "mock-model"
-        assert model.state_dict() == {}
+        assert model.state_dict() == {"user": {}}
         assert model.user_state_dict() == {}
         assert model.trained_state_dict() == {}
 
@@ -188,7 +189,7 @@ class TestClipGradients:
 class TestStateDicts:
     def test_state_dict_empty_without_scaler(self) -> None:
         model = MockModel()
-        assert model.state_dict() == {}
+        assert model.state_dict() == {"user": {}}
 
     def test_state_dict_includes_scaler(self) -> None:
         model = MockModel()
@@ -197,27 +198,8 @@ class TestStateDicts:
         model.amp_context = hlm.AMPContext(scaler=mock_scaler)
 
         sd = model.state_dict()
-        assert "_helios_amp_scaler" in sd
-        assert sd["_helios_amp_scaler"] == {"scale": 65536.0}
-
-    def test_state_dict_raises_on_reserved_key(self) -> None:
-        @hlm.MODEL_REGISTRY.register
-        class ConflictingModel(hlm.Model):
-            def __init__(self) -> None:
-                super().__init__("conflicting")
-
-            def setup(self, fast_init: bool = False) -> None:
-                pass
-
-            def user_state_dict(self) -> dict[str, typing.Any]:
-                return {"_helios_amp_scaler": "oops"}
-
-        model = ConflictingModel()
-        model.amp_context = hlm.AMPContext(
-            scaler=unittest.mock.MagicMock(spec=torch.amp.GradScaler)
-        )
-        with pytest.raises(KeyError, match="_helios_amp_scaler"):
-            model.state_dict()
+        assert _InternalStateKeys.AMP_SCALER in sd
+        assert sd[_InternalStateKeys.AMP_SCALER] == {"scale": 65536.0}
 
     def test_load_state_dict_forwards_user_keys(self) -> None:
         received: dict[str, typing.Any] = {}
@@ -236,7 +218,7 @@ class TestStateDicts:
                 received.update(state_dict)
 
         model = RecordingModel()
-        model.load_state_dict({"foo": 1, "bar": 2})
+        model.load_state_dict({"user": {"foo": 1, "bar": 2}})
         assert received == {"foo": 1, "bar": 2}
 
     def test_load_state_dict_restores_scaler(self) -> None:
@@ -244,32 +226,11 @@ class TestStateDicts:
         mock_scaler = unittest.mock.MagicMock(spec=torch.amp.GradScaler)
         model.amp_context = hlm.AMPContext(scaler=mock_scaler)
 
-        model.load_state_dict({"_helios_amp_scaler": {"scale": 65536.0}, "x": 1})
+        model.load_state_dict(
+            {"user": {}, _InternalStateKeys.AMP_SCALER: {"scale": 65536.0}}
+        )
 
         mock_scaler.load_state_dict.assert_called_once_with({"scale": 65536.0})
-
-    def test_load_state_dict_strips_helios_key_before_forwarding(self) -> None:
-        received: dict[str, typing.Any] = {}
-
-        @hlm.MODEL_REGISTRY.register
-        class StrippingModel(hlm.Model):
-            def __init__(self) -> None:
-                super().__init__("stripping")
-
-            def setup(self, fast_init: bool = False) -> None:
-                pass
-
-            def load_user_state_dict(
-                self, state_dict: dict[str, typing.Any], fast_init: bool = False
-            ) -> None:
-                received.update(state_dict)
-
-        model = StrippingModel()
-        mock_scaler = unittest.mock.MagicMock(spec=torch.amp.GradScaler)
-        model.amp_context = hlm.AMPContext(scaler=mock_scaler)
-        model.load_state_dict({"_helios_amp_scaler": {"scale": 65536.0}, "x": 1})
-        assert "_helios_amp_scaler" not in received
-        assert received == {"x": 1}
 
     def test_amp_context_dict_round_trip(self) -> None:
         if not torch.cuda.is_available():
@@ -280,7 +241,7 @@ class TestStateDicts:
         assert model.amp_context is not None
 
         sd = model.state_dict()
-        assert "_helios_amp_scaler" in sd
+        assert _InternalStateKeys.AMP_SCALER in sd
 
         model2 = MockModel()
         model2.device = torch.device("cuda:0")

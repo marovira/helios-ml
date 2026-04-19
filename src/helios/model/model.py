@@ -53,6 +53,12 @@ class BatchPhase(enum.Enum):
     TEST = 2
 
 
+class _InternalStateKeys(enum.StrEnum):
+    """Identifies the keys used for internal state."""
+
+    AMP_SCALER = "amp_scaler"
+
+
 # Tell Ruff to ignore the empty-method-without-abstract-decorator check, since a lot of
 # functions in the Model base class will be empty by default.
 # ruff: noqa: B027
@@ -354,11 +360,12 @@ class Model(abc.ABC):
         if (
             not fast_init
             and self.amp_context is not None
-            and "_helios_amp_scaler" in state_dict
+            and _InternalStateKeys.AMP_SCALER in state_dict
         ):
-            self.amp_context.scaler.load_state_dict(state_dict["_helios_amp_scaler"])
-        user_dict = {k: v for k, v in state_dict.items() if "_helios_" not in k}
-        self.load_user_state_dict(user_dict, fast_init)
+            self.amp_context.scaler.load_state_dict(
+                state_dict[_InternalStateKeys.AMP_SCALER]
+            )
+        self.load_user_state_dict(state_dict["user"], fast_init)
 
     def load_user_state_dict(
         self, state_dict: dict[str, typing.Any], fast_init: bool
@@ -384,29 +391,16 @@ class Model(abc.ABC):
 
         The full dictionary is assembled like this:
             1. Call :py:meth:`user_state_dict` to gather any user state.
-            1. Ensure that none of the keys are reserved.
             1. Add the model internal state.
-
-        Reserved keys are prefixed with ``_helios_`` to avoid conflicts with user-keys. If
-        a reserved key is found in the user-returned dictionary, then an error will be
-        raised.
 
         Returns:
             The state dictionary of the model.
-
-        Raises:
-            KeyError: if :py:meth:`user_state_dict` contains a reserved key.
         """
-        state = self.user_state_dict()
-        reserved_keys = ("_helios_amp_scaler",)
-        conflicts = [k for k in reserved_keys if k in state]
-        if len(conflicts) > 0:
-            raise KeyError(
-                "user_state_dict() contains the following reserved keys: "
-                f"{conflicts}. Reserved keys are for internal use only"
-            )
+        state = {
+            "user": self.user_state_dict(),
+        }
         if self.amp_context is not None:
-            state["_helios_amp_scaler"] = self.amp_context.scaler.state_dict()
+            state[_InternalStateKeys.AMP_SCALER] = self.amp_context.scaler.state_dict()
         return state
 
     def user_state_dict(self) -> dict[str, typing.Any]:
@@ -414,10 +408,6 @@ class Model(abc.ABC):
         Get the user-defined state dictionary of the model.
 
         Use this  function to save any state that you require for checkpoints.
-
-        .. warning::
-            Do **not** use any keys that begin with ``_helios_`` as these are reserved for
-            internal use.
 
         Returns:
             The user-defined state dictionary of the model.
