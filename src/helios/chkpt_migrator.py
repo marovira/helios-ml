@@ -8,7 +8,8 @@ import tqdm
 from helios import core
 
 from ._version import __version__
-from .trainer import TrainingState, register_trainer_types_for_safe_load
+from .model.model import _InternalStateKeys
+from .trainer import TrainingState, _CheckpointKeys, register_trainer_types_for_safe_load
 
 
 def migrate_checkpoints_to_current_version(root: pathlib.Path) -> None:
@@ -29,13 +30,34 @@ def migrate_checkpoints_to_current_version(root: pathlib.Path) -> None:
         state = core.safe_torch_load(chkpt_path)
 
         # Pre-v1.0, checkpoints didn't have a version key.
-        if "version" not in state:
-            state["version"] = __version__
+        if _CheckpointKeys.VERSION not in state:
+            state[_CheckpointKeys.VERSION] = __version__
 
         # Pre-v1.1, the TrainingState struct is saved as a dictionary, not the object
         # itself.
-        if isinstance(state["training_state"], dict):
-            state["training_state"] = TrainingState(**state["training_state"])
+        if isinstance(state[_CheckpointKeys.TRAINING_STATE], dict):
+            state[_CheckpointKeys.TRAINING_STATE] = TrainingState(
+                **state[_CheckpointKeys.TRAINING_STATE]
+            )
+
+        # Pre-v2.0, all model state was stored under the "model" key. v2.0 added the
+        # notion of model-internal state, and user state is now saved under the "user"
+        # key. Therefore everything that was under the "model" key now gets mapped to the
+        # "user" sub-key.
+        if _InternalStateKeys.USER not in state[_CheckpointKeys.MODEL]:
+            state[_CheckpointKeys.MODEL] = {
+                _InternalStateKeys.USER: state[_CheckpointKeys.MODEL]
+            }
+
+        # Pre-v2.0, the log_path and run_path were stored as separate keys. These have now
+        # been moved under the "loggers" key.
+        if _CheckpointKeys.LOGGERS not in state:
+            loggers_state: dict[str, dict] = {}
+            if "log_path" in state:
+                loggers_state["root"] = {"log_file": state.pop("log_path")}
+            if "run_path" in state:
+                loggers_state["tensorboard"] = {"run_path": state.pop("run_path")}
+            state[_CheckpointKeys.LOGGERS] = loggers_state
 
         torch.save(state, chkpt_path)
 
