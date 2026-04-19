@@ -11,7 +11,7 @@ from torch import nn
 
 def export_to_onnx(
     net: nn.Module,
-    net_args: torch.Tensor,
+    net_args: torch.Tensor | tuple[torch.Tensor, ...],
     out_path: pathlib.Path,
     validate_output: bool = False,
     save_on_validation_fail: bool = True,
@@ -26,10 +26,6 @@ def export_to_onnx(
     valid. If you wish to validate the traced outputs to ensure they're the same, set
     ``validate_output`` to true and change ``rtol``/``atol`` as needed.
 
-    .. warning::
-        This function assumes that the given network takes a single tensor as input and
-        produces a single tensor as output.
-
     .. note::
         Starting in torch 2.9.1, ``torch.onnx.export`` defaults to ``dynamo=True``. If
         dynamo is used (whether by default in torch >= 2.9.1 or by explicitly passing
@@ -39,7 +35,7 @@ def export_to_onnx(
 
     Args:
         net: the network to convert.
-        net_args: the input tensor for tracing.
+        net_args: the input tensor(s) for tracing.
         out_path: the path to save the exported network to.
         validate_output: if true, validation is performed to ensure correctness. Defaults
             to false.
@@ -51,13 +47,14 @@ def export_to_onnx(
     """
     net.eval()
     with torch.no_grad():
-        out = net(net_args)
+        out = net(*net_args) if isinstance(net_args, tuple) else net(net_args)
 
     _dynamo_default = pv.Version(torch.__version__) >= pv.Version("2.9.1")
     is_dynamo = kwargs.get("dynamo", _dynamo_default)
 
     if is_dynamo:
-        program = torch.onnx.export(net, (net_args,), **kwargs)
+        args = net_args if isinstance(net_args, tuple) else (net_args,)
+        program = torch.onnx.export(net, args, **kwargs)
         assert program is not None
         program.save(str(out_path))
     else:
@@ -75,10 +72,18 @@ def export_to_onnx(
                 return tensor.detach().cpu().numpy()
             return tensor.cpu().numpy()
 
-        ort_inputs = {ort_session.get_inputs()[0].name: to_numpy(net_args)}
+        args_seq = net_args if isinstance(net_args, tuple) else (net_args,)
+        ort_inputs = {
+            inp.name: to_numpy(t)
+            for inp, t in zip(ort_session.get_inputs(), args_seq, strict=True)
+        }
         ort_outs = ort_session.run(None, ort_inputs)
+        outs_seq = out if isinstance(out, tuple) else (out,)
         try:
-            np.testing.assert_allclose(to_numpy(out), ort_outs[0], rtol=rtol, atol=atol)
+            for expected, actual in zip(outs_seq, ort_outs, strict=True):
+                np.testing.assert_allclose(
+                    to_numpy(expected), actual, rtol=rtol, atol=atol
+                )
         except AssertionError as e:
             if not save_on_validation_fail:
                 out_path.unlink(missing_ok=True)
