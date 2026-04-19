@@ -43,6 +43,7 @@ class TestLinearWarmupScheduler:
         param = nn.Parameter(torch.tensor(1.0))
         return optim.SGD([param], lr=lr)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_warmup_lr(self) -> None:
         warmup_steps = 4
         base_lr = 1.0
@@ -64,6 +65,7 @@ class TestLinearWarmupScheduler:
             expected = base_lr * step / warmup_steps
             assert optimizer.param_groups[0]["lr"] == pytest.approx(expected)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_warmup_start_factor(self) -> None:
         warmup_steps = 4
         base_lr = 1.0
@@ -88,6 +90,7 @@ class TestLinearWarmupScheduler:
         # After warmup_steps total explicit steps: LR = base_lr
         assert optimizer.param_groups[0]["lr"] == pytest.approx(base_lr)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_post_warmup_delegates(self) -> None:
         warmup_steps = 2
         base_lr = 1.0
@@ -118,6 +121,7 @@ class TestMultiStepRestartLR:
         param = nn.Parameter(torch.tensor(1.0))
         return optim.SGD([param], lr=lr)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_milestone_decay(self) -> None:
         base_lr = 1.0
         gamma = 0.1
@@ -139,6 +143,7 @@ class TestMultiStepRestartLR:
         sched.step()  # epoch 4: milestone hit once → lr * gamma again
         assert optimizer.param_groups[0]["lr"] == pytest.approx(base_lr * gamma**2)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_no_change_between_milestones(self) -> None:
         base_lr = 1.0
         optimizer = self._make_optimizer(base_lr)
@@ -149,6 +154,7 @@ class TestMultiStepRestartLR:
 
         assert optimizer.param_groups[0]["lr"] == pytest.approx(base_lr)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_restart_resets_lr(self) -> None:
         base_lr = 1.0
         gamma = 0.1
@@ -173,6 +179,7 @@ class TestMultiStepRestartLR:
         sched.step()  # epoch 3: restart with weight 0.5 → initial_lr * 0.5
         assert optimizer.param_groups[0]["lr"] == pytest.approx(base_lr * 0.5)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_repeated_milestone_applies_higher_gamma_power(self) -> None:
         base_lr = 1.0
         gamma = 0.1
@@ -207,6 +214,7 @@ class TestCosineAnnealingRestartLR:
         # epoch 0: cos(pi*0/4)=1 → LR = eta_min + weight*0.5*base_lr*2 = base_lr
         assert optimizer.param_groups[0]["lr"] == pytest.approx(base_lr)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_single_period_ends_at_eta_min(self) -> None:
         base_lr = 1.0
         eta_min = 0.0
@@ -219,6 +227,7 @@ class TestCosineAnnealingRestartLR:
         # epoch 4: cos(pi)=-1 → LR = eta_min
         assert optimizer.param_groups[0]["lr"] == pytest.approx(eta_min)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_eta_min_is_floor(self) -> None:
         base_lr = 1.0
         eta_min = 0.1
@@ -234,6 +243,7 @@ class TestCosineAnnealingRestartLR:
         # epoch 4: end → LR = eta_min
         assert optimizer.param_groups[0]["lr"] == pytest.approx(eta_min)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_midpoint_lr(self) -> None:
         base_lr = 1.0
         optimizer = self._make_optimizer(base_lr)
@@ -245,6 +255,7 @@ class TestCosineAnnealingRestartLR:
         # epoch 2: cos(pi*2/4) = cos(pi/2) = 0 → LR = 0.5*base_lr*(1+0) = 0.5
         assert optimizer.param_groups[0]["lr"] == pytest.approx(0.5 * base_lr)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_restart_weight_scales_peak(self) -> None:
         base_lr = 1.0
         optimizer = self._make_optimizer(base_lr)
@@ -264,6 +275,7 @@ class TestCosineAnnealingRestartLR:
         # LR = 0 + 0.5*0.5*(1+cos(pi/2)) = 0.25 — exactly half the period-1 midpoint
         assert optimizer.param_groups[0]["lr"] == pytest.approx(0.5 * lr_period1)
 
+    @pytest.mark.filterwarnings("ignore::UserWarning")
     def test_lr_formula_matches_manual_computation(self) -> None:
         base_lr = 2.0
         eta_min = 0.2
