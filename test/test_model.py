@@ -8,7 +8,9 @@ import torch
 
 import helios.model as hlm
 import helios.trainer as hlt
-from helios.model.model import _InternalStateKeys
+
+# Ignore the use of private members so we can test them correctly.
+# ruff: noqa: SLF001
 
 
 @hlm.MODEL_REGISTRY.register
@@ -189,7 +191,7 @@ class TestClipGradients:
 class TestStateDicts:
     def test_state_dict_empty_without_scaler(self) -> None:
         model = MockModel()
-        assert model.state_dict() == {"user": {}}
+        assert model.state_dict() == {hlm.model._InternalStateKeys.USER: {}}
 
     def test_state_dict_includes_scaler(self) -> None:
         model = MockModel()
@@ -198,8 +200,8 @@ class TestStateDicts:
         model.amp_context = hlm.AMPContext(scaler=mock_scaler)
 
         sd = model.state_dict()
-        assert _InternalStateKeys.AMP_SCALER in sd
-        assert sd[_InternalStateKeys.AMP_SCALER] == {"scale": 65536.0}
+        assert hlm.model._InternalStateKeys.AMP_SCALER in sd
+        assert sd[hlm.model._InternalStateKeys.AMP_SCALER] == {"scale": 65536.0}
 
     def test_load_state_dict_forwards_user_keys(self) -> None:
         received: dict[str, typing.Any] = {}
@@ -218,7 +220,7 @@ class TestStateDicts:
                 received.update(state_dict)
 
         model = RecordingModel()
-        model.load_state_dict({"user": {"foo": 1, "bar": 2}})
+        model.load_state_dict({hlm.model._InternalStateKeys.USER: {"foo": 1, "bar": 2}})
         assert received == {"foo": 1, "bar": 2}
 
     def test_load_state_dict_restores_scaler(self) -> None:
@@ -227,7 +229,7 @@ class TestStateDicts:
         model.amp_context = hlm.AMPContext(scaler=mock_scaler)
 
         model.load_state_dict(
-            {"user": {}, _InternalStateKeys.AMP_SCALER: {"scale": 65536.0}}
+            {"user": {}, hlm.model._InternalStateKeys.AMP_SCALER: {"scale": 65536.0}}
         )
 
         mock_scaler.load_state_dict.assert_called_once_with({"scale": 65536.0})
@@ -241,7 +243,7 @@ class TestStateDicts:
         assert model.amp_context is not None
 
         sd = model.state_dict()
-        assert _InternalStateKeys.AMP_SCALER in sd
+        assert hlm.model._InternalStateKeys.AMP_SCALER in sd
 
         model2 = MockModel()
         model2.device = torch.device("cuda:0")

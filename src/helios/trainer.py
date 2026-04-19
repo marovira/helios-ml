@@ -126,7 +126,12 @@ def get_trainer_safe_types_for_load() -> list[
     Returns:
         The list of types that need to be registered for safe loading.
     """
-    return [TrainingState, pathlib.PosixPath, pathlib.WindowsPath]
+    return [
+        TrainingState,
+        pathlib.PosixPath,
+        pathlib.WindowsPath,
+        *hlm.model.get_model_safe_types_for_load(),
+    ]
 
 
 def register_trainer_types_for_safe_load() -> None:

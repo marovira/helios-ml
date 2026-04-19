@@ -57,6 +57,19 @@ class _InternalStateKeys(enum.StrEnum):
     """Identifies the keys used for internal state."""
 
     AMP_SCALER = "amp_scaler"
+    USER = "user"
+
+
+def get_model_safe_types_for_load() -> list[
+    typing.Callable | tuple[typing.Callable, str]
+]:
+    """
+    Return the list of safe types for loading needed by the model.
+
+    Returns:
+        The list of types that need to be registered for safe loading.
+    """
+    return [_InternalStateKeys]
 
 
 # Tell Ruff to ignore the empty-method-without-abstract-decorator check, since a lot of
@@ -365,7 +378,7 @@ class Model(abc.ABC):
             self.amp_context.scaler.load_state_dict(
                 state_dict[_InternalStateKeys.AMP_SCALER]
             )
-        self.load_user_state_dict(state_dict["user"], fast_init)
+        self.load_user_state_dict(state_dict[_InternalStateKeys.USER], fast_init)
 
     def load_user_state_dict(
         self, state_dict: dict[str, typing.Any], fast_init: bool
@@ -396,8 +409,8 @@ class Model(abc.ABC):
         Returns:
             The state dictionary of the model.
         """
-        state = {
-            "user": self.user_state_dict(),
+        state: dict[str, typing.Any] = {
+            _InternalStateKeys.USER: self.user_state_dict(),
         }
         if self.amp_context is not None:
             state[_InternalStateKeys.AMP_SCALER] = self.amp_context.scaler.state_dict()
