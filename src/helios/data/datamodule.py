@@ -171,6 +171,11 @@ def create_dataloader(
     is_distributed: bool = False,
     sampler: ResumableSamplerType | None = None,
     collate_fn: typing.Callable | None = None,
+    prefetch_factor: int | None = None,
+    persistent_workers: bool = False,
+    pin_memory_device: str = "",
+    timeout: float = 0,
+    multiprocessing_context: typing.Any | None = None,
 ) -> tuple[tud.DataLoader, ResumableSamplerType]:
     """
     Create the dataloader for the given dataset.
@@ -204,6 +209,15 @@ def create_dataloader(
         is_distributed: if true, create the distributed sampler. Defaults to false.
         sampler: (optional) sampler to use.
         collate_fn: (optional) function to merge batches.
+        prefetch_factor: number of batches to prefetch per worker. Only valid when
+            ``num_workers > 0``. Defaults to ``None``.
+        persistent_workers: if true, keep worker processes alive between epochs. Only
+            valid when ``num_workers > 0``. Defaults to false.
+        pin_memory_device: target device for pinned memory when ``pin_memory`` is true.
+            Defaults to ``""``.
+        timeout: timeout in seconds for collecting a batch from workers. Defaults to 0.
+        multiprocessing_context: method for spawning worker processes (e.g.
+            ``"fork"``, ``"spawn"``, ``"forkserver"``). Defaults to ``None``.
 
     Returns:
         The dataloader and sampler.
@@ -249,6 +263,11 @@ def create_dataloader(
             sampler=sampler,
             worker_init_fn=_seed_worker,
             collate_fn=collate_fn,
+            prefetch_factor=prefetch_factor,
+            persistent_workers=persistent_workers,
+            pin_memory_device=pin_memory_device,
+            timeout=timeout,
+            multiprocessing_context=multiprocessing_context,
         ),
         sampler,
     )
@@ -270,6 +289,14 @@ class DataLoaderParams:
         is_distributed: if true, create the distributed sampler.
         sampler: (optional) sampler to use.
         collate_fn: (optional) function to merge batches.
+        prefetch_factor: number of batches to prefetch per worker. Only valid when
+            ``num_workers > 0``.
+        persistent_workers: if true, keep worker processes alive between epochs. Only
+            valid when ``num_workers > 0``.
+        pin_memory_device: target device for pinned memory when ``pin_memory`` is true.
+        timeout: timeout in seconds for collecting a batch from workers.
+        multiprocessing_context: method for spawning worker processes (e.g.
+            ``"fork"``, ``"spawn"``, ``"forkserver"``).
     """
 
     random_seed: int = rng.get_default_seed()
@@ -282,6 +309,11 @@ class DataLoaderParams:
     is_distributed: bool | None = None
     sampler: ResumableSamplerType | None = None
     collate_fn: typing.Callable | None = None
+    prefetch_factor: int | None = None
+    persistent_workers: bool = False
+    pin_memory_device: str = ""
+    timeout: float = 0
+    multiprocessing_context: typing.Any | None = None
 
     def to_dict(self) -> dict[str, typing.Any]:
         """Convert the params object to a dictionary using shallow copies."""
