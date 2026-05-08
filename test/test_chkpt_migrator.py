@@ -57,6 +57,7 @@ class TestChkptMigrator:
             _CheckpointKeys.RNG: {},
             _CheckpointKeys.VERSION: helios.__version__,
             _CheckpointKeys.LOGGERS: {},
+            _CheckpointKeys.DATAMODULE: {},
         }
 
         torch.save(state, tmp_path / "state.pth")

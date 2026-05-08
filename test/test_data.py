@@ -15,6 +15,9 @@ from helios.data import functional as hldf
 from helios.data import samplers as hlds
 from helios.data import transforms as hldt
 
+# Ignore the use of private members so we can test them correctly.
+# ruff: noqa: SLF001
+
 DATASET_SIZE: int = 16
 
 
@@ -66,13 +69,13 @@ class SampleDataModule(data.DataModule):
         )
 
         params.shuffle = True
-        self._train_dataset = self._create_dataset(RandomDataset(), params)
+        self._add_train_phase(RandomDataset(), params)
 
         params.num_workers = 2
-        self._valid_dataset = self._create_dataset(SequentialDataset(), params)
+        self._add_valid_dataset(SequentialDataset(), params)
 
         params.shuffle = False
-        self._test_dataset = self._create_dataset(SequentialDataset(), params)
+        self._add_test_dataset(SequentialDataset(), params)
 
 
 def dummy_collate_fn(a: int) -> int:
@@ -634,6 +637,146 @@ class TestDataModule:
         datamodule.setup()
         with pytest.raises(RuntimeError, match="no training dataset"):
             datamodule.get_train_steps_per_epoch()
+
+    def test_add_train_phase_single(self) -> None:
+        class SinglePhaseModule(data.DataModule):
+            def setup(self) -> None:
+                self._add_train_phase(
+                    RandomDataset(), data.DataLoaderParams(batch_size=1)
+                )
+
+        dm = SinglePhaseModule()
+        dm.setup()
+        assert len(dm._train_phases) == 1
+        assert dm._train_dataset is dm._train_phases[0]
+        assert isinstance(dm.train_dataset, RandomDataset)
+
+    def test_add_train_phase_multi(self) -> None:
+        class MultiPhaseModule(data.DataModule):
+            def setup(self) -> None:
+                params = data.DataLoaderParams(batch_size=1)
+                self._add_train_phase(RandomDataset(), params)
+                self._add_train_phase(SequentialDataset(), params)
+
+        dm = MultiPhaseModule()
+        dm.setup()
+        assert len(dm._train_phases) == 2
+        assert dm._train_dataset is dm._train_phases[0]
+        assert isinstance(dm.train_dataset, RandomDataset)
+
+        dm.advance_train_phase()
+        assert dm._train_dataset is dm._train_phases[1]
+        assert isinstance(dm.train_dataset, SequentialDataset)
+
+        # No-op when already at last phase.
+        dm.advance_train_phase()
+        assert dm._train_dataset is dm._train_phases[1]
+
+    def test_add_train_phase_accepts_dict_params(self) -> None:
+        class DictParamModule(data.DataModule):
+            def setup(self) -> None:
+                self._add_train_phase(RandomDataset(), {"batch_size": 4})
+
+        dm = DictParamModule()
+        dm.setup()
+        assert dm._train_dataset is not None
+        assert dm._train_dataset.params.batch_size == 4
+
+    def test_add_valid_dataset(self) -> None:
+        class ValidModule(data.DataModule):
+            def setup(self) -> None:
+                self._add_valid_dataset(
+                    SequentialDataset(), data.DataLoaderParams(batch_size=1)
+                )
+
+        dm = ValidModule()
+        dm.setup()
+        assert dm._valid_dataset is not None
+        assert isinstance(dm.valid_dataset, SequentialDataset)
+
+    def test_add_valid_dataset_accepts_dict_params(self) -> None:
+        class ValidModule(data.DataModule):
+            def setup(self) -> None:
+                self._add_valid_dataset(SequentialDataset(), {"batch_size": 3})
+
+        dm = ValidModule()
+        dm.setup()
+        assert dm._valid_dataset is not None
+        assert dm._valid_dataset.params.batch_size == 3
+
+    def test_add_test_dataset(self) -> None:
+        class TestModule(data.DataModule):
+            def setup(self) -> None:
+                self._add_test_dataset(
+                    SequentialDataset(), data.DataLoaderParams(batch_size=1)
+                )
+
+        dm = TestModule()
+        dm.setup()
+        assert dm._test_dataset is not None
+        assert isinstance(dm.test_dataset, SequentialDataset)
+
+    def test_add_test_dataset_accepts_dict_params(self) -> None:
+        class TestModule(data.DataModule):
+            def setup(self) -> None:
+                self._add_test_dataset(SequentialDataset(), {"batch_size": 3})
+
+        dm = TestModule()
+        dm.setup()
+        assert dm._test_dataset is not None
+        assert dm._test_dataset.params.batch_size == 3
+
+    def test_datamodule_state_dict_no_phases(self) -> None:
+        class NoPhaseModule(data.DataModule):
+            def setup(self) -> None:
+                pass
+
+        dm = NoPhaseModule()
+        dm.setup()
+        assert dm.state_dict() == {}
+
+    def test_datamodule_state_dict_with_phases(self) -> None:
+        class MultiPhaseModule(data.DataModule):
+            def setup(self) -> None:
+                params = data.DataLoaderParams(batch_size=1)
+                self._add_train_phase(RandomDataset(), params)
+                self._add_train_phase(SequentialDataset(), params)
+
+        dm = MultiPhaseModule()
+        dm.setup()
+        assert dm.state_dict() == {"phase": 0}
+
+        dm.advance_train_phase()
+        assert dm.state_dict() == {"phase": 1}
+
+    def test_datamodule_load_state_dict_no_phases(self) -> None:
+        class NoPhaseModule(data.DataModule):
+            def setup(self) -> None:
+                pass
+
+        dm = NoPhaseModule()
+        dm.setup()
+        dm.load_state_dict({"phase": 1})
+        assert dm._current_train_phase == 0
+
+    def test_datamodule_load_state_dict_with_phases(self) -> None:
+        class MultiPhaseModule(data.DataModule):
+            def setup(self) -> None:
+                params = data.DataLoaderParams(batch_size=1)
+                self._add_train_phase(RandomDataset(), params)
+                self._add_train_phase(SequentialDataset(), params)
+
+        dm = MultiPhaseModule()
+        dm.setup()
+        assert isinstance(dm.train_dataset, RandomDataset)
+
+        dm.load_state_dict({"phase": 1})
+        assert dm._current_train_phase == 1
+        assert isinstance(dm.train_dataset, SequentialDataset)
+
+        # Empty state dict: no-op.
+        dm.load_state_dict({})
+        assert dm._current_train_phase == 1
 
 
 if __name__ == "__main__":

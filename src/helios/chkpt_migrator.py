@@ -29,10 +29,14 @@ def migrate_checkpoints_to_current_version(root: pathlib.Path) -> None:
     ):
         state = core.safe_torch_load(chkpt_path)
 
+        # 1.0 checkpoint changes
+        # =======================#
         # Pre-v1.0, checkpoints didn't have a version key.
         if _CheckpointKeys.VERSION not in state:
             state[_CheckpointKeys.VERSION] = __version__
 
+        # 1.1 checkpoint changes
+        # =======================#
         # Pre-v1.1, the TrainingState struct is saved as a dictionary, not the object
         # itself.
         if isinstance(state[_CheckpointKeys.TRAINING_STATE], dict):
@@ -40,6 +44,8 @@ def migrate_checkpoints_to_current_version(root: pathlib.Path) -> None:
                 **state[_CheckpointKeys.TRAINING_STATE]
             )
 
+        # 2.0 checkpoint changes
+        # =======================#
         # Pre-v2.0, all model state was stored under the "model" key. v2.0 added the
         # notion of model-internal state, and user state is now saved under the "user"
         # key. Therefore everything that was under the "model" key now gets mapped to the
@@ -58,6 +64,11 @@ def migrate_checkpoints_to_current_version(root: pathlib.Path) -> None:
             if "run_path" in state:
                 loggers_state["tensorboard"] = {"run_path": state.pop("run_path")}
             state[_CheckpointKeys.LOGGERS] = loggers_state
+
+        # Pre-v2.0, checkpoints didn't include datamodule phase state. Default is an empty
+        # dict which maps to phase 0.
+        if _CheckpointKeys.DATAMODULE not in state:
+            state[_CheckpointKeys.DATAMODULE] = {}
 
         torch.save(state, chkpt_path)
 

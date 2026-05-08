@@ -78,6 +78,7 @@ class _CheckpointKeys(enum.StrEnum):
     MODEL = "model"
     RNG = "rng"
     LOGGERS = "loggers"
+    DATAMODULE = "datamodule"
 
 
 @dc.dataclass
@@ -952,6 +953,7 @@ class Trainer:
             _CheckpointKeys.TRAINING_STATE,
             _CheckpointKeys.MODEL,
             _CheckpointKeys.RNG,
+            _CheckpointKeys.DATAMODULE,
         )
         if not all(key in state_dict for key in required_keys):
             return False
@@ -985,6 +987,7 @@ class Trainer:
         state_dict[_CheckpointKeys.MODEL] = self.model.state_dict()
         state_dict[_CheckpointKeys.RNG] = rng.get_rng_state_dict()
         state_dict[_CheckpointKeys.LOGGERS] = loggers.get_logger_state_dicts()
+        state_dict[_CheckpointKeys.DATAMODULE] = self.datamodule.state_dict()
 
         # Add the plug-ins (if using)
         for plug_id, plugin in self._plugins.items():
@@ -1032,6 +1035,7 @@ class Trainer:
         self.model.load_state_dict(
             state_dict[_CheckpointKeys.MODEL], fast_init=model_fast_init
         )
+        self.datamodule.load_state_dict(state_dict[_CheckpointKeys.DATAMODULE])
 
         for plug_id, plugin in self._plugins.items():
             if plug_id in state_dict:
@@ -1164,6 +1168,13 @@ class Trainer:
                     training_done = True
                     break
 
+                if self.model.should_advance_dataset_phase():
+                    self.datamodule.advance_train_phase()
+                    dataloader, sampler = core.get_from_optional(
+                        self.datamodule.train_dataloader()
+                    )
+                    break
+
             state.dataset_iter = 0
             self.model.on_training_epoch_end(state.global_epoch)
 
@@ -1282,6 +1293,11 @@ class Trainer:
                 self._save_checkpoint(state)
 
             self.model.on_training_epoch_end(state.global_epoch)
+            if not training_done and self.model.should_advance_dataset_phase():
+                self.datamodule.advance_train_phase()
+                dataloader, sampler = core.get_from_optional(
+                    self.datamodule.train_dataloader()
+                )
             root_logger.info(
                 f"Epoch {epoch + 1} completed in {time.perf_counter() - epoch_start:.2f}s"
             )

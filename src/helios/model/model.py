@@ -719,6 +719,38 @@ class Model(abc.ABC):
         """
         return False
 
+    def should_advance_dataset_phase(self) -> bool:
+        """
+        Determine whether the training dataset should advance to the next phase.
+
+        This is used for multi-phase training and is checked by the trainer depending on
+        the training mode:
+
+        * If training by epoch, then it is checked at the end of each epoch.
+        * If training by iteration, then it is checked at the end of every iteration.
+
+        If this function returns ``True``, then the trainer will call
+        :py:meth:`~helios.data.datamodule.DataModule.advance_train_phase` and rebuild the
+        training dataloader for the next phase.
+
+        .. important::
+            This function should only return ``True`` if and only if the dataset should be
+            advanced. It is the models' responsibility to keep track of the phase changes.
+            For example:
+
+            .. code-block:: python
+
+                def should_advance_dataset_phase(self) -> bool:
+                    if not self._phase_advanced and self._current_epoch >= 10:
+                        self._phase_advanced = True
+                        return True
+                    return False
+
+        Returns:
+            True if the phase should change, False otherwise.
+        """
+        return False
+
     def should_save_checkpoint(self) -> bool:
         """
         Determine whether the current checkpoint should be saved or not.

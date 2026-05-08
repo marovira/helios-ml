@@ -365,6 +365,7 @@ class DataModule(abc.ABC):
 
             from torchvision.datasets import CIFAR10
             from helios import data
+            from helios.data import Dataset, DataLoaderParams
 
             class MyDataModule(data.DataModule):
                 def prepare_data(self) -> None:
@@ -374,23 +375,20 @@ class DataModule(abc.ABC):
                     CIFAR10(download=True) # download the dataset only.
 
                 def setup(self) -> None:
-                    # Create the training dataset using a DataLoaderParams instance. Note
-                    # that you MUST assign it to self._train_dataset.
-                    self._train_dataset = self._create_dataset(CIFAR10(train=True),
-                                                               DataLoaderParams(...))
+                    # Register the training phase(s) using _add_train_phase. The first
+                    # call also sets self._train_dataset automatically.
+                    self._add_train_phase(CIFAR10(train=True), DataLoaderParams(...))
 
-                    # It is also possible to create a dataset using a table of key-value
-                    # pairs that was loaded from a config file or manually created. Let's
-                    # use one to create the validation split:
+                    # For multi-phase training, call _add_train_phase again:
+                    self._add_train_phase(
+                        CIFAR10(train=True, transform=...), DataLoaderParams(...)
+                    )
+
+                    # Validation and testing datasets use their own helpers.
+                    # A dict of settings is also accepted in place of DataLoaderParams.
                     settings = {"batch_size": 1, ...}
-
-                    # We can now use it to assign to self._valid_dataset like this:
-                    self._valid_dataset = self._create_dataset(
-                            CIFAR10(train=False), settings)
-
-                    # Finally, if you need a testing split, you can create it like this:
-                    self._test_dataset = self._create_dataset(
-                            CIFAR10(train=False), settings)
+                    self._add_valid_dataset(CIFAR10(train=False), settings)
+                    self._add_test_dataset(CIFAR10(train=False), DataLoaderParams(...))
 
                 def teardown(self) -> None:
                     # Use this function to clean up any state. It will be called after
@@ -404,6 +402,8 @@ class DataModule(abc.ABC):
         self._valid_dataset: Dataset | None = None
         self._test_dataset: Dataset | None = None
         self._trainer: Trainer | None = None
+        self._train_phases: list[Dataset] = []
+        self._current_train_phase: int = 0
 
     @property
     def is_distributed(self) -> bool:
@@ -518,25 +518,118 @@ class DataModule(abc.ABC):
         dataloader, _ = result
         return len(dataloader)
 
-    def _create_dataset(
-        self, dataset: tud.Dataset, params: DataLoaderParams | dict[str, typing.Any]
-    ) -> Dataset:
+    def advance_train_phase(self) -> None:
         """
-        Create a dataset object from a Torch dataset and a params.
+        Advance the training dataset to the next phase.
 
-        This is a convenience function to help you create the dataset objects. The params
-        object can either be the fully filled in DataLoaderParams instance, or it can be a
-        dict containing all of the necessary settings. If a dict is passed in, it will be
-        used to populate the corresponding DataLoaderParams object.
+        If the current phase is already the last one, this function does nothing.
+        """
+        if self._current_train_phase >= len(self._train_phases) - 1:
+            return
+        self._current_train_phase += 1
+        self._train_dataset = self._train_phases[self._current_train_phase]
 
-        Args:
-            dataset: the dataset.
-            params: either a params object or a dict.
+    def state_dict(self) -> dict[str, typing.Any]:
+        """
+        Get the full state dictionary of the datamodule.
+
+        The contents of the dictionary depend on whether training phases have been
+        registered:
+        * If they have, then this returns the current phase.
+        * If they haven't, then this returns an empty dictionary.
 
         Returns:
-            The new dataset object.
+            The state dictionary of the datamodule.
         """
-        return Dataset(
+        if not self._train_phases:
+            return {}
+        return {"phase": self._current_train_phase}
+
+    def load_state_dict(self, state_dict: dict[str, typing.Any]) -> None:
+        """
+        Load the datamodule state from the given state dictionary.
+
+        Args:
+            state_dict: the state dictionary to load from.
+        """
+        if not self._train_phases or "phase" not in state_dict:
+            return
+        self._current_train_phase = state_dict["phase"]
+        self._train_dataset = self._train_phases[self._current_train_phase]
+
+    def _add_train_phase(
+        self, dataset: tud.Dataset, params: DataLoaderParams | dict[str, typing.Any]
+    ) -> None:
+        """
+        Add a training phase dataset.
+
+        Training phases can be used to control the produced data at different stages
+        during training. For example, suppose that we want to split training in two
+        phases where the dataset is the same but the settings change. We can then add them
+        like this:
+            .. code-block:: python
+
+                from torchvision.datasets import CIFAR10
+                from torchvision.transforms import v2
+                from helios import data
+                from helios.data import Dataset, DataLoaderParams
+
+                class MyDataModule(data.DataModule):
+                    def setup(self) -> None:
+                        # Phase 1: use RandomCrop
+                        self._add_train_phase(CIFAR10(transform=v2.RadnomCrop(...)))
+                        # Phase 2: use RandomResize
+                        self._add_train_phase(CIFAR10(transform=v2.RandomResize(...)))
+                        # ...
+
+        This then introduces two phases which can be controlled by
+        :py:meth:`~helios.model.model.Model.should_advance_dataset_phase`.
+        The first call to this function will set the active dataset to the first phase
+        automatically. If you do not require multi-phase training, you can simply insert
+        one dataset and everything will work normally.
+
+        Args:
+            dataset: the dataset for this phase.
+            params: either a :py:class:`DataLoaderParams` instance or a dict.
+        """
+        phase = Dataset(
+            dataset,
+            copy.deepcopy(params)
+            if isinstance(params, DataLoaderParams)
+            else DataLoaderParams.from_dict(params),
+        )
+        self._train_phases.append(phase)
+        if len(self._train_phases) == 1:
+            self._train_dataset = phase
+
+    def _add_valid_dataset(
+        self, dataset: tud.Dataset, params: DataLoaderParams | dict[str, typing.Any]
+    ) -> None:
+        """
+        Set the validation dataset.
+
+        Args:
+            dataset: the validation dataset.
+            params: either a :py:class:`DataLoaderParams` instance or a dict.
+        """
+        self._valid_dataset = Dataset(
+            dataset,
+            copy.deepcopy(params)
+            if isinstance(params, DataLoaderParams)
+            else DataLoaderParams.from_dict(params),
+        )
+
+    def _add_test_dataset(
+        self, dataset: tud.Dataset, params: DataLoaderParams | dict[str, typing.Any]
+    ) -> None:
+        """
+        Set the test dataset.
+
+        Args:
+            dataset: the test dataset.
+            params: either a :py:class:`DataLoaderParams` instance or a dict.
+        """
+        self._test_dataset = Dataset(
             dataset,
             copy.deepcopy(params)
             if isinstance(params, DataLoaderParams)

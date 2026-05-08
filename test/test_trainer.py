@@ -50,9 +50,9 @@ class RandomDatamodule(data.DataModule):
             batch_size=1, num_workers=0, random_seed=rng.get_default_seed()
         )
 
-        self._train_dataset = self._create_dataset(RandomDataset(), params)
-        self._valid_dataset = self._create_dataset(RandomDataset(), params)
-        self._test_dataset = self._create_dataset(RandomDataset(), params)
+        self._add_train_phase(RandomDataset(), params)
+        self._add_valid_dataset(RandomDataset(), params)
+        self._add_test_dataset(RandomDataset(), params)
 
 
 class TeardownDatamodule(data.DataModule):
@@ -64,8 +64,8 @@ class TeardownDatamodule(data.DataModule):
         params = data.DataLoaderParams(
             batch_size=1, num_workers=0, random_seed=rng.get_default_seed()
         )
-        self._train_dataset = self._create_dataset(RandomDataset(), params)
-        self._test_dataset = self._create_dataset(RandomDataset(), params)
+        self._add_train_phase(RandomDataset(), params)
+        self._add_test_dataset(RandomDataset(), params)
 
     def teardown(self) -> None:
         self.teardown_called = True
@@ -95,6 +95,7 @@ class CheckFunModel(hlm.Model):
             "have_metrics_improved": False,
             "should_training_stop": False,
             "should_save_checkpoint": False,
+            "should_advance_dataset_phase": False,
         }
 
         self.called_test_funs: dict[str, bool] = {
@@ -194,6 +195,10 @@ class CheckFunModel(hlm.Model):
     def should_save_checkpoint(self) -> bool:
         self.called_train_funs["should_save_checkpoint"] = True
         return True
+
+    def should_advance_dataset_phase(self) -> bool:
+        self.called_train_funs["should_advance_dataset_phase"] = True
+        return False
 
     def on_testing_start(self) -> None:
         self.called_test_funs["on_testing_start"] = True
@@ -479,6 +484,119 @@ class CheckPluginModel(hlm.Model):
     def on_testing_end(self) -> None:
         plugin = self._get_plugin()
         assert plugin.called_test_funs["on_testing_end"]
+
+
+PHASE_DATASET_SIZE = 10
+
+
+class Phase1Dataset(tud.Dataset):
+    def __getitem__(self, index):
+        return torch.tensor([1, index])
+
+    def __len__(self):
+        return PHASE_DATASET_SIZE
+
+
+class Phase2Dataset(tud.Dataset):
+    def __getitem__(self, index):
+        return torch.tensor([2, index])
+
+    def __len__(self):
+        return PHASE_DATASET_SIZE
+
+
+class MultiPhaseDataModule(data.DataModule):
+    def setup(self) -> None:
+        params = data.DataLoaderParams(batch_size=1, num_workers=0)
+        self._add_train_phase(Phase1Dataset(), params)
+        self._add_train_phase(Phase2Dataset(), params)
+
+
+class PhaseEpochModel(hlm.Model):
+    def __init__(self, advance_at_epoch: int, stop_at_epoch: int = -1) -> None:
+        super().__init__("test-phase-epoch")
+        self.batches: list[torch.Tensor] = []
+        self._advance_at_epoch = advance_at_epoch
+        self._stop_at_epoch = stop_at_epoch
+        self._phase_advanced: bool = False
+        self._current_epoch: int = 0
+
+    def setup(self, fast_init: bool = False) -> None:
+        pass
+
+    def on_training_batch_start(self, state: hlt.TrainingState) -> None:
+        if self._stop_at_epoch != -1 and state.global_epoch == self._stop_at_epoch:
+            raise RuntimeError("stop")
+
+    def on_training_epoch_end(self, current_epoch: int) -> None:
+        self._current_epoch = current_epoch
+
+    def train_step(self, batch: torch.Tensor, state: hlt.TrainingState) -> None:
+        self.batches.append(batch.clone())
+
+    def should_advance_dataset_phase(self) -> bool:
+        if not self._phase_advanced and self._current_epoch >= self._advance_at_epoch:
+            self._phase_advanced = True
+            return True
+        return False
+
+    def user_state_dict(self) -> dict[str, typing.Any]:
+        return {
+            "_phase_advanced": self._phase_advanced,
+            "_current_epoch": self._current_epoch,
+        }
+
+    def load_user_state_dict(
+        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+    ) -> None:
+        self._phase_advanced = state_dict["_phase_advanced"]
+        self._current_epoch = state_dict["_current_epoch"]
+
+
+class PhaseIterModel(hlm.Model):
+    def __init__(self, advance_at_iter: int, stop_at_val_cycle: int = -1) -> None:
+        super().__init__("test-phase-iter")
+        self.batches: list[torch.Tensor] = []
+        self._advance_at_iter = advance_at_iter
+        self._stop_at_val_cycle = stop_at_val_cycle
+        self._phase_advanced: bool = False
+        self._current_iter: int = 0
+
+    def setup(self, fast_init: bool = False) -> None:
+        pass
+
+    def on_training_batch_start(self, state: hlt.TrainingState) -> None:
+        if (
+            self._stop_at_val_cycle != -1
+            and state.validation_cycles == self._stop_at_val_cycle
+        ):
+            raise RuntimeError("stop")
+
+    def on_training_batch_end(
+        self, state: hlt.TrainingState, should_log: bool = False
+    ) -> None:
+        self._current_iter = state.current_iteration
+
+    def train_step(self, batch: torch.Tensor, state: hlt.TrainingState) -> None:
+        self.batches.append(batch.clone())
+
+    def should_advance_dataset_phase(self) -> bool:
+        if not self._phase_advanced and self._current_iter >= self._advance_at_iter:
+            self._phase_advanced = True
+            return True
+        return False
+
+    def user_state_dict(self) -> dict[str, typing.Any]:
+        return {
+            "_phase_advanced": self._phase_advanced,
+            "_current_iter": self._current_iter,
+        }
+
+    def load_user_state_dict(
+        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+    ) -> None:
+        self._phase_advanced = state_dict["_phase_advanced"]
+        self._current_iter = state_dict["_current_iter"]
 
 
 class TestTrainingUnit:
@@ -1008,3 +1126,143 @@ class TestTrainer:
                 OverrideFlagsPlugin(plug_id="dup", training_batch=True)
             )
         assert "dup" not in trainer.plugins
+
+
+class TestTrainerPhase:
+    # Epoch-based: 4 epochs total, phase swap after epoch 2.
+    # Phase 1 runs epochs 1-2 (20 batches), phase 2 runs epochs 3-4 (20 batches).
+    EPOCH_TOTAL_STEPS = 4
+    EPOCH_ADVANCE_AT = 2
+
+    # Iteration-based: 20 iterations total, phase swap after iteration 10.
+    # chkpt/valid at every 5 iterations so checkpoints exist mid-phase.
+    ITER_TOTAL_STEPS = 20
+    ITER_ADVANCE_AT = 10
+    ITER_FREQ = 5
+
+    def get_epoch_trainer(self, tmp_path: pathlib.Path) -> hlt.Trainer:
+        return hlt.Trainer(
+            train_unit=hlt.TrainingUnit.EPOCH,
+            total_steps=self.EPOCH_TOTAL_STEPS,
+            chkpt_frequency=1,
+            use_cpu=True,
+            chkpt_root=tmp_path,
+        )
+
+    def get_iter_trainer(self, tmp_path: pathlib.Path) -> hlt.Trainer:
+        return hlt.Trainer(
+            train_unit=hlt.TrainingUnit.ITERATION,
+            total_steps=self.ITER_TOTAL_STEPS,
+            valid_frequency=self.ITER_FREQ,
+            chkpt_frequency=self.ITER_FREQ,
+            use_cpu=True,
+            chkpt_root=tmp_path,
+        )
+
+    def clear_chkpts(self, chkpt_root: pathlib.Path) -> None:
+        for chkpt in chkpt_root.glob("*.pth"):
+            chkpt.unlink()
+
+    def check_batches(self, exp: list[torch.Tensor], ret: list[torch.Tensor]) -> None:
+        assert len(exp) == len(ret)
+        for e, r in zip(exp, ret, strict=True):
+            assert torch.all(e == r)
+
+    def check_phase_swap(
+        self,
+        batches: list[torch.Tensor],
+        num_phase1: int,
+        num_phase2: int,
+    ) -> None:
+        assert len(batches) == num_phase1 + num_phase2
+        for b in batches[:num_phase1]:
+            assert b[0, 0] == 1
+        for b in batches[num_phase1:]:
+            assert b[0, 0] == 2
+
+    def test_phase_swap_no_interruption_epoch(self, tmp_path: pathlib.Path) -> None:
+        model = PhaseEpochModel(advance_at_epoch=self.EPOCH_ADVANCE_AT)
+        trainer = self.get_epoch_trainer(tmp_path)
+        assert trainer.fit(model, MultiPhaseDataModule())
+        # 2 epochs × PHASE_DATASET_SIZE each for phase 1, same for phase 2.
+        self.check_phase_swap(
+            model.batches,
+            num_phase1=self.EPOCH_ADVANCE_AT * PHASE_DATASET_SIZE,
+            num_phase2=(self.EPOCH_TOTAL_STEPS - self.EPOCH_ADVANCE_AT)
+            * PHASE_DATASET_SIZE,
+        )
+
+    def test_phase_swap_no_interruption_iter(self, tmp_path: pathlib.Path) -> None:
+        model = PhaseIterModel(advance_at_iter=self.ITER_ADVANCE_AT)
+        trainer = self.get_iter_trainer(tmp_path)
+        assert trainer.fit(model, MultiPhaseDataModule())
+        self.check_phase_swap(
+            model.batches,
+            num_phase1=self.ITER_ADVANCE_AT,
+            num_phase2=self.ITER_TOTAL_STEPS - self.ITER_ADVANCE_AT,
+        )
+
+    def check_phase_restart_epoch(
+        self, tmp_path: pathlib.Path, stop_at_epoch: int
+    ) -> None:
+        chkpt_root = tmp_path / "test-phase-epoch"
+
+        model = PhaseEpochModel(advance_at_epoch=self.EPOCH_ADVANCE_AT)
+        assert self.get_epoch_trainer(tmp_path).fit(model, MultiPhaseDataModule())
+        full_batches = model.batches
+        self.clear_chkpts(chkpt_root)
+
+        model = PhaseEpochModel(
+            advance_at_epoch=self.EPOCH_ADVANCE_AT, stop_at_epoch=stop_at_epoch
+        )
+        assert not self.get_epoch_trainer(tmp_path).fit(model, MultiPhaseDataModule())
+        partial_batches = model.batches
+
+        model = PhaseEpochModel(advance_at_epoch=self.EPOCH_ADVANCE_AT)
+        model.batches = partial_batches
+        assert self.get_epoch_trainer(tmp_path).fit(model, MultiPhaseDataModule())
+
+        self.check_batches(full_batches, model.batches)
+
+    def check_phase_restart_iter(
+        self, tmp_path: pathlib.Path, stop_at_val_cycle: int
+    ) -> None:
+        chkpt_root = tmp_path / "test-phase-iter"
+
+        model = PhaseIterModel(advance_at_iter=self.ITER_ADVANCE_AT)
+        assert self.get_iter_trainer(tmp_path).fit(model, MultiPhaseDataModule())
+        full_batches = model.batches
+        self.clear_chkpts(chkpt_root)
+
+        model = PhaseIterModel(
+            advance_at_iter=self.ITER_ADVANCE_AT,
+            stop_at_val_cycle=stop_at_val_cycle,
+        )
+        assert not self.get_iter_trainer(tmp_path).fit(model, MultiPhaseDataModule())
+        partial_batches = model.batches
+
+        model = PhaseIterModel(advance_at_iter=self.ITER_ADVANCE_AT)
+        model.batches = partial_batches
+        assert self.get_iter_trainer(tmp_path).fit(model, MultiPhaseDataModule())
+
+        self.check_batches(full_batches, model.batches)
+
+    def test_phase_restart_before_swap_epoch(self, tmp_path: pathlib.Path) -> None:
+        # Interrupt at the start of epoch 2, before the phase swap at end of epoch 2.
+        # Last checkpoint: epoch 1 (phase 1).
+        self.check_phase_restart_epoch(tmp_path, stop_at_epoch=2)
+
+    def test_phase_restart_after_swap_epoch(self, tmp_path: pathlib.Path) -> None:
+        # Interrupt at the start of epoch 4, after the phase swap at end of epoch 2.
+        # Last checkpoint: epoch 3 (phase 2).
+        self.check_phase_restart_epoch(tmp_path, stop_at_epoch=4)
+
+    def test_phase_restart_before_swap_iter(self, tmp_path: pathlib.Path) -> None:
+        # Interrupt after validation cycle 1 (at iteration 5 checkpoint).
+        # Phase advance happens at iteration 10, so this is before the swap.
+        self.check_phase_restart_iter(tmp_path, stop_at_val_cycle=1)
+
+    def test_phase_restart_after_swap_iter(self, tmp_path: pathlib.Path) -> None:
+        # Interrupt after validation cycle 3 (at iteration 15 checkpoint).
+        # Phase advance happened at iteration 10, so this is after the swap.
+        self.check_phase_restart_iter(tmp_path, stop_at_val_cycle=3)
