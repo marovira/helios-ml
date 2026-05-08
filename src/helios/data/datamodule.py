@@ -167,7 +167,6 @@ def create_dataloader(
     num_workers: int = 0,
     pin_memory: bool = False,
     drop_last: bool = False,
-    debug_mode: bool = False,
     is_distributed: bool = False,
     sampler: ResumableSamplerType | None = None,
     collate_fn: typing.Callable | None = None,
@@ -205,7 +204,6 @@ def create_dataloader(
         num_workers: number of worker processes for loading data. Defaults to 0.
         pin_memory: if true, use page-locked device memory. Defaults to false.
         drop_last: if true, remove the final batch. Defaults to false.
-        debug_mode: if true, then ``num_workers`` will be set to 0. Defaults to false.
         is_distributed: if true, create the distributed sampler. Defaults to false.
         sampler: (optional) sampler to use.
         collate_fn: (optional) function to merge batches.
@@ -257,7 +255,7 @@ def create_dataloader(
         tud.DataLoader(
             dataset,
             batch_size=batch_size,
-            num_workers=num_workers if not debug_mode else 0,
+            num_workers=num_workers,
             pin_memory=pin_memory,
             drop_last=drop_last,
             sampler=sampler,
@@ -285,7 +283,6 @@ class DataLoaderParams:
         num_workers: number of worker processes for loading data.
         pin_memory: if true, use page-locked device memory.
         drop_last: if true, remove the final batch.
-        debug_mode: if true, set number of workers to 0.
         is_distributed: if true, create the distributed sampler.
         sampler: (optional) sampler to use.
         collate_fn: (optional) function to merge batches.
@@ -305,7 +302,6 @@ class DataLoaderParams:
     num_workers: int = 0
     pin_memory: bool = False
     drop_last: bool = False
-    debug_mode: bool = False
     is_distributed: bool | None = None
     sampler: ResumableSamplerType | None = None
     collate_fn: typing.Callable | None = None
