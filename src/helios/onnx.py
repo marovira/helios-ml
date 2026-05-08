@@ -78,7 +78,12 @@ def export_to_onnx(
             for inp, t in zip(ort_session.get_inputs(), args_seq, strict=True)
         }
         ort_outs = ort_session.run(None, ort_inputs)
-        outs_seq = out if isinstance(out, tuple) else (out,)
+        if isinstance(out, dict):
+            outs_seq = tuple(out.values())
+        elif isinstance(out, tuple | list):
+            outs_seq = tuple(out)
+        else:
+            outs_seq = (out,)
         try:
             for expected, actual in zip(outs_seq, ort_outs, strict=True):
                 np.testing.assert_allclose(

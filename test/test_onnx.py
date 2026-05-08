@@ -45,6 +45,16 @@ class MultiOutputModel(nn.Module):
         return self.fc_a(x), self.fc_b(x)
 
 
+class DictOutputModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc_a = nn.Linear(8, 4, bias=True)
+        self.fc_b = nn.Linear(8, 2, bias=True)
+
+    def forward(self, x: torch.Tensor) -> dict[str, torch.Tensor]:
+        return {"a": self.fc_a(x), "b": self.fc_b(x)}
+
+
 class TestONNX:
     @pytest.mark.filterwarnings("ignore::FutureWarning")
     def test_jit(self, tmp_path: pathlib.Path) -> None:
@@ -71,5 +81,13 @@ class TestONNX:
         model = MultiOutputModel()
         x = torch.rand((4, 8), dtype=torch.float32)
         out_path = tmp_path / "multi_output.onnx"
+        onnx.export_to_onnx(model, x, out_path, validate_output=True)
+        assert out_path.exists()
+
+    @pytest.mark.filterwarnings("ignore::FutureWarning")
+    def test_dict_output(self, tmp_path: pathlib.Path) -> None:
+        model = DictOutputModel()
+        x = torch.rand((4, 8), dtype=torch.float32)
+        out_path = tmp_path / "dict_output.onnx"
         onnx.export_to_onnx(model, x, out_path, validate_output=True)
         assert out_path.exists()
