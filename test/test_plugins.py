@@ -21,7 +21,7 @@ class _SimpleDatamodule(data.DataModule):
         params = data.DataLoaderParams(
             batch_size=1, num_workers=0, random_seed=rng.get_default_seed()
         )
-        self._train_dataset = self._create_dataset(_TinyDataset(), params)
+        self._add_train_phase(_TinyDataset(), params)
 
 
 class ExceptionPlugin(hlp.Plugin):
