@@ -105,8 +105,8 @@ class ResumableRandomSampler(ResumableSampler):
 
     Args:
         data_source: the dataset to sample from.
-        seed: the seed to use for setting up the random generator.
-        batch_size: the number of samples per batch.
+        seed: (optional) the seed to use for setting up the random generator.
+        batch_size: (optional) the number of samples per batch.
     """
 
     def __init__(
@@ -146,7 +146,7 @@ class ResumableSequentialSampler(ResumableSampler):
 
     Args:
         data_source: the dataset to sample from.
-        batch_size: the number of samples per batch.
+        batch_size: (optional) the number of samples per batch.
     """
 
     def __init__(self, data_source: typing.Sized, batch_size: int = 1):
@@ -180,13 +180,13 @@ class ResumableDistributedSampler(tud.DistributedSampler):
 
     Args:
         dataset: the dataset to sample from.
-        num_replicas: number of processes for distributed training.
+        num_replicas: (optional) number of processes for distributed training.
         rank: (optional) rank of the current process.
-        shuffle: if true, shuffle the indices. Defaults to true.
-        seed: random seed used to shuffle the sampler. Defaults to 0.
-        drop_last: if true, then drop the final sample to make it even across replicas.
-            Defaults to false.
-        batch_size: the number of samples per batch. Defaults to 1.
+        shuffle: (optional) if true, shuffle the indices.
+        seed: (optional) random seed used to shuffle the sampler.
+        drop_last: (optional) if true, then drop the final sample to make it even across
+            replicas.
+        batch_size: (optional) the number of samples per batch.
     """
 
     def __init__(

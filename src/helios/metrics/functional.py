@@ -122,7 +122,7 @@ def _mae(pred: npt.NDArray, gt: npt.NDArray, scale: float = 1.0) -> float:
     Args:
         pred: predicate tensor.
         gt: ground-truth tensor.
-        scale: the scaling factor used in the tensor data (if any). Defaults to 1.
+        scale: (optional) the scaling factor used in the tensor data (if any).
 
     Returns:
         The MAE score.
@@ -140,7 +140,7 @@ def _mae_torch(pred: torch.Tensor, gt: torch.Tensor, scale: float = 1.0) -> floa
     Args:
         pred: predicate tensor.
         gt: ground-truth tensor.
-        scale: the scaling factor used in the tensor data (if any). Defaults to 1.
+        scale: (optional) the scaling factor used in the tensor data (if any).
 
     Returns:
         The MAE score.
@@ -168,8 +168,8 @@ def calculate_psnr(
         img2: Images with range :math:`[0, 255]`.
         crop_border: Cropped pixels in each edge of an image. These pixels are not
             involved in the calculation.
-        input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
-        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+        input_order: (optional) whether the input order is ``"HWC"`` or ``"CHW"``.
+        test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
     Returns:
         PSNR value.
@@ -214,7 +214,7 @@ def calculate_psnr_torch(
         img2: Images with range :math:`[0, 255]`.
         crop_border: Cropped pixels in each edge of an image. These pixels are not
             involved in the calculation.
-        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+        test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
     Returns:
         PSNR value.
@@ -259,8 +259,8 @@ def calculate_ssim(
         img2: Images with range :math:`[0, 255]`.
         crop_border: Cropped pixels in each edge of an image. These pixels are not
             involved in the calculation.
-        input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC"
-        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+        input_order: (optional) whether the input order is ``"HWC"`` or ``"CHW"``.
+        test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
     Returns:
         SSIM.
@@ -309,7 +309,7 @@ def calculate_ssim_torch(
         img2: Images with range :math:`[0, 255]`.
         crop_border: Cropped pixels in each edge of an image. These pixels are not
             involved in the calculation.
-        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+        test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
     Returns:
         SSIM.
@@ -377,7 +377,7 @@ def calculate_mae(pred: npt.NDArray, gt: npt.NDArray, scale: float = 1.0) -> flo
     Args:
         pred: predicate (inferred) array
         gt: ground-truth array
-        scale: scaling factor that was used on the input arrays. Defaults to 1.
+        scale: (optional) scaling factor that was used on the input arrays.
 
     Returns:
         The MAE score.
@@ -401,7 +401,7 @@ def calculate_mae_torch(
     Args:
         pred: predicate (inferred) tensor
         gt: ground-truth tensor
-        scale: scaling factor that was used on the input tensors. Defaults to 1.
+        scale: (optional) scaling factor that was used on the input tensors.
 
     Returns:
         The MAE score.
@@ -422,7 +422,7 @@ def calculate_accuracy(
         predictions: predicted logits or scores of shape :math:`(N, C)` where :math:`C`
             is the number of classes.
         targets: ground-truth class indices of shape :math:`(N,)`.
-        top_k: number of top predictions to consider. Defaults to 1.
+        top_k: (optional) number of top predictions to consider.
 
     Returns:
         Top-k accuracy in :math:`[0, 1]`.

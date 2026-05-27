@@ -11,7 +11,7 @@ class EMA(nn.Module):
 
     Args:
         net: the bare network on which EMA will be performed.
-        decay: decay rate. Defaults to 0.9997.
+        decay: (optional) decay rate.
         device: (optional) the device to be used.
     """
 

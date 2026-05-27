@@ -73,7 +73,8 @@ def get_from_optional(opt_var: T | None, raise_on_empty: bool = False) -> T:
 
     Args:
         opt_var: the optional variable.
-        raise_on_empty: if True, an exception is raised when the optional is ``None``.
+        raise_on_empty: (optional) if ``True``, an exception is raised when the
+            optional is ``None``.
 
     Returns:
         The variable without the optional.
@@ -181,7 +182,8 @@ class AverageTimer:
     window moving average.
 
     Args:
-        sliding_window: number of steps over which the moving average will be computed.
+        sliding_window: (optional) number of steps over which the moving average will be
+            computed.
     """
 
     def __init__(self, sliding_window: int = 200):
@@ -189,7 +191,8 @@ class AverageTimer:
         Create the timer with the given sliding window.
 
         Args:
-            sliding_window: steps over which the moving average will be computed.
+            sliding_window: (optional) steps over which the moving average will be
+                computed.
         """
         self._sliding_window = sliding_window
 
@@ -403,8 +406,8 @@ def update_all_registries(
 
     Args:
         root: the path to the root package.
-        recurse: if True, recursively search through sub-packages. Defaults to true.
-        import_prefix: (optional) prefix to be added when imported. Defaults to empty.
+        recurse: (optional) if ``True``, recursively search through sub-packages.
+        import_prefix: (optional) prefix to be added when imported.
 
     Raises:
         RuntimeError: if the given path isn't a valid directory or if the directory is not

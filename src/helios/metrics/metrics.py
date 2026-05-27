@@ -68,8 +68,8 @@ class CalculatePSNR(nn.Module):
     Args:
         crop_border: Cropped pixels in each edge of an image. These pixels are not
             involved in the calculation.
-        input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
-        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+        input_order: (optional) whether the input order is ``"HWC"`` or ``"CHW"``.
+        test_y_channel: (optional) if true, test on Y channel of YCbCr.
     """
 
     def __init__(
@@ -119,8 +119,8 @@ class CalculateSSIM(nn.Module):
     Args:
         crop_border: Cropped pixels in each edge of an image. These pixels are not
             involved in the calculation.
-        input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
-        test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+        input_order: (optional) whether the input order is ``"HWC"`` or ``"CHW"``.
+        test_y_channel: (optional) if true, test on Y channel of YCbCr.
     """
 
     def __init__(
@@ -192,7 +192,7 @@ class CalculateMAE(nn.Module):
     already in the range :math:`[0, 1]`, then the scale can be omitted.
 
     Args:
-        scale: scaling factor that was used on the input tensors. Defaults to 1.
+        scale: (optional) scaling factor that was used on the input tensors.
     """
 
     def __init__(self, scale: float = 1):
@@ -228,7 +228,7 @@ class CalculateAccuracy(nn.Module):
     `<https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)>`__.
 
     Args:
-        top_k: number of top predictions to consider. Defaults to 1.
+        top_k: (optional) number of top predictions to consider.
     """
 
     def __init__(self, top_k: int = 1):

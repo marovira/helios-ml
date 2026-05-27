@@ -104,8 +104,9 @@ def seed_rngs(seed: int | None = None, skip_torch: bool = False) -> None:
     shouldn't be re-seeding them.
 
     Args:
-        seed: optional value to seed the random generators with.
-        skip_torch: if True, torch RNGs won't be seeded.
+        seed: (optional) seed for the random generators. Defaults to the value
+            returned by :py:func:`~helios.core.rng.get_default_seed`.
+        skip_torch: (optional) if ``True``, torch RNGs won't be seeded.
     """
     seed = get_default_seed() if seed is None else seed
 

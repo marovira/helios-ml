@@ -95,7 +95,7 @@ class TensorboardWriter(Logger):
         Args:
             tag: name of the scalar to plot.
             scalar_value: the scalar to plot.
-            global_step: the (optional) step for the given scalar.
+            global_step: (optional) step for the given scalar.
         """
         if self._writer is None:
             return
@@ -113,7 +113,7 @@ class TensorboardWriter(Logger):
         Args:
             main_tag: the parent name for the tags.
             tag_scalar_dict: key-value pair storing tag and corresponding values.
-            global_step: (optional) global step value to record.
+            global_step: global step value to record.
         """
         if self._writer is None:
             return
@@ -133,8 +133,8 @@ class TensorboardWriter(Logger):
             tag: data identifier.
             img_tensor: image data.
             global_step: (optional) global step value to record.
-            dataformats: image data format specification in the form CHW, HWC,
-                HW, WH, etc.
+            dataformats: (optional) image data format specification in the form CHW,
+                HWC, HW, WH, etc.
         """
         if self._writer is None:
             return
@@ -154,8 +154,8 @@ class TensorboardWriter(Logger):
             tag: data identifier.
             img_tensor: image data.
             global_step: (optional) global step value to record.
-            dataformats: image data format specification in the form NCHW, NHWC,
-                CHW, HWC, HW, WH, etc.
+            dataformats: (optional) image data format specification in the form NCHW,
+                NHWC, CHW, HWC, HW, WH, etc.
         """
         if self._writer is None:
             return
@@ -175,7 +175,7 @@ class TensorboardWriter(Logger):
             tag: data identifier.
             figure: figure or a list of figures.
             global_step: (optional) global step value to record.
-            close: flag to automatically close the figure.
+            close: (optional) flag to automatically close the figure.
         """
         if self._writer is None:
             return
@@ -212,10 +212,10 @@ class TensorboardWriter(Logger):
 
         Args:
             model: model to draw.
-            input_to_model: a variable or tuple of variables to be fed.
-            verbose: whether to print graph structure in console.
-            use_strict_trace: whether to pass keyword argument strict to
-                ``torch.jit.trace``.
+            input_to_model: (optional) variable(s) to feed to the model.
+            verbose: (optional) if ``True``, print graph structure in console.
+            use_strict_trace: (optional) if ``True``, pass keyword argument ``strict``
+                to ``torch.jit.trace``.
         """
         if self._writer is None:
             return
@@ -249,8 +249,7 @@ class TensorboardWriter(Logger):
             predictions: the probability that an element be classified as true.
                 Value should be in [0, 1].
             global_step: (optional) global step value to record.
-            num_thresholds: number of thresholds used to draw the curve.
-                Defaults to 127.
+            num_thresholds: (optional) number of thresholds used to draw the curve.
         """
         if self._writer is None:
             return
@@ -273,9 +272,9 @@ class TensorboardWriter(Logger):
                 ``int``, or ``None``.
             metric_dict: each key-value pair is the name of a metric and its
                 value.  Keys must be unique in the Tensorboard record.
-            hparam_domain_discrete: a dictionary containing hyper-parameter
+            hparam_domain_discrete: (optional) dictionary containing hyper-parameter
                 names and all the discrete values they can hold.
-            run_name: name of the run, to be included as part of the log dir.
+            run_name: (optional) name of the run, to be included as part of the log dir.
             global_step: (optional) global step value to record.
         """
         if self._writer is None:

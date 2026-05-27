@@ -23,7 +23,7 @@ class WeightedLoss(nn.Module, metaclass=abc.ABCMeta):
                     return my_loss_function(...)
 
     Args:
-        loss_weight: the weight of the loss function. Defaults to 1.
+        loss_weight: (optional) the weight of the loss function.
     """
 
     def __init__(self, loss_weight: float = 1.0):

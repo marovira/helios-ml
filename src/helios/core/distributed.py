@@ -48,9 +48,9 @@ def init_dist(
     started manually, then both arguments **must** be provided.
 
     Args:
-        backend: the backend to use. Defaults to "nccl".
-        rank: the (optional) rank of the current GPU.
-        world_size: the (optional) number of GPUs in the system.
+        backend: (optional) the backend to use.
+        rank: (optional) rank of the current GPU.
+        world_size: (optional) number of GPUs in the system.
 
     Raises:
         ValueError: if either of ``rank`` or ``world_size`` are ``None`` (but not both).
@@ -255,7 +255,7 @@ def global_print(*args: typing.Any, global_rank: int = 0, **kwargs: typing.Any) 
 
     Args:
         *args: positional arguments to pass in to Python's print.
-        global_rank: the global rank the print should happen on. Defaults to 0.
+        global_rank: (optional) the global rank the print should happen on.
         **kwargs: keyword arguments to pass in to Python's print.
     """
     _dist_print_wrapper(
@@ -269,7 +269,7 @@ def local_print(*args: typing.Any, local_rank: int = 0, **kwargs: typing.Any) ->
 
     Args:
         *args: positional arguments to pass in to Python's print.
-        local_rank: the local rank the print should happen on. Defaults to 0.
+        local_rank: (optional) the local rank the print should happen on.
         **kwargs: keyword arguments to pass in to Python's print.
     """
     _dist_print_wrapper(

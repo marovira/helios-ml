@@ -28,9 +28,9 @@ def load_image(
 
     Args:
         path: the path to the image to load.
-        flags: the OpenCV flags to use when loading.
-        as_rgb: if true, the image will be converted from BGR/BGRA to RGB/RGBA, otherwise
-            the image is returned as is.
+        flags: (optional) the OpenCV flags to use when loading.
+        as_rgb: (optional) if true, the image will be converted from BGR/BGRA to
+            RGB/RGBA, otherwise the image is returned as is.
 
     Returns:
         The loaded image.
@@ -68,9 +68,9 @@ def load_image_pil(
 
     Args:
         path: the path to the image to load.
-        out_fmt: the format to convert the loaded image to. Defaults to empty.
-        as_numpy: if true, the loaded image will be returned as a NumPY array, otherwise
-            it is returned as a PIL image. Defaults to true.
+        out_fmt: (optional) the format to convert the loaded image to.
+        as_numpy: (optional) if true, the loaded image will be returned as a NumPY array,
+            otherwise it is returned as a PIL image.
 
     Returns:
         The loaded image.
@@ -96,15 +96,15 @@ def tensor_to_numpy(
 
     Args:
         x: the tensor to convert.
-        squeeze: if true, squeeze to remove all dimensions of size 1. Defaults to true.
-        clamp: tuple containing min/max values to clamp the tensor to. Can be ``None`` if
-            no clamping is desired. Defaults to ``(0, 1)``.
-        transpose: if true, transpose the tensor so the dimensions are :math:`H \times W
-            \times C` or :math:`B \times H \times W \times C`. Defaults to true.
-        dtype: the type to convert the tensor to. Can be set to ``None`` if no conversion
-            is desired. Defaults to ``torch.float``.
-        as_uint8: if true, convert the final array to be of type uint8 and in the range
-            :math:`[0, 255]`. Defaults to true.
+        squeeze: (optional) if true, squeeze to remove all dimensions of size 1.
+        clamp: (optional) tuple containing min/max values to clamp the tensor to. Can be
+            ``None`` if no clamping is desired.
+        transpose: (optional) if true, transpose the tensor so the dimensions are
+            :math:`H \times W \times C` or :math:`B \times H \times W \times C`.
+        dtype: (optional) the type to convert the tensor to. Can be set to ``None`` if
+            no conversion is desired.
+        as_uint8: (optional) if true, convert the final array to be of type uint8 and in
+            the range :math:`[0, 255]`.
 
     Returns:
         The converted array.
@@ -138,7 +138,7 @@ def show_tensor(tens: torch.Tensor, title: str = "debug window") -> None:
 
     Args:
         tens: the image tensor to display in range :math:`[0, 1]`.
-        title: the title of the displayed window. Defaults to "debug window".
+        title: (optional) the title of the displayed window.
     """
     img = tensor_to_numpy(tens)
     img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
@@ -169,8 +169,8 @@ def convert_to_hwc(img: npt.NDArray, input_order: str = "HWC") -> npt.NDArray:
 
     Args:
         img: input image.
-        input_order: the order of the channels of the input image. Must be one of 'HWC'
-            or 'CHW'.
+        input_order: (optional) the order of the channels of the input image. Must be one
+            of ``'HWC'`` or ``'CHW'``.
 
     Returns:
         The shuffled image.

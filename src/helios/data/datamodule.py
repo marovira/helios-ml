@@ -197,25 +197,25 @@ def create_dataloader(
 
     Args:
         dataset: the dataset to use.
-        random_seed: value to use as seed for the worker processes. Defaults to the value
+        random_seed: (optional) seed for the worker processes. Defaults to the value
             returned by :py:func:`~helios.core.rng.get_default_seed`.
-        batch_size: number of samplers per batch. Defaults to 1.
-        shuffle: if true, samples are randomly shuffled. Defaults to false.
-        num_workers: number of worker processes for loading data. Defaults to 0.
-        pin_memory: if true, use page-locked device memory. Defaults to false.
-        drop_last: if true, remove the final batch. Defaults to false.
-        is_distributed: if true, create the distributed sampler. Defaults to false.
+        batch_size: (optional) number of samples per batch.
+        shuffle: (optional) if true, samples are randomly shuffled.
+        num_workers: (optional) number of worker processes for loading data.
+        pin_memory: (optional) if true, use page-locked device memory.
+        drop_last: (optional) if true, remove the final batch.
+        is_distributed: (optional) if true, create the distributed sampler.
         sampler: (optional) sampler to use.
         collate_fn: (optional) function to merge batches.
-        prefetch_factor: number of batches to prefetch per worker. Only valid when
-            ``num_workers > 0``. Defaults to ``None``.
-        persistent_workers: if true, keep worker processes alive between epochs. Only
-            valid when ``num_workers > 0``. Defaults to false.
-        pin_memory_device: target device for pinned memory when ``pin_memory`` is true.
-            Defaults to ``""``.
-        timeout: timeout in seconds for collecting a batch from workers. Defaults to 0.
-        multiprocessing_context: method for spawning worker processes (e.g.
-            ``"fork"``, ``"spawn"``, ``"forkserver"``). Defaults to ``None``.
+        prefetch_factor: (optional) number of batches to prefetch per worker. Only valid
+            when ``num_workers > 0``.
+        persistent_workers: (optional) if true, keep worker processes alive between
+            epochs. Only valid when ``num_workers > 0``.
+        pin_memory_device: (optional) target device for pinned memory when ``pin_memory``
+            is true.
+        timeout: (optional) timeout in seconds for collecting a batch from workers.
+        multiprocessing_context: (optional) method for spawning worker processes (e.g.
+            ``"fork"``, ``"spawn"``, ``"forkserver"``).
 
     Returns:
         The dataloader and sampler.
@@ -277,22 +277,24 @@ class DataLoaderParams:
     Params used to create the dataloader object.
 
     Args:
-        random_seed: value to use as seed for the worker processes.
-        batch_size: number of samplers per batch.
-        shuffle: if true, samples are randomly shuffled.
-        num_workers: number of worker processes for loading data.
-        pin_memory: if true, use page-locked device memory.
-        drop_last: if true, remove the final batch.
-        is_distributed: if true, create the distributed sampler.
+        random_seed: (optional) seed for the worker processes. Defaults to the value
+            returned by :py:func:`~helios.core.rng.get_default_seed`.
+        batch_size: (optional) number of samples per batch.
+        shuffle: (optional) if true, samples are randomly shuffled.
+        num_workers: (optional) number of worker processes for loading data.
+        pin_memory: (optional) if true, use page-locked device memory.
+        drop_last: (optional) if true, remove the final batch.
+        is_distributed: (optional) if true, create the distributed sampler.
         sampler: (optional) sampler to use.
         collate_fn: (optional) function to merge batches.
-        prefetch_factor: number of batches to prefetch per worker. Only valid when
-            ``num_workers > 0``.
-        persistent_workers: if true, keep worker processes alive between epochs. Only
-            valid when ``num_workers > 0``.
-        pin_memory_device: target device for pinned memory when ``pin_memory`` is true.
-        timeout: timeout in seconds for collecting a batch from workers.
-        multiprocessing_context: method for spawning worker processes (e.g.
+        prefetch_factor: (optional) number of batches to prefetch per worker. Only valid
+            when ``num_workers > 0``.
+        persistent_workers: (optional) if true, keep worker processes alive between
+            epochs. Only valid when ``num_workers > 0``.
+        pin_memory_device: (optional) target device for pinned memory when ``pin_memory``
+            is true.
+        timeout: (optional) timeout in seconds for collecting a batch from workers.
+        multiprocessing_context: (optional) method for spawning worker processes (e.g.
             ``"fork"``, ``"spawn"``, ``"forkserver"``).
     """
 

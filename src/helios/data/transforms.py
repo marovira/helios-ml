@@ -56,8 +56,8 @@ class ToImageTensor(nn.Module):
     either [H, W, C] or [C, H, W].
 
     Args:
-        dtype: the output type of the tensors.
-        scale: if true, scale the values to the valid range. Defaults to true.
+        dtype: (optional) the output type of the tensors.
+        scale: (optional) if true, scale the values to the valid range.
     """
 
     def __init__(self, dtype: torch.dtype = torch.float32, scale: bool = True):

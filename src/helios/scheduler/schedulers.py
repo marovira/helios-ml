@@ -52,9 +52,10 @@ class CosineAnnealingRestartLR(lr_scheduler.LRScheduler):
     Args:
         optimizer: the optimizer.
         periods: period for each cosine annealing cycle.
-        restart_weights: (optional) restart weights at each restart iteration.
-        eta_min: The minimum lr. Defaults to 0
-        last_epoch: Used in _LRScheduler. Defaults to -1.
+        restart_weights: (optional) restart weights at each restart iteration. Defaults
+            to ``[1]``.
+        eta_min: (optional) the minimum lr.
+        last_epoch: (optional) index of the last epoch seen by the scheduler.
     """
 
     def __init__(
@@ -116,8 +117,8 @@ class LinearWarmupScheduler(lr_scheduler.LRScheduler):
         optimizer: the optimizer.
         warmup_steps: number of warmup steps.
         scheduler: the post-warmup scheduler.
-        warmup_start_factor: fraction of ``base_lr`` to start from. Defaults to 0.
-        last_epoch: index of the last epoch seen by the scheduler. Defaults to -1.
+        warmup_start_factor: (optional) fraction of ``base_lr`` to start from.
+        last_epoch: (optional) index of the last epoch seen by the scheduler.
     """
 
     def __init__(
@@ -159,10 +160,11 @@ class MultiStepRestartLR(lr_scheduler.LRScheduler):
     Args:
         optimizer: torch optimizer.
         milestones: iterations that will decrease learning rate.
-        gamma: decrease ratio. Defaults to 0.1.
-        restarts: (optional) restart iterations.
-        restart_weights: (optional) restart weights at each restart iteration.
-        last_epoch: used in _LRScheduler. Defaults to -1.
+        gamma: (optional) decrease ratio.
+        restarts: (optional) restart iterations. Defaults to ``[0]``.
+        restart_weights: (optional) restart weights at each restart iteration. Defaults
+            to ``[1]``.
+        last_epoch: (optional) index of the last epoch seen by the scheduler.
     """
 
     def __init__(

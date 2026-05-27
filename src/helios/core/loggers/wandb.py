@@ -46,11 +46,11 @@ class WandbWriter(Logger):
 
     Args:
         project: W&B project name.
-        name: optional display name for the run.
-        config: optional hyper-parameter configuration dictionary to associate
+        name: (optional) display name for the run.
+        config: (optional) hyper-parameter configuration dictionary to associate
             with the run.
-        extra_args: optional extra keyword arguments forwarded verbatim to
-            :func:`wandb.init`.
+        extra_args: (optional) extra keyword arguments forwarded verbatim to
+            :func:`wandb.init`. Defaults to ``{}``.
     """
 
     def __init__(
@@ -65,10 +65,10 @@ class WandbWriter(Logger):
 
         Args:
             project: W&B project name.
-            name: optional display name for the run.
-            config: optional hyper-parameter configuration dictionary.
-            extra_args: optional extra keyword arguments forwarded to
-                :func:`wandb.init`.
+            name: (optional) display name for the run.
+            config: (optional) hyper-parameter configuration dictionary.
+            extra_args: (optional) extra keyword arguments forwarded to
+                :func:`wandb.init`. Defaults to ``{}``.
 
         Raises:
             ImportError: if ``wandb`` is not installed.

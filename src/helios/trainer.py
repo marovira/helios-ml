@@ -244,25 +244,25 @@ class Trainer:
     any clean up afterwards.
 
     Args:
-        run_name: name of the current run. Defaults to empty.
-        train_unit: the unit used for training. Defaults to
-            :py:attr:`TrainingUnit.ITERATION`.
-        total_steps: the total number of steps to train for. Defaults to 0.
+        run_name: (optional) name of the current run.
+        train_unit: (optional) the unit used for training.
+        total_steps: (optional) the total number of steps to train for.
         valid_frequency: (optional) frequency with which to perform validation.
         chkpt_frequency: (optional) frequency with which to save checkpoints.
         print_frequency: (optional) frequency with which to log.
-        accumulation_steps: number of steps for gradient accumulation. Defaults to 1.
-        enable_cudnn_benchmark: enable/disable CuDNN benchmark. Defaults to false.
-        enable_deterministic: enable/disable PyTorch deterministic. Defaults to false.
+        accumulation_steps: (optional) number of steps for gradient accumulation.
+        enable_cudnn_benchmark: (optional) enable/disable CuDNN benchmark.
+        enable_deterministic: (optional) enable/disable PyTorch deterministic.
         early_stop_cycles: (optional) number of cycles after which training will stop if
             no improvement is seen during validation.
         use_cpu: (optional) if true, CPU will be used.
         gpus: (optional) IDs of GPUs to use.
-        random_seed: (optional) the seed to use for RNGs.
-        enable_tensorboard: enable/disable Tensorboard logging. Defaults to false.
-        enable_file_logging: enable/disable file logging. Defaults to false.
-        capture_warnings: enable/disable warnings capture in the log. Defaults to false.
-        enable_progress_bar: enable/disable the progress bar(s). Defaults to false.
+        random_seed: (optional) the seed to use for RNGs. Defaults to the value
+            returned by :py:func:`~helios.core.rng.get_default_seed`.
+        enable_tensorboard: (optional) enable/disable Tensorboard logging.
+        enable_file_logging: (optional) enable/disable file logging.
+        capture_warnings: (optional) enable/disable warnings capture in the log.
+        enable_progress_bar: (optional) enable/disable the progress bar(s).
         chkpt_root: (optional) root folder in which checkpoints will be placed.
         log_root: (optional) root folder under which each active logger creates
             its own subfolder.  Required when ``enable_file_logging``,
@@ -273,10 +273,10 @@ class Trainer:
         src_root: (optional) root folder where the code is located. This is used to
             automatically populate the registries using
             :py:func:`~helios.core.utils.update_all_registries`.
-        import_prefix: prefix to use when importing modules. See
+        import_prefix: (optional) prefix to use when importing modules. See
             :py:func:`~helios.core.utils.update_all_registries` for details.
-        print_banner: if true, the Helios banner with system info will be printed.
-            Defaults to true.
+        print_banner: (optional) if true, the Helios banner with system info will be
+            printed.
     """
 
     def __init__(

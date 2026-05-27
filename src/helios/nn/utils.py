@@ -58,8 +58,8 @@ def default_init_weights(
 
     Args:
         module_list: the list of modules to initialize.
-        scale: scale initialized weights, especially for residual blocks. Defaults to 1.
-        bias_fill: bias fill value. Defaults to 0.
+        scale: (optional) scale for initialized weights, especially for residual blocks.
+        bias_fill: (optional) bias fill value.
         kwargs: keyword arguments for the ``torch.nn.init.kaiming_normal_`` function.
     """
     if not isinstance(module_list, list):
