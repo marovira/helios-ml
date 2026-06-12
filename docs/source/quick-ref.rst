@@ -139,6 +139,12 @@ set the :py:attr:`~helios.data.datamodule.DataLoaderParams.sampler` field of the
    :py:class:`~helios.data.samplers.ResumabeSampler` or
    :py:class:`~helios.data.samplers.ResumableDistributedSampler`
 
+.. note::
+   :py:attr:`~helios.data.datamodule.DataLoaderParams.pin_memory` defaults to ``False``,
+   matching PyTorch's default. If you are training on a GPU, set ``pin_memory=True`` in
+   your :py:class:`~helios.data.datamodule.DataLoaderParams` to enable pinned memory
+   transfers.
+
 Checkpoints
 -----------
 
@@ -266,6 +272,83 @@ checks this function at the following times:
      finishes on an iteration number that is a multiple of the validation frequency. In
      this case, the early stop checks would occur after the check to see if training
      should halt.
+
+.. _multi-phase-training:
+
+Multi-Phase Training
+====================
+
+Multi-phase training allows the training dataset to change during a single run. The most
+common use case is to apply different data augmentations or configurations at different
+points during training.
+
+Phases are registered in :py:meth:`~helios.data.datamodule.DataModule.setup` by calling
+:py:meth:`~helios.data.datamodule.DataModule._add_train_phase` once per phase:
+
+.. code-block:: python
+
+   class MyDataModule(data.DataModule):
+       def setup(self) -> None:
+           # Phase 1: light augmentation
+           self._add_train_phase(
+               MyDataset(transform=LightAugment()),
+               DataLoaderParams(batch_size=32),
+           )
+           # Phase 2: stronger augmentation
+           self._add_train_phase(
+               MyDataset(transform=StrongAugment()),
+               DataLoaderParams(batch_size=32),
+           )
+
+The first call to :py:meth:`~helios.data.datamodule.DataModule._add_train_phase`
+automatically sets the active dataset to phase 0. If only one phase is registered,
+the behaviour is identical to a regular single-phase setup.
+
+Advancing Phases
+----------------
+
+To signal that the trainer should move to the next phase, override
+:py:meth:`~helios.model.model.Model.should_advance_dataset_phase` in your model and
+return ``True`` when the condition is met:
+
+.. code-block:: python
+
+   def should_advance_dataset_phase(self) -> bool:
+       if not self._phase_advanced and self._current_epoch >= 10:
+           self._phase_advanced = True
+           return True
+       return False
+
+.. important::
+   This function should return ``True`` if and only if the phase should advance. It is
+   the model's responsibility to ensure the function does not keep returning ``True``
+   after the phase has already been advanced (for example, by using a flag as shown
+   above).
+
+When :py:meth:`~helios.model.model.Model.should_advance_dataset_phase` returns ``True``,
+the trainer calls
+:py:meth:`~helios.data.datamodule.DataModule.advance_train_phase` automatically and
+rebuilds the training dataloader for the new phase. The check is performed:
+
+* At the end of each epoch, if the training unit is
+  :py:attr:`~helios.trainer.TrainingUnit.EPOCH`.
+* At the end of each iteration, if the training unit is
+  :py:attr:`~helios.trainer.TrainingUnit.ITERATION`.
+
+Checkpoint Behaviour
+--------------------
+
+The current phase index is saved and restored automatically with each checkpoint. When
+training resumes from a checkpoint, the datamodule restores the correct phase so that
+the active dataset matches the state at the time the checkpoint was written.
+
+Interaction with ``get_train_steps_per_epoch()``
+-------------------------------------------------
+
+:py:meth:`~helios.model.model.Model.get_train_steps_per_epoch` returns the step count
+for the *current* active phase. If you cache this value in
+:py:meth:`~helios.model.model.Model.setup`, be aware that it reflects phase 0. Call it
+again after advancing the phase if the step count may differ between phases.
 
 .. _gradient-accumulation:
 
@@ -456,6 +539,44 @@ Call it between the backward pass and the optimizer step:
            self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
            self._optimizer.step()
 
+.. _linear-warmup-scheduler:
+
+Linear Warmup Scheduler
+=======================
+
+:py:class:`~helios.scheduler.schedulers.LinearWarmupScheduler` implements a two-phase
+learning rate schedule:
+
+#. For the first :math:`N_w` steps (``warmup_steps``), the learning rate increases
+   linearly from :math:`f_0 \cdot \eta_0` to :math:`\eta_0`, where :math:`\eta_0` is the
+   base learning rate and :math:`f_0` is ``warmup_start_factor``.
+#. After :math:`N_w` steps, the learning rate is controlled by the wrapped ``scheduler``.
+
+Typical setup consists of using
+:py:meth:`~helios.model.model.Model.get_train_steps_per_epoch` to derive the warmup
+duration from the dataset size:
+
+.. code-block:: python
+
+   from helios.scheduler import schedulers as hls
+
+   def setup(self, for_inference: bool = False) -> None:
+       self._optimizer = ...
+       steps_per_epoch = self.get_train_steps_per_epoch()
+       base_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+           self._optimizer, T_max=total_steps
+       )
+       self._scheduler = hls.LinearWarmupScheduler(
+           optimizer=self._optimizer,
+           warmup_steps=5 * steps_per_epoch,  # warm up for 5 epochs
+           scheduler=base_scheduler,
+           warmup_start_factor=0.1,
+       )
+
+The ``warmup_start_factor`` argument controls :math:`f_0`, the fraction of
+:math:`\eta_0` to begin from. For :math:`f_0 \in [0.0, 1.0)`, a value of 0.0 starts
+the warmup from zero. The default is 0.0.
+
 .. _checkpoint-saving:
 
 Checkpoint Saving
@@ -524,6 +645,23 @@ be:
 .. note::
    If distributed training is used, then only the process with *global rank* 0 will save
    checkpoints.
+
+Controlling When Checkpoints Are Saved
+---------------------------------------
+
+By default, the trainer writes a checkpoint whenever ``chkpt_frequency`` is reached. You
+can control this by overriding :py:meth:`~helios.model.model.Model.should_save_checkpoint`
+in your model:
+
+.. code-block:: python
+
+   def should_save_checkpoint(self) -> bool:
+       # Only save when the validation score has improved
+       return self._val_score > self._best_score
+
+When this function returns ``False``, the trainer skips writing a checkpoint for that
+cycle. This is useful when you want to only want to save checkpoints based on metrics or
+other criteria.
 
 Migrating Checkpoints
 ---------------------
@@ -717,6 +855,11 @@ code:
         model.on_training_epoch_end()
    model.on_training_end()
 
+.. note::
+   :py:meth:`~helios.model.model.Model.train` is a no-op by default. You must override
+   it and call ``.train()`` on your network(s) manually. The trainer calls this function
+   at the correct point in the loop.
+
 Validation Functions
 --------------------
 
@@ -734,6 +877,11 @@ following code:
 
    model.on_validation_end()
 
+.. note::
+   :py:meth:`~helios.model.model.Model.eval` is a no-op by default. You must override it
+   and call ``.eval()`` on your network(s) manually. The trainer calls this function at
+   the correct point in the loop.
+
 Testing Functions
 -----------------
 
@@ -749,6 +897,40 @@ The order of the testing functions is identical to the one shown for validation:
             model.on_testing_batch_end()
 
    model.on_testing_end()
+
+Getting the Number of Training Steps per Epoch
+-----------------------------------------------
+
+:py:meth:`~helios.model.model.Model.get_train_steps_per_epoch` returns the number of
+training batches in a single epoch. This wraps around
+:py:meth:`~helios.data.datamodule.DataModule.get_train_steps_per_epoch`, which constructs
+the training dataloader internally and returns its length.
+
+This is particularly useful for initialising schedulers in
+:py:meth:`~helios.model.model.Model.setup`:
+
+.. code-block:: python
+
+   def setup(self, for_inference: bool = False) -> None:
+       steps_per_epoch = self.get_train_steps_per_epoch()
+       self._scheduler = ...  # use steps_per_epoch to configure warmup or decay
+
+.. note::
+   Calling this function constructs the dataloader each time it is called. Cache the
+   result if you need it more than once.
+
+Batch Phase
+------------
+
+:py:class:`~helios.model.model.BatchPhase` is an enum with three values:
+
+* :py:attr:`~helios.model.model.BatchPhase.TRAIN`,
+* :py:attr:`~helios.model.model.BatchPhase.VALID`, and
+* :py:attr:`~helios.model.model.BatchPhase.TEST`.
+
+It is passed by the trainer to :py:meth:`~helios.model.model.Model.batch_to_device` to
+indicate which phase the current batch belongs to. This can be useful if you require
+different implementations for each phase.
 
 Exception Handling
 ==================
