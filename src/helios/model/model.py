@@ -211,7 +211,7 @@ class Model(abc.ABC):
         Please see that function for more details.
 
         .. note::
-            This method only applies to the training split.
+            This function only applies to the training split.
 
         Returns:
             The number of iterations per training epoch.
@@ -495,7 +495,13 @@ class Model(abc.ABC):
         return banner
 
     def train(self) -> None:
-        """Switch the model to training mode."""
+        """
+        Switch the model to training mode.
+
+        This function is a no-op by default. You must override it to set your network(s)
+        in training mode by calling ``.train()``. The trainer calls this function at the
+        appropriate point in the training loop.
+        """
 
     def on_training_start(self) -> None:
         """
@@ -623,7 +629,13 @@ class Model(abc.ABC):
         """
 
     def eval(self) -> None:
-        """Switch the model to evaluation mode."""
+        """
+        Switch the model to evaluation mode.
+
+        This function is a no-op by default. You must override it to set your network(s)
+        in evaluation mode by calling ``.eval()``. The trainer calls this function at the
+        appropriate point in the training loop.
+        """
 
     def on_validation_start(self, validation_cycle: int) -> None:
         """
