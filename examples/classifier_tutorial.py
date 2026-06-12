@@ -18,7 +18,7 @@ import helios.data as hld
 import helios.model as hlm
 import helios.optim as hlo
 import helios.trainer as hlt
-from helios.core import logging
+from helios.core import loggers
 
 
 class CIFARDataModule(hld.DataModule):
@@ -44,7 +44,7 @@ class CIFARDataModule(hld.DataModule):
         params.shuffle = True
         params.num_workers = 2
         params.drop_last = True
-        self._train_dataset = self._create_dataset(
+        self._add_train_phase(
             torchvision.datasets.CIFAR10(
                 root=self._root, train=True, download=False, transform=transforms
             ),
@@ -56,7 +56,7 @@ class CIFARDataModule(hld.DataModule):
         # for training.
         params.drop_last = False
         params.shuffle = False
-        self._valid_dataset = self._create_dataset(
+        self._add_valid_dataset(
             torchvision.datasets.CIFAR10(
                 root=self._root, train=False, download=False, transform=transforms
             ),
@@ -88,7 +88,7 @@ class ClassifierModel(hlm.Model):
     def __init__(self) -> None:
         super().__init__("classifier")
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         # Note that when we create the network and loss function, we immediately move them
         # to the current device, which has been set by the trainer.
         self._net = Net().to(self.device)
@@ -100,16 +100,17 @@ class ClassifierModel(hlm.Model):
             "SGD", self._net.parameters(), lr=0.001, momentum=0.9
         )
 
-    def load_state_dict(
-        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+    def load_user_state_dict(
+        self, state_dict: dict[str, typing.Any], for_inference: bool
     ) -> None:
         # Note that we don't have to re-map the weights ourselves. They have already been
         # re-mapped for us by the trainer when it loaded the checkpoint.
         self._net.load_state_dict(state_dict["net"])
         self._criterion.load_state_dict(state_dict["criterion"])
-        self._optimizer.load_state_dict(state_dict["optimizer"])
+        if not for_inference:
+            self._optimizer.load_state_dict(state_dict["optimizer"])
 
-    def state_dict(self) -> dict[str, typing.Any]:
+    def user_state_dict(self) -> dict[str, typing.Any]:
         return {
             "net": self._net.state_dict(),
             "criterion": self._criterion.state_dict(),
@@ -121,7 +122,7 @@ class ClassifierModel(hlm.Model):
         self._net.train()
 
     def on_training_start(self) -> None:
-        tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
+        tb_logger = hlc.get_from_optional(loggers.get_tensorboard_writer())
 
         x = torch.randn((1, 3, 32, 32)).to(self.device)
         tb_logger.add_graph(self._net, x)
@@ -131,8 +132,6 @@ class ClassifierModel(hlm.Model):
         # the training step, but you could also split it between the train_step and
         # on_training_batch_end if your setup is more complex.
         inputs, labels = batch
-        inputs = inputs.to(self.device)
-        labels = labels.to(self.device)
 
         self._optimizer.zero_grad()
 
@@ -158,8 +157,8 @@ class ClassifierModel(hlm.Model):
         # This flag is set to true whenever the number of iterations is a multiple of the
         # logging frequency we set when creating the trainer.
         if should_log:
-            root_logger = logging.get_root_logger()
-            tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
+            root_logger = loggers.get_root_logger()
+            tb_logger = hlc.get_from_optional(loggers.get_tensorboard_writer())
 
             loss_val = self._loss_items["loss"]
 
@@ -184,7 +183,7 @@ class ClassifierModel(hlm.Model):
         total = self._val_scores["total"]
         correct = self._val_scores["correct"]
         accuracy = 100 * correct // total
-        writer = hlc.get_from_optional(logging.get_tensorboard_writer())
+        writer = hlc.get_from_optional(loggers.get_tensorboard_writer())
         writer.add_hparams(
             {"lr": 0.001, "momentum": 0.9, "epochs": 2},
             {"hparam/accuracy": accuracy, "hparam/loss": self._loss_items["loss"].item()},
@@ -205,8 +204,6 @@ class ClassifierModel(hlm.Model):
 
     def valid_step(self, batch: typing.Any, step: int) -> None:
         images, labels = batch
-        images = images.to(self.device)
-        labels = labels.to(self.device)
 
         outputs = self._net(images)
 
@@ -215,8 +212,8 @@ class ClassifierModel(hlm.Model):
         self._val_scores["correct"] += (predicted == labels).sum().item()
 
     def on_validation_end(self, validation_cycle: int) -> None:
-        root_logger = logging.get_root_logger()
-        tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
+        root_logger = loggers.get_root_logger()
+        tb_logger = hlc.get_from_optional(loggers.get_tensorboard_writer())
 
         # Grab the validation scores and compute the accuracy metric so we can log it. If
         # we were in distributed mode, you would need to gather the values here.
@@ -247,8 +244,7 @@ if __name__ == "__main__":
         enable_progress_bar=True,
         enable_deterministic=True,
         chkpt_root=pathlib.Path.cwd() / "chkpt",
-        log_path=pathlib.Path.cwd() / "logs",
-        run_path=pathlib.Path.cwd() / "runs",
+        log_root=pathlib.Path.cwd() / "logs",
     )
 
     trainer.fit(model, datamodule)

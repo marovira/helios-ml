@@ -25,7 +25,7 @@ DataModule
 ~~~~~~~~~~
 
 This class bundles all of the logic for setting up and creating the datasets and
-dataloaders used for testing. This allows multiple models to re-use datasets with
+dataloaders used for training. This allows multiple models to re-use datasets with
 standardised settings without having to duplicate code.
 
 As part of the creation of the dataloaders, Helios ensures that all worker processes are
@@ -61,7 +61,7 @@ Trainer
 ~~~~~~~
 
 The trainer is the main class that holds the main training, testing, and validation loops.
-In addition, it also the one in charge of ensuring the
+In addition, it is also the one in charge of ensuring the
 :py:class:`~helios.model.model.Model` and the
 :py:class:`~helios.data.datamodule.DataModule` are correctly initialised. This involves
 the following:
@@ -83,7 +83,8 @@ The :py:class:`~helios.trainer.Trainer` also natively supports the following log
 schemes (which can be manually enabled):
 
 * File logging,
-* Tensorboard.
+* Tensorboard,
+* Weights & Biases (W&B).
 
 In the next section, we will go over a brief example on how to use Helios. If you are
 evaluating whether Helios is the right tool for your project, see :doc:`why-helios` for

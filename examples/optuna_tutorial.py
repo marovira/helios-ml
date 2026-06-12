@@ -22,16 +22,17 @@ import helios.model as hlm
 import helios.nn as hln
 import helios.optim as hlo
 import helios.trainer as hlt
-from helios.core import logging
+from helios.core import loggers
 from helios.plugins.optuna import OptunaPlugin
 
 
 class CIFARDataModule(hld.DataModule):
-    def __init__(self, root: pathlib.Path, batch_size: int):
+    def __init__(self, root: pathlib.Path, batch_size: int) -> None:
+        super().__init__()
         self._root = root / "data"
         self._batch_size = batch_size
 
-    def prepare_data(self):
+    def prepare_data(self) -> None:
         torchvision.datasets.CIFAR10(root=self._root, train=True, download=True)
         torchvision.datasets.CIFAR10(root=self._root, train=False, download=True)
 
@@ -48,7 +49,7 @@ class CIFARDataModule(hld.DataModule):
         params.shuffle = True
         params.num_workers = 2
         params.drop_last = True
-        self._train_dataset = self._create_dataset(
+        self._add_train_phase(
             torchvision.datasets.CIFAR10(
                 root=self._root,
                 train=True,
@@ -61,7 +62,7 @@ class CIFARDataModule(hld.DataModule):
         params.drop_last = False
         params.shuffle = False
         params.is_distributed = False
-        self._valid_dataset = self._create_dataset(
+        self._add_valid_dataset(
             torchvision.datasets.CIFAR10(
                 root=self._root,
                 train=False,
@@ -110,7 +111,7 @@ class ClassifierModel(hlm.Model):
         accuracy = 100 * correct // total
         return {"accuracy": accuracy}
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         plugin = self.trainer.plugins[OptunaPlugin.plugin_id]
         assert isinstance(plugin, OptunaPlugin)
 
@@ -144,16 +145,17 @@ class ClassifierModel(hlm.Model):
             momentum=0.9,
         )
 
-    def load_state_dict(
-        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+    def load_user_state_dict(
+        self, state_dict: dict[str, typing.Any], for_inference: bool
     ) -> None:
         if not self.is_distributed:
             consume_prefix_in_state_dict_if_present(state_dict["net"], "module.")
 
         self._net.load_state_dict(state_dict["net"])
-        self._optimizer.load_state_dict(state_dict["optimizer"])
+        if not for_inference:
+            self._optimizer.load_state_dict(state_dict["optimizer"])
 
-    def state_dict(self) -> dict[str, typing.Any]:
+    def user_state_dict(self) -> dict[str, typing.Any]:
         return {"net": self._net.state_dict(), "optimizer": self._optimizer.state_dict()}
 
     def train(self) -> None:
@@ -164,8 +166,6 @@ class ClassifierModel(hlm.Model):
         labels: torch.Tensor
 
         inputs, labels = batch
-        inputs = inputs.to(self.device)
-        labels = labels.to(self.device)
 
         self._optimizer.zero_grad()
 
@@ -182,8 +182,8 @@ class ClassifierModel(hlm.Model):
         super().on_training_batch_end(state, should_log)
 
         if should_log:
-            root_logger = logging.get_root_logger()
-            tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
+            root_logger = loggers.get_root_logger()
+            tb_logger = hlc.get_from_optional(loggers.get_tensorboard_writer())
 
             loss_val = self._loss_items["loss"]
 
@@ -204,7 +204,7 @@ class ClassifierModel(hlm.Model):
         total = self._val_scores["total"]
         correct = self._val_scores["correct"]
         accuracy = 100 * correct / total
-        tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
+        tb_logger = hlc.get_from_optional(loggers.get_tensorboard_writer())
         tb_logger.add_hparams(
             self._tune_params,
             {"hparam/accuracy": accuracy, "hparam/loss": self._loss_items["loss"].item()},
@@ -231,8 +231,6 @@ class ClassifierModel(hlm.Model):
         images: torch.Tensor
         labels: torch.Tensor
         images, labels = batch
-        images = images.to(self.device)
-        labels = labels.to(self.device)
 
         outputs = self._net(images)
         _, predicted = torch.max(outputs.data, 1)
@@ -244,8 +242,8 @@ class ClassifierModel(hlm.Model):
         self._val_scores["steps"] += 1
 
     def on_validation_end(self, validation_cycle: int) -> None:
-        root_logger = logging.get_root_logger()
-        tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
+        root_logger = loggers.get_root_logger()
+        tb_logger = hlc.get_from_optional(loggers.get_tensorboard_writer())
 
         total = self._val_scores["total"]
         correct = self._val_scores["correct"]
@@ -295,12 +293,10 @@ def objective(trial: optuna.Trial) -> float:
         enable_deterministic=True,
         print_banner=True,
         chkpt_root=pathlib.Path.cwd() / "chkpt",
-        log_path=pathlib.Path.cwd() / "logs",
-        run_path=pathlib.Path.cwd() / "runs",
+        log_root=pathlib.Path.cwd() / "logs",
     )
 
-    plugin.configure_trainer(trainer)
-    plugin.configure_model(model)
+    trainer.register_plugin(plugin)
     trainer.fit(model, datamodule)
     plugin.check_pruned()
 
