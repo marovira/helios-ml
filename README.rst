@@ -140,6 +140,14 @@ most important areas for research and engineering work:
      - Explicit
      - Magic hooks
      - Event-based
+   * - Training unit
+     - First-class (``EPOCH``/``ITERATION``)
+     - Epoch-based
+     - Epoch-based
+   * - Gradient accumulation
+     - Iteration-aware
+     - Epoch-based
+     - Manual
    * - Registry system
      - Built-in
      - None

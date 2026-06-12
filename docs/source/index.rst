@@ -11,6 +11,7 @@ Welcome to Helios's documentation!
    :caption: Contents:
 
    getting-started
+   why-helios
    tutorial
    quick-ref
    plugins
@@ -23,4 +24,4 @@ Welcome to Helios's documentation!
 
 .. include:: ../../README.rst
    :start-after: .. main_features
-   :end-before: .. installation
+   :end-before: .. why_helios

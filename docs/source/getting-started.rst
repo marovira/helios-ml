@@ -85,4 +85,6 @@ schemes (which can be manually enabled):
 * File logging,
 * Tensorboard.
 
-In the next section, we will go over a brief example on how to use Helios.
+In the next section, we will go over a brief example on how to use Helios. If you are
+evaluating whether Helios is the right tool for your project, see :doc:`why-helios` for
+a detailed comparison with other frameworks.
