@@ -17,7 +17,7 @@ class PluginModel(hlm.Model):
     def __init__(self, save_name: str):
         super().__init__(save_name)
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         pass
 
 

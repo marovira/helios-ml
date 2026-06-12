@@ -672,7 +672,7 @@ class Trainer:
         )
         self._setup_plugins()
         self._setup_datamodule()
-        self._setup_model(fast_init=True)
+        self._setup_model(for_inference=True)
         self._prepare_roots(mkdir=False)
 
         chkpt_path: pathlib.Path | None = None
@@ -680,7 +680,7 @@ class Trainer:
         if self._chkpt_root is not None:
             chkpt_path = find_last_checkpoint(core.get_from_optional(self._chkpt_root))
             loaded = (
-                self._load_checkpoint(chkpt_path, skip_rng=True, model_fast_init=True)
+                self._load_checkpoint(chkpt_path, skip_rng=True, model_for_inference=True)
                 != TrainingState()
             )
 
@@ -766,19 +766,20 @@ class Trainer:
         self.datamodule.trainer = self
         self.datamodule.setup()
 
-    def _setup_model(self, fast_init: bool = False) -> None:
+    def _setup_model(self, for_inference: bool = False) -> None:
         """
         Finish setting up the model.
 
         Args:
-            fast_init: whether the model should setup its full state or not.
+            for_inference: if True, the model sets up for inference only (no training
+                state).
         """
         self.model.map_loc = self._map_loc
         self.model.is_distributed = self._is_distributed
         self.model.device = core.get_from_optional(self._device)
         self.model.rank = self.local_rank
         self.model.trainer = self
-        self.model.setup(fast_init)
+        self.model.setup(for_inference)
 
     def _setup_plugins(self) -> None:
         """Finish setting up the plug-ins."""
@@ -1002,7 +1003,7 @@ class Trainer:
         self,
         chkpt_path: pathlib.Path | None,
         skip_rng: bool = False,
-        model_fast_init: bool = False,
+        model_for_inference: bool = False,
     ) -> TrainingState:
         """
         Load the given checkpoint.
@@ -1010,7 +1011,8 @@ class Trainer:
         Args:
             chkpt_path: path to the checkpoint to load.
             skip_rng: if True, skip the loading of the RNG states.
-            model_fast_init: whether the model should setup its full state or not.
+            model_for_inference: if True, the model loads for inference only (no
+                training state).
 
         Returns:
             Returns the loaded training state and ``True`` if the checkpoint was
@@ -1033,7 +1035,7 @@ class Trainer:
         if not skip_rng:
             rng.load_rng_state_dict(state_dict[_CheckpointKeys.RNG])
         self.model.load_state_dict(
-            state_dict[_CheckpointKeys.MODEL], fast_init=model_fast_init
+            state_dict[_CheckpointKeys.MODEL], for_inference=model_for_inference
         )
         self.datamodule.load_state_dict(state_dict[_CheckpointKeys.DATAMODULE])
 

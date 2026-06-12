@@ -34,7 +34,7 @@ class MockModel(hlm.Model):
     def test_scores(self) -> dict[str, float]:
         return self._test_scores
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         pass
 
     def train_step(self, batch: typing.Any, state) -> None:
@@ -211,11 +211,11 @@ class TestStateDicts:
             def __init__(self) -> None:
                 super().__init__("recording")
 
-            def setup(self, fast_init: bool = False) -> None:
+            def setup(self, for_inference: bool = False) -> None:
                 pass
 
             def load_user_state_dict(
-                self, state_dict: dict[str, typing.Any], fast_init: bool = False
+                self, state_dict: dict[str, typing.Any], for_inference: bool = False
             ) -> None:
                 received.update(state_dict)
 
@@ -319,7 +319,7 @@ class TestBatchToDevice:
             def __init__(self) -> None:
                 super().__init__("phase-capture")
 
-            def setup(self, fast_init: bool = False) -> None:
+            def setup(self, for_inference: bool = False) -> None:
                 pass
 
             def batch_to_device(

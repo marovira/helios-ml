@@ -113,7 +113,7 @@ class Model(abc.ABC):
             import helios.model as hlm
             import helios.trainer as hlt
             class MyModel(hlm.Model):
-                def setup(self, fast_init: bool = False) -> None:
+                def setup(self, for_inference: bool = False) -> None:
                     self._net = ...
                     self._optimizer = ...
                     self._criterion = ...
@@ -233,7 +233,7 @@ class Model(abc.ABC):
         self._amp_context = state
 
     @abc.abstractmethod
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         """
         Initialize all the state necessary for training.
 
@@ -241,11 +241,13 @@ class Model(abc.ABC):
         that you require for training. This will be called before training starts and
         after the distributed processes have been launched (if applicable).
 
-        The ``fast_init`` flag is used to indicate that the model should **not** load any
-        training state. This can be used for testing or for other purposes.
+        The ``for_inference`` flag signals that the model is being loaded for inference
+        rather than training. When ``True``, training-only state such as optimisers and
+        schedulers should not be loaded.
 
         Args:
-            fast_init: if True, only networks are loaded.
+            for_inference: if True, skip loading training-only state (optimisers,
+                schedulers, etc.) and load only the network weights.
         """
 
     def create_scaler(
@@ -355,7 +357,7 @@ class Model(abc.ABC):
         """
 
     def load_state_dict(
-        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+        self, state_dict: dict[str, typing.Any], for_inference: bool = False
     ) -> None:
         """
         Load the model state from the given state dictionary.
@@ -364,24 +366,25 @@ class Model(abc.ABC):
             1. Internal state
             1. User-state
         Note that any weights will have been automatically mapped to the correct device.
-        Also note that internal state is only loaded if ``fast_init`` is set to False.
+        Also note that internal state is only loaded if ``for_inference`` is set to False.
 
         Args:
             state_dict: the state dictionary to load from.
-            fast_init: if True, only networks need to be loaded.
+            for_inference: if True, skip loading training-only state (optimisers,
+                schedulers, etc.) and load only the network weights.
         """
         if (
-            not fast_init
+            not for_inference
             and self.amp_context is not None
             and _InternalStateKeys.AMP_SCALER in state_dict
         ):
             self.amp_context.scaler.load_state_dict(
                 state_dict[_InternalStateKeys.AMP_SCALER]
             )
-        self.load_user_state_dict(state_dict[_InternalStateKeys.USER], fast_init)
+        self.load_user_state_dict(state_dict[_InternalStateKeys.USER], for_inference)
 
     def load_user_state_dict(
-        self, state_dict: dict[str, typing.Any], fast_init: bool
+        self, state_dict: dict[str, typing.Any], for_inference: bool
     ) -> None:
         """
         Load the user-defined model state from the given state dictionary.
@@ -389,13 +392,14 @@ class Model(abc.ABC):
         Use this function to restore any training state from a checkpoint. Note that any
         weights will have already been automatically mapped to the correct device.
 
-        The ``fast_init`` flag is used to indicate that the model should **not** load any
-        training state. This can be used for testing or for other purposes. As such, you
-        should only load the state of your network(s) and nothing else.
+        The ``for_inference`` flag signals that the model is being loaded for inference
+        rather than training. When ``True``, you should load only the network weights and
+        skip any training-only state such as optimisers and schedulers.
 
         Args:
             state_dict: the state dictionary to load from.
-            fast_init: if True, only networks need be loaded
+            for_inference: if True, skip loading training-only state and load only
+                network weights.
         """
 
     def state_dict(self) -> dict[str, typing.Any]:

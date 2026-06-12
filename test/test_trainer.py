@@ -109,7 +109,7 @@ class CheckFunModel(hlm.Model):
             "on_testing_end": False,
         }
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         self.called_train_funs["setup"] = True
 
     def load_for_testing(self) -> None:
@@ -228,7 +228,7 @@ class RestartModel(hlm.Model):
         self.batches: list[npt.NDArray] = []
         self.val_count = val_count
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         pass
 
     def on_training_batch_start(self, state: hlt.TrainingState) -> None:
@@ -256,7 +256,7 @@ class CheckpointModel(hlm.Model):
             "value": Values.A,
         }
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         pass
 
     def types_for_safe_load(self) -> list[typing.Callable | tuple[typing.Callable, str]]:
@@ -266,7 +266,7 @@ class CheckpointModel(hlm.Model):
         return self._state
 
     def load_user_state_dict(
-        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+        self, state_dict: dict[str, typing.Any], for_inference: bool = False
     ) -> None:
         assert self._state == state_dict
 
@@ -278,7 +278,7 @@ class AccumulationModel(hlm.Model):
         self.global_steps: int = 0
         self.accumulated_steps: int = 0
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         pass
 
     def train_step(self, batch: torch.Tensor, state: hlt.TrainingState) -> None:
@@ -296,7 +296,7 @@ class ExceptionModel(hlm.Model):
         self._exc_type = exc_type
         self._raise_in_setup = raise_in_setup
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         if self._raise_in_setup:
             raise self._exc_type("error")
 
@@ -311,7 +311,7 @@ class EmptyModel(hlm.Model):
     def __init__(self) -> None:
         super().__init__("empty")
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         pass
 
 
@@ -342,7 +342,7 @@ class CheckpointPlugin(hlp.Plugin):
         return self._state
 
     def load_state_dict(
-        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+        self, state_dict: dict[str, typing.Any], for_inference: bool = False
     ) -> None:
         assert self._state == state_dict
 
@@ -440,7 +440,7 @@ class CheckPluginModel(hlm.Model):
         assert isinstance(plugin, CheckFunPlugin)
         return plugin
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         plugin = self._get_plugin()
         assert plugin.called_train_funs["setup"]
 
@@ -521,7 +521,7 @@ class PhaseEpochModel(hlm.Model):
         self._phase_advanced: bool = False
         self._current_epoch: int = 0
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         pass
 
     def on_training_batch_start(self, state: hlt.TrainingState) -> None:
@@ -547,7 +547,7 @@ class PhaseEpochModel(hlm.Model):
         }
 
     def load_user_state_dict(
-        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+        self, state_dict: dict[str, typing.Any], for_inference: bool = False
     ) -> None:
         self._phase_advanced = state_dict["_phase_advanced"]
         self._current_epoch = state_dict["_current_epoch"]
@@ -562,7 +562,7 @@ class PhaseIterModel(hlm.Model):
         self._phase_advanced: bool = False
         self._current_iter: int = 0
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         pass
 
     def on_training_batch_start(self, state: hlt.TrainingState) -> None:
@@ -593,7 +593,7 @@ class PhaseIterModel(hlm.Model):
         }
 
     def load_user_state_dict(
-        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+        self, state_dict: dict[str, typing.Any], for_inference: bool = False
     ) -> None:
         self._phase_advanced = state_dict["_phase_advanced"]
         self._current_iter = state_dict["_current_iter"]
@@ -612,7 +612,7 @@ class SkipCheckpointModel(hlm.Model):
     def __init__(self) -> None:
         super().__init__("skip-checkpoint")
 
-    def setup(self, fast_init: bool = False) -> None:
+    def setup(self, for_inference: bool = False) -> None:
         pass
 
     def should_save_checkpoint(self) -> bool:
