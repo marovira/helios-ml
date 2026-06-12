@@ -26,17 +26,6 @@
 .. |License| image:: https://img.shields.io/pypi/l/helios-ml.svg
    :target: https://opensource.org/license/bsd-3-clause
 
-.. |PythonMinVersion| replace:: 3.11
-.. |TQDMMinVersion| replace:: 4.66.0
-.. |OpenCVMinVersion| replace:: 4.10.0.84
-.. |TensorboardMinVersion| replace:: 2.17.0
-.. |TorchMinVersion| replace:: 2.5.0
-.. |TorchvisionMinVersion| replace:: 0.20.0
-.. |ONNXMinVersion| replace:: 1.16.0
-.. |ORTMinVersion| replace:: 1.19.0
-.. |PLTMinVersion| replace:: 3.9.2
-.. |NumpyMinVersion| replace:: 2.1.0
-
 .. what_is_helios
 
 What is Helios?
@@ -47,17 +36,56 @@ networks built on top of PyTorch. It is designed to abstract all of the "boiler-
 code involved with training. Specifically, it wraps the following common patterns:
 
 - Creation of the dataloaders.
-- Initialization of CUDA, PyTorch, and random number states.
-- Initialization for distributed training.
+- Initialisation of CUDA, PyTorch, and random number states.
+- Initialisation for distributed training.
 - Training, validation, and testing loops.
 - Saving and loading checkpoints.
 - Exporting to ONNX.
 
 It is important to note that Helios is **not** a fully fledged training environment similar
-to `Pytorch Lightning <https://github.com/Lightning-AI/pytorch-lightning>`__. Instead,
+to `PyTorch Lightning <https://github.com/Lightning-AI/pytorch-lightning>`__. Instead,
 Helios is focused on providing a simple and straight-forward interface that abstracts most
 of the common code patterns while retaining the ability to be easily overridden to suit
 the individual needs of each training scheme.
+
+.. quick_start
+
+Quick Start
+-----------
+
+Training with Helios requires three steps:
+
+1. Subclass ``DataModule`` to define your datasets and dataloaders.
+2. Subclass ``Model`` to implement your training logic.
+3. Create a ``Trainer`` and call ``fit()``.
+
+.. code-block:: python
+
+   import helios
+   import helios.data as hld
+   import helios.model as hlm
+
+   class MyDataModule(hld.DataModule):
+       def setup(self) -> None:
+           dataset = MyDataset(...)
+           params = hld.DataLoaderParams(batch_size=32)
+           self._add_train_phase(dataset, params)
+
+   class MyModel(hlm.Model):
+       def setup(self, for_inference: bool = False) -> None:
+           self._net = MyNetwork()
+           self._optimizer = ...
+           self._criterion = ...
+
+       def train_step(self, batch, state: helios.TrainingState) -> None:
+           inputs, labels = batch
+           self._optimizer.zero_grad()
+           loss = self._criterion(self._net(inputs), labels)
+           loss.backward()
+           self._optimizer.step()
+
+   trainer = helios.Trainer()
+   trainer.fit(MyModel("my_model"), MyDataModule())
 
 .. main_features
 
@@ -72,40 +100,83 @@ Helios offers the following functionality out of the box:
 #. Automatic detection of multi-GPU environments for distributed training. In addition,
    Helios also supports training using ``torchrun`` and will automatically handle the
    initialisation and clean up of the distributed state. It will also correctly set the
-   devices and maps to ensure weights are mapped tot he correct location.
+   devices and maps to ensure weights are mapped to the correct location.
 #. Registries for creation of arbitrary types. These include: networks, loss functions,
-   optimizers, schedulers, etc.
+   optimisers, schedulers, etc.
 #. Correct handling of logging when doing distributed training (even over multiple nodes).
 #. Native integration with Optuna for hyper-parameter optimisation. Also supports resuming
    studies and generating checkpoints to ensure reproducibility.
+
+.. why_helios
+
+Why Helios?
+-----------
+
+Compared to larger frameworks, Helios prioritises explicitness and simplicity over
+automation. The table below compares it against PyTorch Lightning and Ignite across the
+most important areas for research and engineering work:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 23 23 24
+
+   * - Feature
+     - Helios
+     - Lightning
+     - Ignite
+   * - Mixed precision
+     - Helper functions
+     - Automatic
+     - Manual
+   * - Reproducible resume
+     - Built-in
+     - Partial
+     - Manual
+   * - Distributed training
+     - ``torchrun``
+     - ``torchrun``
+     - Manual
+   * - Boilerplate style
+     - Explicit
+     - Magic hooks
+     - Event-based
+   * - Registry system
+     - Built-in
+     - None
+     - None
+   * - Learning curve
+     - Low
+     - Medium
+     - High
+   * - Debuggability
+     - High
+     - Medium
+     - High
+
+**Registry system.** Helios provides typed global registries (``MODEL_REGISTRY``,
+``DATASET_REGISTRY``, ``OPTIMIZER_REGISTRY``, and others) that map string names to
+types. Any component can be created by name, enabling config-file-driven experiments and
+trivial component swaps without changing training code. Register a class with
+``@REGISTRY.register`` and create an instance with ``create_model("MyModel", ...)``.
+
+**Core philosophy.** Helios removes training boilerplate without hiding what is
+happening. You can always read the code and know exactly what runs at every point in the
+training loop.
 
 .. installation
 
 Installation
 ------------
 
-Dependencies
-~~~~~~~~~~~~
-
-Helios requires:
-
-- Python (>= |PythonMinVersion|)
-- TQDM (>= |TQDMMinVersion|)
-- OpenCV (>= |OpenCVMinVersion|)
-- Tensorboard (>= |TensorboardMinVersion|)
-- PyTorch (>= |TorchMinVersion|)
-- Torchvision (>= |TorchvisionMinVersion|)
-- ONNX (>= |ONNXMinVersion|)
-- ONNXRuntime (>= |ORTMinVersion|)
-- Matplotlib (>= |PLTMinVersion|)
-- Numpy (>= |NumpyMinVersion|)
-
-User Installation
-~~~~~~~~~~~~~~~~~
-
-You can install Helios using ``pip``::
+Install Helios using ``pip``::
 
     pip install -U helios-ml
+
+The following optional features are available as install extras:
+
+- Optuna integration for hyper-parameter tuning: ``pip install -U helios-ml[tune]``
+- Tensorboard logging: ``pip install -U helios-ml[tensorboard]``
+- Weights & Biases logging: ``pip install -U helios-ml[wandb]``
 
 If you require a specific version of CUDA, you can install with::
 
