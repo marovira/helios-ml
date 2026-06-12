@@ -14,6 +14,8 @@ Welcome to Helios's documentation!
    why-helios
    tutorial
    quick-ref
+   tensorboard
+   wandb
    plugins
    optuna
 
