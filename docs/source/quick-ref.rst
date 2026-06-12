@@ -369,6 +369,94 @@ would do something like this:
    Unlike the epoch case, we **cannot** use ``state.current_iteration`` as that keeps
    track of the number of *complete* iterations we have done.
 
+.. _amp:
+
+Automatic Mixed Precision
+=========================
+
+The :py:class:`~helios.model.model.Model` class provides helper functions for Automatic
+Mixed Precision (AMP) training.
+
+To enable AMP, call :py:func:`~helios.model.model.Model.create_scaler` in your
+:py:func:`~helios.model.model.Model.setup` function:
+
+.. code-block:: python
+
+   def setup(self, for_inference: bool = False) -> None:
+       self._net = ...
+       self._optimizer = ...
+       self.create_scaler(dtype=torch.float16)
+
+Once enabled, use :py:func:`~helios.model.model.Model.autocast` to wrap the forward
+pass in your training step:
+
+.. code-block:: python
+
+   def train_step(self, batch, state: TrainingState) -> None:
+       inputs, labels = batch
+       self._optimizer.zero_grad()
+
+       with self.autocast():
+           loss = self._criterion(self._net(inputs), labels)
+
+       self._loss_items["loss"] = loss
+       scaler = self.amp_context.scaler
+       scaler.scale(loss).backward()
+       scaler.step(self._optimizer)
+       scaler.update()
+
+:py:func:`~helios.model.model.Model.autocast` returns
+:py:class:`torch.amp.autocast` when AMP is active and a null context otherwise, so the
+same training step code works regardless of whether AMP is enabled.
+
+The AMP state can be accessed directly through the
+:py:attr:`~helios.model.model.Model.amp_context` property, which returns an
+:py:class:`~helios.model.model.AMPContext` dataclass containing the scaler and the
+dtype. When AMP is disabled, :py:attr:`~helios.model.model.Model.amp_context` is
+``None``.
+
+AMP state is saved and restored automatically with each checkpoint.
+
+.. note::
+   On CPU, only ``torch.bfloat16`` is supported. Passing any other dtype when the
+   device is CPU will raise a :py:exc:`ValueError`.
+
+.. _grad-clipping:
+
+Gradient Clipping
+=================
+
+:py:func:`~helios.model.model.Model.clip_gradients` handles gradient clipping correctly
+regardless of whether AMP is active. When AMP is enabled, gradients must be unscaled
+before the norm is computed, otherwise the threshold is applied to scaled values and the
+effective clip is wrong. The function handles this automatically:
+
+1. When AMP is active, call :py:meth:`torch.amp.GradScaler.unscale_` on the optimizer.
+2. Call :py:func:`torch.nn.utils.clip_grad_norm_`.
+
+Call it between the backward pass and the optimizer step:
+
+.. code-block:: python
+
+   def train_step(self, batch, state: TrainingState) -> None:
+       inputs, labels = batch
+       self._optimizer.zero_grad()
+
+       with self.autocast():
+           loss = self._criterion(self._net(inputs), labels)
+
+       self._loss_items["loss"] = loss
+       if self.amp_context is not None:
+           scaler = self.amp_context.scaler
+           scaler.scale(loss).backward()
+           self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
+           scaler.step(self._optimizer)
+           scaler.update()
+       else:
+           loss.backward()
+           self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
+           self._optimizer.step()
+
 .. _checkpoint-saving:
 
 Checkpoint Saving
@@ -500,6 +588,51 @@ choice of training unit:
 
 The progress bar is also shown during validation, in which case it tracks the number of
 iterations in the validation set.
+
+.. _tensorboard-ref:
+
+Tensorboard
+===========
+
+Tensorboard logging is enabled by setting ``enable_tensorboard=True`` and providing a
+``log_root`` when constructing the :py:class:`~helios.trainer.Trainer`:
+
+.. code-block:: python
+
+   import helios
+   import pathlib
+
+   trainer = helios.Trainer(
+       log_root=pathlib.Path("logs"),
+       enable_tensorboard=True,
+   )
+
+The writer is accessible via :py:func:`~helios.core.loggers.get_tensorboard_writer`.
+For full details including run resumption, directory layout, and available logging
+functions, see :doc:`tensorboard`.
+
+.. _wandb-ref:
+
+Weights & Biases
+================
+
+W&B logging is enabled by passing a ``wandb_args`` dictionary to the
+:py:class:`~helios.trainer.Trainer` constructor:
+
+.. code-block:: python
+
+   import helios
+
+   trainer = helios.Trainer(
+       ...,
+       wandb_args={"project": "my-project", "name": "run-1"},
+   )
+
+The ``wandb_args`` dictionary accepts the fields defined by
+:py:class:`~helios.core.loggers.wandb.WandbArgs`. The ``project`` key is the only
+required field; all others are optional.
+
+For full details including run resumption and directory layout, see :doc:`wandb`.
 
 CUDA
 ====
