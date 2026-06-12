@@ -149,7 +149,7 @@ default, the trainer will write the following data:
 * The state of all supported RNGs.
 * The current :py:class:`~helios.trainer.TrainingState`.
 * The state of the model (if any).
-* The paths to the log file and Tensorboard folder (if using).
+* The state of any active loggers (if any).
 
 If training is stopped and restarted, then Helios will look in the folder where
 checkpoints are stored and load the last checkpoint. This checkpoint is found by finding
@@ -159,8 +159,7 @@ the following:
 * Restore the state of all supported RNGs.
 * Load the saved training state.
 * Provide the loaded state to the model (if any).
-* Restore the file and Tensorboard loggers to continue writing to their original locations
-  (if using).
+* Restore any active loggers to continue writing to their original locations (if any).
 
 .. note::
    Any weights contained in the saved checkpoint are automatically mapped to the correct
@@ -287,7 +286,7 @@ and the logic is the following:
 Training by Epoch
 -----------------
 
-To better understand the behaviour of each unit type, lets look at an example. First, lets
+To better understand the behaviour of each unit type, let's look at an example. First, lets
 set the training unit to be epochs. Then, suppose that we want to train a network for 5
 epochs and the batch size results in 10 iterations per epoch. We want to accumulate
 gradients for 2 iterations, effectively emulating a batch size that results in 5
@@ -475,12 +474,14 @@ keys:
 * ``rng``: contains the state of the supported RNGs.
 * ``version``: contains the version of Helios used to generate the checkpoint.
 
-The following keys may optionally appear in the dictionary:
+The following key may optionally appear in the dictionary:
 
-* ``log_path``: appears only when file logging is enabled and contains the path to the log
-  file.
-* ``run_path``: appears only when Tensorboard logging is enabled and contains the path to
-  the directory where the data is stored.
+* ``loggers``: appears when at least one logger is active. It maps logger type names to
+  their respective state dictionaries:
+
+  * ``root`` → ``{"log_file": <path>}`` (present when file logging is enabled)
+  * ``tensorboard`` → ``{"run_path": <path>}`` (present when Tensorboard logging is enabled)
+  * ``wandb`` → ``{"run_id": <run-id>}`` (present when W&B logging is enabled)
 
 The name of the checkpoint is determined as follows:
 
@@ -546,23 +547,26 @@ script directly from the command line as follows:
 Logging
 =======
 
-The :py:class:`~helios.trainer.Trainer` has several sets of flags that control logging.
-These are:
+The :py:class:`~helios.trainer.Trainer` supports three logging options controlled by
+flags:
 
-* ``enable_tensorboard`` which is paired with ``run_path``,
-* ``enable_file_logging`` which is paired with ``log_path``, and
-* ``enable_progress_bar``.
+* ``enable_file_logging``: writes a log file under ``log_root``.
+* ``enable_tensorboard``: enables Tensorboard logging. See :doc:`tensorboard` for full
+  details.
+* ``enable_progress_bar``: displays a progress bar during training.
 
-The ``*_path`` arguments determine the root directories where the corresponding logs will
-be saved.
+W&B logging is not toggled by a flag; it is enabled by passing ``wandb_args`` to the
+:py:class:`~helios.trainer.Trainer` constructor. See :doc:`wandb` for full details.
+
+All file-based loggers write under the single ``log_root`` directory. This covers file
+logging, Tensorboard, and W&B.
 
 .. warning::
-   If a flag is paired with a path, then you **must** provide the corresponding path if
-   the flag is enabled. In other words, if you set ``enable_tensorboard``, then you must
-   also provide ``run_path``.
+   If any file-based logging is enabled (``enable_file_logging``, ``enable_tensorboard``,
+   or ``wandb_args``), you **must** also provide ``log_root``.
 
 .. note::
-   If the given path doesn't exist, it will be created automatically.
+   If the ``log_root`` path does not exist, it will be created automatically.
 
 The way the names for logs is determined as follows:
 
