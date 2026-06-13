@@ -9,7 +9,7 @@ necessary to accomplish the same task using Helios.
 
 .. note::
    The code for this tutorial is available
-   `here <https://github.com/marovira/helios-ml/blob/master/examples/cifar10/cifar10.py>`__.
+   `here <https://github.com/marovira/helios-ml/blob/master/examples/classifier_tutorial.py>`__.
 
 Project Structure
 =================
@@ -30,7 +30,7 @@ will be installed automatically.
     python3 -m venv .venv # For Windows, replace with python
     . .venv/bin/activate
     # . .venv/Scripts/activate for Windows.
-    pip install helios
+    pip install helios-ml
     touch cifar.py
 
 With that done, let's begin by defining how our data will be managed.
@@ -62,7 +62,7 @@ familiar with that it will be easier to follow along. First, let's add our impor
     import helios.model as hlm
     import helios.optim as hlo
     import helios.trainer as hlt
-    from helios.core import logging
+    from helios.core import loggers
 
 These will be all the imports we'll need for this tutorial. Next, let's create a new class
 for our data:
@@ -102,7 +102,7 @@ make the datasets themselves:
             params.shuffle = True
             params.num_workers = 2
             params.drop_last = True
-            self._train_dataset = self._create_dataset(
+            self._add_train_phase(
                 torchvision.datasets.CIFAR10(
                     root=self._root, train=True, download=False, transform=transforms
                 ),
@@ -111,7 +111,7 @@ make the datasets themselves:
 
             params.drop_last = False
             params.shuffle = False
-            self._valid_dataset = self._create_dataset(
+            self._add_valid_dataset(
                 torchvision.datasets.CIFAR10(
                     root=self._root, train=False, download=False, transform=transforms
                 ),
@@ -138,8 +138,8 @@ There's a few things to note here:
    options like batch sizes, number of workers, whether the dataset should be shuffled,
    etc.
 #. The ``params`` object can be freely re-used without worrying about settings interfering
-   with each other. As soon as ``_create_dataset`` is called, the ``params`` object is
-   deep-copied to avoid conflicts.
+   with each other. As soon as ``_add_train_phase`` or ``_add_valid_dataset`` is called,
+   the ``params`` object is deep-copied to avoid conflicts.
 
 Making the Model
 ================
@@ -191,7 +191,7 @@ our loss function. The could would be as follows:
         def __init__(self) -> None:
             super().__init__("classifier")
 
-        def setup(self, fast_init: bool = False) -> None:
+        def setup(self, for_inference: bool = False) -> None:
             self._net = Net().to(self.device)
             self._criterion = nn.CrossEntropyLoss().to(self.device)
 
@@ -268,21 +268,22 @@ Checkpoints
 Now that the loss and optimizer have been created, we turn our attention to checkpoints.
 The :py:class:`~helios.trainer.Trainer` is designed to automatically save checkpoints at
 predetermined intervals. The checkpoints store all the necessary state to ensure training
-can be resumed. As part of the state stored, the model is able to add it's own state. In
+can be resumed. As part of the state stored, the model is able to add its own state. In
 our case, we would like to save the state of the network, optimizer, and loss function. To
-do this, we need to override :py:meth:`~helios.model.model.Model.load_state_dict` and
-:py:meth:`~helios.model.model.Model.state_dict`. The code is:
+do this, we need to override :py:meth:`~helios.model.model.Model.load_user_state_dict` and
+:py:meth:`~helios.model.model.Model.user_state_dict`. The code is:
 
 .. code-block:: python
 
-    def load_state_dict(
-        self, state_dict: dict[str, typing.Any], fast_init: bool = False
+    def load_user_state_dict(
+        self, state_dict: dict[str, typing.Any], for_inference: bool
     ) -> None:
         self._net.load_state_dict(state_dict["net"])
         self._criterion.load_state_dict(state_dict["criterion"])
-        self._optimizer.load_state_dict(state_dict["optimizer"])
+        if not for_inference:
+            self._optimizer.load_state_dict(state_dict["optimizer"])
 
-    def state_dict(self) -> dict[str, typing.Any]:
+    def user_state_dict(self) -> dict[str, typing.Any]:
         return {
             "net": self._net.state_dict(),
             "criterion": self._criterion.state_dict(),
@@ -291,7 +292,9 @@ do this, we need to override :py:meth:`~helios.model.model.Model.load_state_dict
 
 Similarly to the device, the model *should not* remap any weights from the loaded
 checkpoint. Those will be automatically mapped by the :py:class:`~helios.trainer.Trainer`
-when the checkpoint is loaded.
+when the checkpoint is loaded. The ``for_inference`` flag signals that the model is being
+loaded for inference rather than training; when ``True``, training-only state such as
+optimisers and schedulers should be skipped.
 
 Training
 --------
@@ -320,18 +323,18 @@ we're going to use :py:meth:`~helios.model.model.Model.on_training_start`:
 .. code-block:: python
 
     def on_training_start(self) -> None:
-        tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
+        tb_logger = hlc.get_from_optional(loggers.get_tensorboard_writer())
 
         x = torch.randn((1, 3, 32, 32)).to(self.device)
         tb_logger.add_graph(self._net, x)
 
 The Tensorboard writer is automatically created by the :py:class:`~helios.trainer.Trainer`
-if requested to do so. As a result, :py:func:`~helios.core.logging.get_tensorboard_writer`
+if requested to do so. As a result, :py:func:`~helios.core.loggers.get_tensorboard_writer`
 can return ``None``. We could ensure that it's valid by doing:
 
 .. code-block:: python
 
-    logger = logging.get_tensorboard_writer()
+    logger = loggers.get_tensorboard_writer()
     if logger is not None:
         ...
     # Or alternatively:
@@ -347,8 +350,6 @@ identifies. Now to add the forward and backward passes. These are going to be ke
 
     def train_step(self, batch: typing.Any, state: hlt.TrainingState) -> None:
         inputs, labels = batch
-        inputs = inputs.to(self.device)
-        labels = labels.to(self.device)
 
         self._optimizer.zero_grad()
 
@@ -364,11 +365,11 @@ There's a few things to unpack here, so let's go one by one:
 #. The type of the ``batch`` parameter is determined by our dataset. In the case of the
    CIFAR10 dataset, the batch is a tuple of tensors containing the inputs and labels. Note
    that the base model class imposes no restrictions on what the batch is.
-#. Since the base model class makes no assumptions on the type of the batch, we need to
-   move the components of the batch to the target device ourselves. This gives maximum
-   flexibility since you can choose what (if anything) gets moved. Note that similarly to
-   the creation of the network itself, we use the
-   :py:attr:`~helios.model.model.Model.device` property.
+#. Before :py:meth:`~helios.model.model.Model.train_step` is called, the
+   :py:class:`~helios.trainer.Trainer` automatically moves the batch to the model's device
+   by calling :py:meth:`~helios.model.model.Model.batch_to_device`. The default
+   implementation recursively moves any tensors it finds, so no manual ``.to(device)``
+   calls are needed in the step functions.
 #. We're going to store the returned loss into the ``_loss_items`` dictionary. This allows
    the model to automatically gather the tensors for us if we were doing distributed
    training.
@@ -385,8 +386,8 @@ Now let's look at the logging code:
         super().on_training_batch_end(state, should_log)
 
         if should_log:
-            root_logger = logging.get_root_logger()
-            tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
+            root_logger = loggers.get_root_logger()
+            tb_logger = hlc.get_from_optional(loggers.get_tensorboard_writer())
 
             loss_val = self._loss_items["loss"]
 
@@ -423,20 +424,21 @@ Let's examine each part independently:
 
 The rest of the code is pretty self-explanatory, with us just grabbing the Tensorboard
 logger just like before. Note that we also call
-:py:func:`~helios.core.logging.get_root_logger`, so let's discuss how Helios manages
+:py:func:`~helios.core.loggers.get_root_logger`, so let's discuss how Helios manages
 logging.
 
 Logging
 -------
 
-By default, Helios provides two loggers:
+By default, Helios provides the following loggers:
 
-* :py:class:`~helios.core.logging.RootLogger`: logs to a file and to stdout.
-* :py:class:`~helios.core.logging.TensorboardWriter`: wraps the PyTorch Tensorboard writer
+* :py:class:`~helios.core.loggers.RootLogger`: logs to stdout and optionally to a file.
+* :py:class:`~helios.core.loggers.TensorboardWriter`: wraps the PyTorch Tensorboard writer
   class.
+* :py:class:`~helios.core.loggers.WandbWriter`: wraps the Weights & Biases writer class.
 
 .. note::
-   The :py:class:`~helios.core.logging.RootLogger` will *always* be created with stream
+   The :py:class:`~helios.core.loggers.RootLogger` will *always* be created with stream
    output by default. This behaviour *cannot* be changed, as it is used to correctly
    forward error messages that may occur during training. The logging to a file can be
    toggled on/off based on the arguments provided to the
@@ -444,16 +446,16 @@ By default, Helios provides two loggers:
 
 
 The creation of these is handled by the :py:class:`~helios.trainer.Trainer`, and will be
-performed before training starts. If training is distributed, both loggers are designed to
+performed before training starts. If training is distributed, all loggers are designed to
 only log on the process whose rank is 0. In the event that training occurs over multiple
 nodes, then logging is performed on the process whose *global* rank is 0. The loggers can
-be obtained through :py:func:`~helios.core.logging.get_root_logger` and
-:py:func:`~helios.core.logging.get_tensorboard_writer`.
+be obtained through :py:func:`~helios.core.loggers.get_root_logger` and
+:py:func:`~helios.core.loggers.get_tensorboard_writer`.
 
 .. warning::
-   Only the :py:class:`~helios.core.logging.RootLogger` is guaranteed to exist. In the
+   Only the :py:class:`~helios.core.loggers.RootLogger` is guaranteed to exist. In the
    event that the trainer is created with Tensorboard logging disabled,
-   :py:func:`~helios.core.logging.get_tensorboard_writer` will return ``None``.
+   :py:func:`~helios.core.loggers.get_tensorboard_writer` will return ``None``.
 
 Now that we have logged the training losses, let's add the code to log the final
 validation result as well as the final loss value.
@@ -464,7 +466,7 @@ validation result as well as the final loss value.
         total = self._val_scores["total"]
         correct = self._val_scores["correct"]
         accuracy = 100 * correct // total
-        writer = hlc.get_from_optional(logging.get_tensorboard_writer())
+        writer = hlc.get_from_optional(loggers.get_tensorboard_writer())
         writer.add_hparams(
             {"lr": 0.001, "momentum": 0.9, "epochs": 2},
             {"hparam/accuracy": accuracy, "hparam/loss": self._loss_items["loss"].item()},
@@ -508,8 +510,6 @@ validation step:
 
     def valid_step(self, batch: typing.Any, step: int) -> None:
         images, labels = batch
-        images = images.to(self.device)
-        labels = labels.to(self.device)
 
         outputs = self._net(images)
 
@@ -518,19 +518,18 @@ validation step:
         self._val_scores["correct"] += (predicted == labels).sum().item()
 
 The :py:meth:`~helios.model.model.Model.valid_step` function is analogous to
-:py:meth:`~helios.model.model.Model.train_step`. Like before, we receive the batch from
-our dataset and we are responsible for moving the data into the appropriate device using
-:py:attr:`~helios.model.model.Model.device`. The rest of the code is identical to the
-PyTorch tutorial, with the only difference that we assign the results to the fields we
-added before validation began.
+:py:meth:`~helios.model.model.Model.train_step`. As before, the batch has already been
+moved to the model's device by the :py:class:`~helios.trainer.Trainer` before this
+function is called. The rest of the code is identical to the PyTorch tutorial, with the
+only difference that we assign the results to the fields we added before validation began.
 
 Finally, we need to compute the final accuracy score and log it:
 
 .. code-block:: python
 
     def on_validation_end(self, validation_cycle: int) -> None:
-        root_logger = logging.get_root_logger()
-        tb_logger = hlc.get_from_optional(logging.get_tensorboard_writer())
+        root_logger = loggers.get_root_logger()
+        tb_logger = hlc.get_from_optional(loggers.get_tensorboard_writer())
 
         total = self._val_scores["total"]
         correct = self._val_scores["correct"]
@@ -573,8 +572,7 @@ Now let's create the trainer itself:
         enable_progress_bar=True,
         enable_deterministic=True,
         chkpt_root=pathlib.Path.cwd() / "chkpt",
-        log_path=pathlib.Path.cwd() / "logs",
-        run_path=pathlib.Path.cwd() / "runs",
+        log_root=pathlib.Path.cwd() / "logs",
     )
 
 The :py:class:`~helios.trainer.Trainer` constructor takes a long list of arguments that
@@ -637,7 +635,7 @@ Enabling Logging and Checkpoints
 
 The next 3 arguments of the trainer cover the various kinds of logging that are available.
 As mentioned previously, the :py:class:`~helios.trainer.Trainer` will *always* create the
-:py:class:`~helios.core.logging.RootLogger` with output to stdout. That said, we can add
+:py:class:`~helios.core.loggers.RootLogger` with output to stdout. That said, we can add
 logging to a file and to Tensorboard by setting the corresponding flags:
 
 * ``enable_tensorboard``: enables the Tensorboard writer.
@@ -645,8 +643,8 @@ logging to a file and to Tensorboard by setting the corresponding flags:
 
 .. warning::
    If either of ``enable_tensorboard`` or ``enable_file_logging`` is set, then you
-   **must** also set ``run_path`` or ``log_path`` respectively. These should be set to a
-   directory where the logs will be saved. Note that if the directory doesn't exist, it
+   **must** also set ``log_root``. This should be set to a root directory under which each
+   active logger creates its own subfolder. Note that if the directory doesn't exist, it
    will be created automatically.
 
 The final logging flag determines whether a progress bar is displayed while training is
