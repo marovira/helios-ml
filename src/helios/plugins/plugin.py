@@ -106,7 +106,7 @@ class Plugin(abc.ABC):
 
     def __init__(self, plug_id: str):
         """Create the plug-in."""
-        self._trainer: Trainer | None
+        self._trainer: Trainer | None = None
         self._plug_id = plug_id
 
         self._is_distributed: bool = False

@@ -138,7 +138,7 @@ class Model(abc.ABC):
     def __init__(self, save_name: str):
         """Create the model."""
         self._save_name: str = save_name
-        self._trainer: Trainer | None
+        self._trainer: Trainer | None = None
 
         self._is_distributed: bool = False
         self._map_loc: str | dict[str, str] = ""
