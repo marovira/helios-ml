@@ -88,6 +88,7 @@ def restore_loggers(
     For each active logger whose name appears in the ``loggers_state`` dictionary:
         1. Call :py:meth:`~Logger.load_state_dict` so that their previous state is loaded.
         1. Call :py:meth:`~Logger.setup` so the loggers re-use the original paths.
+
     If an active logger does not have an entry in the dictionary, then it is configured to
     start fresh.
 

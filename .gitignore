@@ -19,3 +19,8 @@ examples/**/runs
 examples/**/chkpt
 examples/**/logs
 examples/**/data
+
+# Generated folders from docs
+autoapi/
+_static/
+_templates/

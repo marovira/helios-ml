@@ -28,9 +28,11 @@ This class bundles all of the logic for setting up and creating the datasets and
 dataloaders used for training. This allows multiple models to re-use datasets with
 standardised settings without having to duplicate code.
 
-As part of the creation of the dataloaders, Helios ensures that all worker processes are
-correctly seeded to ensure reproducibility. In addition to this, samplers are used that
-guarantee the ability to restart training if it is stopped at *any* time.
+As part of the creation of the dataloaders, Helios will:
+
+* Ensure that all worker processes are correctly seeded to ensure reproducibility,
+* Use samplers that guarantee the ability to restart training if it is stopped at *any*
+  time.
 
 Model
 ~~~~~

@@ -21,9 +21,11 @@ def load_image(
 
     ``as_rgb`` can be used to automatically convert the image from OpenCV's default BGR to
     RGB using the following logic:
+
     * If the image is grayscale, then it is returned as is.
     * If the image is a 3-channel BGR, it is converted to RGB.
     * If the image is a 4-channel BGRA, it is converted to RGBA.
+
     If all these checks fail, the image is returned as is.
 
     Args:
@@ -59,7 +61,7 @@ def load_image_pil(
     """
     Load the given image using PIL.
 
-    ``out_fmt`` is a format string that can be passed in to PIL.Image.convert. Please
+    ``out_fmt`` is a format string that can be passed in to PIL.Image.convert. See
     `here <https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.convert>`__
     for the list of accepted strings.
     If no string is passed, the image will be converted to RGB format.

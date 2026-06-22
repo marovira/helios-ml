@@ -18,7 +18,7 @@ class WandbArgs(typing.TypedDict, total=False):
 
     ``project`` is the only required key; all others are optional.
 
-    Keys:
+    Args:
         project: W&B project name.
         name: display name for the run shown in the W&B UI. If not provided, defaults to
             ``run_name`` provided by :py:meth:`~WandbWriter.setup`.

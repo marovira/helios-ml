@@ -182,9 +182,9 @@ def create_dataloader(
     If no sampler is provided, the choice of sampler will be determined based on the
     values of is_distributed and shuffle. Specifically, the following logic is used:
 
-    * If is_distributed, then sampler is
+    * If ``is_distributed``, then sampler is
       :py:class:`~helios.data.samplers.ResumableDistributedSampler`.
-    * Otherwise, if shuffle then sampler is
+    * Otherwise, if ``shuffle`` then sampler is
       :py:class:`~helios.data.samplers.ResumableRandomSampler`, else
       :py:class:`~helios.data.samplers.ResumableSequentialSampler`.
 

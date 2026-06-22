@@ -218,6 +218,7 @@ is that a single model class can be written which can then create the necessary
 optimizers, loss functions, etc. based on settings which can be provided externally
 through a config file (for example). Helios ships with the following registries:
 
+* :py:data:`~helios.data.datamodule.COLLATE_FN_REGISTRY`
 * :py:data:`~helios.data.datamodule.DATASET_REGISTRY`,
 * :py:data:`~helios.data.samplers.SAMPLER_REGISTRY`,
 * :py:data:`~helios.data.transforms.TRANSFORM_REGISTRY`,
@@ -226,6 +227,7 @@ through a config file (for example). Helios ships with the following registries:
 * :py:data:`~helios.model.utils.MODEL_REGISTRY`,
 * :py:data:`~helios.nn.utils.NETWORK_REGISTRY`,
 * :py:data:`~helios.optim.utils.OPTIMIZER_REGISTRY`,
+* :py:data:`~helios.plugins.plugin.PLUGIN_REGISTRY`,
 * :py:data:`~helios.scheduler.utils.SCHEDULER_REGISTRY`
 
 Each registry comes with an associated ``create_`` function that will create the

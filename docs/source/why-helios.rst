@@ -18,7 +18,7 @@ automation. Rather than inferring behaviour from annotations or hooks, Helios re
 you to state your intent explicitly in code you own and can read.
 
 The table below contrasts Helios with PyTorch Lightning and Ignite across the most
-important areas for research and engineering work:
+important areas for research and engineering:
 
 .. list-table::
    :header-rows: 1
@@ -42,7 +42,7 @@ important areas for research and engineering work:
      - Manual
    * - Boilerplate style
      - Explicit
-     - Magic hooks
+     - Hook-based
      - Event-based
    * - Training unit
      - First-class (``EPOCH``/``ITERATION``)
@@ -74,8 +74,12 @@ clear. Lightning applies mixed precision automatically based on a trainer flag w
 Ignite leaves it entirely to the user.
 
 **Reproducible resume.** When resuming from a checkpoint, Helios guarantees that three
-things are restored to exactly the state they were in when the checkpoint was saved: the
-training state (internal and user-defined), the RNG state, and the sequence of batches.
+things are restored to the exact state they were in when the checkpoint was saved:
+
+* The training state (internal and user-defined),
+* the RNG state,
+* and the sequence of batches.
+
 The last point is the key differentiator: Helios uses resumable samplers by default, so
 the dataloader picks up from exactly the same position in the dataset. Lightning saves
 core training state and RNG state but does not provide the batch sequence guarantee by
@@ -93,8 +97,8 @@ clear call-site visibility.
 :py:attr:`~helios.trainer.TrainingUnit.ITERATION` are distinct modes that govern the
 entire training loop, including checkpoint frequency, stopping conditions, and gradient
 accumulation behaviour. Both Lightning and Ignite are fundamentally epoch-based;
-Lightning exposes ``max_steps`` as a secondary knob, but iteration-based training in
-either framework requires working against the grain of the default design.
+Lightning exposes ``max_steps`` as a secondary option, but iteration-based training in
+either framework requires working around the default design.
 
 **Gradient accumulation.** Helios handles gradient accumulation through the
 :py:class:`~helios.trainer.TrainingState` rather than a dedicated parameter. In epoch
@@ -102,12 +106,12 @@ mode, the trainer does not intervene: the iteration count is unchanged and the m
 decides when to call ``backward()`` by inspecting
 :py:attr:`~helios.trainer.TrainingState.current_iteration`. In iteration mode, the
 trainer automatically scales the total iteration count by the accumulation factor, so
-requesting N iterations with accumulation M truly means N backward passes at the target
-batch size. The distinction between
+requesting :math:`N` iterations with accumulation :math:`M` truly means :math:`N` backward
+passes at the target batch size. The distinction between
 :py:attr:`~helios.trainer.TrainingState.current_iteration` (effective, complete
 iterations) and :py:attr:`~helios.trainer.TrainingState.global_iteration` (raw forward
 passes) makes the accounting explicit. See :ref:`Gradient Accumulation <gradient-accumulation>`
-in the quick reference for the full details.
+for full details.
 
 .. _registry:
 
@@ -117,14 +121,17 @@ The Registry System
 Helios provides typed global registries that map string names to types. Registries exist
 for all major components:
 
-* :py:data:`~helios.model.MODEL_REGISTRY`
-* :py:data:`~helios.data.DATASET_REGISTRY`
-* :py:data:`~helios.optim.OPTIMIZER_REGISTRY`
-* :py:data:`~helios.scheduler.SCHEDULER_REGISTRY`
-* :py:data:`~helios.losses.LOSS_REGISTRY`
-* :py:data:`~helios.plugins.PLUGIN_REGISTRY`
-* :py:data:`~helios.data.COLLATE_FN_REGISTRY`
-* :py:data:`~helios.data.TRANSFORM_REGISTRY`
+* :py:data:`~helios.data.datamodule.COLLATE_FN_REGISTRY`
+* :py:data:`~helios.data.datamodule.DATASET_REGISTRY`,
+* :py:data:`~helios.data.samplers.SAMPLER_REGISTRY`,
+* :py:data:`~helios.data.transforms.TRANSFORM_REGISTRY`,
+* :py:data:`~helios.losses.utils.LOSS_REGISTRY`,
+* :py:data:`~helios.metrics.metrics.METRICS_REGISTRY`,
+* :py:data:`~helios.model.utils.MODEL_REGISTRY`,
+* :py:data:`~helios.nn.utils.NETWORK_REGISTRY`,
+* :py:data:`~helios.optim.utils.OPTIMIZER_REGISTRY`,
+* :py:data:`~helios.plugins.plugin.PLUGIN_REGISTRY`,
+* :py:data:`~helios.scheduler.utils.SCHEDULER_REGISTRY`
 
 Any component can be registered with the ``@REGISTRY.register`` decorator and
 instantiated by name using the corresponding factory function:
@@ -144,7 +151,7 @@ scheduler are all selected by string name, with no changes to training code. Swa
 any component is a one-line change in the configuration.
 
 If your source tree spans multiple packages, use
-:py:func:`~helios.core.registry.update_all_registries` to scan and auto-register all
+:py:func:`~helios.core.utils.update_all_registries` to scan and auto-register all
 decorated classes at startup:
 
 .. code-block:: python

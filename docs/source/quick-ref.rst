@@ -18,8 +18,9 @@ end is a short summary explaining how to use Helios correctly to ensure reproduc
 .. warning::
    While every effort is done to ensure reproducibility, there are some limitations to
    what Helios can do. As Helios depends on PyTorch, it is bound to the same
-   reproducibility limitations. For more information, see the
-   `reproducibility documentation from PyTorch <https://github.com/Lightning-AI/pytorch-lightning>`__.
+   reproducibility limitations. For more information, see the `reproducibility
+   documentation from PyTorch
+   <https://docs.pytorch.org/docs/stable/notes/randomness.html>`__.
 
 Random Number Generation
 ------------------------
@@ -30,8 +31,8 @@ seeding system that is invoked as part of the start up process by the
 generators can be assigned by setting the ``random_seed`` parameter of the trainer.
 
 .. note::
-   If no value is assigned, the default seed is used. Helios has a default value of 6691
-   for seeding RNGs.
+   If no value is assigned, the default seed is used. Helios has a default value of
+   ``6691`` for seeding RNGs.
 
 Random numbers may be required throughout the training process, so Helios will
 automatically seed the following generators:
@@ -109,8 +110,8 @@ provide a way to do the following:
 
 #. The sampler must have a way of setting the starting iteration. For example, suppose
    that the sampler would've produced for a given epoch a sequence of :math:`N` batches
-   numbered :math:`0, 1, \ldots, N`. We need the sampler to provide way for us to set the
-   starting batch to a given number :math:`n_i` such that the sequence of batches
+   numbered :math:`0, 1, \ldots, N-1`. We need the sampler to provide a way for us to set
+   the starting batch to a given number :math:`n_i` such that the sequence of batches
    continues from that starting point.
 #. The sampler must have a way of setting the current epoch. This is to allow the samplers
    to re-shuffle between epochs (if shuffling is used) and to guarantee that the resulting
@@ -136,7 +137,7 @@ set the :py:attr:`~helios.data.datamodule.DataLoaderParams.sampler` field of the
 
 .. warning::
    The sampler **must** derive from either
-   :py:class:`~helios.data.samplers.ResumabeSampler` or
+   :py:class:`~helios.data.samplers.ResumableSampler` or
    :py:class:`~helios.data.samplers.ResumableDistributedSampler`
 
 .. note::
@@ -442,13 +443,13 @@ would do something like this:
     ) -> None:
         # Suppose that our loss tensor is stored in self._loss_items and the number of
         # accumulation steps is stored in self._accumulation_steps
-        if state.global_iteration % self._accumulation_steps == 0:
+        if state.current_iteration % self._accumulation_steps == 0:
             self._loss_items["loss"].backward()
             self._optimizer.step()
         ...
 
 .. warning::
-   Unlike the epoch case, we **cannot** use ``state.current_iteration`` as that keeps
+   Unlike the epoch case, we **cannot** use ``state.global_iteration`` as that keeps
    track of the number of *complete* iterations we have done.
 
 .. _amp:
@@ -585,24 +586,14 @@ Checkpoint Saving
 As mentioned in :ref:`repro`, Helios will automatically save checkpoints whenever both
 ``chkpt_frequency`` and ``chkpt_root`` are set in the :py:class:`~helios.trainer.Trainer`.
 The data for checkpoints is stored in a dictionary that *always* contains the following
-keys:
+data:
 
-* ``training_state``: contains the current :py:class:`~helios.trainer.TrainingState`
-  object.
-* ``model``: contains the state of the model as returned by
-  :py:meth:`~helios.model.model.Model.state_dict`. Note that by default this is an empty
-  dictionary.
-* ``rng``: contains the state of the supported RNGs.
-* ``version``: contains the version of Helios used to generate the checkpoint.
-
-The following key may optionally appear in the dictionary:
-
-* ``loggers``: appears when at least one logger is active. It maps logger type names to
-  their respective state dictionaries:
-
-  * ``root`` → ``{"log_file": <path>}`` (present when file logging is enabled)
-  * ``tensorboard`` → ``{"run_path": <path>}`` (present when Tensorboard logging is enabled)
-  * ``wandb`` → ``{"run_id": <run-id>}`` (present when W&B logging is enabled)
+* The version of Helios used to generate the checkpoint,
+* The current :py:class:`~helios.trainer.TrainingState`,
+* The state of the model as returned by :py:meth:`~helios.model.model.Model.state_dict`,
+* The state of the supported RNGs,
+* The state of the loggers,
+* The state of the datamodule.
 
 The name of the checkpoint is determined as follows:
 
@@ -615,7 +606,7 @@ Where:
 * ``<run-name>`` is the value assigned to ``run_name`` in the trainer.
 * ``<epoch>`` and ``<iteration>`` are the values stored in
   :py:attr:`~helios.trainer.TrainingState.global_epoch` and
-  :py:attr:`~helios.trainer.TrainingState.global_iteration`, respectively.
+  :py:attr:`~helios.trainer.TrainingState.current_iteration`, respectively.
 
 The ``<additional-metadata>`` field is used to allow users to append additional
 information to the checkpoint name for easier identification later on. This data is
@@ -689,12 +680,12 @@ The :py:class:`~helios.trainer.Trainer` supports three logging options controlle
 flags:
 
 * ``enable_file_logging``: writes a log file under ``log_root``.
-* ``enable_tensorboard``: enables Tensorboard logging. See :doc:`tensorboard` for full
+* ``enable_tensorboard``: enables Tensorboard logging. See :doc:`logging` for full
   details.
 * ``enable_progress_bar``: displays a progress bar during training.
 
 W&B logging is not toggled by a flag; it is enabled by passing ``wandb_args`` to the
-:py:class:`~helios.trainer.Trainer` constructor. See :doc:`wandb` for full details.
+:py:class:`~helios.trainer.Trainer` constructor. See :doc:`logging` for full details.
 
 All file-based loggers write under the single ``log_root`` directory. This covers file
 logging, Tensorboard, and W&B.
@@ -751,7 +742,7 @@ Tensorboard logging is enabled by setting ``enable_tensorboard=True`` and provid
 
 The writer is accessible via :py:func:`~helios.core.loggers.get_tensorboard_writer`.
 For full details including run resumption, directory layout, and available logging
-functions, see :doc:`tensorboard`.
+functions, see :doc:`logging`.
 
 .. _wandb-ref:
 
@@ -774,7 +765,7 @@ The ``wandb_args`` dictionary accepts the fields defined by
 :py:class:`~helios.core.loggers.wandb.WandbArgs`. The ``project`` key is the only
 required field; all others are optional.
 
-For full details including run resumption and directory layout, see :doc:`wandb`.
+For full details including run resumption and directory layout, see :doc:`logging`.
 
 CUDA
 ====
@@ -857,8 +848,7 @@ code:
 
 .. note::
    :py:meth:`~helios.model.model.Model.train` is a no-op by default. You must override
-   it and call ``.train()`` on your network(s) manually. The trainer calls this function
-   at the correct point in the loop.
+   it and call ``.train()`` on your network(s) manually.
 
 Validation Functions
 --------------------
@@ -879,8 +869,7 @@ following code:
 
 .. note::
    :py:meth:`~helios.model.model.Model.eval` is a no-op by default. You must override it
-   and call ``.eval()`` on your network(s) manually. The trainer calls this function at
-   the correct point in the loop.
+   and call ``.eval()`` on your network(s) manually.
 
 Testing Functions
 -----------------
@@ -977,19 +966,22 @@ Helios provides some synchronization wrappers found in the
 * :py:func:`~helios.core.distributed.gather_into_tensor`,
 * :py:func:`~helios.core.distributed.all_reduce_tensors`.
 
-The trainer also provides another way to synchronize values through the multi-processing
-queue. When using distributed training that isn't through ``torchrun``, Helios uses
-``spawn`` to create the processes for each GPU. This triggers a copy of the arguments
-passed in to the handler, which in this case are the trainer, model, and datamodule. This
-presents a problem in the event that we need to return values back to the main process
-once training is complete. To facilitate this task, the trainer will create a `queue
-<https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue>`__ that can
-be accessed through :py:attr:`~helios.trainer.Trainer.queue`.
+The trainer also provides access to a `multi-processing
+queue <https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue>`__
+that can be used to synchronize values. When using distributed training that isn't through
+``torchrun``, Helios uses ``spawn``, which will create a copy of all arguments passed to
+the handler, which are:
+
+* The trainer itself,
+* The model, and
+* The datamodule.
+
+If you need to return values back to the main process, you can use the
+:py:attr:`~helios.trainer.Trainer.queue` from the trainer to accomplish this. The queue
+can then be used by either the :py:class:`~helios.model.model.Model`, the
+:py:class:`~helios.data.datamodule.DataModule`, or any plug-in through their reference to
+the trainer.
 
 .. note::
    If training isn't distributed or if it was started through ``torchrun``, then the
    :py:attr:`~helios.trainer.Trainer.queue` is set to ``None``.
-
-The queue can then be used by either the :py:class:`~helios.model.model.Model`, the
-:py:class:`~helios.data.datamodule.DataModule`, or any plug-in through their reference to
-the trainer.

@@ -31,6 +31,7 @@ autoapi_options = [
     "show-module-summary",
     "special-members",
 ]
+autoapi_keep_files = True
 
 
 # -- Options for HTML output -------------------------------------------------

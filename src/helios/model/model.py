@@ -313,9 +313,11 @@ class Model(abc.ABC):
 
         When AMP is active, gradients must be unscaled before clipping or the norm
         is computed on scaled values, producing incorrect results.
+
         This function performs the following steps:
-            1. Call :py:meth:`torch.amp.GradScaler.unscale_` if AMP is active.
-            1. Call :py:func:`torch.nn.utils.clip_grad_norm_`.
+            #. Call :py:meth:`torch.amp.GradScaler.unscale_` if AMP is active.
+            #. Call :py:func:`torch.nn.utils.clip_grad_norm_`.
+
         If AMP is not acitve, then :py:func:`torch.nn.utils.clip_grad_norm_` is called
         directly.
 
@@ -365,6 +367,7 @@ class Model(abc.ABC):
         Restores the state from the dictionary in the following order:
             1. Internal state
             1. User-state
+
         Note that any weights will have been automatically mapped to the correct device.
         Also note that internal state is only loaded if ``for_inference`` is set to False.
 
@@ -407,8 +410,8 @@ class Model(abc.ABC):
         Get the full state dictionary of the model.
 
         The full dictionary is assembled like this:
-            1. Call :py:meth:`user_state_dict` to gather any user state.
-            1. Add the model internal state.
+            #. Call :py:meth:`user_state_dict` to gather any user state.
+            #. Add the model internal state.
 
         Returns:
             The state dictionary of the model.
@@ -542,6 +545,7 @@ class Model(abc.ABC):
             * :py:meth:`train_step`,
             * :py:meth:`valid_step`, and
             * :py:meth:`test_step`.
+
         Thereby ensuring that the batch has already been moved before the ``_step``
         functions are called. By default, this function will recursively look through the
         batch and move any tensors it can find to the model's device. Non-tensor elements
