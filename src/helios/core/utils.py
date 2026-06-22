@@ -7,6 +7,7 @@ import sys
 import time
 import types
 import typing
+import warnings
 
 import torch
 import torchvision
@@ -270,8 +271,8 @@ class Registry:
 
         assert name not in self._obj_map, (
             f"error: an object named '{name}' already exists in the "
+            f"'{self._name}' registry"
         )
-        f"'{self._name}' registry"
 
         self._obj_map[name] = obj
 
@@ -309,7 +310,7 @@ class Registry:
         if ret is None and suffix is not None:
             name_suff = name + "_" + suffix
             ret = self._obj_map.get(name_suff)
-            print(f"warning: found {name_suff} instead of {name}")
+            warnings.warn(f"found {name_suff} instead of {name}", stacklevel=2)
             if ret is None:
                 raise KeyError(
                     f"No object called '{name}' found in the '{self._name}' registrar"
