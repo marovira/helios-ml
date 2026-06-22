@@ -58,7 +58,7 @@ class DefaultNumpyRNG:
 _DEFAULT_RNG: DefaultNumpyRNG | None = None
 
 
-def _get_safe_default_rng() -> DefaultNumpyRNG:
+def _get_safe_default_numpy_rng() -> DefaultNumpyRNG:
     global _DEFAULT_RNG
     if _DEFAULT_RNG is None:
         raise RuntimeError(
@@ -79,17 +79,17 @@ def create_default_numpy_rng(seed: int | list[int] | tuple[int] | None = None):
     _DEFAULT_RNG = DefaultNumpyRNG(seed=seed)
 
 
-def get_default_numpy_rng() -> DefaultNumpyRNG:
+def get_default_numpy_rng() -> npr.Generator:
     """
-    Return the default RNG.
+    Return the default Numpy Generator instance.
 
-    Return:
-        The random generator.
+    Returns:
+        The Numpy Generator.
 
     Raises:
         RuntimeError: if the default Numpy RNG hasn't been created.
     """
-    return _get_safe_default_rng()
+    return _get_safe_default_numpy_rng().generator
 
 
 def seed_rngs(seed: int | None = None, skip_torch: bool = False) -> None:
@@ -130,7 +130,7 @@ def get_rng_state_dict() -> dict[str, typing.Any]:
     state = {
         "torch": torch.get_rng_state(),
         "rand": random.getstate(),
-        "numpy": get_default_numpy_rng().state_dict(),
+        "numpy": _get_safe_default_numpy_rng().state_dict(),
     }
 
     if torch.cuda.is_available():
@@ -150,6 +150,6 @@ def load_rng_state_dict(state_dict: dict[str, typing.Any]) -> None:
     """
     torch.set_rng_state(state_dict["torch"])
     random.setstate(state_dict["rand"])
-    get_default_numpy_rng().load_state_dict(state_dict["numpy"])
+    _get_safe_default_numpy_rng().load_state_dict(state_dict["numpy"])
     if torch.cuda.is_available() and "cuda" in state_dict:
         torch.cuda.set_rng_state(state_dict["cuda"])

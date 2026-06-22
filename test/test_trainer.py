@@ -37,7 +37,7 @@ class SimpleNet(nn.Module):
 
 class RandomDataset(tud.Dataset):
     def __getitem__(self, index):
-        gen = rng.get_default_numpy_rng().generator
+        gen = rng.get_default_numpy_rng()
         return gen.integers(0, 100, 3)
 
     def __len__(self):

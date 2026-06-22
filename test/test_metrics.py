@@ -60,7 +60,7 @@ class TestMetrics:
 
     def test_mAP(self) -> None:
         rng.seed_rngs()
-        gen = rng.get_default_numpy_rng().generator
+        gen = rng.get_default_numpy_rng()
         targs = gen.random((1, 10))
         preds = gen.random((1, 10))
 

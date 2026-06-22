@@ -218,7 +218,7 @@ class TestRNG:
         exp = ExpectedRNG()
         rng.seed_rngs()
 
-        np_gen = rng.get_default_numpy_rng().generator
+        np_gen = rng.get_default_numpy_rng()
 
         self.check_torch(exp.torch_vals, torch.randint(10, [10]))
         self.check_rand(exp.rand_vals, [random.randint(0, 9) for _ in range(10)])
@@ -227,7 +227,7 @@ class TestRNG:
     def test_rng_restore(self) -> None:
         exp = ExpectedRNG()
         rng.seed_rngs()
-        np_gen = rng.get_default_numpy_rng().generator
+        np_gen = rng.get_default_numpy_rng()
 
         # Check the first 5 entries.
         self.check_torch(exp.torch_vals[:5], torch.randint(10, [5]))
@@ -237,7 +237,7 @@ class TestRNG:
         # Grab the states and re-seed the generators.
         state = rng.get_rng_state_dict()
         rng.seed_rngs(0)
-        np_gen = rng.get_default_numpy_rng().generator
+        np_gen = rng.get_default_numpy_rng()
 
         # Generate a few numbers to move the generators along.
         torch.randint(10, [10])
@@ -246,7 +246,7 @@ class TestRNG:
 
         # Now restore the RNG state and read the final 5 numbers.
         rng.load_rng_state_dict(state)
-        np_gen = rng.get_default_numpy_rng().generator
+        np_gen = rng.get_default_numpy_rng()
 
         self.check_torch(exp.torch_vals[5:], torch.randint(10, [5]))
         self.check_rand(exp.rand_vals[5:], [random.randint(0, 9) for _ in range(5)])

@@ -58,7 +58,7 @@ seen below:
 
    from helios.core import rng
 
-   generator = rng.get_default_numpy_rng().generator
+   generator = rng.get_default_numpy_rng()
 
    # Use the generator as necessary. For example, we can retrieve a uniform random float
    # between 0 and 1.

@@ -24,7 +24,7 @@ DATASET_SIZE: int = 16
 @data.DATASET_REGISTRY.register
 class RandomDataset(tud.Dataset):
     def __getitem__(self, index):
-        gen = rng.get_default_numpy_rng().generator
+        gen = rng.get_default_numpy_rng()
         return gen.integers(0, 1000, 3)
 
     def __len__(self):
@@ -120,7 +120,7 @@ class TestTransforms:
         as_tuple: bool = False,
         as_pil: bool = False,
     ):
-        gen = rng.get_default_numpy_rng().generator
+        gen = rng.get_default_numpy_rng()
 
         samples: list[npt.NDArray | PIL.Image.Image] = []
         for _ in range(num_elems):
@@ -192,7 +192,7 @@ class TestFunctional:
 
     def test_load_image(self, tmp_path: pathlib.Path):
         rng.seed_rngs()
-        gen = rng.get_default_numpy_rng().generator
+        gen = rng.get_default_numpy_rng()
         out_path = tmp_path / "tmp.png"
         max_8 = 255
         max_16 = 65535
@@ -248,7 +248,7 @@ class TestFunctional:
 
     def test_load_image_pil(self, tmp_path: pathlib.Path):
         rng.seed_rngs()
-        gen = rng.get_default_numpy_rng().generator
+        gen = rng.get_default_numpy_rng()
         img = (gen.random(size=(32, 32, 3)) * 255).astype(np.uint8)
         as_pil = PIL.Image.fromarray(img)
 
