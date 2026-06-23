@@ -5,8 +5,11 @@ Helios is built around two principles: explicitness and simplicity. It removes t
 boilerplate without hiding what is happening. Every step in the training loop is visible
 and overridable, which makes the code easy to follow and debug.
 
-This page explains how Helios compares to other frameworks, describes its registry
-system in detail, and helps you decide whether it is the right tool for your project.
+The goal of this page is to help you decide whether Helios is a good fit for your project.
+It covers:
+
+* A comparison between Helios and other popular frameworks, and
+* A description of its registry system.
 
 .. _comparison:
 
@@ -15,10 +18,11 @@ Comparison with Other Frameworks
 
 Compared to larger frameworks, Helios prioritises explicitness and simplicity over
 automation. Rather than inferring behaviour from annotations or hooks, Helios requires
-you to state your intent explicitly in code you own and can read.
+you to state your intent explicitly by either overriding functions or opting in to
+features in code that you own.
 
-The table below contrasts Helios with PyTorch Lightning and Ignite across the most
-important areas for research and engineering:
+The table below contrasts Helios with PyTorch Lightning and Ignite across several areas
+for research and engineering:
 
 .. list-table::
    :header-rows: 1
@@ -65,7 +69,7 @@ important areas for research and engineering:
      - Medium
      - High
 
-**Mixed precision.** Helios exposes
+**Mixed precision:** Helios exposes
 :py:func:`~helios.model.model.Model.create_scaler`,
 :py:func:`~helios.model.model.Model.autocast`, and
 :py:func:`~helios.model.model.Model.clip_gradients` as explicit helper functions. You
@@ -73,7 +77,7 @@ opt in deliberately and interact with the scaler directly, so the behaviour is a
 clear. Lightning applies mixed precision automatically based on a trainer flag while
 Ignite leaves it entirely to the user.
 
-**Reproducible resume.** When resuming from a checkpoint, Helios guarantees that three
+**Reproducible resume:** When resuming from a checkpoint, Helios guarantees that three
 things are restored to the exact state they were in when the checkpoint was saved:
 
 * The training state (internal and user-defined),
@@ -85,14 +89,14 @@ the dataloader picks up from exactly the same position in the dataset. Lightning
 core training state and RNG state but does not provide the batch sequence guarantee by
 default. Ignite provides no built-in resumption support.
 
-**Distributed training.** Both Helios and Lightning support ``torchrun`` with automatic
+**Distributed training:** Both Helios and Lightning support ``torchrun`` with automatic
 device detection. Ignite requires manual process group setup.
 
-**Boilerplate style.** Lightning relies on magic hook names and decorator-based
+**Boilerplate style:** Lightning relies on hook names and decorator-based
 injection; Ignite uses an event system. Helios uses explicit function overrides with
 clear call-site visibility.
 
-**Training unit.** In Helios, the training unit is a first-class concept.
+**Training unit:** In Helios, the training unit is a first-class concept.
 :py:attr:`~helios.trainer.TrainingUnit.EPOCH` and
 :py:attr:`~helios.trainer.TrainingUnit.ITERATION` are distinct modes that govern the
 entire training loop, including checkpoint frequency, stopping conditions, and gradient
@@ -100,7 +104,7 @@ accumulation behaviour. Both Lightning and Ignite are fundamentally epoch-based;
 Lightning exposes ``max_steps`` as a secondary option, but iteration-based training in
 either framework requires working around the default design.
 
-**Gradient accumulation.** Helios handles gradient accumulation through the
+**Gradient accumulation:** Helios handles gradient accumulation through the
 :py:class:`~helios.trainer.TrainingState` rather than a dedicated parameter. In epoch
 mode, the trainer does not intervene: the iteration count is unchanged and the model
 decides when to call ``backward()`` by inspecting

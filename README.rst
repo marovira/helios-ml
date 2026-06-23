@@ -31,7 +31,7 @@
 What is Helios?
 ---------------
 
-Named after Greek god of the sun, Helios is a light-weight package for training ML
+Named after Greek god of the Sun, Helios is a light-weight package for training ML
 networks built on top of PyTorch. It is designed to abstract all of the "boiler-plate"
 code involved with training. Specifically, it wraps the following common patterns:
 
@@ -113,8 +113,8 @@ Why Helios?
 -----------
 
 Compared to larger frameworks, Helios prioritises explicitness and simplicity over
-automation. The table below compares it against PyTorch Lightning and Ignite across the
-most important areas for research and engineering work:
+automation. The table below compares it against PyTorch Lightning and Ignite across
+several areas for research and engineering work:
 
 .. list-table::
    :header-rows: 1
@@ -138,7 +138,7 @@ most important areas for research and engineering work:
      - Manual
    * - Boilerplate style
      - Explicit
-     - Magic hooks
+     - Hook-based
      - Event-based
    * - Training unit
      - First-class (``EPOCH``/``ITERATION``)
@@ -161,14 +161,15 @@ most important areas for research and engineering work:
      - Medium
      - High
 
-**Registry system.** Helios provides typed global registries (``MODEL_REGISTRY``,
+**Registry system:** Helios provides typed global registries (``MODEL_REGISTRY``,
 ``DATASET_REGISTRY``, ``OPTIMIZER_REGISTRY``, and others) that map string names to
 types. Any component can be created by name, enabling config-file-driven experiments and
 trivial component swaps without changing training code. Register a class with
 ``@REGISTRY.register`` and create an instance with ``create_model("MyModel", ...)``.
 
-**Core philosophy.** Helios removes training boilerplate without hiding what is
-happening. You can always read the code and know exactly what runs at every point in the
+**Core philosophy:** Helios removes training boilerplate without hiding what is
+happening. The code has been designed to be easy to read and trace in the event something
+goes wrong. You can always read the code and know exactly what runs at every point in the
 training loop.
 
 .. installation
@@ -198,27 +199,8 @@ Documentation available `here <https://marovira.github.io/helios-ml>`__.
 Contributing
 ------------
 
-There are three ways in which you can contribute to Helios:
-
-- If you find a bug, please open an issue. Similarly, if you have a question
-  about how to use it, or if something is unclear, please post an issue so it
-  can be addressed.
-- If you have a fix for a bug, or a code enhancement, please open a pull
-  request. Before you submit it though, make sure to abide by the rules written
-  below.
-- If you have a feature proposal, you can either open an issue or create a pull
-  request. If you are submitting a pull request, it must abide by the rules
-  written below. Note that any new features need to be approved by me.
-
-If you are submitting a pull request, the guidelines are the following:
-
-1. Ensure that your code follows the standards and formatting of Helios. The coding
-   standards and formatting are enforced through the Ruff Linter and Formatter. Any
-   changes that do not abide by these rules will be rejected. It is your responsibility to
-   ensure that both Ruff and Mypy linters pass.
-2. Ensure that *all* unit tests are working prior to submitting the pull
-   request. If you are adding a new feature that has been approved, it is your
-   responsibility to provide the corresponding unit tests (if applicable).
+Contributing guidelines are available `here
+<https://raw.githubusercontent.com/marovira/helios-ml/master/CONTRIBUTING.md>`__.
 
 License
 -------
