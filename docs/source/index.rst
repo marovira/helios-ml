@@ -17,6 +17,7 @@ Welcome to Helios's documentation!
    logging
    plugins
    optuna
+   migration
 
 
 .. include:: ../../README.rst
