@@ -32,4 +32,6 @@ jobs:
 
   docs:
     needs: publish
+    permissions:
+      contents: write
     uses: ./.github/workflows/docs.yml
