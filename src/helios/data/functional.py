@@ -36,8 +36,13 @@ def load_image(
 
     Returns:
         The loaded image.
+
+    Raises:
+        RuntimeError: if the image cannot be loaded from ``path``.
     """
     img = cv2.imread(str(path), flags=flags)
+    if img is None:
+        raise RuntimeError(f"error: failed to load image from '{path}'")
     if not as_rgb:
         return img
 
