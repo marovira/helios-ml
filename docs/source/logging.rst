@@ -8,6 +8,8 @@ Helios supports multiple logging backends. By default, Helios will use the :py:c
 
 For each optional backend, we'll cover how to install, configure, and use the backend.
 
+.. _logging-tensorboard:
+
 Tensorboard
 ===========
 
@@ -55,6 +57,8 @@ functions:
 * :py:func:`~helios.core.loggers.tensorboard.TensorboardWriter.add_graph`
 * :py:func:`~helios.core.loggers.tensorboard.TensorboardWriter.add_pr_curve`
 * :py:func:`~helios.core.loggers.tensorboard.TensorboardWriter.add_hparams`
+
+.. _logging-wandb:
 
 Weights & Biases
 ================

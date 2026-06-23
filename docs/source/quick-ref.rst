@@ -680,12 +680,12 @@ The :py:class:`~helios.trainer.Trainer` supports three logging options controlle
 flags:
 
 * ``enable_file_logging``: writes a log file under ``log_root``.
-* ``enable_tensorboard``: enables Tensorboard logging. See :doc:`logging` for full
-  details.
+* ``enable_tensorboard``: enables Tensorboard logging. See :ref:`logging-tensorboard` for
+  full details.
 * ``enable_progress_bar``: displays a progress bar during training.
 
 W&B logging is not toggled by a flag; it is enabled by passing ``wandb_args`` to the
-:py:class:`~helios.trainer.Trainer` constructor. See :doc:`logging` for full details.
+:py:class:`~helios.trainer.Trainer` constructor. See :ref:`logging-wandb` for full details.
 
 All file-based loggers write under the single ``log_root`` directory. This covers file
 logging, Tensorboard, and W&B.
@@ -725,7 +725,7 @@ iterations in the validation set.
 .. _tensorboard-ref:
 
 Tensorboard
-===========
+-----------
 
 Tensorboard logging is enabled by setting ``enable_tensorboard=True`` and providing a
 ``log_root`` when constructing the :py:class:`~helios.trainer.Trainer`:
@@ -742,12 +742,12 @@ Tensorboard logging is enabled by setting ``enable_tensorboard=True`` and provid
 
 The writer is accessible via :py:func:`~helios.core.loggers.get_tensorboard_writer`.
 For full details including run resumption, directory layout, and available logging
-functions, see :doc:`logging`.
+functions, see :ref:`logging-tensorboard`.
 
 .. _wandb-ref:
 
 Weights & Biases
-================
+----------------
 
 W&B logging is enabled by passing a ``wandb_args`` dictionary to the
 :py:class:`~helios.trainer.Trainer` constructor:
@@ -765,7 +765,7 @@ The ``wandb_args`` dictionary accepts the fields defined by
 :py:class:`~helios.core.loggers.wandb.WandbArgs`. The ``project`` key is the only
 required field; all others are optional.
 
-For full details including run resumption and directory layout, see :doc:`logging`.
+For full details including run resumption and directory layout, see :ref:`logging-wandb`.
 
 CUDA
 ====
