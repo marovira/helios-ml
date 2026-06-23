@@ -3,6 +3,11 @@ name: "Render docs"
 on:
   workflow_call:
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy docs to GitHub Pages"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -37,7 +42,7 @@ jobs:
           path: docs/build/html/
 
       - name: Deploy
-        if: github.event_name == 'workflow_call'
+        if: github.event_name != 'workflow_dispatch' || inputs.deploy
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
