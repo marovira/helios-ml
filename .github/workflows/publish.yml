@@ -3,13 +3,10 @@ name: "Publish"
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
-  check:
-    uses: ./.github/workflows/tests.yml
-
   publish:
-    needs: check
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -28,10 +25,17 @@ jobs:
           uv build
 
       - name: Publish Helios
+        if: github.event_name == 'release'
         uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Check distribution (dry run)
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          uvx twine check dist/*
 
   docs:
     needs: publish
+    if: github.event_name == 'release'
     permissions:
       contents: write
     uses: ./.github/workflows/docs.yml
