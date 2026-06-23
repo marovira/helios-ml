@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Helios"
-copyright = "2024, Mauricio A. Rovira Galvez"  # noqa: A001
+copyright = "2026, Mauricio A. Rovira Galvez"  # noqa: A001
 author = "Mauricio A. Rovira Galvez"
 
 # -- General configuration ---------------------------------------------------
