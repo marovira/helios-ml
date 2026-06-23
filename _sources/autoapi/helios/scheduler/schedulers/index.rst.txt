@@ -10,13 +10,14 @@ Classes
 .. autoapisummary::
 
    helios.scheduler.schedulers.CosineAnnealingRestartLR
+   helios.scheduler.schedulers.LinearWarmupScheduler
    helios.scheduler.schedulers.MultiStepRestartLR
 
 
 Module Contents
 ---------------
 
-.. py:class:: CosineAnnealingRestartLR(optimizer: torch.optim.Optimizer, periods: list[int], restart_weights: list[int] | None = None, eta_min: float = 0, last_epoch: int = -1)
+.. py:class:: CosineAnnealingRestartLR(optimizer: torch.optim.Optimizer, periods: list[int], restart_weights: list[float] | None = None, eta_min: float = 0, last_epoch: int = -1)
 
    Bases: :py:obj:`torch.optim.lr_scheduler.LRScheduler`
 
@@ -38,18 +39,50 @@ Module Contents
 
    :param optimizer: the optimizer.
    :param periods: period for each cosine annealing cycle.
-   :param restart_weights: (optional) restarts weights at each restart iteration.
-   :param eta_min: The minimum lr. Defaults to 0
-   :param last_epoch: Used in _LRScheduler. Defaults to -1.
+   :param restart_weights: (optional) restart weights at each restart iteration. Defaults
+                           to ``[1]``.
+   :param eta_min: (optional) the minimum lr.
+   :param last_epoch: (optional) index of the last epoch seen by the scheduler.
 
 
-   .. py:method:: get_lr()
+   .. py:method:: get_lr() -> list[float | torch.Tensor]
 
       Return the current learning rate.
 
 
 
-.. py:class:: MultiStepRestartLR(optimizer: torch.optim.Optimizer, milestones: list[int], gamma: float = 0.1, restarts: list[int] | None = None, restart_weights: list[int] | None = None, last_epoch: int = -1)
+.. py:class:: LinearWarmupScheduler(optimizer: torch.optim.Optimizer, warmup_steps: int, scheduler: torch.optim.lr_scheduler.LRScheduler, warmup_start_factor: float = 0.0, last_epoch: int = -1)
+
+   Bases: :py:obj:`torch.optim.lr_scheduler.LRScheduler`
+
+
+   A linear warmup LR scheduler.
+
+   The scheduler functions as follows:
+       #. During the first ``warmup_steps``, increase the learning rate lineary from
+       ``base_lr * warmup_start_factor`` to ``base_lr``.
+       #. After ``warmup_steps``, switch to the provided ``scheduler``.
+
+   :param optimizer: the optimizer.
+   :param warmup_steps: number of warmup steps.
+   :param scheduler: the post-warmup scheduler.
+   :param warmup_start_factor: (optional) fraction of ``base_lr`` to start from.
+   :param last_epoch: (optional) index of the last epoch seen by the scheduler.
+
+
+   .. py:method:: get_lr() -> list[float | torch.Tensor]
+
+      Return the current learning rate.
+
+
+
+   .. py:method:: step(epoch: int | None = None) -> None
+
+      Advance the scheduler by one step.
+
+
+
+.. py:class:: MultiStepRestartLR(optimizer: torch.optim.Optimizer, milestones: list[int], gamma: float = 0.1, restarts: list[int] | None = None, restart_weights: list[float] | None = None, last_epoch: int = -1)
 
    Bases: :py:obj:`torch.optim.lr_scheduler.LRScheduler`
 
@@ -58,13 +91,14 @@ Module Contents
 
    :param optimizer: torch optimizer.
    :param milestones: iterations that will decrease learning rate.
-   :param gamma: decrease ratio. Defaults to 0.1.
-   :param restarts: (optional) restart iterations.
-   :param restart_weights: (optional) restart weights at each restart iteration.
-   :param last_epoch: used in _LRScheduler. Defaults to -1.
+   :param gamma: (optional) decrease ratio.
+   :param restarts: (optional) restart iterations. Defaults to ``[0]``.
+   :param restart_weights: (optional) restart weights at each restart iteration. Defaults
+                           to ``[1]``.
+   :param last_epoch: (optional) index of the last epoch seen by the scheduler.
 
 
-   .. py:method:: get_lr()
+   .. py:method:: get_lr() -> list[float | torch.Tensor]
 
       Return the current learning rate.
 

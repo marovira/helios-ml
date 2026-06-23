@@ -72,7 +72,8 @@ Module Contents
        v = core.get_from_optional(var)
 
    :param opt_var: the optional variable.
-   :param raise_on_empty: if True, an exception is raised when the optional is ``None``.
+   :param raise_on_empty: (optional) if ``True``, an exception is raised when the
+                          optional is ``None``.
 
    :returns: The variable without the optional.
 
@@ -153,7 +154,8 @@ Module Contents
    The timer will determine the elapsed time between a series of points using a sliding
    window moving average.
 
-   :param sliding_window: number of steps over which the moving average will be computed.
+   :param sliding_window: (optional) number of steps over which the moving average will be
+                          computed.
 
 
    .. py:method:: start() -> None
@@ -306,8 +308,8 @@ Module Contents
    with the types and they can be used elsewhere in the code.
 
    :param root: the path to the root package.
-   :param recurse: if True, recursively search through sub-packages. Defaults to true.
-   :param import_prefix: (optional) prefix to be added when imported. Defaults to empty.
+   :param recurse: (optional) if ``True``, recursively search through sub-packages.
+   :param import_prefix: (optional) prefix to be added when imported.
 
    :raises RuntimeError: if the given path isn't a valid directory or if the directory is not
        Python package with ``__init__.py``.

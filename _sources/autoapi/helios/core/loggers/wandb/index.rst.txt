@@ -1,0 +1,121 @@
+helios.core.loggers.wandb
+=========================
+
+.. py:module:: helios.core.loggers.wandb
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.core.loggers.wandb.WandbArgs
+   helios.core.loggers.wandb.WandbWriter
+
+
+Module Contents
+---------------
+
+.. py:class:: WandbArgs
+
+   Bases: :py:obj:`TypedDict`
+
+
+   Arguments for constructing a :py:class:`WandbWriter`.
+
+   ``project`` is the only required key; all others are optional.
+
+   :param project: W&B project name.
+   :param name: display name for the run shown in the W&B UI. If not provided, defaults to
+                ``run_name`` provided by :py:meth:`~WandbWriter.setup`.
+   :param config: hyper-parameter dictionary to associate with the run.
+   :param extra_args: additional keyword arguments forwarded verbatim to
+                      :func:`wandb.init`.
+
+
+   .. py:attribute:: project
+      :type:  Required[str]
+
+
+   .. py:attribute:: name
+      :type:  str
+
+
+   .. py:attribute:: config
+      :type:  dict[str, Any]
+
+
+   .. py:attribute:: extra_args
+      :type:  dict[str, Any]
+
+
+.. py:class:: WandbWriter(project: str, name: str | None = None, config: dict[str, Any] | None = None, extra_args: dict[str, Any] | None = None)
+
+   Bases: :py:obj:`helios.core.loggers.base.Logger`
+
+
+   Wrapper for the Weights & Biases ``wandb.init`` run.
+
+   Data for the logger will be placed under ``log_root/wandb``.  When
+   resuming, the original run ID is restored and new data is appended to it.
+
+   Requires the ``wandb`` package.  Install it with::
+
+       pip install wandb
+
+   :param project: W&B project name.
+   :param name: (optional) display name for the run.
+   :param config: (optional) hyper-parameter configuration dictionary to associate
+                  with the run.
+   :param extra_args: (optional) extra keyword arguments forwarded verbatim to
+                      :func:`wandb.init`. Defaults to ``{}``.
+
+
+   .. py:method:: setup(run_name: str, log_root: pathlib.Path | None, is_resume: bool) -> None
+
+      Finish configuring the ``WandbWriter``.
+
+      In particular, this function will call :func:`wandb.init`. If a run ID was
+      previously saved, then it will be forwarded to W&B so the run continues in place.
+      In distributed training, the writer will only be created on rank 0.
+
+      :param run_name: the name of the current run; used as the W&B run name
+                       when no explicit ``name`` was given in ``__init__``.
+      :param log_root: root directory for logs.  W&B data will be written
+                       under ``log_root/wandb/``.  ``None`` lets W&B choose its own
+                       default directory.
+      :param is_resume: ``True`` when continuing a previous run.
+
+
+
+   .. py:method:: flush() -> None
+
+      No-op, W&B syncs its own data automatically.
+
+
+
+   .. py:method:: close() -> None
+
+      Finish and close the W&B run.
+
+
+
+   .. py:method:: state_dict() -> dict[str, Any]
+
+      Return a dictionary containing the writer state.
+
+      The state will be saved under a key called ``"run_id"`` holding the current run
+      ID. If W&B was disabled, then ``None`` is stored.
+
+      :returns: A dictionary with the logger state.
+
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
+      Restore the writer state from a previously saved dictionary.
+
+      :param state_dict: the state dictionary returned by :py:meth:`state_dict`.
+
+
+

@@ -1,23 +1,24 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html">
+        <link rel="prefetch" href="../../_static/logo-transparent.png" as="image">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>helios.trainer - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=354aac6f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
@@ -144,14 +145,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -161,8 +158,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -170,8 +166,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -179,8 +174,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -188,7 +182,6 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../index.html">
-  
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="../../_static/logo-transparent.png" alt="Logo"/>
   </div>
@@ -203,45 +196,54 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../why-helios.html">Why Helios?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../plugins.html">Plug-Ins</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../optuna.html">Optuna Integartion</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/helios/index.html">helios</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../optuna.html">Optuna Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migration.html">Migration Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../autoapi/helios/index.html">helios</a><input aria-label="Toggle navigation of helios" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/helios/chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/core/index.html">helios.core</a><input aria-label="Toggle navigation of helios.core" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/core/cuda/index.html">helios.core.cuda</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/core/distributed/index.html">helios.core.distributed</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/core/logging/index.html">helios.core.logging</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/helios/core/loggers/index.html">helios.core.loggers</a><input aria-label="Toggle navigation of helios.core.loggers" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../autoapi/helios/core/loggers/base/index.html">helios.core.loggers.base</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../autoapi/helios/core/loggers/root/index.html">helios.core.loggers.root</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../autoapi/helios/core/loggers/tensorboard/index.html">helios.core.loggers.tensorboard</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../autoapi/helios/core/loggers/wandb/index.html">helios.core.loggers.wandb</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/core/rng/index.html">helios.core.rng</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/core/utils/index.html">helios.core.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/data/index.html">helios.data</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of helios.data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/data/index.html">helios.data</a><input aria-label="Toggle navigation of helios.data" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/data/datamodule/index.html">helios.data.datamodule</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/data/functional/index.html">helios.data.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/data/samplers/index.html">helios.data.samplers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/data/transforms/index.html">helios.data.transforms</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/losses/index.html">helios.losses</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of helios.losses</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/losses/index.html">helios.losses</a><input aria-label="Toggle navigation of helios.losses" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/losses/utils/index.html">helios.losses.utils</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/losses/weighted_loss/index.html">helios.losses.weighted_loss</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/metrics/index.html">helios.metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of helios.metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/metrics/index.html">helios.metrics</a><input aria-label="Toggle navigation of helios.metrics" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/metrics/functional/index.html">helios.metrics.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/metrics/metrics/index.html">helios.metrics.metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/model/index.html">helios.model</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of helios.model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/model/index.html">helios.model</a><input aria-label="Toggle navigation of helios.model" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/model/model/index.html">helios.model.model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/model/utils/index.html">helios.model.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/nn/index.html">helios.nn</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of helios.nn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of helios.nn.layers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/nn/index.html">helios.nn</a><input aria-label="Toggle navigation of helios.nn" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input aria-label="Toggle navigation of helios.nn.layers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../autoapi/helios/nn/layers/pool/index.html">helios.nn.layers.pool</a></li>
 </ul>
 </li>
@@ -250,12 +252,12 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../autoapi/helios/onnx/index.html">helios.onnx</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/optim/index.html">helios.optim</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.optim</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/optim/index.html">helios.optim</a><input aria-label="Toggle navigation of helios.optim" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of helios.plugins.optuna</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/plugins/index.html">helios.plugins</a><input aria-label="Toggle navigation of helios.plugins" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input aria-label="Toggle navigation of helios.plugins.optuna" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../autoapi/helios/plugins/optuna/plugin/index.html">helios.plugins.optuna.plugin</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../autoapi/helios/plugins/optuna/utils/index.html">helios.plugins.optuna.utils</a></li>
 </ul>
@@ -263,7 +265,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/plugins/plugin/index.html">helios.plugins.plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../autoapi/helios/scheduler/index.html">helios.scheduler</a><input aria-label="Toggle navigation of helios.scheduler" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -293,8 +295,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -302,8 +303,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -329,7 +329,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">helios.plugins</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">helios</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span><span class="p">,</span> <span class="n">data</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">helios.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">distributed</span> <span class="k">as</span> <span class="n">dist</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">helios.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">logging</span><span class="p">,</span> <span class="n">rng</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helios.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">loggers</span><span class="p">,</span> <span class="n">rng</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">helios.data.samplers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResumableSamplerType</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">._version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span>
@@ -386,6 +386,17 @@
     <span class="n">TEST</span> <span class="o">=</span> <span class="mi">1</span>
 
 
+<span class="k">class</span><span class="w"> </span><span class="nc">_CheckpointKeys</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines the top-level keys for saved checkpoints.&quot;&quot;&quot;</span>
+
+    <span class="n">VERSION</span> <span class="o">=</span> <span class="s2">&quot;version&quot;</span>
+    <span class="n">TRAINING_STATE</span> <span class="o">=</span> <span class="s2">&quot;training_state&quot;</span>
+    <span class="n">MODEL</span> <span class="o">=</span> <span class="s2">&quot;model&quot;</span>
+    <span class="n">RNG</span> <span class="o">=</span> <span class="s2">&quot;rng&quot;</span>
+    <span class="n">LOGGERS</span> <span class="o">=</span> <span class="s2">&quot;loggers&quot;</span>
+    <span class="n">DATAMODULE</span> <span class="o">=</span> <span class="s2">&quot;datamodule&quot;</span>
+
+
 <span class="nd">@dc</span><span class="o">.</span><span class="n">dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">_DistributedErrorState</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -395,10 +406,11 @@
 <span class="sd">    process when an error occurs to ensure the exception is handled correctly.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        log_path: the path used by the root logger (if using).</span>
+<span class="sd">        loggers_state: state dicts from all active loggers at the time of the</span>
+<span class="sd">            push, used to resume file logging on error recovery.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">log_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">loggers_state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="TrainingState">
@@ -446,7 +458,13 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        The list of types that need to be registered for safe loading.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">TrainingState</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">PosixPath</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">WindowsPath</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">TrainingState</span><span class="p">,</span>
+        <span class="n">pathlib</span><span class="o">.</span><span class="n">PosixPath</span><span class="p">,</span>
+        <span class="n">pathlib</span><span class="o">.</span><span class="n">WindowsPath</span><span class="p">,</span>
+        <span class="n">_CheckpointKeys</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">hlm</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">get_model_safe_types_for_load</span><span class="p">(),</span>
+    <span class="p">]</span></div>
 
 
 
@@ -556,35 +574,39 @@
 <span class="sd">    any clean up afterwards.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        run_name: name of the current run. Defaults to empty.</span>
-<span class="sd">        train_unit: the unit used for training. Defaults to</span>
-<span class="sd">            :py:attr:`TrainingUnit.ITERATION`.</span>
-<span class="sd">        total_steps: the total number of steps to train for. Defaults to 0.</span>
+<span class="sd">        run_name: (optional) name of the current run.</span>
+<span class="sd">        train_unit: (optional) the unit used for training.</span>
+<span class="sd">        total_steps: (optional) the total number of steps to train for.</span>
 <span class="sd">        valid_frequency: (optional) frequency with which to perform validation.</span>
 <span class="sd">        chkpt_frequency: (optional) frequency with which to save checkpoints.</span>
 <span class="sd">        print_frequency: (optional) frequency with which to log.</span>
-<span class="sd">        accumulation_steps: number of steps for gradient accumulation. Defaults to 1.</span>
-<span class="sd">        enable_cudnn_benchmark: enable/disable CuDNN benchmark. Defaults to false.</span>
-<span class="sd">        enable_deterministic: enable/disable PyTorch deterministic. Defaults to false.</span>
+<span class="sd">        accumulation_steps: (optional) number of steps for gradient accumulation.</span>
+<span class="sd">        enable_cudnn_benchmark: (optional) enable/disable CuDNN benchmark.</span>
+<span class="sd">        enable_deterministic: (optional) enable/disable PyTorch deterministic.</span>
 <span class="sd">        early_stop_cycles: (optional) number of cycles after which training will stop if</span>
 <span class="sd">            no improvement is seen during validation.</span>
 <span class="sd">        use_cpu: (optional) if true, CPU will be used.</span>
 <span class="sd">        gpus: (optional) IDs of GPUs to use.</span>
-<span class="sd">        random_seed: (optional) the seed to use for RNGs.</span>
-<span class="sd">        enable_tensorboard: enable/disable Tensorboard logging. Defaults to false.</span>
-<span class="sd">        enable_file_logging: enable/disable file logging. Defaults to false.</span>
-<span class="sd">        capture_warnings: enable/disable warnings capture in the log. Defaults to false.</span>
-<span class="sd">        enable_progress_bar: enable/disable the progress bar(s). Defaults to false.</span>
+<span class="sd">        random_seed: (optional) the seed to use for RNGs. Defaults to the value</span>
+<span class="sd">            returned by :py:func:`~helios.core.rng.get_default_seed`.</span>
+<span class="sd">        enable_tensorboard: (optional) enable/disable Tensorboard logging.</span>
+<span class="sd">        enable_file_logging: (optional) enable/disable file logging.</span>
+<span class="sd">        capture_warnings: (optional) enable/disable warnings capture in the log.</span>
+<span class="sd">        enable_progress_bar: (optional) enable/disable the progress bar(s).</span>
 <span class="sd">        chkpt_root: (optional) root folder in which checkpoints will be placed.</span>
-<span class="sd">        log_path: (optional) root folder in which logs will be saved.</span>
-<span class="sd">        run_path: (optional) root folder in which Tensorboard runs will be saved.</span>
+<span class="sd">        log_root: (optional) root folder under which each active logger creates</span>
+<span class="sd">            its own subfolder.  Required when ``enable_file_logging``,</span>
+<span class="sd">            ``enable_tensorboard``, or ``wandb_args`` is set.</span>
+<span class="sd">        wandb_args: (optional) W&amp;B configuration.  Setting this enables W&amp;B</span>
+<span class="sd">            logging and requires ``log_root`` to be set.  See</span>
+<span class="sd">            :py:class:`~helios.core.loggers.WandbArgs` for the available keys.</span>
 <span class="sd">        src_root: (optional) root folder where the code is located. This is used to</span>
 <span class="sd">            automatically populate the registries using</span>
 <span class="sd">            :py:func:`~helios.core.utils.update_all_registries`.</span>
-<span class="sd">        import_prefix: prefix to use when importing modules. See</span>
+<span class="sd">        import_prefix: (optional) prefix to use when importing modules. See</span>
 <span class="sd">            :py:func:`~helios.core.utils.update_all_registries` for details.</span>
-<span class="sd">        print_banner: if true, the Helios banner with system info will be printed.</span>
-<span class="sd">            Defaults to true.</span>
+<span class="sd">        print_banner: (optional) if true, the Helios banner with system info will be</span>
+<span class="sd">            printed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -607,8 +629,8 @@
         <span class="n">capture_warnings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">enable_progress_bar</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">chkpt_root</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">log_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">run_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_root</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">wandb_args</span><span class="p">:</span> <span class="n">loggers</span><span class="o">.</span><span class="n">WandbArgs</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">src_root</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">import_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">print_banner</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -646,8 +668,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_enable_progress_bar</span> <span class="o">=</span> <span class="n">enable_progress_bar</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_chkpt_root</span> <span class="o">=</span> <span class="n">chkpt_root</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_log_path</span> <span class="o">=</span> <span class="n">log_path</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_run_path</span> <span class="o">=</span> <span class="n">run_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_root</span> <span class="o">=</span> <span class="n">log_root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wandb_args</span> <span class="o">=</span> <span class="n">wandb_args</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_src_root</span> <span class="o">=</span> <span class="n">src_root</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_import_prefix</span> <span class="o">=</span> <span class="n">import_prefix</span>
@@ -732,9 +754,39 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the list of plug-ins.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span>
 
-    <span class="nd">@plugins</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span> <span class="o">=</span> <span class="n">plugs</span>
+<div class="viewcode-block" id="Trainer.register_plugin">
+<a class="viewcode-back" href="../../autoapi/helios/trainer/index.html#helios.trainer.Trainer.register_plugin">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin</span><span class="p">:</span> <span class="n">hlp</span><span class="o">.</span><span class="n">Plugin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a plug-in with the trainer.</span>
+
+<span class="sd">        The plug-in is registered using its ``plug_id``.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            :py:meth:`~helios.plugins.plugin.Plugin.configure_trainer` and</span>
+<span class="sd">            :py:meth:`~helios.plugins.plugin.Plugin.configure_model` are called</span>
+<span class="sd">            automatically by the trainer before training/testing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            plugin: the plug-in to register.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            KeyError: if a plug-in with the same ID is already registered.</span>
+<span class="sd">            ValueError: if the plug-in conflicts with an already-registered plug-in&#39;s</span>
+<span class="sd">                :py:class:`~helios.plugins.plugin.UniquePluginOverrides`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plug_id</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">_plug_id</span>  <span class="c1"># noqa: SLF001</span>
+        <span class="k">if</span> <span class="n">plug_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;error: a plug-in with id </span><span class="si">{</span><span class="n">plug_id</span><span class="si">}</span><span class="s2"> has already been registered&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">[</span><span class="n">plug_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">plugin</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_plugins</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="p">[</span><span class="n">plug_id</span><span class="p">]</span>
+            <span class="k">raise</span></div>
+
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">queue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mp</span><span class="o">.</span><span class="n">Queue</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
@@ -814,13 +866,13 @@
             <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_exceptions</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span> <span class="k">for</span> <span class="n">exc</span> <span class="ow">in</span> <span class="n">exc_list</span><span class="p">):</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">close_default_loggers</span><span class="p">()</span>
+            <span class="n">loggers</span><span class="o">.</span><span class="n">close_loggers</span><span class="p">()</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="n">logging</span><span class="o">.</span><span class="n">is_root_logger_active</span><span class="p">():</span>
-            <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">loggers</span><span class="o">.</span><span class="n">is_root_logger_active</span><span class="p">():</span>
+            <span class="n">root_logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
             <span class="n">root_logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;error: uncaught exception&quot;</span><span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">close_default_loggers</span><span class="p">()</span>
+            <span class="n">loggers</span><span class="o">.</span><span class="n">close_loggers</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_configure_env_for_distributed_error_handling</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -829,11 +881,9 @@
             <span class="k">return</span>
 
         <span class="n">state</span><span class="p">:</span> <span class="n">_DistributedErrorState</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_error_queue</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_file_logging</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">log_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">create_default_loggers</span><span class="p">(</span>
-                <span class="n">enable_tensorboard</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">capture_warnings</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">restore_default_loggers</span><span class="p">(</span><span class="n">log_path</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_file_logging</span><span class="p">:</span>
+            <span class="n">loggers</span><span class="o">.</span><span class="n">create_loggers</span><span class="p">(</span><span class="n">enable_tensorboard</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">capture_warnings</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">loggers</span><span class="o">.</span><span class="n">restore_loggers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_root</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">loggers_state</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_push_distributed_error_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">_DistributedErrorState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distributed_error_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -855,6 +905,10 @@
 <span class="sd">            mode:: the operation to perform.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">datamodule</span><span class="o">.</span><span class="n">prepare_data</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">plugin</span><span class="o">.</span><span class="n">configure_trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">plugin</span><span class="o">.</span><span class="n">configure_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_torchrun</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">mp</span><span class="o">.</span><span class="n">get_start_method</span><span class="p">(</span><span class="n">allow_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -883,6 +937,7 @@
                 <span class="k">raise</span> <span class="n">e</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">queue</span>
+            <span class="n">datamodule</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
             <span class="k">return</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_torchrun</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span><span class="p">:</span>
@@ -900,7 +955,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_torchrun</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span><span class="p">:</span>
             <span class="n">dist</span><span class="o">.</span><span class="n">shutdown_dist</span><span class="p">()</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">close_default_loggers</span><span class="p">()</span>
+        <span class="n">datamodule</span><span class="o">.</span><span class="n">teardown</span><span class="p">()</span>
+        <span class="n">loggers</span><span class="o">.</span><span class="n">close_loggers</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -910,6 +966,9 @@
 <span class="sd">        appropriate training loop for the given training unit.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_configure_env</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_push_distributed_error_state</span><span class="p">(</span>
+            <span class="n">_DistributedErrorState</span><span class="p">(</span><span class="n">loggers_state</span><span class="o">=</span><span class="n">loggers</span><span class="o">.</span><span class="n">get_logger_state_dicts</span><span class="p">())</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_plugins</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_datamodule</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_model</span><span class="p">()</span>
@@ -917,9 +976,6 @@
 
         <span class="n">chkpt_path</span> <span class="o">=</span> <span class="n">find_last_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chkpt_root</span><span class="p">)</span>
         <span class="n">training_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_checkpoint</span><span class="p">(</span><span class="n">chkpt_path</span><span class="p">)</span>
-
-        <span class="n">log_path</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_push_distributed_error_state</span><span class="p">(</span><span class="n">_DistributedErrorState</span><span class="p">(</span><span class="n">log_path</span><span class="o">=</span><span class="n">log_path</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_print_header</span><span class="p">(</span><span class="n">chkpt_path</span><span class="p">)</span>
 
@@ -933,8 +989,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_execute_plugins</span><span class="p">(</span><span class="s2">&quot;on_training_end&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_training_end</span><span class="p">()</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">flush_default_loggers</span><span class="p">()</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">close_default_loggers</span><span class="p">()</span>
+        <span class="n">loggers</span><span class="o">.</span><span class="n">flush_loggers</span><span class="p">()</span>
+        <span class="n">loggers</span><span class="o">.</span><span class="n">close_loggers</span><span class="p">()</span>
 
         <span class="c1"># If we&#39;re distributed, ensure that all processes are caught up before we exit.</span>
         <span class="n">dist</span><span class="o">.</span><span class="n">safe_barrier</span><span class="p">()</span>
@@ -950,9 +1006,12 @@
 <span class="sd">        the correct state internally.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_configure_env</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_push_distributed_error_state</span><span class="p">(</span>
+            <span class="n">_DistributedErrorState</span><span class="p">(</span><span class="n">loggers_state</span><span class="o">=</span><span class="n">loggers</span><span class="o">.</span><span class="n">get_logger_state_dicts</span><span class="p">())</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_plugins</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_datamodule</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_model</span><span class="p">(</span><span class="n">fast_init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_model</span><span class="p">(</span><span class="n">for_inference</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_roots</span><span class="p">(</span><span class="n">mkdir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="n">chkpt_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -960,16 +1019,13 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chkpt_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">chkpt_path</span> <span class="o">=</span> <span class="n">find_last_checkpoint</span><span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chkpt_root</span><span class="p">))</span>
             <span class="n">loaded</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_load_checkpoint</span><span class="p">(</span><span class="n">chkpt_path</span><span class="p">,</span> <span class="n">skip_rng</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">model_fast_init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_load_checkpoint</span><span class="p">(</span><span class="n">chkpt_path</span><span class="p">,</span> <span class="n">skip_rng</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">model_for_inference</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="o">!=</span> <span class="n">TrainingState</span><span class="p">()</span>
             <span class="p">)</span>
 
         <span class="c1"># We failed to load the last checkpoint, so tell the model to load its state.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chkpt_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">loaded</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_for_testing</span><span class="p">()</span>
-
-        <span class="n">log_path</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_file</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_push_distributed_error_state</span><span class="p">(</span><span class="n">_DistributedErrorState</span><span class="p">(</span><span class="n">log_path</span><span class="o">=</span><span class="n">log_path</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_print_header</span><span class="p">(</span><span class="n">chkpt_path</span><span class="p">,</span> <span class="n">for_training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -999,6 +1055,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
             <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
+                    <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">batch_to_device</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">hlm</span><span class="o">.</span><span class="n">BatchPhase</span><span class="o">.</span><span class="n">TEST</span><span class="p">)</span>
                     <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_process_batch</span><span class="p">(</span><span class="s2">&quot;testing&quot;</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_testing_batch_start</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">test_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
@@ -1031,8 +1088,10 @@
             <span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">benchmark</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_cudnn_benchmark</span>
             <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">set_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
 
-        <span class="n">logging</span><span class="o">.</span><span class="n">create_default_loggers</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_enable_tensorboard</span><span class="p">,</span> <span class="n">capture_warnings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_capture_warnings</span>
+        <span class="n">loggers</span><span class="o">.</span><span class="n">create_loggers</span><span class="p">(</span>
+            <span class="n">enable_tensorboard</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_enable_tensorboard</span><span class="p">,</span>
+            <span class="n">capture_warnings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_capture_warnings</span><span class="p">,</span>
+            <span class="n">wandb_args</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_wandb_args</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1046,19 +1105,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">trainer</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">for_inference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finish setting up the model.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            fast_init: whether the model should setup its full state or not.</span>
+<span class="sd">            for_inference: if True, the model sets up for inference only (no training</span>
+<span class="sd">                state).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">map_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_loc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">is_distributed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_device</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">rank</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_rank</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">trainer</span> <span class="o">=</span> <span class="bp">self</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">fast_init</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">for_inference</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Finish setting up the plug-ins.&quot;&quot;&quot;</span>
@@ -1080,16 +1140,14 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chkpt_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_chkpt_root</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_log_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_run_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log_root</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_print_header</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">chkpt_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">for_training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the Helios header with system info to the logs.&quot;&quot;&quot;</span>
-        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">)</span>
         <span class="n">banner</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">append_to_banner</span><span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="n">get_env_info_str</span><span class="p">())</span>
 
@@ -1144,23 +1202,18 @@
                 <span class="s2">&quot;&#39;early_stop_cycles&#39; must be non-zero&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_tensorboard</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_enable_tensorboard</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_file_logging</span>
+            <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wandb_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;error: Tensorboard requested but no run directory was given&quot;</span>
+                    <span class="s2">&quot;error: logging requested but no log root directory was given&quot;</span>
                 <span class="p">)</span>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;error: run path must be a directory&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_file_logging</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;error: file logging requested but no log directory was given&quot;</span>
-                <span class="p">)</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;error: log path must be a directory&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_root</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;error: log root must be a directory&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_src_root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;error: source root must be a directory&quot;</span><span class="p">)</span>
@@ -1235,13 +1288,19 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            True if the checkpoint is valid, false otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">required_keys</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;version&quot;</span><span class="p">,</span> <span class="s2">&quot;training_state&quot;</span><span class="p">,</span> <span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;rng&quot;</span><span class="p">)</span>
+        <span class="n">required_keys</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">VERSION</span><span class="p">,</span>
+            <span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">TRAINING_STATE</span><span class="p">,</span>
+            <span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">MODEL</span><span class="p">,</span>
+            <span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">RNG</span><span class="p">,</span>
+            <span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">DATAMODULE</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">state_dict</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">required_keys</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="c1"># Now check the version to see if it&#39;s compatible with us.</span>
         <span class="n">cur_ver</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">__version__</span><span class="p">)</span>
-        <span class="n">chkpt_ver</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">])</span>
+        <span class="n">chkpt_ver</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">Version</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">VERSION</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">chkpt_ver</span> <span class="o">&lt;=</span> <span class="n">cur_ver</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1263,17 +1322,12 @@
         <span class="n">filename</span> <span class="o">+=</span> <span class="s2">&quot;.pth&quot;</span>
 
         <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">__version__</span>
-        <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;training_state&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
-        <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
-        <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;rng&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">get_rng_state_dict</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_file_logging</span><span class="p">:</span>
-            <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;log_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span><span class="o">.</span><span class="n">log_file</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enable_tensorboard</span><span class="p">:</span>
-            <span class="n">writer</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">get_tensorboard_writer</span><span class="p">())</span>
-            <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;run_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">run_path</span>
+        <span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">VERSION</span><span class="p">]</span> <span class="o">=</span> <span class="n">__version__</span>
+        <span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">TRAINING_STATE</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">MODEL</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+        <span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">RNG</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">get_rng_state_dict</span><span class="p">()</span>
+        <span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">LOGGERS</span><span class="p">]</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">get_logger_state_dicts</span><span class="p">()</span>
+        <span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">DATAMODULE</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
 
         <span class="c1"># Add the plug-ins (if using)</span>
         <span class="k">for</span> <span class="n">plug_id</span><span class="p">,</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1288,7 +1342,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">chkpt_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">skip_rng</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">model_fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">model_for_inference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainingState</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the given checkpoint.</span>
@@ -1296,7 +1350,8 @@
 <span class="sd">        Args:</span>
 <span class="sd">            chkpt_path: path to the checkpoint to load.</span>
 <span class="sd">            skip_rng: if True, skip the loading of the RNG states.</span>
-<span class="sd">            model_fast_init: whether the model should setup its full state or not.</span>
+<span class="sd">            model_for_inference: if True, the model loads for inference only (no</span>
+<span class="sd">                training state).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Returns the loaded training state and ``True`` if the checkpoint was</span>
@@ -1304,7 +1359,7 @@
 <span class="sd">                ``False``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">chkpt_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logging</span><span class="o">.</span><span class="n">setup_default_loggers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_path</span><span class="p">)</span>
+            <span class="n">loggers</span><span class="o">.</span><span class="n">setup_loggers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_root</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">TrainingState</span><span class="p">()</span>
 
         <span class="n">state_dict</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">safe_torch_load</span><span class="p">(</span><span class="n">chkpt_path</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_map_loc</span><span class="p">)</span>
@@ -1313,18 +1368,21 @@
                 <span class="sa">f</span><span class="s2">&quot;error: the checkpoint found at </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">chkpt_path</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not a &quot;</span>
                 <span class="s2">&quot;valid checkpoint generated by Helios&quot;</span>
             <span class="p">)</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">restore_default_loggers</span><span class="p">(</span>
-            <span class="n">state_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">state_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;run_path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">loggers</span><span class="o">.</span><span class="n">restore_loggers</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_run_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_root</span><span class="p">,</span> <span class="n">state_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">LOGGERS</span><span class="p">,</span> <span class="p">{})</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_rng</span><span class="p">:</span>
-            <span class="n">rng</span><span class="o">.</span><span class="n">load_rng_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;rng&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">],</span> <span class="n">fast_init</span><span class="o">=</span><span class="n">model_fast_init</span><span class="p">)</span>
+            <span class="n">rng</span><span class="o">.</span><span class="n">load_rng_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">RNG</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span>
+            <span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">MODEL</span><span class="p">],</span> <span class="n">for_inference</span><span class="o">=</span><span class="n">model_for_inference</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">DATAMODULE</span><span class="p">])</span>
 
         <span class="k">for</span> <span class="n">plug_id</span><span class="p">,</span> <span class="n">plugin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">plug_id</span> <span class="ow">in</span> <span class="n">state_dict</span><span class="p">:</span>
                 <span class="n">plugin</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="n">plug_id</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;training_state&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">state_dict</span><span class="p">[</span><span class="n">_CheckpointKeys</span><span class="o">.</span><span class="n">TRAINING_STATE</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_train_on_iteration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1343,7 +1401,7 @@
 
         <span class="n">current_iteration_changed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">training_done</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
         <span class="n">iter_timer</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">AverageTimer</span><span class="p">()</span>
 
         <span class="n">pbar_disabled</span> <span class="o">=</span> <span class="p">(</span>
@@ -1371,7 +1429,7 @@
             <span class="n">state</span><span class="o">.</span><span class="n">global_epoch</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">root_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting epoch </span><span class="si">{</span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">sampler</span><span class="o">.</span><span class="n">set_epoch</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span>
-            <span class="n">epoch_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">epoch_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_training_epoch_start</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">global_epoch</span><span class="p">)</span>
 
             <span class="n">iter_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -1384,6 +1442,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">current_iteration_changed</span> <span class="o">=</span> <span class="kc">False</span>
 
+                <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">batch_to_device</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">hlm</span><span class="o">.</span><span class="n">BatchPhase</span><span class="o">.</span><span class="n">TRAIN</span><span class="p">)</span>
                 <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_process_batch</span><span class="p">(</span><span class="s2">&quot;training&quot;</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_training_batch_start</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
@@ -1428,6 +1487,7 @@
                     <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">current_iteration</span> <span class="o">%</span> <span class="n">save_freq</span> <span class="o">==</span> <span class="mi">0</span>
                     <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span>
                     <span class="ow">and</span> <span class="n">current_iteration_changed</span>
+                    <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">should_save_checkpoint</span><span class="p">()</span>
                 <span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_save_checkpoint</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 
@@ -1449,11 +1509,18 @@
                     <span class="n">training_done</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="k">break</span>
 
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">should_advance_dataset_phase</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">advance_train_phase</span><span class="p">()</span>
+                    <span class="n">dataloader</span><span class="p">,</span> <span class="n">sampler</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">train_dataloader</span><span class="p">()</span>
+                    <span class="p">)</span>
+                    <span class="k">break</span>
+
             <span class="n">state</span><span class="o">.</span><span class="n">dataset_iter</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_training_epoch_end</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">global_epoch</span><span class="p">)</span>
 
             <span class="n">root_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">epoch_start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">epoch_start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span>
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_train_on_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1471,7 +1538,7 @@
         <span class="n">early_stop_cycles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_early_stop_cycles</span>
 
         <span class="n">training_done</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
+        <span class="n">root_logger</span> <span class="o">=</span> <span class="n">loggers</span><span class="o">.</span><span class="n">get_root_logger</span><span class="p">()</span>
         <span class="n">iter_timer</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">AverageTimer</span><span class="p">()</span>
 
         <span class="n">pbar_disabled</span> <span class="o">=</span> <span class="p">(</span>
@@ -1508,7 +1575,7 @@
 
             <span class="n">root_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting epoch </span><span class="si">{</span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">sampler</span><span class="o">.</span><span class="n">set_epoch</span><span class="p">(</span><span class="n">epoch</span><span class="p">)</span>
-            <span class="n">epoch_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="n">epoch_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_training_epoch_start</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">global_epoch</span><span class="p">)</span>
             <span class="n">iter_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
             <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span>
@@ -1523,6 +1590,7 @@
                     <span class="n">state</span><span class="o">.</span><span class="n">current_iteration</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="n">state</span><span class="o">.</span><span class="n">running_iter</span> <span class="o">+=</span> <span class="mi">1</span>
 
+                    <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">batch_to_device</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">hlm</span><span class="o">.</span><span class="n">BatchPhase</span><span class="o">.</span><span class="n">TRAIN</span><span class="p">)</span>
                     <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_process_batch</span><span class="p">(</span><span class="s2">&quot;training&quot;</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_training_batch_start</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
@@ -1561,12 +1629,18 @@
                 <span class="n">save_freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
                 <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">global_epoch</span> <span class="o">%</span> <span class="n">save_freq</span> <span class="o">==</span> <span class="mi">0</span>
                 <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">should_save_checkpoint</span><span class="p">()</span>
             <span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_save_checkpoint</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_training_epoch_end</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">global_epoch</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">training_done</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">should_advance_dataset_phase</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">advance_train_phase</span><span class="p">()</span>
+                <span class="n">dataloader</span><span class="p">,</span> <span class="n">sampler</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">get_from_optional</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">train_dataloader</span><span class="p">()</span>
+                <span class="p">)</span>
             <span class="n">root_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">epoch_start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> completed in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">epoch_start</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">s&quot;</span>
             <span class="p">)</span>
             <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
             <span class="k">if</span> <span class="p">(</span>
@@ -1610,6 +1684,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_validation_start</span><span class="p">(</span><span class="n">val_cycle</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
                 <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
+                    <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">batch_to_device</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">hlm</span><span class="o">.</span><span class="n">BatchPhase</span><span class="o">.</span><span class="n">VALID</span><span class="p">)</span>
                     <span class="n">batch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plugins_process_batch</span><span class="p">(</span><span class="s2">&quot;validation&quot;</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">on_validation_batch_start</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">valid_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
@@ -1673,7 +1748,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, Mauricio A. Rovira Galvez
+                Copyright &#169; 2026, Mauricio A. Rovira Galvez
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1694,8 +1769,8 @@
     </aside>
   </div>
 </div><script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

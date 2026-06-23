@@ -1,23 +1,24 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+        <link rel="prefetch" href="../../../_static/logo-transparent.png" as="image">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>helios.data.datamodule - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
@@ -144,14 +145,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -161,8 +158,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -170,8 +166,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -179,8 +174,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -188,7 +182,6 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
-  
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="../../../_static/logo-transparent.png" alt="Logo"/>
   </div>
@@ -203,45 +196,54 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../why-helios.html">Why Helios?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Plug-Ins</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../optuna.html">Optuna Integartion</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/helios/index.html">helios</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../optuna.html">Optuna Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/helios/index.html">helios</a><input aria-label="Toggle navigation of helios" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/helios/chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/core/index.html">helios.core</a><input aria-label="Toggle navigation of helios.core" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/cuda/index.html">helios.core.cuda</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/distributed/index.html">helios.core.distributed</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/logging/index.html">helios.core.logging</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/core/loggers/index.html">helios.core.loggers</a><input aria-label="Toggle navigation of helios.core.loggers" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/core/loggers/base/index.html">helios.core.loggers.base</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/core/loggers/root/index.html">helios.core.loggers.root</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/core/loggers/tensorboard/index.html">helios.core.loggers.tensorboard</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/core/loggers/wandb/index.html">helios.core.loggers.wandb</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/rng/index.html">helios.core.rng</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/utils/index.html">helios.core.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/data/index.html">helios.data</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of helios.data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/data/index.html">helios.data</a><input aria-label="Toggle navigation of helios.data" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/data/datamodule/index.html">helios.data.datamodule</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/data/functional/index.html">helios.data.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/data/samplers/index.html">helios.data.samplers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/data/transforms/index.html">helios.data.transforms</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/losses/index.html">helios.losses</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of helios.losses</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/losses/index.html">helios.losses</a><input aria-label="Toggle navigation of helios.losses" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/losses/utils/index.html">helios.losses.utils</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/losses/weighted_loss/index.html">helios.losses.weighted_loss</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/metrics/index.html">helios.metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of helios.metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/metrics/index.html">helios.metrics</a><input aria-label="Toggle navigation of helios.metrics" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/metrics/functional/index.html">helios.metrics.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/metrics/metrics/index.html">helios.metrics.metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/model/index.html">helios.model</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of helios.model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/model/index.html">helios.model</a><input aria-label="Toggle navigation of helios.model" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/model/model/index.html">helios.model.model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/model/utils/index.html">helios.model.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/nn/index.html">helios.nn</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of helios.nn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of helios.nn.layers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/nn/index.html">helios.nn</a><input aria-label="Toggle navigation of helios.nn" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input aria-label="Toggle navigation of helios.nn.layers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/nn/layers/pool/index.html">helios.nn.layers.pool</a></li>
 </ul>
 </li>
@@ -250,12 +252,12 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/helios/onnx/index.html">helios.onnx</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/optim/index.html">helios.optim</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.optim</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/optim/index.html">helios.optim</a><input aria-label="Toggle navigation of helios.optim" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of helios.plugins.optuna</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/plugins/index.html">helios.plugins</a><input aria-label="Toggle navigation of helios.plugins" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input aria-label="Toggle navigation of helios.plugins.optuna" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/plugins/optuna/plugin/index.html">helios.plugins.optuna.plugin</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/plugins/optuna/utils/index.html">helios.plugins.optuna.utils</a></li>
 </ul>
@@ -263,7 +265,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/plugins/plugin/index.html">helios.plugins.plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/scheduler/index.html">helios.scheduler</a><input aria-label="Toggle navigation of helios.scheduler" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -293,8 +295,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -302,8 +303,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -489,12 +489,16 @@
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">pin_memory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">pin_memory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">drop_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">debug_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">is_distributed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">sampler</span><span class="p">:</span> <span class="n">ResumableSamplerType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">collate_fn</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">prefetch_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">persistent_workers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">pin_memory_device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">multiprocessing_context</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">tud</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">,</span> <span class="n">ResumableSamplerType</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create the dataloader for the given dataset.</span>
@@ -502,9 +506,9 @@
 <span class="sd">    If no sampler is provided, the choice of sampler will be determined based on the</span>
 <span class="sd">    values of is_distributed and shuffle. Specifically, the following logic is used:</span>
 
-<span class="sd">    * If is_distributed, then sampler is</span>
+<span class="sd">    * If ``is_distributed``, then sampler is</span>
 <span class="sd">      :py:class:`~helios.data.samplers.ResumableDistributedSampler`.</span>
-<span class="sd">    * Otherwise, if shuffle then sampler is</span>
+<span class="sd">    * Otherwise, if ``shuffle`` then sampler is</span>
 <span class="sd">      :py:class:`~helios.data.samplers.ResumableRandomSampler`, else</span>
 <span class="sd">      :py:class:`~helios.data.samplers.ResumableSequentialSampler`.</span>
 
@@ -517,17 +521,25 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        dataset: the dataset to use.</span>
-<span class="sd">        random_seed: value to use as seed for the worker processes. Defaults to the value</span>
+<span class="sd">        random_seed: (optional) seed for the worker processes. Defaults to the value</span>
 <span class="sd">            returned by :py:func:`~helios.core.rng.get_default_seed`.</span>
-<span class="sd">        batch_size: number of samplers per batch. Defaults to 1.</span>
-<span class="sd">        shuffle: if true, samples are randomly shuffled. Defaults to false.</span>
-<span class="sd">        num_workers: number of worker processes for loading data. Defaults to 0.</span>
-<span class="sd">        pin_memory: if true, use page-locked device memory. Defaults to true.</span>
-<span class="sd">        drop_last: if true, remove the final batch. Defaults to false.</span>
-<span class="sd">        debug_mode: if true, then ``num_workers`` will be set to 0. Defaults to false.</span>
-<span class="sd">        is_distributed: if true, create the distributed sampler. Defaults to false.</span>
+<span class="sd">        batch_size: (optional) number of samples per batch.</span>
+<span class="sd">        shuffle: (optional) if true, samples are randomly shuffled.</span>
+<span class="sd">        num_workers: (optional) number of worker processes for loading data.</span>
+<span class="sd">        pin_memory: (optional) if true, use page-locked device memory.</span>
+<span class="sd">        drop_last: (optional) if true, remove the final batch.</span>
+<span class="sd">        is_distributed: (optional) if true, create the distributed sampler.</span>
 <span class="sd">        sampler: (optional) sampler to use.</span>
 <span class="sd">        collate_fn: (optional) function to merge batches.</span>
+<span class="sd">        prefetch_factor: (optional) number of batches to prefetch per worker. Only valid</span>
+<span class="sd">            when ``num_workers &gt; 0``.</span>
+<span class="sd">        persistent_workers: (optional) if true, keep worker processes alive between</span>
+<span class="sd">            epochs. Only valid when ``num_workers &gt; 0``.</span>
+<span class="sd">        pin_memory_device: (optional) target device for pinned memory when ``pin_memory``</span>
+<span class="sd">            is true.</span>
+<span class="sd">        timeout: (optional) timeout in seconds for collecting a batch from workers.</span>
+<span class="sd">        multiprocessing_context: (optional) method for spawning worker processes (e.g.</span>
+<span class="sd">            ``&quot;fork&quot;``, ``&quot;spawn&quot;``, ``&quot;forkserver&quot;``).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The dataloader and sampler.</span>
@@ -567,12 +579,17 @@
         <span class="n">tud</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
             <span class="n">dataset</span><span class="p">,</span>
             <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-            <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">debug_mode</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
             <span class="n">pin_memory</span><span class="o">=</span><span class="n">pin_memory</span><span class="p">,</span>
             <span class="n">drop_last</span><span class="o">=</span><span class="n">drop_last</span><span class="p">,</span>
             <span class="n">sampler</span><span class="o">=</span><span class="n">sampler</span><span class="p">,</span>
             <span class="n">worker_init_fn</span><span class="o">=</span><span class="n">_seed_worker</span><span class="p">,</span>
             <span class="n">collate_fn</span><span class="o">=</span><span class="n">collate_fn</span><span class="p">,</span>
+            <span class="n">prefetch_factor</span><span class="o">=</span><span class="n">prefetch_factor</span><span class="p">,</span>
+            <span class="n">persistent_workers</span><span class="o">=</span><span class="n">persistent_workers</span><span class="p">,</span>
+            <span class="n">pin_memory_device</span><span class="o">=</span><span class="n">pin_memory_device</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">multiprocessing_context</span><span class="o">=</span><span class="n">multiprocessing_context</span><span class="p">,</span>
         <span class="p">),</span>
         <span class="n">sampler</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -587,28 +604,41 @@
 <span class="sd">    Params used to create the dataloader object.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        random_seed: value to use as seed for the worker processes.</span>
-<span class="sd">        batch_size: number of samplers per batch.</span>
-<span class="sd">        shuffle: if true, samples are randomly shuffled.</span>
-<span class="sd">        num_workers: number of worker processes for loading data.</span>
-<span class="sd">        pin_memory: if true, use page-locked device memory.</span>
-<span class="sd">        drop_last: if true, remove the final batch.</span>
-<span class="sd">        debug_mode: if true, set number of workers to 0.</span>
-<span class="sd">        is_distributed: if true, create the distributed sampler.</span>
+<span class="sd">        random_seed: (optional) seed for the worker processes. Defaults to the value</span>
+<span class="sd">            returned by :py:func:`~helios.core.rng.get_default_seed`.</span>
+<span class="sd">        batch_size: (optional) number of samples per batch.</span>
+<span class="sd">        shuffle: (optional) if true, samples are randomly shuffled.</span>
+<span class="sd">        num_workers: (optional) number of worker processes for loading data.</span>
+<span class="sd">        pin_memory: (optional) if true, use page-locked device memory.</span>
+<span class="sd">        drop_last: (optional) if true, remove the final batch.</span>
+<span class="sd">        is_distributed: (optional) if true, create the distributed sampler.</span>
 <span class="sd">        sampler: (optional) sampler to use.</span>
 <span class="sd">        collate_fn: (optional) function to merge batches.</span>
+<span class="sd">        prefetch_factor: (optional) number of batches to prefetch per worker. Only valid</span>
+<span class="sd">            when ``num_workers &gt; 0``.</span>
+<span class="sd">        persistent_workers: (optional) if true, keep worker processes alive between</span>
+<span class="sd">            epochs. Only valid when ``num_workers &gt; 0``.</span>
+<span class="sd">        pin_memory_device: (optional) target device for pinned memory when ``pin_memory``</span>
+<span class="sd">            is true.</span>
+<span class="sd">        timeout: (optional) timeout in seconds for collecting a batch from workers.</span>
+<span class="sd">        multiprocessing_context: (optional) method for spawning worker processes (e.g.</span>
+<span class="sd">            ``&quot;fork&quot;``, ``&quot;spawn&quot;``, ``&quot;forkserver&quot;``).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">get_default_seed</span><span class="p">()</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">pin_memory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">pin_memory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">drop_last</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">debug_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">is_distributed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">sampler</span><span class="p">:</span> <span class="n">ResumableSamplerType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">collate_fn</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">prefetch_factor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">persistent_workers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">pin_memory_device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">multiprocessing_context</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DataLoaderParams.to_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataLoaderParams.to_dict">[docs]</a>
@@ -675,6 +705,7 @@
 
 <span class="sd">            from torchvision.datasets import CIFAR10</span>
 <span class="sd">            from helios import data</span>
+<span class="sd">            from helios.data import Dataset, DataLoaderParams</span>
 
 <span class="sd">            class MyDataModule(data.DataModule):</span>
 <span class="sd">                def prepare_data(self) -&gt; None:</span>
@@ -684,23 +715,20 @@
 <span class="sd">                    CIFAR10(download=True) # download the dataset only.</span>
 
 <span class="sd">                def setup(self) -&gt; None:</span>
-<span class="sd">                    # Create the training dataset using a DataLoaderParams instance. Note</span>
-<span class="sd">                    # that you MUST assign it to self._train_dataset.</span>
-<span class="sd">                    self._train_dataset = self._create_dataset(CIFAR10(train=True),</span>
-<span class="sd">                                                               DataLoaderParams(...))</span>
+<span class="sd">                    # Register the training phase(s) using _add_train_phase. The first</span>
+<span class="sd">                    # call also sets self._train_dataset automatically.</span>
+<span class="sd">                    self._add_train_phase(CIFAR10(train=True), DataLoaderParams(...))</span>
 
-<span class="sd">                    # It is also possible to create a dataset using a table of key-value</span>
-<span class="sd">                    # pairs that was loaded from a config file or manually created. Let&#39;s</span>
-<span class="sd">                    # use one to create the validation split:</span>
+<span class="sd">                    # For multi-phase training, call _add_train_phase again:</span>
+<span class="sd">                    self._add_train_phase(</span>
+<span class="sd">                        CIFAR10(train=True, transform=...), DataLoaderParams(...)</span>
+<span class="sd">                    )</span>
+
+<span class="sd">                    # Validation and testing datasets use their own helpers.</span>
+<span class="sd">                    # A dict of settings is also accepted in place of DataLoaderParams.</span>
 <span class="sd">                    settings = {&quot;batch_size&quot;: 1, ...}</span>
-
-<span class="sd">                    # We can now use it to assign to self._valid_dataset like this:</span>
-<span class="sd">                    self._valid_dataset = self._create_dataset(</span>
-<span class="sd">                            CIFAR10(train=False), settings)</span>
-
-<span class="sd">                    # Finally, if you need a testing split, you can create it like this:</span>
-<span class="sd">                    self._test_dataset = self._create_dataset(</span>
-<span class="sd">                            CIFAR10(train=False), settings)</span>
+<span class="sd">                    self._add_valid_dataset(CIFAR10(train=False), settings)</span>
+<span class="sd">                    self._add_test_dataset(CIFAR10(train=False), DataLoaderParams(...))</span>
 
 <span class="sd">                def teardown(self) -&gt; None:</span>
 <span class="sd">                    # Use this function to clean up any state. It will be called after</span>
@@ -714,6 +742,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_valid_dataset</span><span class="p">:</span> <span class="n">Dataset</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span><span class="p">:</span> <span class="n">Dataset</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span><span class="p">:</span> <span class="n">Trainer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_train_phases</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Dataset</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_train_phase</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_distributed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -807,25 +837,169 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Clean up any state after training is over.&quot;&quot;&quot;</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_create_dataset</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">DataLoaderParams</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dataset</span><span class="p">:</span>
+<div class="viewcode-block" id="DataModule.get_train_steps_per_epoch">
+<a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.get_train_steps_per_epoch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_train_steps_per_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a dataset object from a Torch dataset and a params.</span>
+<span class="sd">        Return the number of iterations per training epoch.</span>
 
-<span class="sd">        This is a convenience function to help you create the dataset objects. The params</span>
-<span class="sd">        object can either be the fully filled in DataLoaderParams instance, or it can be a</span>
-<span class="sd">        dict containing all of the necessary settings. If a dict is passed in, it will be</span>
-<span class="sd">        used to populate the corresponding DataLoaderParams object.</span>
+<span class="sd">        The number is determined by constructing the training dataloader and returning its</span>
+<span class="sd">        length. This function is generally useful for initialising schedulers that need</span>
+<span class="sd">        the total number of steps per epoch, so you should call this within</span>
+<span class="sd">        :py:meth:`~helios.model.model.Model.steup` or</span>
+<span class="sd">        :py:meth:`~helios.plugins.plugin.Plugin.setup` and cache the result.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            dataset: the dataset.</span>
-<span class="sd">            params: either a params object or a dict.</span>
+<span class="sd">        This function is equivalent to:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                import helios.core as hlc</span>
+<span class="sd">                # If called from within Model.setup()</span>
+<span class="sd">                dataloader, _ = hlc.get_from_optional(</span>
+<span class="sd">                        self.trainer.datamodule.train_dataloader())</span>
+<span class="sd">                steps = len(dataloader)</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This function only applies to training datasets. If you need something similar</span>
+<span class="sd">            for validation or testing, you can obtain the dataloader directly.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The new dataset object.</span>
+<span class="sd">            The number of iterations per training epoch.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: if the training dataloader hasn&#39;t been created.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Dataset</span><span class="p">(</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_dataloader</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;get_train_steps_per_epoch() called but no training dataset &quot;</span>
+                <span class="s2">&quot;has been configured.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">dataloader</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DataModule.advance_train_phase">
+<a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.advance_train_phase">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">advance_train_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Advance the training dataset to the next phase.</span>
+
+<span class="sd">        If the current phase is already the last one, this function does nothing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_train_phase</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_phases</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_train_phase</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_train_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_phases</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_train_phase</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="DataModule.state_dict">
+<a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.state_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full state dictionary of the datamodule.</span>
+
+<span class="sd">        The contents of the dictionary depend on whether training phases have been</span>
+<span class="sd">        registered:</span>
+<span class="sd">        * If they have, then this returns the current phase.</span>
+<span class="sd">        * If they haven&#39;t, then this returns an empty dictionary.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The state dictionary of the datamodule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_phases</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;phase&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_train_phase</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DataModule.load_state_dict">
+<a class="viewcode-back" href="../../../autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.load_state_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the datamodule state from the given state dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state_dict: the state dictionary to load from.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_phases</span> <span class="ow">or</span> <span class="s2">&quot;phase&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">state_dict</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_train_phase</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;phase&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_train_dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_train_phases</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_current_train_phase</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_train_phase</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">DataLoaderParams</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a training phase dataset.</span>
+
+<span class="sd">        Training phases can be used to control the produced data at different stages</span>
+<span class="sd">        during training. For example, suppose that we want to split training in two</span>
+<span class="sd">        phases where the dataset is the same but the settings change. We can then add them</span>
+<span class="sd">        like this:</span>
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                from torchvision.datasets import CIFAR10</span>
+<span class="sd">                from torchvision.transforms import v2</span>
+<span class="sd">                from helios import data</span>
+<span class="sd">                from helios.data import Dataset, DataLoaderParams</span>
+
+<span class="sd">                class MyDataModule(data.DataModule):</span>
+<span class="sd">                    def setup(self) -&gt; None:</span>
+<span class="sd">                        # Phase 1: use RandomCrop</span>
+<span class="sd">                        self._add_train_phase(CIFAR10(transform=v2.RadnomCrop(...)))</span>
+<span class="sd">                        # Phase 2: use RandomResize</span>
+<span class="sd">                        self._add_train_phase(CIFAR10(transform=v2.RandomResize(...)))</span>
+<span class="sd">                        # ...</span>
+
+<span class="sd">        This then introduces two phases which can be controlled by</span>
+<span class="sd">        :py:meth:`~helios.model.model.Model.should_advance_dataset_phase`.</span>
+<span class="sd">        The first call to this function will set the active dataset to the first phase</span>
+<span class="sd">        automatically. If you do not require multi-phase training, you can simply insert</span>
+<span class="sd">        one dataset and everything will work normally.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataset: the dataset for this phase.</span>
+<span class="sd">            params: either a :py:class:`DataLoaderParams` instance or a dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">DataLoaderParams</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">DataLoaderParams</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_train_phases</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_train_phases</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_train_dataset</span> <span class="o">=</span> <span class="n">phase</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_valid_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">DataLoaderParams</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the validation dataset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataset: the validation dataset.</span>
+<span class="sd">            params: either a :py:class:`DataLoaderParams` instance or a dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_valid_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
+            <span class="n">dataset</span><span class="p">,</span>
+            <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">DataLoaderParams</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">DataLoaderParams</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_test_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">tud</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">DataLoaderParams</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the test dataset.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dataset: the test dataset.</span>
+<span class="sd">            params: either a :py:class:`DataLoaderParams` instance or a dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span>
             <span class="n">dataset</span><span class="p">,</span>
             <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">DataLoaderParams</span><span class="p">)</span>
@@ -852,7 +1026,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, Mauricio A. Rovira Galvez
+                Copyright &#169; 2026, Mauricio A. Rovira Galvez
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -873,8 +1047,8 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

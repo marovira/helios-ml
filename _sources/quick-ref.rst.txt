@@ -18,8 +18,9 @@ end is a short summary explaining how to use Helios correctly to ensure reproduc
 .. warning::
    While every effort is done to ensure reproducibility, there are some limitations to
    what Helios can do. As Helios depends on PyTorch, it is bound to the same
-   reproducibility limitations. For more information, see the
-   `reproducibility documentation from PyTorch <https://github.com/Lightning-AI/pytorch-lightning>`__.
+   reproducibility limitations. For more information, see the `reproducibility
+   documentation from PyTorch
+   <https://docs.pytorch.org/docs/stable/notes/randomness.html>`__.
 
 Random Number Generation
 ------------------------
@@ -30,8 +31,8 @@ seeding system that is invoked as part of the start up process by the
 generators can be assigned by setting the ``random_seed`` parameter of the trainer.
 
 .. note::
-   If no value is assigned, the default seed is used. Helios has a default value of 6691
-   for seeding RNGs.
+   If no value is assigned, the default seed is used. Helios has a default value of
+   ``6691`` for seeding RNGs.
 
 Random numbers may be required throughout the training process, so Helios will
 automatically seed the following generators:
@@ -57,7 +58,7 @@ seen below:
 
    from helios.core import rng
 
-   generator = rng.get_default_numpy_rng().generator
+   generator = rng.get_default_numpy_rng()
 
    # Use the generator as necessary. For example, we can retrieve a uniform random float
    # between 0 and 1.
@@ -109,8 +110,8 @@ provide a way to do the following:
 
 #. The sampler must have a way of setting the starting iteration. For example, suppose
    that the sampler would've produced for a given epoch a sequence of :math:`N` batches
-   numbered :math:`0, 1, \ldots, N`. We need the sampler to provide way for us to set the
-   starting batch to a given number :math:`n_i` such that the sequence of batches
+   numbered :math:`0, 1, \ldots, N-1`. We need the sampler to provide a way for us to set
+   the starting batch to a given number :math:`n_i` such that the sequence of batches
    continues from that starting point.
 #. The sampler must have a way of setting the current epoch. This is to allow the samplers
    to re-shuffle between epochs (if shuffling is used) and to guarantee that the resulting
@@ -136,8 +137,14 @@ set the :py:attr:`~helios.data.datamodule.DataLoaderParams.sampler` field of the
 
 .. warning::
    The sampler **must** derive from either
-   :py:class:`~helios.data.samplers.ResumabeSampler` or
+   :py:class:`~helios.data.samplers.ResumableSampler` or
    :py:class:`~helios.data.samplers.ResumableDistributedSampler`
+
+.. note::
+   :py:attr:`~helios.data.datamodule.DataLoaderParams.pin_memory` defaults to ``False``,
+   matching PyTorch's default. If you are training on a GPU, set ``pin_memory=True`` in
+   your :py:class:`~helios.data.datamodule.DataLoaderParams` to enable pinned memory
+   transfers.
 
 Checkpoints
 -----------
@@ -149,7 +156,7 @@ default, the trainer will write the following data:
 * The state of all supported RNGs.
 * The current :py:class:`~helios.trainer.TrainingState`.
 * The state of the model (if any).
-* The paths to the log file and Tensorboard folder (if using).
+* The state of any active loggers (if any).
 
 If training is stopped and restarted, then Helios will look in the folder where
 checkpoints are stored and load the last checkpoint. This checkpoint is found by finding
@@ -159,8 +166,7 @@ the following:
 * Restore the state of all supported RNGs.
 * Load the saved training state.
 * Provide the loaded state to the model (if any).
-* Restore the file and Tensorboard loggers to continue writing to their original locations
-  (if using).
+* Restore any active loggers to continue writing to their original locations (if any).
 
 .. note::
    Any weights contained in the saved checkpoint are automatically mapped to the correct
@@ -268,6 +274,83 @@ checks this function at the following times:
      this case, the early stop checks would occur after the check to see if training
      should halt.
 
+.. _multi-phase-training:
+
+Multi-Phase Training
+====================
+
+Multi-phase training allows the training dataset to change during a single run. The most
+common use case is to apply different data augmentations or configurations at different
+points during training.
+
+Phases are registered in :py:meth:`~helios.data.datamodule.DataModule.setup` by calling
+:py:meth:`~helios.data.datamodule.DataModule._add_train_phase` once per phase:
+
+.. code-block:: python
+
+   class MyDataModule(data.DataModule):
+       def setup(self) -> None:
+           # Phase 1: light augmentation
+           self._add_train_phase(
+               MyDataset(transform=LightAugment()),
+               DataLoaderParams(batch_size=32),
+           )
+           # Phase 2: stronger augmentation
+           self._add_train_phase(
+               MyDataset(transform=StrongAugment()),
+               DataLoaderParams(batch_size=32),
+           )
+
+The first call to :py:meth:`~helios.data.datamodule.DataModule._add_train_phase`
+automatically sets the active dataset to phase 0. If only one phase is registered,
+the behaviour is identical to a regular single-phase setup.
+
+Advancing Phases
+----------------
+
+To signal that the trainer should move to the next phase, override
+:py:meth:`~helios.model.model.Model.should_advance_dataset_phase` in your model and
+return ``True`` when the condition is met:
+
+.. code-block:: python
+
+   def should_advance_dataset_phase(self) -> bool:
+       if not self._phase_advanced and self._current_epoch >= 10:
+           self._phase_advanced = True
+           return True
+       return False
+
+.. important::
+   This function should return ``True`` if and only if the phase should advance. It is
+   the model's responsibility to ensure the function does not keep returning ``True``
+   after the phase has already been advanced (for example, by using a flag as shown
+   above).
+
+When :py:meth:`~helios.model.model.Model.should_advance_dataset_phase` returns ``True``,
+the trainer calls
+:py:meth:`~helios.data.datamodule.DataModule.advance_train_phase` automatically and
+rebuilds the training dataloader for the new phase. The check is performed:
+
+* At the end of each epoch, if the training unit is
+  :py:attr:`~helios.trainer.TrainingUnit.EPOCH`.
+* At the end of each iteration, if the training unit is
+  :py:attr:`~helios.trainer.TrainingUnit.ITERATION`.
+
+Checkpoint Behaviour
+--------------------
+
+The current phase index is saved and restored automatically with each checkpoint. When
+training resumes from a checkpoint, the datamodule restores the correct phase so that
+the active dataset matches the state at the time the checkpoint was written.
+
+Interaction with ``get_train_steps_per_epoch()``
+-------------------------------------------------
+
+:py:meth:`~helios.model.model.Model.get_train_steps_per_epoch` returns the step count
+for the *current* active phase. If you cache this value in
+:py:meth:`~helios.model.model.Model.setup`, be aware that it reflects phase 0. Call it
+again after advancing the phase if the step count may differ between phases.
+
 .. _gradient-accumulation:
 
 Gradient Accumulation
@@ -287,7 +370,7 @@ and the logic is the following:
 Training by Epoch
 -----------------
 
-To better understand the behaviour of each unit type, lets look at an example. First, lets
+To better understand the behaviour of each unit type, let's look at an example. First, lets
 set the training unit to be epochs. Then, suppose that we want to train a network for 5
 epochs and the batch size results in 10 iterations per epoch. We want to accumulate
 gradients for 2 iterations, effectively emulating a batch size that results in 5
@@ -360,14 +443,140 @@ would do something like this:
     ) -> None:
         # Suppose that our loss tensor is stored in self._loss_items and the number of
         # accumulation steps is stored in self._accumulation_steps
-        if state.global_iteration % self._accumulation_steps == 0:
+        if state.current_iteration % self._accumulation_steps == 0:
             self._loss_items["loss"].backward()
             self._optimizer.step()
         ...
 
 .. warning::
-   Unlike the epoch case, we **cannot** use ``state.current_iteration`` as that keeps
+   Unlike the epoch case, we **cannot** use ``state.global_iteration`` as that keeps
    track of the number of *complete* iterations we have done.
+
+.. _amp:
+
+Automatic Mixed Precision
+=========================
+
+The :py:class:`~helios.model.model.Model` class provides helper functions for Automatic
+Mixed Precision (AMP) training.
+
+To enable AMP, call :py:func:`~helios.model.model.Model.create_scaler` in your
+:py:func:`~helios.model.model.Model.setup` function:
+
+.. code-block:: python
+
+   def setup(self, for_inference: bool = False) -> None:
+       self._net = ...
+       self._optimizer = ...
+       self.create_scaler(dtype=torch.float16)
+
+Once enabled, use :py:func:`~helios.model.model.Model.autocast` to wrap the forward
+pass in your training step:
+
+.. code-block:: python
+
+   def train_step(self, batch, state: TrainingState) -> None:
+       inputs, labels = batch
+       self._optimizer.zero_grad()
+
+       with self.autocast():
+           loss = self._criterion(self._net(inputs), labels)
+
+       self._loss_items["loss"] = loss
+       scaler = self.amp_context.scaler
+       scaler.scale(loss).backward()
+       scaler.step(self._optimizer)
+       scaler.update()
+
+:py:func:`~helios.model.model.Model.autocast` returns
+:py:class:`torch.amp.autocast` when AMP is active and a null context otherwise, so the
+same training step code works regardless of whether AMP is enabled.
+
+The AMP state can be accessed directly through the
+:py:attr:`~helios.model.model.Model.amp_context` property, which returns an
+:py:class:`~helios.model.model.AMPContext` dataclass containing the scaler and the
+dtype. When AMP is disabled, :py:attr:`~helios.model.model.Model.amp_context` is
+``None``.
+
+AMP state is saved and restored automatically with each checkpoint.
+
+.. note::
+   On CPU, only ``torch.bfloat16`` is supported. Passing any other dtype when the
+   device is CPU will raise a :py:exc:`ValueError`.
+
+.. _grad-clipping:
+
+Gradient Clipping
+=================
+
+:py:func:`~helios.model.model.Model.clip_gradients` handles gradient clipping correctly
+regardless of whether AMP is active. When AMP is enabled, gradients must be unscaled
+before the norm is computed, otherwise the threshold is applied to scaled values and the
+effective clip is wrong. The function handles this automatically:
+
+1. When AMP is active, call :py:meth:`torch.amp.GradScaler.unscale_` on the optimizer.
+2. Call :py:func:`torch.nn.utils.clip_grad_norm_`.
+
+Call it between the backward pass and the optimizer step:
+
+.. code-block:: python
+
+   def train_step(self, batch, state: TrainingState) -> None:
+       inputs, labels = batch
+       self._optimizer.zero_grad()
+
+       with self.autocast():
+           loss = self._criterion(self._net(inputs), labels)
+
+       self._loss_items["loss"] = loss
+       if self.amp_context is not None:
+           scaler = self.amp_context.scaler
+           scaler.scale(loss).backward()
+           self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
+           scaler.step(self._optimizer)
+           scaler.update()
+       else:
+           loss.backward()
+           self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
+           self._optimizer.step()
+
+.. _linear-warmup-scheduler:
+
+Linear Warmup Scheduler
+=======================
+
+:py:class:`~helios.scheduler.schedulers.LinearWarmupScheduler` implements a two-phase
+learning rate schedule:
+
+#. For the first :math:`N_w` steps (``warmup_steps``), the learning rate increases
+   linearly from :math:`f_0 \cdot \eta_0` to :math:`\eta_0`, where :math:`\eta_0` is the
+   base learning rate and :math:`f_0` is ``warmup_start_factor``.
+#. After :math:`N_w` steps, the learning rate is controlled by the wrapped ``scheduler``.
+
+Typical setup consists of using
+:py:meth:`~helios.model.model.Model.get_train_steps_per_epoch` to derive the warmup
+duration from the dataset size:
+
+.. code-block:: python
+
+   from helios.scheduler import schedulers as hls
+
+   def setup(self, for_inference: bool = False) -> None:
+       self._optimizer = ...
+       steps_per_epoch = self.get_train_steps_per_epoch()
+       base_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+           self._optimizer, T_max=total_steps
+       )
+       self._scheduler = hls.LinearWarmupScheduler(
+           optimizer=self._optimizer,
+           warmup_steps=5 * steps_per_epoch,  # warm up for 5 epochs
+           scheduler=base_scheduler,
+           warmup_start_factor=0.1,
+       )
+
+The ``warmup_start_factor`` argument controls :math:`f_0`, the fraction of
+:math:`\eta_0` to begin from. For :math:`f_0 \in [0.0, 1.0)`, a value of 0.0 starts
+the warmup from zero. The default is 0.0.
 
 .. _checkpoint-saving:
 
@@ -377,22 +586,14 @@ Checkpoint Saving
 As mentioned in :ref:`repro`, Helios will automatically save checkpoints whenever both
 ``chkpt_frequency`` and ``chkpt_root`` are set in the :py:class:`~helios.trainer.Trainer`.
 The data for checkpoints is stored in a dictionary that *always* contains the following
-keys:
+data:
 
-* ``training_state``: contains the current :py:class:`~helios.trainer.TrainingState`
-  object.
-* ``model``: contains the state of the model as returned by
-  :py:meth:`~helios.model.model.Model.state_dict`. Note that by default this is an empty
-  dictionary.
-* ``rng``: contains the state of the supported RNGs.
-* ``version``: contains the version of Helios used to generate the checkpoint.
-
-The following keys may optionally appear in the dictionary:
-
-* ``log_path``: appears only when file logging is enabled and contains the path to the log
-  file.
-* ``run_path``: appears only when Tensorboard logging is enabled and contains the path to
-  the directory where the data is stored.
+* The version of Helios used to generate the checkpoint,
+* The current :py:class:`~helios.trainer.TrainingState`,
+* The state of the model as returned by :py:meth:`~helios.model.model.Model.state_dict`,
+* The state of the supported RNGs,
+* The state of the loggers,
+* The state of the datamodule.
 
 The name of the checkpoint is determined as follows:
 
@@ -405,7 +606,7 @@ Where:
 * ``<run-name>`` is the value assigned to ``run_name`` in the trainer.
 * ``<epoch>`` and ``<iteration>`` are the values stored in
   :py:attr:`~helios.trainer.TrainingState.global_epoch` and
-  :py:attr:`~helios.trainer.TrainingState.global_iteration`, respectively.
+  :py:attr:`~helios.trainer.TrainingState.current_iteration`, respectively.
 
 The ``<additional-metadata>`` field is used to allow users to append additional
 information to the checkpoint name for easier identification later on. This data is
@@ -436,6 +637,23 @@ be:
    If distributed training is used, then only the process with *global rank* 0 will save
    checkpoints.
 
+Controlling When Checkpoints Are Saved
+---------------------------------------
+
+By default, the trainer writes a checkpoint whenever ``chkpt_frequency`` is reached. You
+can control this by overriding :py:meth:`~helios.model.model.Model.should_save_checkpoint`
+in your model:
+
+.. code-block:: python
+
+   def should_save_checkpoint(self) -> bool:
+       # Only save when the validation score has improved
+       return self._val_score > self._best_score
+
+When this function returns ``False``, the trainer skips writing a checkpoint for that
+cycle. This is useful when you want to only want to save checkpoints based on metrics or
+other criteria.
+
 Migrating Checkpoints
 ---------------------
 
@@ -458,23 +676,26 @@ script directly from the command line as follows:
 Logging
 =======
 
-The :py:class:`~helios.trainer.Trainer` has several sets of flags that control logging.
-These are:
+The :py:class:`~helios.trainer.Trainer` supports three logging options controlled by
+flags:
 
-* ``enable_tensorboard`` which is paired with ``run_path``,
-* ``enable_file_logging`` which is paired with ``log_path``, and
-* ``enable_progress_bar``.
+* ``enable_file_logging``: writes a log file under ``log_root``.
+* ``enable_tensorboard``: enables Tensorboard logging. See :ref:`logging-tensorboard` for
+  full details.
+* ``enable_progress_bar``: displays a progress bar during training.
 
-The ``*_path`` arguments determine the root directories where the corresponding logs will
-be saved.
+W&B logging is not toggled by a flag; it is enabled by passing ``wandb_args`` to the
+:py:class:`~helios.trainer.Trainer` constructor. See :ref:`logging-wandb` for full details.
+
+All file-based loggers write under the single ``log_root`` directory. This covers file
+logging, Tensorboard, and W&B.
 
 .. warning::
-   If a flag is paired with a path, then you **must** provide the corresponding path if
-   the flag is enabled. In other words, if you set ``enable_tensorboard``, then you must
-   also provide ``run_path``.
+   If any file-based logging is enabled (``enable_file_logging``, ``enable_tensorboard``,
+   or ``wandb_args``), you **must** also provide ``log_root``.
 
 .. note::
-   If the given path doesn't exist, it will be created automatically.
+   If the ``log_root`` path does not exist, it will be created automatically.
 
 The way the names for logs is determined as follows:
 
@@ -500,6 +721,51 @@ choice of training unit:
 
 The progress bar is also shown during validation, in which case it tracks the number of
 iterations in the validation set.
+
+.. _tensorboard-ref:
+
+Tensorboard
+-----------
+
+Tensorboard logging is enabled by setting ``enable_tensorboard=True`` and providing a
+``log_root`` when constructing the :py:class:`~helios.trainer.Trainer`:
+
+.. code-block:: python
+
+   import helios
+   import pathlib
+
+   trainer = helios.Trainer(
+       log_root=pathlib.Path("logs"),
+       enable_tensorboard=True,
+   )
+
+The writer is accessible via :py:func:`~helios.core.loggers.get_tensorboard_writer`.
+For full details including run resumption, directory layout, and available logging
+functions, see :ref:`logging-tensorboard`.
+
+.. _wandb-ref:
+
+Weights & Biases
+----------------
+
+W&B logging is enabled by passing a ``wandb_args`` dictionary to the
+:py:class:`~helios.trainer.Trainer` constructor:
+
+.. code-block:: python
+
+   import helios
+
+   trainer = helios.Trainer(
+       ...,
+       wandb_args={"project": "my-project", "name": "run-1"},
+   )
+
+The ``wandb_args`` dictionary accepts the fields defined by
+:py:class:`~helios.core.loggers.wandb.WandbArgs`. The ``project`` key is the only
+required field; all others are optional.
+
+For full details including run resumption and directory layout, see :ref:`logging-wandb`.
 
 CUDA
 ====
@@ -580,6 +846,10 @@ code:
         model.on_training_epoch_end()
    model.on_training_end()
 
+.. note::
+   :py:meth:`~helios.model.model.Model.train` is a no-op by default. You must override
+   it and call ``.train()`` on your network(s) manually.
+
 Validation Functions
 --------------------
 
@@ -597,6 +867,10 @@ following code:
 
    model.on_validation_end()
 
+.. note::
+   :py:meth:`~helios.model.model.Model.eval` is a no-op by default. You must override it
+   and call ``.eval()`` on your network(s) manually.
+
 Testing Functions
 -----------------
 
@@ -612,6 +886,40 @@ The order of the testing functions is identical to the one shown for validation:
             model.on_testing_batch_end()
 
    model.on_testing_end()
+
+Getting the Number of Training Steps per Epoch
+-----------------------------------------------
+
+:py:meth:`~helios.model.model.Model.get_train_steps_per_epoch` returns the number of
+training batches in a single epoch. This wraps around
+:py:meth:`~helios.data.datamodule.DataModule.get_train_steps_per_epoch`, which constructs
+the training dataloader internally and returns its length.
+
+This is particularly useful for initialising schedulers in
+:py:meth:`~helios.model.model.Model.setup`:
+
+.. code-block:: python
+
+   def setup(self, for_inference: bool = False) -> None:
+       steps_per_epoch = self.get_train_steps_per_epoch()
+       self._scheduler = ...  # use steps_per_epoch to configure warmup or decay
+
+.. note::
+   Calling this function constructs the dataloader each time it is called. Cache the
+   result if you need it more than once.
+
+Batch Phase
+------------
+
+:py:class:`~helios.model.model.BatchPhase` is an enum with three values:
+
+* :py:attr:`~helios.model.model.BatchPhase.TRAIN`,
+* :py:attr:`~helios.model.model.BatchPhase.VALID`, and
+* :py:attr:`~helios.model.model.BatchPhase.TEST`.
+
+It is passed by the trainer to :py:meth:`~helios.model.model.Model.batch_to_device` to
+indicate which phase the current batch belongs to. This can be useful if you require
+different implementations for each phase.
 
 Exception Handling
 ==================
@@ -658,19 +966,22 @@ Helios provides some synchronization wrappers found in the
 * :py:func:`~helios.core.distributed.gather_into_tensor`,
 * :py:func:`~helios.core.distributed.all_reduce_tensors`.
 
-The trainer also provides another way to synchronize values through the multi-processing
-queue. When using distributed training that isn't through ``torchrun``, Helios uses
-``spawn`` to create the processes for each GPU. This triggers a copy of the arguments
-passed in to the handler, which in this case are the trainer, model, and datamodule. This
-presents a problem in the event that we need to return values back to the main process
-once training is complete. To facilitate this task, the trainer will create a `queue
-<https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue>`__ that can
-be accessed through :py:attr:`~helios.trainer.Trainer.queue`.
+The trainer also provides access to a `multi-processing
+queue <https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue>`__
+that can be used to synchronize values. When using distributed training that isn't through
+``torchrun``, Helios uses ``spawn``, which will create a copy of all arguments passed to
+the handler, which are:
+
+* The trainer itself,
+* The model, and
+* The datamodule.
+
+If you need to return values back to the main process, you can use the
+:py:attr:`~helios.trainer.Trainer.queue` from the trainer to accomplish this. The queue
+can then be used by either the :py:class:`~helios.model.model.Model`, the
+:py:class:`~helios.data.datamodule.DataModule`, or any plug-in through their reference to
+the trainer.
 
 .. note::
    If training isn't distributed or if it was started through ``torchrun``, then the
    :py:attr:`~helios.trainer.Trainer.queue` is set to ``None``.
-
-The queue can then be used by either the :py:class:`~helios.model.model.Model`, the
-:py:class:`~helios.data.datamodule.DataModule`, or any plug-in through their reference to
-the trainer.

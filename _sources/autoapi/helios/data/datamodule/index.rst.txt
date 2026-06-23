@@ -108,7 +108,7 @@ Module Contents
    :returns: The function
 
 
-.. py:class:: DatasetSplit(*args, **kwds)
+.. py:class:: DatasetSplit
 
    Bases: :py:obj:`enum.Enum`
 
@@ -147,16 +147,16 @@ Module Contents
 
 
 
-.. py:function:: create_dataloader(dataset: torch.utils.data.Dataset, random_seed: int = rng.get_default_seed(), batch_size: int = 1, shuffle: bool = False, num_workers: int = 0, pin_memory: bool = True, drop_last: bool = False, debug_mode: bool = False, is_distributed: bool = False, sampler: helios.data.samplers.ResumableSamplerType | None = None, collate_fn: Callable | None = None) -> tuple[torch.utils.data.DataLoader, helios.data.samplers.ResumableSamplerType]
+.. py:function:: create_dataloader(dataset: torch.utils.data.Dataset, random_seed: int = rng.get_default_seed(), batch_size: int = 1, shuffle: bool = False, num_workers: int = 0, pin_memory: bool = False, drop_last: bool = False, is_distributed: bool = False, sampler: helios.data.samplers.ResumableSamplerType | None = None, collate_fn: Callable | None = None, prefetch_factor: int | None = None, persistent_workers: bool = False, pin_memory_device: str = '', timeout: float = 0, multiprocessing_context: Any | None = None) -> tuple[torch.utils.data.DataLoader, helios.data.samplers.ResumableSamplerType]
 
    Create the dataloader for the given dataset.
 
    If no sampler is provided, the choice of sampler will be determined based on the
    values of is_distributed and shuffle. Specifically, the following logic is used:
 
-   * If is_distributed, then sampler is
+   * If ``is_distributed``, then sampler is
      :py:class:`~helios.data.samplers.ResumableDistributedSampler`.
-   * Otherwise, if shuffle then sampler is
+   * Otherwise, if ``shuffle`` then sampler is
      :py:class:`~helios.data.samplers.ResumableRandomSampler`, else
      :py:class:`~helios.data.samplers.ResumableSequentialSampler`.
 
@@ -168,17 +168,25 @@ Module Contents
        :py:class:`helios.data.samplers.ResumableDistributedSampler`.
 
    :param dataset: the dataset to use.
-   :param random_seed: value to use as seed for the worker processes. Defaults to the value
+   :param random_seed: (optional) seed for the worker processes. Defaults to the value
                        returned by :py:func:`~helios.core.rng.get_default_seed`.
-   :param batch_size: number of samplers per batch. Defaults to 1.
-   :param shuffle: if true, samples are randomly shuffled. Defaults to false.
-   :param num_workers: number of worker processes for loading data. Defaults to 0.
-   :param pin_memory: if true, use page-locked device memory. Defaults to true.
-   :param drop_last: if true, remove the final batch. Defaults to false.
-   :param debug_mode: if true, then ``num_workers`` will be set to 0. Defaults to false.
-   :param is_distributed: if true, create the distributed sampler. Defaults to false.
+   :param batch_size: (optional) number of samples per batch.
+   :param shuffle: (optional) if true, samples are randomly shuffled.
+   :param num_workers: (optional) number of worker processes for loading data.
+   :param pin_memory: (optional) if true, use page-locked device memory.
+   :param drop_last: (optional) if true, remove the final batch.
+   :param is_distributed: (optional) if true, create the distributed sampler.
    :param sampler: (optional) sampler to use.
    :param collate_fn: (optional) function to merge batches.
+   :param prefetch_factor: (optional) number of batches to prefetch per worker. Only valid
+                           when ``num_workers > 0``.
+   :param persistent_workers: (optional) if true, keep worker processes alive between
+                              epochs. Only valid when ``num_workers > 0``.
+   :param pin_memory_device: (optional) target device for pinned memory when ``pin_memory``
+                             is true.
+   :param timeout: (optional) timeout in seconds for collecting a batch from workers.
+   :param multiprocessing_context: (optional) method for spawning worker processes (e.g.
+                                   ``"fork"``, ``"spawn"``, ``"forkserver"``).
 
    :returns: The dataloader and sampler.
 
@@ -191,16 +199,25 @@ Module Contents
 
    Params used to create the dataloader object.
 
-   :param random_seed: value to use as seed for the worker processes.
-   :param batch_size: number of samplers per batch.
-   :param shuffle: if true, samples are randomly shuffled.
-   :param num_workers: number of worker processes for loading data.
-   :param pin_memory: if true, use page-locked device memory.
-   :param drop_last: if true, remove the final batch.
-   :param debug_mode: if true, set number of workers to 0.
-   :param is_distributed: if true, create the distributed sampler.
+   :param random_seed: (optional) seed for the worker processes. Defaults to the value
+                       returned by :py:func:`~helios.core.rng.get_default_seed`.
+   :param batch_size: (optional) number of samples per batch.
+   :param shuffle: (optional) if true, samples are randomly shuffled.
+   :param num_workers: (optional) number of worker processes for loading data.
+   :param pin_memory: (optional) if true, use page-locked device memory.
+   :param drop_last: (optional) if true, remove the final batch.
+   :param is_distributed: (optional) if true, create the distributed sampler.
    :param sampler: (optional) sampler to use.
    :param collate_fn: (optional) function to merge batches.
+   :param prefetch_factor: (optional) number of batches to prefetch per worker. Only valid
+                           when ``num_workers > 0``.
+   :param persistent_workers: (optional) if true, keep worker processes alive between
+                              epochs. Only valid when ``num_workers > 0``.
+   :param pin_memory_device: (optional) target device for pinned memory when ``pin_memory``
+                             is true.
+   :param timeout: (optional) timeout in seconds for collecting a batch from workers.
+   :param multiprocessing_context: (optional) method for spawning worker processes (e.g.
+                                   ``"fork"``, ``"spawn"``, ``"forkserver"``).
 
 
    .. py:attribute:: random_seed
@@ -229,17 +246,11 @@ Module Contents
 
    .. py:attribute:: pin_memory
       :type:  bool
-      :value: True
-
-
-
-   .. py:attribute:: drop_last
-      :type:  bool
       :value: False
 
 
 
-   .. py:attribute:: debug_mode
+   .. py:attribute:: drop_last
       :type:  bool
       :value: False
 
@@ -259,6 +270,36 @@ Module Contents
 
    .. py:attribute:: collate_fn
       :type:  Callable | None
+      :value: None
+
+
+
+   .. py:attribute:: prefetch_factor
+      :type:  int | None
+      :value: None
+
+
+
+   .. py:attribute:: persistent_workers
+      :type:  bool
+      :value: False
+
+
+
+   .. py:attribute:: pin_memory_device
+      :type:  str
+      :value: ''
+
+
+
+   .. py:attribute:: timeout
+      :type:  float
+      :value: 0
+
+
+
+   .. py:attribute:: multiprocessing_context
+      :type:  Any | None
       :value: None
 
 
@@ -315,6 +356,7 @@ Module Contents
 
        from torchvision.datasets import CIFAR10
        from helios import data
+       from helios.data import Dataset, DataLoaderParams
 
        class MyDataModule(data.DataModule):
            def prepare_data(self) -> None:
@@ -324,23 +366,20 @@ Module Contents
                CIFAR10(download=True) # download the dataset only.
 
            def setup(self) -> None:
-               # Create the training dataset using a DataLoaderParams instance. Note
-               # that you MUST assign it to self._train_dataset.
-               self._train_dataset = self._create_dataset(CIFAR10(train=True),
-                                                          DataLoaderParams(...))
+               # Register the training phase(s) using _add_train_phase. The first
+               # call also sets self._train_dataset automatically.
+               self._add_train_phase(CIFAR10(train=True), DataLoaderParams(...))
 
-               # It is also possible to create a dataset using a table of key-value
-               # pairs that was loaded from a config file or manually created. Let's
-               # use one to create the validation split:
+               # For multi-phase training, call _add_train_phase again:
+               self._add_train_phase(
+                   CIFAR10(train=True, transform=...), DataLoaderParams(...)
+               )
+
+               # Validation and testing datasets use their own helpers.
+               # A dict of settings is also accepted in place of DataLoaderParams.
                settings = {"batch_size": 1, ...}
-
-               # We can now use it to assign to self._valid_dataset like this:
-               self._valid_dataset = self._create_dataset(
-                       CIFAR10(train=False), settings)
-
-               # Finally, if you need a testing split, you can create it like this:
-               self._test_dataset = self._create_dataset(
-                       CIFAR10(train=False), settings)
+               self._add_valid_dataset(CIFAR10(train=False), settings)
+               self._add_test_dataset(CIFAR10(train=False), DataLoaderParams(...))
 
            def teardown(self) -> None:
                # Use this function to clean up any state. It will be called after
@@ -422,6 +461,65 @@ Module Contents
    .. py:method:: teardown() -> None
 
       Clean up any state after training is over.
+
+
+
+   .. py:method:: get_train_steps_per_epoch() -> int
+
+      Return the number of iterations per training epoch.
+
+      The number is determined by constructing the training dataloader and returning its
+      length. This function is generally useful for initialising schedulers that need
+      the total number of steps per epoch, so you should call this within
+      :py:meth:`~helios.model.model.Model.steup` or
+      :py:meth:`~helios.plugins.plugin.Plugin.setup` and cache the result.
+
+      This function is equivalent to:
+
+          .. code-block:: python
+
+              import helios.core as hlc
+              # If called from within Model.setup()
+              dataloader, _ = hlc.get_from_optional(
+                      self.trainer.datamodule.train_dataloader())
+              steps = len(dataloader)
+
+      .. note::
+          This function only applies to training datasets. If you need something similar
+          for validation or testing, you can obtain the dataloader directly.
+
+      :returns: The number of iterations per training epoch.
+
+      :raises RuntimeError: if the training dataloader hasn't been created.
+
+
+
+   .. py:method:: advance_train_phase() -> None
+
+      Advance the training dataset to the next phase.
+
+      If the current phase is already the last one, this function does nothing.
+
+
+
+   .. py:method:: state_dict() -> dict[str, Any]
+
+      Get the full state dictionary of the datamodule.
+
+      The contents of the dictionary depend on whether training phases have been
+      registered:
+      * If they have, then this returns the current phase.
+      * If they haven't, then this returns an empty dictionary.
+
+      :returns: The state dictionary of the datamodule.
+
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
+      Load the datamodule state from the given state dictionary.
+
+      :param state_dict: the state dictionary to load from.
 
 
 

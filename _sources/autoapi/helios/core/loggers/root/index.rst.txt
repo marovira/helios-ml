@@ -1,0 +1,133 @@
+helios.core.loggers.root
+========================
+
+.. py:module:: helios.core.loggers.root
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.core.loggers.root.RootLogger
+
+
+Module Contents
+---------------
+
+.. py:class:: RootLogger(capture_warnings: bool)
+
+   Bases: :py:obj:`helios.core.loggers.base.Logger`
+
+
+   Logger used to log while training, optionally to a file.
+
+   The log file will be placed under ``log_root``. When resuming, the original file is
+   loaded and new output is appended to the file.
+
+   :param capture_warnings: if ``True``, output of ``warnings.warn`` is captured
+                            in the log.
+
+
+   .. py:method:: setup(run_name: str, log_root: pathlib.Path | None, is_resume: bool) -> None
+
+      Finish configuring the root logger.
+
+      In particular, this function will create the file logger provided that the input
+      path is not ``None``. If the path points to a file that already exists, then the
+      logger will automatically append to the file, otherwise a new file will be
+      created.
+
+      :param run_name: the name of the current run.
+      :param log_root: root directory for log files.  ``None`` disables file
+                       logging.
+      :param is_resume: ``True`` when continuing a previous run.
+
+
+
+   .. py:property:: logger
+      :type: logging.Logger
+
+
+      Return the logger instance.
+
+
+   .. py:property:: log_file
+      :type: pathlib.Path | None
+
+
+      Return the path to the current log file.
+
+      If the path for the log file was originally ``None``, this will return ``None``
+      as well.
+
+
+   .. py:method:: info(msg: str, **kwargs: Any) -> None
+
+      Log using the ``INFO`` tag.
+
+      Only available for the main process in distributed training.
+
+      :param msg: the message to log.
+      :param kwargs: keyword arguments to :py:meth:`logging.Logger.info`.
+
+
+
+   .. py:method:: warning(msg: str, **kwargs: Any) -> None
+
+      Log using the ``WARNING`` tag.
+
+      :param msg: the message to log.
+      :param kwargs: keyword arguments to :py:meth:`logging.Logger.warning`.
+
+
+
+   .. py:method:: error(msg: str, **kwargs: Any) -> None
+
+      Log using the ``ERROR`` tag.
+
+      :param msg: the message to log.
+      :param kwargs: keyword arguments to :py:meth:`logging.Logger.error`.
+
+
+
+   .. py:method:: exception(msg: str, **kwargs: Any) -> None
+
+      Log an exception.
+
+      :param msg: the message to log.
+      :param kwargs: keyword arguments to :py:meth:`logging.Logger.exception`.
+
+
+
+   .. py:method:: flush() -> None
+
+      Flush all handlers.
+
+
+
+   .. py:method:: close() -> None
+
+      Close all handlers.
+
+
+
+   .. py:method:: state_dict() -> dict[str, Any]
+
+      Return a dictionary containing the logger state.
+
+      The state will be saved under a key called ``"log_file"`` holding the current
+      log-file path (if using). If file logging is disabled, ``None`` is stored instead.
+
+      :returns: A dictionary with the logger state.
+
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+
+      Restore the logger state from a previously saved dictionary.
+
+      :param state_dict: the state dictionary returned by :py:meth:`state_dict`.
+
+
+

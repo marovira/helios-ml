@@ -1,24 +1,25 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="./">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Getting Started" href="getting-started.html" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Getting Started" href="getting-started.html">
+        <link rel="prefetch" href="_static/logo-transparent.png" as="image">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
@@ -145,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -162,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -171,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -180,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -189,7 +183,6 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
-  
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="_static/logo-transparent.png" alt="Logo"/>
   </div>
@@ -204,45 +197,54 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="why-helios.html">Why Helios?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins.html">Plug-Ins</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optuna.html">Optuna Integartion</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/helios/index.html">helios</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="optuna.html">Optuna Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/helios/index.html">helios</a><input aria-label="Toggle navigation of helios" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/helios/chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/core/index.html">helios.core</a><input aria-label="Toggle navigation of helios.core" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/cuda/index.html">helios.core.cuda</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/distributed/index.html">helios.core.distributed</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/logging/index.html">helios.core.logging</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/core/loggers/index.html">helios.core.loggers</a><input aria-label="Toggle navigation of helios.core.loggers" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/helios/core/loggers/base/index.html">helios.core.loggers.base</a></li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/helios/core/loggers/root/index.html">helios.core.loggers.root</a></li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/helios/core/loggers/tensorboard/index.html">helios.core.loggers.tensorboard</a></li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/helios/core/loggers/wandb/index.html">helios.core.loggers.wandb</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/rng/index.html">helios.core.rng</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/utils/index.html">helios.core.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/data/index.html">helios.data</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of helios.data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/data/index.html">helios.data</a><input aria-label="Toggle navigation of helios.data" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/datamodule/index.html">helios.data.datamodule</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/functional/index.html">helios.data.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/samplers/index.html">helios.data.samplers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/transforms/index.html">helios.data.transforms</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/losses/index.html">helios.losses</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of helios.losses</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/losses/index.html">helios.losses</a><input aria-label="Toggle navigation of helios.losses" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/losses/utils/index.html">helios.losses.utils</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/losses/weighted_loss/index.html">helios.losses.weighted_loss</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/metrics/index.html">helios.metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of helios.metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/metrics/index.html">helios.metrics</a><input aria-label="Toggle navigation of helios.metrics" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/metrics/functional/index.html">helios.metrics.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/metrics/metrics/index.html">helios.metrics.metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/model/index.html">helios.model</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of helios.model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/model/index.html">helios.model</a><input aria-label="Toggle navigation of helios.model" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/model/model/index.html">helios.model.model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/model/utils/index.html">helios.model.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/nn/index.html">helios.nn</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of helios.nn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of helios.nn.layers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/nn/index.html">helios.nn</a><input aria-label="Toggle navigation of helios.nn" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input aria-label="Toggle navigation of helios.nn.layers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/helios/nn/layers/pool/index.html">helios.nn.layers.pool</a></li>
 </ul>
 </li>
@@ -251,12 +253,12 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/helios/onnx/index.html">helios.onnx</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/optim/index.html">helios.optim</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.optim</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/optim/index.html">helios.optim</a><input aria-label="Toggle navigation of helios.optim" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of helios.plugins.optuna</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/plugins/index.html">helios.plugins</a><input aria-label="Toggle navigation of helios.plugins" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input aria-label="Toggle navigation of helios.plugins.optuna" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/helios/plugins/optuna/plugin/index.html">helios.plugins.optuna.plugin</a></li>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/helios/plugins/optuna/utils/index.html">helios.plugins.optuna.utils</a></li>
 </ul>
@@ -264,7 +266,7 @@
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/plugins/plugin/index.html">helios.plugins.plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/scheduler/index.html">helios.scheduler</a><input aria-label="Toggle navigation of helios.scheduler" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -300,8 +302,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -309,8 +310,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -324,6 +324,13 @@
 <li class="toctree-l2"><a class="reference internal" href="getting-started.html#overview">Overview</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="why-helios.html">Why Helios?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="why-helios.html#comparison-with-other-frameworks">Comparison with Other Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why-helios.html#the-registry-system">The Registry System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why-helios.html#when-to-choose-helios">When to Choose Helios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="why-helios.html#when-lightning-might-be-a-better-fit">When Lightning Might Be a Better Fit</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Training a Classifier with Helios</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorial.html#project-structure">Project Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorial.html#managing-datasets">Managing Datasets</a></li>
@@ -335,7 +342,11 @@
 <li class="toctree-l1"><a class="reference internal" href="quick-ref.html">Quick Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quick-ref.html#reproducibility">Reproducibility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quick-ref.html#stopping-training">Stopping Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick-ref.html#multi-phase-training">Multi-Phase Training</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quick-ref.html#gradient-accumulation">Gradient Accumulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick-ref.html#automatic-mixed-precision">Automatic Mixed Precision</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick-ref.html#gradient-clipping">Gradient Clipping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quick-ref.html#linear-warmup-scheduler">Linear Warmup Scheduler</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quick-ref.html#checkpoint-saving">Checkpoint Saving</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quick-ref.html#logging">Logging</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quick-ref.html#cuda">CUDA</a></li>
@@ -344,14 +355,34 @@
 <li class="toctree-l2"><a class="reference internal" href="quick-ref.html#synchronization">Synchronization</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#tensorboard">Tensorboard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html#weights-biases">Weights &amp; Biases</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="plugins.html">Plug-Ins</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="plugins.html#plug-in-api">Plug-in API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plugins.html#built-in-plug-ins">Built-in Plug-ins</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="optuna.html">Optuna Integartion</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="optuna.html">Optuna Integration</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="optuna.html#sampler-checkpoints">Sampler Checkpoints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="optuna.html#creating-and-restarting-studies">Creating and Restarting Studies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#checkpoint-migration">Checkpoint Migration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#tensorboard-is-now-optional">Tensorboard is Now Optional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#logging-module-replaced">Logging Module Replaced</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#cudaplugin-removed"><code class="docutils literal notranslate"><span class="pre">CUDAPlugin</span></code> Removed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#plugin-registration-changed">Plugin Registration Changed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#model-state-dictionary-api-changed">Model State Dictionary API Changed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#fast-init-renamed-to-for-inference"><code class="docutils literal notranslate"><span class="pre">fast_init</span></code> Renamed to <code class="docutils literal notranslate"><span class="pre">for_inference</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#trainer-arguments-changed">Trainer Arguments Changed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#dataloaderparams-debug-mode-removed"><code class="docutils literal notranslate"><span class="pre">DataLoaderParams.debug_mode</span></code> Removed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#dataloaderparams-pin-memory-default-changed"><code class="docutils literal notranslate"><span class="pre">DataLoaderParams.pin_memory</span></code> Default Changed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#get-default-numpy-rng-return-type-changed"><code class="docutils literal notranslate"><span class="pre">get_default_numpy_rng()</span></code> Return Type Changed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration.html#new-features-in-2-0-0">New Features in 2.0.0</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="autoapi/index.html">API Reference</a><ul>
@@ -362,22 +393,58 @@
 </div>
 <section id="what-is-helios">
 <h2>What is Helios?<a class="headerlink" href="#what-is-helios" title="Link to this heading">¶</a></h2>
-<p>Named after Greek god of the sun, Helios is a light-weight package for training ML
+<p>Named after Greek god of the Sun, Helios is a light-weight package for training ML
 networks built on top of PyTorch. It is designed to abstract all of the “boiler-plate”
 code involved with training. Specifically, it wraps the following common patterns:</p>
 <ul class="simple">
 <li><p>Creation of the dataloaders.</p></li>
-<li><p>Initialization of CUDA, PyTorch, and random number states.</p></li>
-<li><p>Initialization for distributed training.</p></li>
+<li><p>Initialisation of CUDA, PyTorch, and random number states.</p></li>
+<li><p>Initialisation for distributed training.</p></li>
 <li><p>Training, validation, and testing loops.</p></li>
 <li><p>Saving and loading checkpoints.</p></li>
 <li><p>Exporting to ONNX.</p></li>
 </ul>
 <p>It is important to note that Helios is <strong>not</strong> a fully fledged training environment similar
-to <a class="reference external" href="https://github.com/Lightning-AI/pytorch-lightning">Pytorch Lightning</a>. Instead,
+to <a class="reference external" href="https://github.com/Lightning-AI/pytorch-lightning">PyTorch Lightning</a>. Instead,
 Helios is focused on providing a simple and straight-forward interface that abstracts most
 of the common code patterns while retaining the ability to be easily overridden to suit
 the individual needs of each training scheme.</p>
+</section>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
+<p>Training with Helios requires three steps:</p>
+<ol class="arabic simple">
+<li><p>Subclass <code class="docutils literal notranslate"><span class="pre">DataModule</span></code> to define your datasets and dataloaders.</p></li>
+<li><p>Subclass <code class="docutils literal notranslate"><span class="pre">Model</span></code> to implement your training logic.</p></li>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> and call <code class="docutils literal notranslate"><span class="pre">fit()</span></code>.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">helios.data</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hld</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">helios.model</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">hlm</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyDataModule</span><span class="p">(</span><span class="n">hld</span><span class="o">.</span><span class="n">DataModule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">MyDataset</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">hld</span><span class="o">.</span><span class="n">DataLoaderParams</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_train_phase</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">hlm</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">for_inference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_net</span> <span class="o">=</span> <span class="n">MyNetwork</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="o">...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span> <span class="o">=</span> <span class="o">...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">helios</span><span class="o">.</span><span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">helios</span><span class="o">.</span><span class="n">Trainer</span><span class="p">()</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">MyModel</span><span class="p">(</span><span class="s2">&quot;my_model&quot;</span><span class="p">),</span> <span class="n">MyDataModule</span><span class="p">())</span>
+</pre></div>
+</div>
 </section>
 <section id="main-features">
 <h2>Main Features<a class="headerlink" href="#main-features" title="Link to this heading">¶</a></h2>
@@ -389,9 +456,9 @@ paused. Specifically, Helios will ensure that the behaviour of the trained model
 <li><p>Automatic detection of multi-GPU environments for distributed training. In addition,
 Helios also supports training using <code class="docutils literal notranslate"><span class="pre">torchrun</span></code> and will automatically handle the
 initialisation and clean up of the distributed state. It will also correctly set the
-devices and maps to ensure weights are mapped tot he correct location.</p></li>
+devices and maps to ensure weights are mapped to the correct location.</p></li>
 <li><p>Registries for creation of arbitrary types. These include: networks, loss functions,
-optimizers, schedulers, etc.</p></li>
+optimisers, schedulers, etc.</p></li>
 <li><p>Correct handling of logging when doing distributed training (even over multiple nodes).</p></li>
 <li><p>Native integration with Optuna for hyper-parameter optimisation. Also supports resuming
 studies and generating checkpoints to ensure reproducibility.</p></li>
@@ -418,7 +485,7 @@ studies and generating checkpoints to ensure reproducibility.</p></li>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, Mauricio A. Rovira Galvez
+                Copyright &#169; 2026, Mauricio A. Rovira Galvez
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -446,6 +513,7 @@ studies and generating checkpoints to ensure reproducibility.</p></li>
             <ul>
 <li><a class="reference internal" href="#">Welcome to Helios’s documentation!</a><ul>
 <li><a class="reference internal" href="#what-is-helios">What is Helios?</a></li>
+<li><a class="reference internal" href="#quick-start">Quick Start</a></li>
 <li><a class="reference internal" href="#main-features">Main Features</a></li>
 </ul>
 </li>
@@ -459,8 +527,8 @@ studies and generating checkpoints to ensure reproducibility.</p></li>
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

@@ -16,6 +16,11 @@ Functions
    helios.metrics.functional.calculate_mAP
    helios.metrics.functional.calculate_mae
    helios.metrics.functional.calculate_mae_torch
+   helios.metrics.functional.calculate_accuracy
+   helios.metrics.functional.calculate_precision
+   helios.metrics.functional.calculate_recall
+   helios.metrics.functional.calculate_f1
+   helios.metrics.functional.calculate_rmse
 
 
 Module Contents
@@ -31,8 +36,8 @@ Module Contents
    :param img2: Images with range :math:`[0, 255]`.
    :param crop_border: Cropped pixels in each edge of an image. These pixels are not
                        involved in the calculation.
-   :param input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
-   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+   :param input_order: (optional) whether the input order is ``"HWC"`` or ``"CHW"``.
+   :param test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
    :returns: PSNR value.
 
@@ -47,7 +52,7 @@ Module Contents
    :param img2: Images with range :math:`[0, 255]`.
    :param crop_border: Cropped pixels in each edge of an image. These pixels are not
                        involved in the calculation.
-   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+   :param test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
    :returns: PSNR value.
 
@@ -66,8 +71,8 @@ Module Contents
    :param img2: Images with range :math:`[0, 255]`.
    :param crop_border: Cropped pixels in each edge of an image. These pixels are not
                        involved in the calculation.
-   :param input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC"
-   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+   :param input_order: (optional) whether the input order is ``"HWC"`` or ``"CHW"``.
+   :param test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
    :returns: SSIM.
 
@@ -86,7 +91,7 @@ Module Contents
    :param img2: Images with range :math:`[0, 255]`.
    :param crop_border: Cropped pixels in each edge of an image. These pixels are not
                        involved in the calculation.
-   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+   :param test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
    :returns: SSIM.
 
@@ -117,7 +122,7 @@ Module Contents
 
    :param pred: predicate (inferred) array
    :param gt: ground-truth array
-   :param scale: scaling factor that was used on the input arrays. Defaults to 1.
+   :param scale: (optional) scaling factor that was used on the input arrays.
 
    :returns: The MAE score.
 
@@ -135,8 +140,78 @@ Module Contents
 
    :param pred: predicate (inferred) tensor
    :param gt: ground-truth tensor
-   :param scale: scaling factor that was used on the input tensors. Defaults to 1.
+   :param scale: (optional) scaling factor that was used on the input tensors.
 
    :returns: The MAE score.
+
+
+.. py:function:: calculate_accuracy(predictions: torch.Tensor, targets: torch.Tensor, top_k: int = 1) -> float
+
+   Calculate top-k accuracy.
+
+   Implementation follows:
+   `<https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)>`__.
+
+   :param predictions: predicted logits or scores of shape :math:`(N, C)` where :math:`C`
+                       is the number of classes.
+   :param targets: ground-truth class indices of shape :math:`(N,)`.
+   :param top_k: (optional) number of top predictions to consider.
+
+   :returns: Top-k accuracy in :math:`[0, 1]`.
+
+
+.. py:function:: calculate_precision(predictions: torch.Tensor, targets: torch.Tensor) -> float
+
+   Calculate macro-averaged precision across classes.
+
+   Implementation follows:
+   `<https://en.wikipedia.org/wiki/Precision_and_recall>`__.
+
+   :param predictions: predicted logits or scores of shape :math:`(N, C)`, or predicted
+                       class indices of shape :math:`(N,)`.
+   :param targets: ground-truth class indices of shape :math:`(N,)`.
+
+   :returns: Macro-averaged precision in range :math:`[0, 1]`.
+
+
+.. py:function:: calculate_recall(predictions: torch.Tensor, targets: torch.Tensor) -> float
+
+   Calculate macro-averaged recall across classes.
+
+   Implementation follows:
+   `<https://en.wikipedia.org/wiki/Precision_and_recall>`__.
+
+   :param predictions: predicted logits or scores of shape :math:`(N, C)`, or predicted
+                       class indices of shape :math:`(N,)`.
+   :param targets: ground-truth class indices of shape :math:`(N,)`.
+
+   :returns: Macro-averaged recall in range :math:`[0, 1]`.
+
+
+.. py:function:: calculate_f1(predictions: torch.Tensor, targets: torch.Tensor) -> float
+
+   Calculate macro-averaged F1 score.
+
+   Computed from the macro precision and recall. Implementation follows:
+   `<https://en.wikipedia.org/wiki/F-score>`__.
+
+   :param predictions: predicted logits or scores of shape :math:`(N, C)`, or predicted
+                       class indices of shape :math:`(N,)`.
+   :param targets: ground-truth class indices of shape :math:`(N,)`.
+
+   :returns: Macro-averaged F1 score in range :math:`[0, 1]`.
+
+
+.. py:function:: calculate_rmse(predictions: torch.Tensor, targets: torch.Tensor) -> float
+
+   Calculate root mean squared error (RMSE).
+
+   Implementation follows:
+   `<https://en.wikipedia.org/wiki/Root_mean_square_deviation>`__.
+
+   :param predictions: predicted values tensor.
+   :param targets: ground-truth values tensor.
+
+   :returns: RMSE score.
 
 

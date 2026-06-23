@@ -74,11 +74,11 @@ Module Contents
    :param seed: (optional) the seed to use.
 
 
-.. py:function:: get_default_numpy_rng() -> DefaultNumpyRNG
+.. py:function:: get_default_numpy_rng() -> numpy.random.Generator
 
-   Return the default RNG.
+   Return the default Numpy Generator instance.
 
-   :returns: The random generator.
+   :returns: The Numpy Generator.
 
    :raises RuntimeError: if the default Numpy RNG hasn't been created.
 
@@ -94,8 +94,9 @@ Module Contents
    dataloaders. In those cases, the RNGs for PyTorch have already been seeded, so we
    shouldn't be re-seeding them.
 
-   :param seed: optional value to seed the random generators with.
-   :param skip_torch: if True, torch RNGs won't be seeded.
+   :param seed: (optional) seed for the random generators. Defaults to the value
+                returned by :py:func:`~helios.core.rng.get_default_seed`.
+   :param skip_torch: (optional) if ``True``, torch RNGs won't be seeded.
 
 
 .. py:function:: get_rng_state_dict() -> dict[str, Any]

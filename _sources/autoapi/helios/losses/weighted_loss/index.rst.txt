@@ -37,7 +37,7 @@ Module Contents
            def _eval(self, ...):
                return my_loss_function(...)
 
-   :param loss_weight: the weight of the loss function. Defaults to 1.
+   :param loss_weight: (optional) the weight of the loss function.
 
 
    .. py:method:: forward(*args: Any, **kwargs: Any) -> Any

@@ -64,8 +64,8 @@ Module Contents
    * ``torch.nn.modules.batchnorm._BatchNorm``
 
    :param module_list: the list of modules to initialize.
-   :param scale: scale initialized weights, especially for residual blocks. Defaults to 1.
-   :param bias_fill: bias fill value. Defaults to 0.
+   :param scale: (optional) scale for initialized weights, especially for residual blocks.
+   :param bias_fill: (optional) bias fill value.
    :param kwargs: keyword arguments for the ``torch.nn.init.kaiming_normal_`` function.
 
 

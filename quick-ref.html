@@ -1,24 +1,25 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="./">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Plug-Ins" href="plugins.html" /><link rel="prev" title="Training a Classifier with Helios" href="tutorial.html" />
+<link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="Logging" href="logging.html"><link rel="prev" title="Training a Classifier with Helios" href="tutorial.html">
+        <link rel="prefetch" href="_static/logo-transparent.png" as="image">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>Quick Reference - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
@@ -145,14 +146,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -162,8 +159,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -171,8 +167,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -180,8 +175,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -189,7 +183,6 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
-  
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="_static/logo-transparent.png" alt="Logo"/>
   </div>
@@ -204,45 +197,54 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="why-helios.html">Why Helios?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="plugins.html">Plug-Ins</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optuna.html">Optuna Integartion</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/helios/index.html">helios</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="optuna.html">Optuna Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migration.html">Migration Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="autoapi/helios/index.html">helios</a><input aria-label="Toggle navigation of helios" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/helios/chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/core/index.html">helios.core</a><input aria-label="Toggle navigation of helios.core" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/cuda/index.html">helios.core.cuda</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/distributed/index.html">helios.core.distributed</a></li>
-<li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/logging/index.html">helios.core.logging</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/core/loggers/index.html">helios.core.loggers</a><input aria-label="Toggle navigation of helios.core.loggers" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/helios/core/loggers/base/index.html">helios.core.loggers.base</a></li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/helios/core/loggers/root/index.html">helios.core.loggers.root</a></li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/helios/core/loggers/tensorboard/index.html">helios.core.loggers.tensorboard</a></li>
+<li class="toctree-l5"><a class="reference internal" href="autoapi/helios/core/loggers/wandb/index.html">helios.core.loggers.wandb</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/rng/index.html">helios.core.rng</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/core/utils/index.html">helios.core.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/data/index.html">helios.data</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of helios.data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/data/index.html">helios.data</a><input aria-label="Toggle navigation of helios.data" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/datamodule/index.html">helios.data.datamodule</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/functional/index.html">helios.data.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/samplers/index.html">helios.data.samplers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/data/transforms/index.html">helios.data.transforms</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/losses/index.html">helios.losses</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of helios.losses</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/losses/index.html">helios.losses</a><input aria-label="Toggle navigation of helios.losses" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/losses/utils/index.html">helios.losses.utils</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/losses/weighted_loss/index.html">helios.losses.weighted_loss</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/metrics/index.html">helios.metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of helios.metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/metrics/index.html">helios.metrics</a><input aria-label="Toggle navigation of helios.metrics" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/metrics/functional/index.html">helios.metrics.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/metrics/metrics/index.html">helios.metrics.metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/model/index.html">helios.model</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of helios.model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/model/index.html">helios.model</a><input aria-label="Toggle navigation of helios.model" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/model/model/index.html">helios.model.model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/model/utils/index.html">helios.model.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/nn/index.html">helios.nn</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of helios.nn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of helios.nn.layers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/nn/index.html">helios.nn</a><input aria-label="Toggle navigation of helios.nn" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input aria-label="Toggle navigation of helios.nn.layers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/helios/nn/layers/pool/index.html">helios.nn.layers.pool</a></li>
 </ul>
 </li>
@@ -251,12 +253,12 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="autoapi/helios/onnx/index.html">helios.onnx</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/optim/index.html">helios.optim</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.optim</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/optim/index.html">helios.optim</a><input aria-label="Toggle navigation of helios.optim" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of helios.plugins.optuna</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/plugins/index.html">helios.plugins</a><input aria-label="Toggle navigation of helios.plugins" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input aria-label="Toggle navigation of helios.plugins.optuna" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/helios/plugins/optuna/plugin/index.html">helios.plugins.optuna.plugin</a></li>
 <li class="toctree-l5"><a class="reference internal" href="autoapi/helios/plugins/optuna/utils/index.html">helios.plugins.optuna.utils</a></li>
 </ul>
@@ -264,7 +266,7 @@
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/plugins/plugin/index.html">helios.plugins.plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="autoapi/helios/scheduler/index.html">helios.scheduler</a><input aria-label="Toggle navigation of helios.scheduler" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -300,8 +302,7 @@
   </a>
 </div>
 <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -309,8 +310,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -329,8 +329,8 @@ end is a short summary explaining how to use Helios correctly to ensure reproduc
 <p class="admonition-title">Warning</p>
 <p>While every effort is done to ensure reproducibility, there are some limitations to
 what Helios can do. As Helios depends on PyTorch, it is bound to the same
-reproducibility limitations. For more information, see the
-<a class="reference external" href="https://github.com/Lightning-AI/pytorch-lightning">reproducibility documentation from PyTorch</a>.</p>
+reproducibility limitations. For more information, see the <a class="reference external" href="https://docs.pytorch.org/docs/stable/notes/randomness.html">reproducibility
+documentation from PyTorch</a>.</p>
 </div>
 <section id="random-number-generation">
 <h3>Random Number Generation<a class="headerlink" href="#random-number-generation" title="Link to this heading">¶</a></h3>
@@ -340,8 +340,8 @@ seeding system that is invoked as part of the start up process by the
 generators can be assigned by setting the <code class="docutils literal notranslate"><span class="pre">random_seed</span></code> parameter of the trainer.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If no value is assigned, the default seed is used. Helios has a default value of 6691
-for seeding RNGs.</p>
+<p>If no value is assigned, the default seed is used. Helios has a default value of
+<code class="docutils literal notranslate"><span class="pre">6691</span></code> for seeding RNGs.</p>
 </div>
 <p>Random numbers may be required throughout the training process, so Helios will
 automatically seed the following generators:</p>
@@ -363,7 +363,7 @@ The generator can be accessed through <a class="reference internal" href="autoap
 seen below:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">helios.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">rng</span>
 
-<span class="n">generator</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">get_default_numpy_rng</span><span class="p">()</span><span class="o">.</span><span class="n">generator</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">get_default_numpy_rng</span><span class="p">()</span>
 
 <span class="c1"># Use the generator as necessary. For example, we can retrieve a uniform random float</span>
 <span class="c1"># between 0 and 1.</span>
@@ -413,8 +413,8 @@ provide a way to do the following:</p>
 <ol class="arabic simple">
 <li><p>The sampler must have a way of setting the starting iteration. For example, suppose
 that the sampler would’ve produced for a given epoch a sequence of <span class="math notranslate nohighlight">\(N\)</span> batches
-numbered <span class="math notranslate nohighlight">\(0, 1, \ldots, N\)</span>. We need the sampler to provide way for us to set the
-starting batch to a given number <span class="math notranslate nohighlight">\(n_i\)</span> such that the sequence of batches
+numbered <span class="math notranslate nohighlight">\(0, 1, \ldots, N-1\)</span>. We need the sampler to provide a way for us to set
+the starting batch to a given number <span class="math notranslate nohighlight">\(n_i\)</span> such that the sequence of batches
 continues from that starting point.</p></li>
 <li><p>The sampler must have a way of setting the current epoch. This is to allow the samplers
 to re-shuffle between epochs (if shuffling is used) and to guarantee that the resulting
@@ -440,8 +440,15 @@ set the <a class="reference internal" href="autoapi/helios/data/datamodule/index
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The sampler <strong>must</strong> derive from either
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ResumabeSampler</span></code> or
+<a class="reference internal" href="autoapi/helios/data/samplers/index.html#helios.data.samplers.ResumableSampler" title="helios.data.samplers.ResumableSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResumableSampler</span></code></a> or
 <a class="reference internal" href="autoapi/helios/data/samplers/index.html#helios.data.samplers.ResumableDistributedSampler" title="helios.data.samplers.ResumableDistributedSampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResumableDistributedSampler</span></code></a></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataLoaderParams.pin_memory" title="helios.data.datamodule.DataLoaderParams.pin_memory"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pin_memory</span></code></a> defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+matching PyTorch’s default. If you are training on a GPU, set <code class="docutils literal notranslate"><span class="pre">pin_memory=True</span></code> in
+your <a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataLoaderParams" title="helios.data.datamodule.DataLoaderParams"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoaderParams</span></code></a> to enable pinned memory
+transfers.</p>
 </div>
 </section>
 </section>
@@ -454,7 +461,7 @@ default, the trainer will write the following data:</p>
 <li><p>The state of all supported RNGs.</p></li>
 <li><p>The current <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState" title="helios.trainer.TrainingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainingState</span></code></a>.</p></li>
 <li><p>The state of the model (if any).</p></li>
-<li><p>The paths to the log file and Tensorboard folder (if using).</p></li>
+<li><p>The state of any active loggers (if any).</p></li>
 </ul>
 <p>If training is stopped and restarted, then Helios will look in the folder where
 checkpoints are stored and load the last checkpoint. This checkpoint is found by finding
@@ -464,8 +471,7 @@ the following:</p>
 <li><p>Restore the state of all supported RNGs.</p></li>
 <li><p>Load the saved training state.</p></li>
 <li><p>Provide the loaded state to the model (if any).</p></li>
-<li><p>Restore the file and Tensorboard loggers to continue writing to their original locations
-(if using).</p></li>
+<li><p>Restore any active loggers to continue writing to their original locations (if any).</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -577,8 +583,76 @@ should halt.</p></li>
 </div>
 </section>
 </section>
+<section id="multi-phase-training">
+<span id="id2"></span><h2>Multi-Phase Training<a class="headerlink" href="#multi-phase-training" title="Link to this heading">¶</a></h2>
+<p>Multi-phase training allows the training dataset to change during a single run. The most
+common use case is to apply different data augmentations or configurations at different
+points during training.</p>
+<p>Phases are registered in <a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.setup" title="helios.data.datamodule.DataModule.setup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setup()</span></code></a> by calling
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">_add_train_phase()</span></code> once per phase:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyDataModule</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">DataModule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Phase 1: light augmentation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_train_phase</span><span class="p">(</span>
+            <span class="n">MyDataset</span><span class="p">(</span><span class="n">transform</span><span class="o">=</span><span class="n">LightAugment</span><span class="p">()),</span>
+            <span class="n">DataLoaderParams</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="c1"># Phase 2: stronger augmentation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_train_phase</span><span class="p">(</span>
+            <span class="n">MyDataset</span><span class="p">(</span><span class="n">transform</span><span class="o">=</span><span class="n">StrongAugment</span><span class="p">()),</span>
+            <span class="n">DataLoaderParams</span><span class="p">(</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">),</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>The first call to <code class="xref py py-meth docutils literal notranslate"><span class="pre">_add_train_phase()</span></code>
+automatically sets the active dataset to phase 0. If only one phase is registered,
+the behaviour is identical to a regular single-phase setup.</p>
+<section id="advancing-phases">
+<h3>Advancing Phases<a class="headerlink" href="#advancing-phases" title="Link to this heading">¶</a></h3>
+<p>To signal that the trainer should move to the next phase, override
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.should_advance_dataset_phase" title="helios.model.model.Model.should_advance_dataset_phase"><code class="xref py py-meth docutils literal notranslate"><span class="pre">should_advance_dataset_phase()</span></code></a> in your model and
+return <code class="docutils literal notranslate"><span class="pre">True</span></code> when the condition is met:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">should_advance_dataset_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advanced</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_epoch</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phase_advanced</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>This function should return <code class="docutils literal notranslate"><span class="pre">True</span></code> if and only if the phase should advance. It is
+the model’s responsibility to ensure the function does not keep returning <code class="docutils literal notranslate"><span class="pre">True</span></code>
+after the phase has already been advanced (for example, by using a flag as shown
+above).</p>
+</div>
+<p>When <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.should_advance_dataset_phase" title="helios.model.model.Model.should_advance_dataset_phase"><code class="xref py py-meth docutils literal notranslate"><span class="pre">should_advance_dataset_phase()</span></code></a> returns <code class="docutils literal notranslate"><span class="pre">True</span></code>,
+the trainer calls
+<a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.advance_train_phase" title="helios.data.datamodule.DataModule.advance_train_phase"><code class="xref py py-meth docutils literal notranslate"><span class="pre">advance_train_phase()</span></code></a> automatically and
+rebuilds the training dataloader for the new phase. The check is performed:</p>
+<ul class="simple">
+<li><p>At the end of each epoch, if the training unit is
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingUnit.EPOCH" title="helios.trainer.TrainingUnit.EPOCH"><code class="xref py py-attr docutils literal notranslate"><span class="pre">EPOCH</span></code></a>.</p></li>
+<li><p>At the end of each iteration, if the training unit is
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingUnit.ITERATION" title="helios.trainer.TrainingUnit.ITERATION"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ITERATION</span></code></a>.</p></li>
+</ul>
+</section>
+<section id="checkpoint-behaviour">
+<h3>Checkpoint Behaviour<a class="headerlink" href="#checkpoint-behaviour" title="Link to this heading">¶</a></h3>
+<p>The current phase index is saved and restored automatically with each checkpoint. When
+training resumes from a checkpoint, the datamodule restores the correct phase so that
+the active dataset matches the state at the time the checkpoint was written.</p>
+</section>
+<section id="interaction-with-get-train-steps-per-epoch">
+<h3>Interaction with <code class="docutils literal notranslate"><span class="pre">get_train_steps_per_epoch()</span></code><a class="headerlink" href="#interaction-with-get-train-steps-per-epoch" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.get_train_steps_per_epoch" title="helios.model.model.Model.get_train_steps_per_epoch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_train_steps_per_epoch()</span></code></a> returns the step count
+for the <em>current</em> active phase. If you cache this value in
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.setup" title="helios.model.model.Model.setup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setup()</span></code></a>, be aware that it reflects phase 0. Call it
+again after advancing the phase if the step count may differ between phases.</p>
+</section>
+</section>
 <section id="gradient-accumulation">
-<span id="id2"></span><h2>Gradient Accumulation<a class="headerlink" href="#gradient-accumulation" title="Link to this heading">¶</a></h2>
+<span id="id3"></span><h2>Gradient Accumulation<a class="headerlink" href="#gradient-accumulation" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> provides native support for performing gradient
 accumulation while training. The behaviour is dependent on the choice of training unit,
 and the logic is the following:</p>
@@ -592,7 +666,7 @@ do the total number of epochs.</p></li>
 </ul>
 <section id="training-by-epoch">
 <h3>Training by Epoch<a class="headerlink" href="#training-by-epoch" title="Link to this heading">¶</a></h3>
-<p>To better understand the behaviour of each unit type, lets look at an example. First, lets
+<p>To better understand the behaviour of each unit type, let’s look at an example. First, lets
 set the training unit to be epochs. Then, suppose that we want to train a network for 5
 epochs and the batch size results in 10 iterations per epoch. We want to accumulate
 gradients for 2 iterations, effectively emulating a batch size that results in 5
@@ -660,7 +734,7 @@ would do something like this:</p>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># Suppose that our loss tensor is stored in self._loss_items and the number of</span>
     <span class="c1"># accumulation steps is stored in self._accumulation_steps</span>
-    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">global_iteration</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accumulation_steps</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">state</span><span class="o">.</span><span class="n">current_iteration</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accumulation_steps</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loss_items</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
     <span class="o">...</span>
@@ -668,32 +742,132 @@ would do something like this:</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Unlike the epoch case, we <strong>cannot</strong> use <code class="docutils literal notranslate"><span class="pre">state.current_iteration</span></code> as that keeps
+<p>Unlike the epoch case, we <strong>cannot</strong> use <code class="docutils literal notranslate"><span class="pre">state.global_iteration</span></code> as that keeps
 track of the number of <em>complete</em> iterations we have done.</p>
 </div>
 </section>
 </section>
+<section id="automatic-mixed-precision">
+<span id="amp"></span><h2>Automatic Mixed Precision<a class="headerlink" href="#automatic-mixed-precision" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a> class provides helper functions for Automatic
+Mixed Precision (AMP) training.</p>
+<p>To enable AMP, call <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.create_scaler" title="helios.model.model.Model.create_scaler"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_scaler()</span></code></a> in your
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.setup" title="helios.model.model.Model.setup"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup()</span></code></a> function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">for_inference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_net</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">create_scaler</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Once enabled, use <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.autocast" title="helios.model.model.Model.autocast"><code class="xref py py-func docutils literal notranslate"><span class="pre">autocast()</span></code></a> to wrap the forward
+pass in your training step:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocast</span><span class="p">():</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="n">labels</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_loss_items</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
+    <span class="n">scaler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span><span class="o">.</span><span class="n">scaler</span>
+    <span class="n">scaler</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+    <span class="n">scaler</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="p">)</span>
+    <span class="n">scaler</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.autocast" title="helios.model.model.Model.autocast"><code class="xref py py-func docutils literal notranslate"><span class="pre">autocast()</span></code></a> returns
+<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.amp.autocast</span></code> when AMP is active and a null context otherwise, so the
+same training step code works regardless of whether AMP is enabled.</p>
+<p>The AMP state can be accessed directly through the
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.amp_context" title="helios.model.model.Model.amp_context"><code class="xref py py-attr docutils literal notranslate"><span class="pre">amp_context</span></code></a> property, which returns an
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.AMPContext" title="helios.model.model.AMPContext"><code class="xref py py-class docutils literal notranslate"><span class="pre">AMPContext</span></code></a> dataclass containing the scaler and the
+dtype. When AMP is disabled, <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.amp_context" title="helios.model.model.Model.amp_context"><code class="xref py py-attr docutils literal notranslate"><span class="pre">amp_context</span></code></a> is
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>AMP state is saved and restored automatically with each checkpoint.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On CPU, only <code class="docutils literal notranslate"><span class="pre">torch.bfloat16</span></code> is supported. Passing any other dtype when the
+device is CPU will raise a <code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+</div>
+</section>
+<section id="gradient-clipping">
+<span id="grad-clipping"></span><h2>Gradient Clipping<a class="headerlink" href="#gradient-clipping" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.clip_gradients" title="helios.model.model.Model.clip_gradients"><code class="xref py py-func docutils literal notranslate"><span class="pre">clip_gradients()</span></code></a> handles gradient clipping correctly
+regardless of whether AMP is active. When AMP is enabled, gradients must be unscaled
+before the norm is computed, otherwise the threshold is applied to scaled values and the
+effective clip is wrong. The function handles this automatically:</p>
+<ol class="arabic simple">
+<li><p>When AMP is active, call <code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.amp.GradScaler.unscale_()</span></code> on the optimizer.</p></li>
+<li><p>Call <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.utils.clip_grad_norm_()</span></code>.</p></li>
+</ol>
+<p>Call it between the backward pass and the optimizer step:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">inputs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">batch</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">autocast</span><span class="p">():</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="n">labels</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_loss_items</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">scaler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span><span class="o">.</span><span class="n">scaler</span>
+        <span class="n">scaler</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">loss</span><span class="p">)</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clip_gradients</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="p">,</span> <span class="n">max_norm</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">scaler</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="p">)</span>
+        <span class="n">scaler</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clip_gradients</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_net</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="p">,</span> <span class="n">max_norm</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="linear-warmup-scheduler">
+<span id="id4"></span><h2>Linear Warmup Scheduler<a class="headerlink" href="#linear-warmup-scheduler" title="Link to this heading">¶</a></h2>
+<p><a class="reference internal" href="autoapi/helios/scheduler/schedulers/index.html#helios.scheduler.schedulers.LinearWarmupScheduler" title="helios.scheduler.schedulers.LinearWarmupScheduler"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinearWarmupScheduler</span></code></a> implements a two-phase
+learning rate schedule:</p>
+<ol class="arabic simple">
+<li><p>For the first <span class="math notranslate nohighlight">\(N_w\)</span> steps (<code class="docutils literal notranslate"><span class="pre">warmup_steps</span></code>), the learning rate increases
+linearly from <span class="math notranslate nohighlight">\(f_0 \cdot \eta_0\)</span> to <span class="math notranslate nohighlight">\(\eta_0\)</span>, where <span class="math notranslate nohighlight">\(\eta_0\)</span> is the
+base learning rate and <span class="math notranslate nohighlight">\(f_0\)</span> is <code class="docutils literal notranslate"><span class="pre">warmup_start_factor</span></code>.</p></li>
+<li><p>After <span class="math notranslate nohighlight">\(N_w\)</span> steps, the learning rate is controlled by the wrapped <code class="docutils literal notranslate"><span class="pre">scheduler</span></code>.</p></li>
+</ol>
+<p>Typical setup consists of using
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.get_train_steps_per_epoch" title="helios.model.model.Model.get_train_steps_per_epoch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_train_steps_per_epoch()</span></code></a> to derive the warmup
+duration from the dataset size:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">helios.scheduler</span><span class="w"> </span><span class="kn">import</span> <span class="n">schedulers</span> <span class="k">as</span> <span class="n">hls</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">for_inference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">steps_per_epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_train_steps_per_epoch</span><span class="p">()</span>
+    <span class="n">base_scheduler</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">lr_scheduler</span><span class="o">.</span><span class="n">CosineAnnealingLR</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="p">,</span> <span class="n">T_max</span><span class="o">=</span><span class="n">total_steps</span>
+    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="n">hls</span><span class="o">.</span><span class="n">LinearWarmupScheduler</span><span class="p">(</span>
+        <span class="n">optimizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="p">,</span>
+        <span class="n">warmup_steps</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="n">steps_per_epoch</span><span class="p">,</span>  <span class="c1"># warm up for 5 epochs</span>
+        <span class="n">scheduler</span><span class="o">=</span><span class="n">base_scheduler</span><span class="p">,</span>
+        <span class="n">warmup_start_factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">warmup_start_factor</span></code> argument controls <span class="math notranslate nohighlight">\(f_0\)</span>, the fraction of
+<span class="math notranslate nohighlight">\(\eta_0\)</span> to begin from. For <span class="math notranslate nohighlight">\(f_0 \in [0.0, 1.0)\)</span>, a value of 0.0 starts
+the warmup from zero. The default is 0.0.</p>
+</section>
 <section id="checkpoint-saving">
-<span id="id3"></span><h2>Checkpoint Saving<a class="headerlink" href="#checkpoint-saving" title="Link to this heading">¶</a></h2>
+<span id="id5"></span><h2>Checkpoint Saving<a class="headerlink" href="#checkpoint-saving" title="Link to this heading">¶</a></h2>
 <p>As mentioned in <a class="reference internal" href="#repro"><span class="std std-ref">Reproducibility</span></a>, Helios will automatically save checkpoints whenever both
 <code class="docutils literal notranslate"><span class="pre">chkpt_frequency</span></code> and <code class="docutils literal notranslate"><span class="pre">chkpt_root</span></code> are set in the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a>.
 The data for checkpoints is stored in a dictionary that <em>always</em> contains the following
-keys:</p>
+data:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">training_state</span></code>: contains the current <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState" title="helios.trainer.TrainingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainingState</span></code></a>
-object.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code>: contains the state of the model as returned by
-<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.state_dict" title="helios.model.model.Model.state_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code></a>. Note that by default this is an empty
-dictionary.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">rng</span></code>: contains the state of the supported RNGs.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">version</span></code>: contains the version of Helios used to generate the checkpoint.</p></li>
-</ul>
-<p>The following keys may optionally appear in the dictionary:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">log_path</span></code>: appears only when file logging is enabled and contains the path to the log
-file.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">run_path</span></code>: appears only when Tensorboard logging is enabled and contains the path to
-the directory where the data is stored.</p></li>
+<li><p>The version of Helios used to generate the checkpoint,</p></li>
+<li><p>The current <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState" title="helios.trainer.TrainingState"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainingState</span></code></a>,</p></li>
+<li><p>The state of the model as returned by <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.state_dict" title="helios.model.model.Model.state_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code></a>,</p></li>
+<li><p>The state of the supported RNGs,</p></li>
+<li><p>The state of the loggers,</p></li>
+<li><p>The state of the datamodule.</p></li>
 </ul>
 <p>The name of the checkpoint is determined as follows:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;run-name&gt;_&lt;epoch&gt;_&lt;iteration&gt;_&lt;additional-metadata&gt;.pth
@@ -704,7 +878,7 @@ the directory where the data is stored.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&lt;run-name&gt;</span></code> is the value assigned to <code class="docutils literal notranslate"><span class="pre">run_name</span></code> in the trainer.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&lt;epoch&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;iteration&gt;</span></code> are the values stored in
 <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState.global_epoch" title="helios.trainer.TrainingState.global_epoch"><code class="xref py py-attr docutils literal notranslate"><span class="pre">global_epoch</span></code></a> and
-<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState.global_iteration" title="helios.trainer.TrainingState.global_iteration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">global_iteration</span></code></a>, respectively.</p></li>
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.TrainingState.current_iteration" title="helios.trainer.TrainingState.current_iteration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">current_iteration</span></code></a>, respectively.</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">&lt;additional-metadata&gt;</span></code> field is used to allow users to append additional
 information to the checkpoint name for easier identification later on. This data is
@@ -733,6 +907,20 @@ will be automatically handled by the trainer.</p>
 <p>If distributed training is used, then only the process with <em>global rank</em> 0 will save
 checkpoints.</p>
 </div>
+<section id="controlling-when-checkpoints-are-saved">
+<h3>Controlling When Checkpoints Are Saved<a class="headerlink" href="#controlling-when-checkpoints-are-saved" title="Link to this heading">¶</a></h3>
+<p>By default, the trainer writes a checkpoint whenever <code class="docutils literal notranslate"><span class="pre">chkpt_frequency</span></code> is reached. You
+can control this by overriding <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.should_save_checkpoint" title="helios.model.model.Model.should_save_checkpoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">should_save_checkpoint()</span></code></a>
+in your model:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">should_save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="c1"># Only save when the validation score has improved</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_val_score</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_best_score</span>
+</pre></div>
+</div>
+<p>When this function returns <code class="docutils literal notranslate"><span class="pre">False</span></code>, the trainer skips writing a checkpoint for that
+cycle. This is useful when you want to only want to save checkpoints based on metrics or
+other criteria.</p>
+</section>
 <section id="migrating-checkpoints">
 <h3>Migrating Checkpoints<a class="headerlink" href="#migrating-checkpoints" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">version</span></code> key stored in the checkpoints generated by Helios acts as a fail-safe to
@@ -749,25 +937,27 @@ script directly from the command line as follows:</p>
 </section>
 </section>
 <section id="logging">
-<span id="id4"></span><h2>Logging<a class="headerlink" href="#logging" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> has several sets of flags that control logging.
-These are:</p>
+<span id="id6"></span><h2>Logging<a class="headerlink" href="#logging" title="Link to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> supports three logging options controlled by
+flags:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">enable_tensorboard</span></code> which is paired with <code class="docutils literal notranslate"><span class="pre">run_path</span></code>,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">enable_file_logging</span></code> which is paired with <code class="docutils literal notranslate"><span class="pre">log_path</span></code>, and</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">enable_progress_bar</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enable_file_logging</span></code>: writes a log file under <code class="docutils literal notranslate"><span class="pre">log_root</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enable_tensorboard</span></code>: enables Tensorboard logging. See <a class="reference internal" href="logging.html#logging-tensorboard"><span class="std std-ref">Tensorboard</span></a> for
+full details.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">enable_progress_bar</span></code>: displays a progress bar during training.</p></li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">*_path</span></code> arguments determine the root directories where the corresponding logs will
-be saved.</p>
+<p>W&amp;B logging is not toggled by a flag; it is enabled by passing <code class="docutils literal notranslate"><span class="pre">wandb_args</span></code> to the
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> constructor. See <a class="reference internal" href="logging.html#logging-wandb"><span class="std std-ref">Weights &amp; Biases</span></a> for full details.</p>
+<p>All file-based loggers write under the single <code class="docutils literal notranslate"><span class="pre">log_root</span></code> directory. This covers file
+logging, Tensorboard, and W&amp;B.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>If a flag is paired with a path, then you <strong>must</strong> provide the corresponding path if
-the flag is enabled. In other words, if you set <code class="docutils literal notranslate"><span class="pre">enable_tensorboard</span></code>, then you must
-also provide <code class="docutils literal notranslate"><span class="pre">run_path</span></code>.</p>
+<p>If any file-based logging is enabled (<code class="docutils literal notranslate"><span class="pre">enable_file_logging</span></code>, <code class="docutils literal notranslate"><span class="pre">enable_tensorboard</span></code>,
+or <code class="docutils literal notranslate"><span class="pre">wandb_args</span></code>), you <strong>must</strong> also provide <code class="docutils literal notranslate"><span class="pre">log_root</span></code>.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If the given path doesn’t exist, it will be created automatically.</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">log_root</span></code> path does not exist, it will be created automatically.</p>
 </div>
 <p>The way the names for logs is determined as follows:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&lt;run-name&gt;_&lt;current-date/time&gt;
@@ -790,6 +980,40 @@ iterations.</p></li>
 </ul>
 <p>The progress bar is also shown during validation, in which case it tracks the number of
 iterations in the validation set.</p>
+<section id="tensorboard">
+<span id="tensorboard-ref"></span><h3>Tensorboard<a class="headerlink" href="#tensorboard" title="Link to this heading">¶</a></h3>
+<p>Tensorboard logging is enabled by setting <code class="docutils literal notranslate"><span class="pre">enable_tensorboard=True</span></code> and providing a
+<code class="docutils literal notranslate"><span class="pre">log_root</span></code> when constructing the <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">helios</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span>
+    <span class="n">log_root</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;logs&quot;</span><span class="p">),</span>
+    <span class="n">enable_tensorboard</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The writer is accessible via <a class="reference internal" href="autoapi/helios/core/loggers/index.html#helios.core.loggers.get_tensorboard_writer" title="helios.core.loggers.get_tensorboard_writer"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_tensorboard_writer()</span></code></a>.
+For full details including run resumption, directory layout, and available logging
+functions, see <a class="reference internal" href="logging.html#logging-tensorboard"><span class="std std-ref">Tensorboard</span></a>.</p>
+</section>
+<section id="weights-biases">
+<span id="wandb-ref"></span><h3>Weights &amp; Biases<a class="headerlink" href="#weights-biases" title="Link to this heading">¶</a></h3>
+<p>W&amp;B logging is enabled by passing a <code class="docutils literal notranslate"><span class="pre">wandb_args</span></code> dictionary to the
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer" title="helios.trainer.Trainer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code></a> constructor:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">helios</span>
+
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">helios</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">wandb_args</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="s2">&quot;my-project&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;run-1&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">wandb_args</span></code> dictionary accepts the fields defined by
+<a class="reference internal" href="autoapi/helios/core/loggers/wandb/index.html#helios.core.loggers.wandb.WandbArgs" title="helios.core.loggers.wandb.WandbArgs"><code class="xref py py-class docutils literal notranslate"><span class="pre">WandbArgs</span></code></a>. The <code class="docutils literal notranslate"><span class="pre">project</span></code> key is the only
+required field; all others are optional.</p>
+<p>For full details including run resumption and directory layout, see <a class="reference internal" href="logging.html#logging-wandb"><span class="std std-ref">Weights &amp; Biases</span></a>.</p>
+</section>
 </section>
 <section id="cuda">
 <h2>CUDA<a class="headerlink" href="#cuda" title="Link to this heading">¶</a></h2>
@@ -870,6 +1094,11 @@ code:</p>
 <span class="n">model</span><span class="o">.</span><span class="n">on_training_end</span><span class="p">()</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.train" title="helios.model.model.Model.train"><code class="xref py py-meth docutils literal notranslate"><span class="pre">train()</span></code></a> is a no-op by default. You must override
+it and call <code class="docutils literal notranslate"><span class="pre">.train()</span></code> on your network(s) manually.</p>
+</div>
 </section>
 <section id="validation-functions">
 <h3>Validation Functions<a class="headerlink" href="#validation-functions" title="Link to this heading">¶</a></h3>
@@ -885,6 +1114,11 @@ following code:</p>
 <span class="n">model</span><span class="o">.</span><span class="n">on_validation_end</span><span class="p">()</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.eval" title="helios.model.model.Model.eval"><code class="xref py py-meth docutils literal notranslate"><span class="pre">eval()</span></code></a> is a no-op by default. You must override it
+and call <code class="docutils literal notranslate"><span class="pre">.eval()</span></code> on your network(s) manually.</p>
+</div>
 </section>
 <section id="testing-functions">
 <h3>Testing Functions<a class="headerlink" href="#testing-functions" title="Link to this heading">¶</a></h3>
@@ -899,6 +1133,37 @@ following code:</p>
 <span class="n">model</span><span class="o">.</span><span class="n">on_testing_end</span><span class="p">()</span>
 </pre></div>
 </div>
+</section>
+<section id="getting-the-number-of-training-steps-per-epoch">
+<h3>Getting the Number of Training Steps per Epoch<a class="headerlink" href="#getting-the-number-of-training-steps-per-epoch" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.get_train_steps_per_epoch" title="helios.model.model.Model.get_train_steps_per_epoch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_train_steps_per_epoch()</span></code></a> returns the number of
+training batches in a single epoch. This wraps around
+<a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule.get_train_steps_per_epoch" title="helios.data.datamodule.DataModule.get_train_steps_per_epoch"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_train_steps_per_epoch()</span></code></a>, which constructs
+the training dataloader internally and returns its length.</p>
+<p>This is particularly useful for initialising schedulers in
+<a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.setup" title="helios.model.model.Model.setup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">setup()</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">for_inference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">steps_per_epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_train_steps_per_epoch</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_scheduler</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># use steps_per_epoch to configure warmup or decay</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Calling this function constructs the dataloader each time it is called. Cache the
+result if you need it more than once.</p>
+</div>
+</section>
+<section id="batch-phase">
+<h3>Batch Phase<a class="headerlink" href="#batch-phase" title="Link to this heading">¶</a></h3>
+<p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.BatchPhase" title="helios.model.model.BatchPhase"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchPhase</span></code></a> is an enum with three values:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.BatchPhase.TRAIN" title="helios.model.model.BatchPhase.TRAIN"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TRAIN</span></code></a>,</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.BatchPhase.VALID" title="helios.model.model.BatchPhase.VALID"><code class="xref py py-attr docutils literal notranslate"><span class="pre">VALID</span></code></a>, and</p></li>
+<li><p><a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.BatchPhase.TEST" title="helios.model.model.BatchPhase.TEST"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TEST</span></code></a>.</p></li>
+</ul>
+<p>It is passed by the trainer to <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model.batch_to_device" title="helios.model.model.Model.batch_to_device"><code class="xref py py-meth docutils literal notranslate"><span class="pre">batch_to_device()</span></code></a> to
+indicate which phase the current batch belongs to. This can be useful if you require
+different implementations for each phase.</p>
 </section>
 </section>
 <section id="exception-handling">
@@ -941,21 +1206,26 @@ with plug-ins.</p>
 <li><p><a class="reference internal" href="autoapi/helios/core/distributed/index.html#helios.core.distributed.gather_into_tensor" title="helios.core.distributed.gather_into_tensor"><code class="xref py py-func docutils literal notranslate"><span class="pre">gather_into_tensor()</span></code></a>,</p></li>
 <li><p><a class="reference internal" href="autoapi/helios/core/distributed/index.html#helios.core.distributed.all_reduce_tensors" title="helios.core.distributed.all_reduce_tensors"><code class="xref py py-func docutils literal notranslate"><span class="pre">all_reduce_tensors()</span></code></a>.</p></li>
 </ul>
-<p>The trainer also provides another way to synchronize values through the multi-processing
-queue. When using distributed training that isn’t through <code class="docutils literal notranslate"><span class="pre">torchrun</span></code>, Helios uses
-<code class="docutils literal notranslate"><span class="pre">spawn</span></code> to create the processes for each GPU. This triggers a copy of the arguments
-passed in to the handler, which in this case are the trainer, model, and datamodule. This
-presents a problem in the event that we need to return values back to the main process
-once training is complete. To facilitate this task, the trainer will create a <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue">queue</a> that can
-be accessed through <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.queue" title="helios.trainer.Trainer.queue"><code class="xref py py-attr docutils literal notranslate"><span class="pre">queue</span></code></a>.</p>
+<p>The trainer also provides access to a <a class="reference external" href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Queue">multi-processing
+queue</a>
+that can be used to synchronize values. When using distributed training that isn’t through
+<code class="docutils literal notranslate"><span class="pre">torchrun</span></code>, Helios uses <code class="docutils literal notranslate"><span class="pre">spawn</span></code>, which will create a copy of all arguments passed to
+the handler, which are:</p>
+<ul class="simple">
+<li><p>The trainer itself,</p></li>
+<li><p>The model, and</p></li>
+<li><p>The datamodule.</p></li>
+</ul>
+<p>If you need to return values back to the main process, you can use the
+<a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.queue" title="helios.trainer.Trainer.queue"><code class="xref py py-attr docutils literal notranslate"><span class="pre">queue</span></code></a> from the trainer to accomplish this. The queue
+can then be used by either the <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, the
+<a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule" title="helios.data.datamodule.DataModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataModule</span></code></a>, or any plug-in through their reference to
+the trainer.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If training isn’t distributed or if it was started through <code class="docutils literal notranslate"><span class="pre">torchrun</span></code>, then the
 <a class="reference internal" href="autoapi/helios/trainer/index.html#helios.trainer.Trainer.queue" title="helios.trainer.Trainer.queue"><code class="xref py py-attr docutils literal notranslate"><span class="pre">queue</span></code></a> is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </div>
-<p>The queue can then be used by either the <a class="reference internal" href="autoapi/helios/model/model/index.html#helios.model.model.Model" title="helios.model.model.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></a>, the
-<a class="reference internal" href="autoapi/helios/data/datamodule/index.html#helios.data.datamodule.DataModule" title="helios.data.datamodule.DataModule"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataModule</span></code></a>, or any plug-in through their reference to
-the trainer.</p>
 </section>
 </section>
 
@@ -964,12 +1234,12 @@ the trainer.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="plugins.html">
+          <a class="next-page" href="logging.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Plug-Ins</div>
+                <div class="title">Logging</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -988,7 +1258,7 @@ the trainer.</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, Mauricio A. Rovira Galvez
+                Copyright &#169; 2026, Mauricio A. Rovira Galvez
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -1034,16 +1304,30 @@ the trainer.</p>
 <li><a class="reference internal" href="#stopping-on-a-condition">Stopping on a Condition</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#multi-phase-training">Multi-Phase Training</a><ul>
+<li><a class="reference internal" href="#advancing-phases">Advancing Phases</a></li>
+<li><a class="reference internal" href="#checkpoint-behaviour">Checkpoint Behaviour</a></li>
+<li><a class="reference internal" href="#interaction-with-get-train-steps-per-epoch">Interaction with <code class="docutils literal notranslate"><span class="pre">get_train_steps_per_epoch()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#gradient-accumulation">Gradient Accumulation</a><ul>
 <li><a class="reference internal" href="#training-by-epoch">Training by Epoch</a></li>
 <li><a class="reference internal" href="#training-by-iteration">Training by Iteration</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#automatic-mixed-precision">Automatic Mixed Precision</a></li>
+<li><a class="reference internal" href="#gradient-clipping">Gradient Clipping</a></li>
+<li><a class="reference internal" href="#linear-warmup-scheduler">Linear Warmup Scheduler</a></li>
 <li><a class="reference internal" href="#checkpoint-saving">Checkpoint Saving</a><ul>
+<li><a class="reference internal" href="#controlling-when-checkpoints-are-saved">Controlling When Checkpoints Are Saved</a></li>
 <li><a class="reference internal" href="#migrating-checkpoints">Migrating Checkpoints</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#logging">Logging</a><ul>
+<li><a class="reference internal" href="#tensorboard">Tensorboard</a></li>
+<li><a class="reference internal" href="#weights-biases">Weights &amp; Biases</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#cuda">CUDA</a><ul>
 <li><a class="reference internal" href="#device-selection">Device Selection</a></li>
 </ul>
@@ -1052,6 +1336,8 @@ the trainer.</p>
 <li><a class="reference internal" href="#training-functions">Training Functions</a></li>
 <li><a class="reference internal" href="#validation-functions">Validation Functions</a></li>
 <li><a class="reference internal" href="#testing-functions">Testing Functions</a></li>
+<li><a class="reference internal" href="#getting-the-number-of-training-steps-per-epoch">Getting the Number of Training Steps per Epoch</a></li>
+<li><a class="reference internal" href="#batch-phase">Batch Phase</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#exception-handling">Exception Handling</a></li>
@@ -1068,9 +1354,9 @@ the trainer.</p>
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/scripts/furo.js?v=46bd48cc"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     </body>
 </html>

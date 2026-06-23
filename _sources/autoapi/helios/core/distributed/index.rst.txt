@@ -57,9 +57,9 @@ Module Contents
    distributed training is handled through ``torchrun``. If distributed training is
    started manually, then both arguments **must** be provided.
 
-   :param backend: the backend to use. Defaults to "nccl".
-   :param rank: the (optional) rank of the current GPU.
-   :param world_size: the (optional) number of GPUs in the system.
+   :param backend: (optional) the backend to use.
+   :param rank: (optional) rank of the current GPU.
+   :param world_size: (optional) number of GPUs in the system.
 
    :raises ValueError: if either of ``rank`` or ``world_size`` are ``None`` (but not both).
 
@@ -151,6 +151,7 @@ Module Contents
 
    This number represents the total number of nodes that the run is being performed on.
    For example, the local world size for the following cases would be:
+
    * 2 nodes, 4 GPUs: local world size is 2.
    * 1 node, 2 GPUs: local world size is 1.
 
@@ -164,6 +165,7 @@ Module Contents
    This number represents the total number of nodes multiplied by the total number of
    processes per node. In general, this second number equals the number of GPUs but this
    need not be the case. For instance, here are the world sizes for the following setups:
+
    * 2 nodes, 4 GPUs: world size is 8.
    * 1 node, 2 GPUs: world size is 2.
 
@@ -201,7 +203,7 @@ Module Contents
    Print wrapper that only prints on the specified global rank.
 
    :param \*args: positional arguments to pass in to Python's print.
-   :param global_rank: the global rank the print should happen on. Defaults to 0.
+   :param global_rank: (optional) the global rank the print should happen on.
    :param \*\*kwargs: keyword arguments to pass in to Python's print.
 
 
@@ -210,7 +212,7 @@ Module Contents
    Print wrapper that only prints on the specified local rank.
 
    :param \*args: positional arguments to pass in to Python's print.
-   :param local_rank: the local rank the print should happen on. Defaults to 0.
+   :param local_rank: (optional) the local rank the print should happen on.
    :param \*\*kwargs: keyword arguments to pass in to Python's print.
 
 

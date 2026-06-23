@@ -19,7 +19,7 @@ Submodules
 
    /autoapi/helios/core/cuda/index
    /autoapi/helios/core/distributed/index
-   /autoapi/helios/core/logging/index
+   /autoapi/helios/core/loggers/index
    /autoapi/helios/core/rng/index
    /autoapi/helios/core/utils/index
 

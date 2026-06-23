@@ -19,7 +19,6 @@ Classes
 
    helios.plugins.plugin.UniquePluginOverrides
    helios.plugins.plugin.Plugin
-   helios.plugins.plugin.CUDAPlugin
 
 
 Functions
@@ -80,13 +79,11 @@ Module Contents
 
    By default, the registry contains the following plug-ins:
 
-   .. list-table:: Schedulers
+   .. list-table:: Plug-ins
        :header-rows: 1
 
        * - Plugin
          - Name
-       * - :py:class:`helios.plugins.plugin.CUDAPlugin`
-         - CUDAPlugin
        * - :py:class:`helios.plugins.optuna.OptunaPlugin`
          - OptunaPlugin
 
@@ -184,8 +181,7 @@ Module Contents
       Configure the trainer before training or testing.
 
       This function can be used to set certain properties of the trainer. For example,
-      it can be used to assign valid exceptions that the plug-in requires or to register
-      the plug-in itself in the trainer.
+      it can be used to assign valid exceptions that the plug-in requires.
 
       :param trainer: the trainer instance.
 
@@ -315,101 +311,6 @@ Module Contents
    .. py:method:: on_testing_end() -> None
 
       Perform any necessary actions when testing ends.
-
-
-
-.. py:class:: CUDAPlugin
-
-   Bases: :py:obj:`Plugin`
-
-
-   Plug-in to move elements of a training batch to a GPU.
-
-   This plug-in can be used to move the elements of a training batch to the currently
-   selected device automatically *prior* to the call to
-   :py:meth:`~helios.model.model.Model.train_step`. The device is automatically assigned
-   by the :py:class:`helios.trainer.Trainer` when training or testing starts.
-
-   In order to cover the largest possible number of structures, the plug-in can handle
-   the following containers:
-
-   #. Single tensors
-   #. Lists. Note that the elements of the list need not all be tensors. If any
-      tensors are present, they are automatically moved to the device.
-   #. Dictionaries. Similar to the list, not all the elements of the dictionary have
-      to be tensors. Any tensors are detected automatically.
-
-   .. warning::
-       The plug-in is **not** designed to work with nested structures. In other words, if
-       a list of dictionaries is passed in, the plug-in **will not** recognise any
-       tensors contained inside the dictionary. Similarly, if a dictionary contains
-       nested dictionaries (or any other container), the plug-in won't recognise them.
-
-   .. warning::
-       The use of this plug-in **requires** CUDA being enabled. If CUDA is not present,
-       an exception is raised.
-
-   .. note::
-       If you require custom handling for your specific data types, you can override the
-       behaviour of the plug-in by deriving from it. See the example below for details.
-
-       Example:
-           .. code-block:: python
-
-               import helios.plug-ins as hlp
-
-               class MyCUDAPlugin(hlp.CUDAPlugin):
-                   def _move_collection_to_device(self, batch: <your-type>):
-                       # Suppose our batch is a list:
-                       for i in range(len(batch)):
-                           batch[i] = batch[i].to(self.device)
-
-
-   .. py:attribute:: plugin_id
-      :value: 'cuda'
-
-
-
-   .. py:method:: setup() -> None
-
-      No-op setup function.
-
-
-
-   .. py:method:: configure_trainer(trainer: helios.trainer.Trainer) -> None
-
-      Register the plug-in instance into the trainer.
-
-      The plug-in will be registered under the name ``cuda``.
-
-      :param trainer: the trainer instance.
-
-
-
-   .. py:method:: process_training_batch(batch: Any, state: helios.trainer.TrainingState) -> Any
-
-      Move the training batch to the GPU.
-
-      :param batch: the batch returned by the training dataset.
-      :param state: the current training state.
-
-
-
-   .. py:method:: process_validation_batch(batch: Any, step: int) -> Any
-
-      Move the validation batch to the GPU.
-
-      :param batch: the batch returned by the training dataset.
-      :param state: the current training state.
-
-
-
-   .. py:method:: process_testing_batch(batch: Any, step: int) -> Any
-
-      Move the testing batch to the GPU.
-
-      :param batch: the batch returned by the training dataset.
-      :param state: the current training state.
 
 
 

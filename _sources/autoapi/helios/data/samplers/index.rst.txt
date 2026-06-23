@@ -113,8 +113,8 @@ Module Contents
    default ``RandomSampler`` from PyTorch.
 
    :param data_source: the dataset to sample from.
-   :param seed: the seed to use for setting up the random generator.
-   :param batch_size: the number of samples per batch.
+   :param seed: (optional) the seed to use for setting up the random generator.
+   :param batch_size: (optional) the number of samples per batch.
 
 
    .. py:method:: __len__() -> int
@@ -141,7 +141,7 @@ Module Contents
    default ``SequentialSampler`` from PyTorch.
 
    :param data_source: the dataset to sample from.
-   :param batch_size: the number of samples per batch.
+   :param batch_size: (optional) the number of samples per batch.
 
 
    .. py:method:: __len__() -> int
@@ -168,13 +168,13 @@ Module Contents
    default ``DistributedSampler`` from PyTorch.
 
    :param dataset: the dataset to sample from.
-   :param num_replicas: number of processes for distributed training.
+   :param num_replicas: (optional) number of processes for distributed training.
    :param rank: (optional) rank of the current process.
-   :param shuffle: if true, shuffle the indices. Defaults to true.
-   :param seed: random seed used to shuffle the sampler. Defaults to 0.
-   :param drop_last: if true, then drop the final sample to make it even across replicas.
-                     Defaults to false.
-   :param batch_size: the number of samples per batch. Defaults to 1.
+   :param shuffle: (optional) if true, shuffle the indices.
+   :param seed: (optional) random seed used to shuffle the sampler.
+   :param drop_last: (optional) if true, then drop the final sample to make it even across
+                     replicas.
+   :param batch_size: (optional) the number of samples per batch.
 
 
    .. py:property:: start_iter

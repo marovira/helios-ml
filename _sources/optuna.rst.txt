@@ -1,4 +1,4 @@
-Optuna Integartion
+Optuna Integration
 ##################
 
 Helios ships with first-class integration for `optuna

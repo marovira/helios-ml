@@ -21,6 +21,11 @@ Classes
    helios.metrics.metrics.CalculateSSIM
    helios.metrics.metrics.CalculateMAP
    helios.metrics.metrics.CalculateMAE
+   helios.metrics.metrics.CalculateAccuracy
+   helios.metrics.metrics.CalculatePrecision
+   helios.metrics.metrics.CalculateRecall
+   helios.metrics.metrics.CalculateF1
+   helios.metrics.metrics.CalculateRMSE
 
 
 Functions
@@ -76,8 +81,8 @@ Module Contents
 
    :param crop_border: Cropped pixels in each edge of an image. These pixels are not
                        involved in the calculation.
-   :param input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
-   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+   :param input_order: (optional) whether the input order is ``"HWC"`` or ``"CHW"``.
+   :param test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
 
    .. py:method:: forward(img: numpy.typing.NDArray | torch.Tensor, img2: numpy.typing.NDArray | torch.Tensor) -> float
@@ -106,8 +111,8 @@ Module Contents
 
    :param crop_border: Cropped pixels in each edge of an image. These pixels are not
                        involved in the calculation.
-   :param input_order: Whether the input order is "HWC" or "CHW". Defaults to "HWC".
-   :param test_y_channel: Test on Y channel of YCbCr. Defaults to false.
+   :param input_order: (optional) whether the input order is ``"HWC"`` or ``"CHW"``.
+   :param test_y_channel: (optional) if true, test on Y channel of YCbCr.
 
 
    .. py:method:: forward(img: numpy.typing.NDArray | torch.Tensor, img2: numpy.typing.NDArray | torch.Tensor) -> float
@@ -121,7 +126,7 @@ Module Contents
 
 
 
-.. py:class:: CalculateMAP(*args, **kwargs)
+.. py:class:: CalculateMAP(*args: Any, **kwargs: Any)
 
    Bases: :py:obj:`torch.nn.Module`
 
@@ -157,7 +162,7 @@ Module Contents
    :math:`[0, 255]`, then the scaling factor should be set to 255. If the arrays are
    already in the range :math:`[0, 1]`, then the scale can be omitted.
 
-   :param scale: scaling factor that was used on the input tensors. Defaults to 1.
+   :param scale: (optional) scaling factor that was used on the input tensors.
 
 
    .. py:method:: forward(pred: numpy.typing.NDArray | torch.Tensor, gt: numpy.typing.NDArray | torch.Tensor) -> float
@@ -168,6 +173,121 @@ Module Contents
       :param gt: ground-truth data.
 
       :returns: The MAE score
+
+
+
+.. py:class:: CalculateAccuracy(top_k: int = 1)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Calculate top-k accuracy.
+
+   Implementation follows:
+   `<https://en.wikipedia.org/wiki/Evaluation_measures_(information_retrieval)>`__.
+
+   :param top_k: (optional) number of top predictions to consider.
+
+
+   .. py:method:: forward(predictions: torch.Tensor, targets: torch.Tensor) -> float
+
+      Calculate top-k accuracy.
+
+      :param predictions: predicted logits or scores of shape :math:`(N, C)`.
+      :param targets: ground-truth class indices of shape :math:`(N,)`.
+
+      :returns: Top-k accuracy in range :math:`[0, 1]`.
+
+
+
+.. py:class:: CalculatePrecision(*args: Any, **kwargs: Any)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Calculate macro-averaged precision across classes.
+
+   Implementation follows:
+   `<https://en.wikipedia.org/wiki/Precision_and_recall>`__.
+
+
+   .. py:method:: forward(predictions: torch.Tensor, targets: torch.Tensor) -> float
+
+      Calculate macro-averaged precision.
+
+      :param predictions: predicted logits or scores of shape :math:`(N, C)`, or
+                          predicted class indices of shape :math:`(N,)`.
+      :param targets: ground-truth class indices of shape :math:`(N,)`.
+
+      :returns: Macro-averaged precision in range :math:`[0, 1]`.
+
+
+
+.. py:class:: CalculateRecall(*args: Any, **kwargs: Any)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Calculate macro-averaged recall across classes.
+
+   Implementation follows:
+   `<https://en.wikipedia.org/wiki/Precision_and_recall>`__.
+
+
+   .. py:method:: forward(predictions: torch.Tensor, targets: torch.Tensor) -> float
+
+      Calculate macro-averaged recall.
+
+      :param predictions: predicted logits or scores of shape :math:`(N, C)`, or
+                          predicted class indices of shape :math:`(N,)`.
+      :param targets: ground-truth class indices of shape :math:`(N,)`.
+
+      :returns: Macro-averaged recall in range :math:`[0, 1]`.
+
+
+
+.. py:class:: CalculateF1(*args: Any, **kwargs: Any)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Calculate macro-averaged F1 score.
+
+   Computed from the macro precision and recall. Implementation follows:
+   `<https://en.wikipedia.org/wiki/F-score>`__.
+
+
+   .. py:method:: forward(predictions: torch.Tensor, targets: torch.Tensor) -> float
+
+      Calculate macro-averaged F1 score.
+
+      :param predictions: predicted logits or scores of shape :math:`(N, C)`, or
+                          predicted class indices of shape :math:`(N,)`.
+      :param targets: ground-truth class indices of shape :math:`(N,)`.
+
+      :returns: Macro-averaged F1 score in range :math:`[0, 1]`.
+
+
+
+.. py:class:: CalculateRMSE(*args: Any, **kwargs: Any)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Calculate root mean squared error (RMSE).
+
+   Implementation follows:
+   `<https://en.wikipedia.org/wiki/Root_mean_square_deviation>`__.
+
+
+   .. py:method:: forward(predictions: torch.Tensor, targets: torch.Tensor) -> float
+
+      Calculate RMSE.
+
+      :param predictions: predicted values tensor.
+      :param targets: ground-truth values tensor.
+
+      :returns: RMSE score.
 
 
 

@@ -1,23 +1,24 @@
 <!doctype html>
 <html class="no-js" lang="en" data-content_root="../../../">
-  <head><meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
+        <link rel="prefetch" href="../../../_static/logo-transparent.png" as="image">
 
-    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+    <!-- Generated with Sphinx 9.1.0 and Furo 2025.12.19 -->
         <title>helios.model.model - Helios documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
     
 
 
 <style>
   body {
-    --color-code-background: #f8f8f8;
-  --color-code-foreground: black;
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
   
   }
   @media not print {
@@ -144,14 +145,10 @@
   </symbol>
 </svg>
 
-<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
-<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
-<label class="overlay sidebar-overlay" for="__navigation">
-  <div class="visually-hidden">Hide navigation sidebar</div>
-</label>
-<label class="overlay toc-overlay" for="__toc">
-  <div class="visually-hidden">Hide table of contents sidebar</div>
-</label>
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 <a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
@@ -161,8 +158,7 @@
   <header class="mobile-header">
     <div class="header-left">
       <label class="nav-overlay-icon" for="__navigation">
-        <div class="visually-hidden">Toggle site navigation sidebar</div>
-        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
       </label>
     </div>
     <div class="header-center">
@@ -170,8 +166,7 @@
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
-        <button class="theme-toggle">
-          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
           <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
           <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -179,8 +174,7 @@
         </button>
       </div>
       <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
-        <div class="visually-hidden">Toggle table of contents sidebar</div>
-        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
   </header>
@@ -188,7 +182,6 @@
     <div class="sidebar-container">
       
       <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
-  
   <div class="sidebar-logo-container">
     <img class="sidebar-logo" src="../../../_static/logo-transparent.png" alt="Logo"/>
   </div>
@@ -203,45 +196,54 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../why-helios.html">Why Helios?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../tutorial.html">Training a Classifier with Helios</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick-ref.html">Quick Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../plugins.html">Plug-Ins</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../optuna.html">Optuna Integartion</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/helios/index.html">helios</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of helios</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../optuna.html">Optuna Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../migration.html">Migration Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../autoapi/helios/index.html">helios</a><input aria-label="Toggle navigation of helios" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/helios/chkpt_migrator/index.html">helios.chkpt_migrator</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/core/index.html">helios.core</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of helios.core</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/core/index.html">helios.core</a><input aria-label="Toggle navigation of helios.core" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/cuda/index.html">helios.core.cuda</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/distributed/index.html">helios.core.distributed</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/logging/index.html">helios.core.logging</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/core/loggers/index.html">helios.core.loggers</a><input aria-label="Toggle navigation of helios.core.loggers" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/core/loggers/base/index.html">helios.core.loggers.base</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/core/loggers/root/index.html">helios.core.loggers.root</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/core/loggers/tensorboard/index.html">helios.core.loggers.tensorboard</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/core/loggers/wandb/index.html">helios.core.loggers.wandb</a></li>
+</ul>
+</li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/rng/index.html">helios.core.rng</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/core/utils/index.html">helios.core.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/data/index.html">helios.data</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of helios.data</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/data/index.html">helios.data</a><input aria-label="Toggle navigation of helios.data" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/data/datamodule/index.html">helios.data.datamodule</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/data/functional/index.html">helios.data.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/data/samplers/index.html">helios.data.samplers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/data/transforms/index.html">helios.data.transforms</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/losses/index.html">helios.losses</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of helios.losses</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/losses/index.html">helios.losses</a><input aria-label="Toggle navigation of helios.losses" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/losses/utils/index.html">helios.losses.utils</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/losses/weighted_loss/index.html">helios.losses.weighted_loss</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/metrics/index.html">helios.metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of helios.metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/metrics/index.html">helios.metrics</a><input aria-label="Toggle navigation of helios.metrics" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/metrics/functional/index.html">helios.metrics.functional</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/metrics/metrics/index.html">helios.metrics.metrics</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/model/index.html">helios.model</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle navigation of helios.model</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/model/index.html">helios.model</a><input aria-label="Toggle navigation of helios.model" class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/model/model/index.html">helios.model.model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/model/utils/index.html">helios.model.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/nn/index.html">helios.nn</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle navigation of helios.nn</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><div class="visually-hidden">Toggle navigation of helios.nn.layers</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/nn/index.html">helios.nn</a><input aria-label="Toggle navigation of helios.nn" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" role="switch" type="checkbox"/><label for="toctree-checkbox-9"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/nn/layers/index.html">helios.nn.layers</a><input aria-label="Toggle navigation of helios.nn.layers" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/nn/layers/pool/index.html">helios.nn.layers.pool</a></li>
 </ul>
 </li>
@@ -250,12 +252,12 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../../autoapi/helios/onnx/index.html">helios.onnx</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/optim/index.html">helios.optim</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" role="switch" type="checkbox"/><label for="toctree-checkbox-10"><div class="visually-hidden">Toggle navigation of helios.optim</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/optim/index.html">helios.optim</a><input aria-label="Toggle navigation of helios.optim" class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/optim/utils/index.html">helios.optim.utils</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/plugins/index.html">helios.plugins</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" role="switch" type="checkbox"/><label for="toctree-checkbox-11"><div class="visually-hidden">Toggle navigation of helios.plugins</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><div class="visually-hidden">Toggle navigation of helios.plugins.optuna</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/plugins/index.html">helios.plugins</a><input aria-label="Toggle navigation of helios.plugins" class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" role="switch" type="checkbox"/><label for="toctree-checkbox-12"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l4 has-children"><a class="reference internal" href="../../../autoapi/helios/plugins/optuna/index.html">helios.plugins.optuna</a><input aria-label="Toggle navigation of helios.plugins.optuna" class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/plugins/optuna/plugin/index.html">helios.plugins.optuna.plugin</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../../../autoapi/helios/plugins/optuna/utils/index.html">helios.plugins.optuna.utils</a></li>
 </ul>
@@ -263,7 +265,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/plugins/plugin/index.html">helios.plugins.plugin</a></li>
 </ul>
 </li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/scheduler/index.html">helios.scheduler</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" role="switch" type="checkbox"/><label for="toctree-checkbox-13"><div class="visually-hidden">Toggle navigation of helios.scheduler</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../autoapi/helios/scheduler/index.html">helios.scheduler</a><input aria-label="Toggle navigation of helios.scheduler" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" role="switch" type="checkbox"/><label for="toctree-checkbox-14"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/scheduler/schedulers/index.html">helios.scheduler.schedulers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../../autoapi/helios/scheduler/utils/index.html">helios.scheduler.utils</a></li>
 </ul>
@@ -293,8 +295,7 @@
         </a>
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
-            <button class="theme-toggle">
-              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
               <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
@@ -302,8 +303,7 @@
             </button>
           </div>
           <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
-            <div class="visually-hidden">Toggle table of contents sidebar</div>
-            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
@@ -311,6 +311,9 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">contextlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
@@ -320,6 +323,72 @@
 
 <span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">..trainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trainer</span><span class="p">,</span> <span class="n">TrainingState</span>
+
+
+<div class="viewcode-block" id="AMPContext">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.AMPContext">[docs]</a>
+<span class="nd">@dc</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AMPContext</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The AMP scaler state.</span>
+
+<span class="sd">    You can use this class to gain access to the AMP state of the model. For example, you</span>
+<span class="sd">    can do this:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        Class MyModel(helios.model.Model):</span>
+<span class="sd">            def train_step(self, batch: typing.Any, state: TrainingState) -&gt; None:</span>
+<span class="sd">                with self.autocast():</span>
+<span class="sd">                    loss = ...</span>
+
+<span class="sd">                # Now scale the loss</span>
+<span class="sd">                if self.amp_context is not None:</span>
+<span class="sd">                    scaler = self.amp_context.scaler</span>
+<span class="sd">                    scaler.scale(loss).backward()</span>
+<span class="sd">                    scaler.step(optimizer)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        scaler: the :py:class:`torch.amp.GradScaler` (if enabled).</span>
+<span class="sd">        dtype: the :py:class:`torch.dtype` of the scaler.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">scaler</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">GradScaler</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float16</span></div>
+
+
+
+<div class="viewcode-block" id="BatchPhase">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.BatchPhase">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BatchPhase</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Identifies which phase a batch originates from.&quot;&quot;&quot;</span>
+
+    <span class="n">TRAIN</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">VALID</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">TEST</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_InternalStateKeys</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">StrEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Identifies the keys used for internal state.&quot;&quot;&quot;</span>
+
+    <span class="n">AMP_SCALER</span> <span class="o">=</span> <span class="s2">&quot;amp_scaler&quot;</span>
+    <span class="n">USER</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>
+
+
+<div class="viewcode-block" id="get_model_safe_types_for_load">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.get_model_safe_types_for_load">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_model_safe_types_for_load</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span>
+    <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the list of safe types for loading needed by the model.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The list of types that need to be registered for safe loading.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">_InternalStateKeys</span><span class="p">]</span></div>
+
 
 
 <span class="c1"># Tell Ruff to ignore the empty-method-without-abstract-decorator check, since a lot of</span>
@@ -365,7 +434,7 @@
 <span class="sd">            import helios.model as hlm</span>
 <span class="sd">            import helios.trainer as hlt</span>
 <span class="sd">            class MyModel(hlm.Model):</span>
-<span class="sd">                def setup(self, fast_init: bool = False) -&gt; None:</span>
+<span class="sd">                def setup(self, for_inference: bool = False) -&gt; None:</span>
 <span class="sd">                    self._net = ...</span>
 <span class="sd">                    self._optimizer = ...</span>
 <span class="sd">                    self._criterion = ...</span>
@@ -390,7 +459,7 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the model.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">save_name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span><span class="p">:</span> <span class="n">Trainer</span> <span class="o">|</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span><span class="p">:</span> <span class="n">Trainer</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_distributed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_map_loc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -401,6 +470,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_running_losses</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_val_scores</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_test_scores</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_amp_context</span><span class="p">:</span> <span class="n">AMPContext</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">save_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -452,15 +523,43 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">trainer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_trainer</span> <span class="o">=</span> <span class="n">t</span>
 
+<div class="viewcode-block" id="Model.get_train_steps_per_epoch">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.get_train_steps_per_epoch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_train_steps_per_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of iterations per training epoch.</span>
+
+<span class="sd">        This is a convenience wrapper around</span>
+<span class="sd">        :py:meth:`~helios.data.datamodule.DataModule.get_train_steps_per_epoch`.</span>
+<span class="sd">        Please see that function for more details.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            This function only applies to the training split.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The number of iterations per training epoch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">datamodule</span><span class="o">.</span><span class="n">get_train_steps_per_epoch</span><span class="p">()</span></div>
+
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The metric table for the model.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{}</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">amp_context</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AMPContext</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The AMP state of the model.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amp_context</span>
+
+    <span class="nd">@amp_context</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">amp_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">AMPContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_amp_context</span> <span class="o">=</span> <span class="n">state</span>
+
 <div class="viewcode-block" id="Model.setup">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.setup">[docs]</a>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">for_inference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize all the state necessary for training.</span>
 
@@ -468,12 +567,121 @@
 <span class="sd">        that you require for training. This will be called before training starts and</span>
 <span class="sd">        after the distributed processes have been launched (if applicable).</span>
 
-<span class="sd">        The ``fast_init`` flag is used to indicate that the model should **not** load any</span>
-<span class="sd">        training state. This can be used for testing or for other purposes.</span>
+<span class="sd">        The ``for_inference`` flag signals that the model is being loaded for inference</span>
+<span class="sd">        rather than training. When ``True``, training-only state such as optimisers and</span>
+<span class="sd">        schedulers should not be loaded.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            fast_init: if True, only networks are loaded.</span>
+<span class="sd">            for_inference: if True, skip loading training-only state (optimisers,</span>
+<span class="sd">                schedulers, etc.) and load only the network weights.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Model.create_scaler">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.create_scaler">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_scaler</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the :py:class:`torch.amp.GradScaler` for AMP training.</span>
+
+<span class="sd">        This should be called in your :py:meth:`setup` function to enable Automatic Mixed</span>
+<span class="sd">        Precision.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            There is no need to pass in the &quot;device&quot; argument to</span>
+<span class="sd">            :py:class:`torch.amp.GradScaler`. This is already handled internally. If the</span>
+<span class="sd">            keyword is passed in, it will be removed.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            On CPU, only ``torch.bfloat16`` is supported. If any other type is passed in</span>
+<span class="sd">            when the device is CPU, then a :py:exc:`ValueError` will be raised.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dtype: the dtype to use for :py:func:`torch.amp.autocast`. Defaults to</span>
+<span class="sd">                ``torch.float16``.</span>
+<span class="sd">            kwargs: additional keyword arguments for :py:class:`torch.amp.GradScaler`.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: if the device is CPU and ``dtype`` is not ``torch.bfloat16``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;cpu&quot;</span> <span class="ow">and</span> <span class="n">dtype</span> <span class="o">!=</span> <span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;error: only torch.bfloat16 is supported for AMP on CPU&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;device&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;device&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span> <span class="o">=</span> <span class="n">AMPContext</span><span class="p">(</span>
+            <span class="n">scaler</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">GradScaler</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Model.autocast">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.autocast">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">autocast</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">AbstractContextManager</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a context manager for Automatic Mixed Precision.</span>
+
+<span class="sd">        Return :py:class:`torch.amp.autocast` configured with the AMP dtype if AMP is</span>
+<span class="sd">        enabled, otherwise returns a null context.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The context manager.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">amp</span><span class="o">.</span><span class="n">autocast</span><span class="p">(</span>
+                <span class="n">device_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span><span class="o">.</span><span class="n">dtype</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">contextlib</span><span class="o">.</span><span class="n">nullcontext</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Model.clip_gradients">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.clip_gradients">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clip_gradients</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">|</span> <span class="n">typing</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
+        <span class="n">optimizer</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
+        <span class="n">max_norm</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clip gradient norms, handling AMP unscaling automatically.</span>
+
+<span class="sd">        When AMP is active, gradients must be unscaled before clipping or the norm</span>
+<span class="sd">        is computed on scaled values, producing incorrect results.</span>
+
+<span class="sd">        This function performs the following steps:</span>
+<span class="sd">            #. Call :py:meth:`torch.amp.GradScaler.unscale_` if AMP is active.</span>
+<span class="sd">            #. Call :py:func:`torch.nn.utils.clip_grad_norm_`.</span>
+
+<span class="sd">        If AMP is not acitve, then :py:func:`torch.nn.utils.clip_grad_norm_` is called</span>
+<span class="sd">        directly.</span>
+
+<span class="sd">        Call this between the backward pass and the optimizer step:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            if self.amp_context.enabled:</span>
+<span class="sd">                scaler = self.amp_context.scaler</span>
+<span class="sd">                scaler.scale(loss).backward()</span>
+<span class="sd">                self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)</span>
+<span class="sd">                scaler.step(self._optimizer)</span>
+<span class="sd">                scaler.update()</span>
+<span class="sd">            else:</span>
+<span class="sd">                loss.backward()</span>
+<span class="sd">                self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)</span>
+<span class="sd">                self._optimizer.step()</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parameters: the parameters whose gradients will be clipped.</span>
+<span class="sd">            optimizer: the optimizer associated with the parameters. Only used when AMP</span>
+<span class="sd">                is enabled to perform gradient unscaling.</span>
+<span class="sd">            max_norm: the maximum norm of the gradients.</span>
+<span class="sd">            kwargs: additional keyword arguments forwarded to</span>
+<span class="sd">                :py:func:`torch.nn.utils.clip_grad_norm_`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span><span class="o">.</span><span class="n">scaler</span><span class="o">.</span><span class="n">unscale_</span><span class="p">(</span><span class="n">optimizer</span><span class="p">)</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">max_norm</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Model.load_for_testing">
@@ -492,21 +700,53 @@
 <div class="viewcode-block" id="Model.load_state_dict">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.load_state_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_state_dict</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">fast_init</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">for_inference</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the model state from the given state dictionary.</span>
 
-<span class="sd">        Use this function to restore any training state from a checkpoint. Note that any</span>
-<span class="sd">        weights will have been automatically mapped to the correct device.</span>
+<span class="sd">        Restores the state from the dictionary in the following order:</span>
+<span class="sd">            1. Internal state</span>
+<span class="sd">            1. User-state</span>
 
-<span class="sd">        The ``fast_init`` flag is used to indicate that the model should **not** load any</span>
-<span class="sd">        training state. This can be used for testing or for other purposes. As such, you</span>
-<span class="sd">        should only load the state of your network(s) and nothing else.</span>
+<span class="sd">        Note that any weights will have been automatically mapped to the correct device.</span>
+<span class="sd">        Also note that internal state is only loaded if ``for_inference`` is set to False.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            state_dict: the state dictionary to load from.</span>
-<span class="sd">            fast_init: if True, only networks need to be loaded.</span>
+<span class="sd">            for_inference: if True, skip loading training-only state (optimisers,</span>
+<span class="sd">                schedulers, etc.) and load only the network weights.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">for_inference</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">_InternalStateKeys</span><span class="o">.</span><span class="n">AMP_SCALER</span> <span class="ow">in</span> <span class="n">state_dict</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span><span class="o">.</span><span class="n">scaler</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span>
+                <span class="n">state_dict</span><span class="p">[</span><span class="n">_InternalStateKeys</span><span class="o">.</span><span class="n">AMP_SCALER</span><span class="p">]</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_user_state_dict</span><span class="p">(</span><span class="n">state_dict</span><span class="p">[</span><span class="n">_InternalStateKeys</span><span class="o">.</span><span class="n">USER</span><span class="p">],</span> <span class="n">for_inference</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Model.load_user_state_dict">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.load_user_state_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_user_state_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">for_inference</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load the user-defined model state from the given state dictionary.</span>
+
+<span class="sd">        Use this function to restore any training state from a checkpoint. Note that any</span>
+<span class="sd">        weights will have already been automatically mapped to the correct device.</span>
+
+<span class="sd">        The ``for_inference`` flag signals that the model is being loaded for inference</span>
+<span class="sd">        rather than training. When ``True``, you should load only the network weights and</span>
+<span class="sd">        skip any training-only state such as optimisers and schedulers.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state_dict: the state dictionary to load from.</span>
+<span class="sd">            for_inference: if True, skip loading training-only state and load only</span>
+<span class="sd">                network weights.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 
@@ -514,12 +754,33 @@
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.state_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the state dictionary of the model.</span>
+<span class="sd">        Get the full state dictionary of the model.</span>
 
-<span class="sd">        Use this function to save any state that you require for checkpoints.</span>
+<span class="sd">        The full dictionary is assembled like this:</span>
+<span class="sd">            #. Call :py:meth:`user_state_dict` to gather any user state.</span>
+<span class="sd">            #. Add the model internal state.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The state dictionary of the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">state</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">_InternalStateKeys</span><span class="o">.</span><span class="n">USER</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_state_dict</span><span class="p">(),</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">[</span><span class="n">_InternalStateKeys</span><span class="o">.</span><span class="n">AMP_SCALER</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">amp_context</span><span class="o">.</span><span class="n">scaler</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">state</span></div>
+
+
+<div class="viewcode-block" id="Model.user_state_dict">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.user_state_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">user_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the user-defined state dictionary of the model.</span>
+
+<span class="sd">        Use this  function to save any state that you require for checkpoints.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The user-defined state dictionary of the model.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{}</span></div>
 
@@ -602,7 +863,13 @@
 <div class="viewcode-block" id="Model.train">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.train">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Switch the model to training mode.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Switch the model to training mode.</span>
+
+<span class="sd">        This function is a no-op by default. You must override it to set your network(s)</span>
+<span class="sd">        in training mode by calling ``.train()``. The trainer calls this function at the</span>
+<span class="sd">        appropriate point in the training loop.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Model.on_training_start">
@@ -645,6 +912,43 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_loss_items</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="Model.batch_to_device">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.batch_to_device">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">batch_to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">phase</span><span class="p">:</span> <span class="n">BatchPhase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Move the batch to the model&#39;s device.</span>
+
+<span class="sd">        This function is called before the following functions are called:</span>
+<span class="sd">            * :py:meth:`train_step`,</span>
+<span class="sd">            * :py:meth:`valid_step`, and</span>
+<span class="sd">            * :py:meth:`test_step`.</span>
+
+<span class="sd">        Thereby ensuring that the batch has already been moved before the ``_step``</span>
+<span class="sd">        functions are called. By default, this function will recursively look through the</span>
+<span class="sd">        batch and move any tensors it can find to the model&#39;s device. Non-tensor elements</span>
+<span class="sd">        are left as is.</span>
+
+<span class="sd">        If you require special logic for handling your batches, you can override this</span>
+<span class="sd">        function and use the provided ``phase`` argument to differentiate between</span>
+<span class="sd">        training, validation, and testing batches as needed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            batch: the batch data returned from the dataloader.</span>
+<span class="sd">            phase: the phase the batch originates from.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The batch with all tensors moved to :py:attr:`device`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_to_device</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">batch</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="nb">list</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">converted</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_to_device</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span>
+            <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">batch</span><span class="p">)(</span><span class="n">converted</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">batch</span></div>
+
+
 <div class="viewcode-block" id="Model.train_step">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.train_step">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">TrainingState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -656,10 +960,6 @@
 <span class="sd">        network(s). If you use schedulers, they should be updated here as well. Note that</span>
 <span class="sd">        you do not have to clear the losses or gather them. This will be handled</span>
 <span class="sd">        automatically for you.</span>
-
-<span class="sd">        .. warning::</span>
-<span class="sd">            The contents of the batch **are not** moved to any devices prior to this call.</span>
-<span class="sd">            It is your responsibility to move them (if necessary).</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            batch: the batch data returned from the dataset.</span>
@@ -725,7 +1025,13 @@
 <div class="viewcode-block" id="Model.eval">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.eval">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Switch the model to evaluation mode.&quot;&quot;&quot;</span></div>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Switch the model to evaluation mode.</span>
+
+<span class="sd">        This function is a no-op by default. You must override it to set your network(s)</span>
+<span class="sd">        in evaluation mode by calling ``.eval()``. The trainer calls this function at the</span>
+<span class="sd">        appropriate point in the training loop.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="Model.on_validation_start">
@@ -847,6 +1153,58 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
+<div class="viewcode-block" id="Model.should_advance_dataset_phase">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.should_advance_dataset_phase">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_advance_dataset_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine whether the training dataset should advance to the next phase.</span>
+
+<span class="sd">        This is used for multi-phase training and is checked by the trainer depending on</span>
+<span class="sd">        the training mode:</span>
+
+<span class="sd">        * If training by epoch, then it is checked at the end of each epoch.</span>
+<span class="sd">        * If training by iteration, then it is checked at the end of every iteration.</span>
+
+<span class="sd">        If this function returns ``True``, then the trainer will call</span>
+<span class="sd">        :py:meth:`~helios.data.datamodule.DataModule.advance_train_phase` and rebuild the</span>
+<span class="sd">        training dataloader for the next phase.</span>
+
+<span class="sd">        .. important::</span>
+<span class="sd">            This function should only return ``True`` if and only if the dataset should be</span>
+<span class="sd">            advanced. It is the models&#39; responsibility to keep track of the phase changes.</span>
+<span class="sd">            For example:</span>
+
+<span class="sd">            .. code-block:: python</span>
+
+<span class="sd">                def should_advance_dataset_phase(self) -&gt; bool:</span>
+<span class="sd">                    if not self._phase_advanced and self._current_epoch &gt;= 10:</span>
+<span class="sd">                        self._phase_advanced = True</span>
+<span class="sd">                        return True</span>
+<span class="sd">                    return False</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the phase should change, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Model.should_save_checkpoint">
+<a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.should_save_checkpoint">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">should_save_checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine whether the current checkpoint should be saved or not.</span>
+
+<span class="sd">        This is used when only the checkpoint containing the best weights should be saved.</span>
+<span class="sd">        You may override this function to only save when the highest metric score is</span>
+<span class="sd">        attained, or some other custom logic. This is called every time the trainer has</span>
+<span class="sd">        been configured to save a checkpoint.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if a checkpoint should be saved, false otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
 <div class="viewcode-block" id="Model.on_testing_start">
 <a class="viewcode-back" href="../../../autoapi/helios/model/model/index.html#helios.model.model.Model.on_testing_start">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">on_testing_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -926,7 +1284,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2024, Mauricio A. Rovira Galvez
+                Copyright &#169; 2026, Mauricio A. Rovira Galvez
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -947,8 +1305,8 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     </body>
 </html>

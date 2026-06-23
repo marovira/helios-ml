@@ -1,0 +1,187 @@
+helios.core.loggers
+===================
+
+.. py:module:: helios.core.loggers
+
+.. autoapi-nested-parse::
+
+   Logging sub-package for Helios.
+
+   Holds all of the logger classes.
+
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/helios/core/loggers/base/index
+   /autoapi/helios/core/loggers/root/index
+   /autoapi/helios/core/loggers/tensorboard/index
+   /autoapi/helios/core/loggers/wandb/index
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.core.loggers.LoggerType
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.core.loggers.create_loggers
+   helios.core.loggers.setup_loggers
+   helios.core.loggers.restore_loggers
+   helios.core.loggers.get_logger
+   helios.core.loggers.get_logger_state_dicts
+   helios.core.loggers.flush_loggers
+   helios.core.loggers.close_loggers
+   helios.core.loggers.is_root_logger_active
+   helios.core.loggers.get_root_logger
+   helios.core.loggers.get_tensorboard_writer
+   helios.core.loggers.get_wandb_writer
+
+
+Package Contents
+----------------
+
+.. py:class:: LoggerType
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   Defines the types of loggers.
+
+
+   .. py:attribute:: ROOT
+      :value: 'root'
+
+
+
+   .. py:attribute:: TENSORBOARD
+      :value: 'tensorboard'
+
+
+
+   .. py:attribute:: WANDB
+      :value: 'wandb'
+
+
+
+.. py:function:: create_loggers(enable_tensorboard: bool = True, capture_warnings: bool = True, wandb_args: wandb.WandbArgs | None = None) -> None
+
+   Construct the logger instances and add them to the active table.
+
+   The :py:class:`RootLogger` is always created, while additional loggers are only crated
+   when their corresponding flag is ``True``. If a logger has already been created then
+   this function does nothing, making it safe to call multiple times.
+
+   In distributed training, this function should be called *after* the processes have
+   been created to ensure each process gets a copy of the loggers.
+
+   :param enable_tensorboard: enable the Tensorboard writer.  Defaults to
+                              ``True``.
+   :param capture_warnings: if ``True``, :py:func:`warnings.warn` output is
+                            captured by the root logger.  Defaults to ``True``.
+   :param wandb_writer: an already-constructed :py:class:`WandbWriter` instance to
+                        register, or ``None`` to skip W&B logging.  Defaults to ``None``.
+
+
+.. py:function:: setup_loggers(run_name: str, log_root: pathlib.Path | None = None) -> None
+
+   Call :py:meth:`~Logger.setup` on every active logger for a fresh run.
+
+   This function should be called when the loggers don't need to continue from a previous
+   run. If you need that, call :py:func:`restore_loggers` instead.
+
+   :param run_name: the name of the current run.
+   :param log_root: root directory under which each logger will create its own
+                    subfolder.  ``None`` disables on-disk output.
+
+
+.. py:function:: restore_loggers(run_name: str, log_root: pathlib.Path | None = None, loggers_state: dict[str, dict[str, Any]] | None = None) -> None
+
+   Restore active loggers from a previous run.
+
+   For each active logger whose name appears in the ``loggers_state`` dictionary:
+       1. Call :py:meth:`~Logger.load_state_dict` so that their previous state is loaded.
+       1. Call :py:meth:`~Logger.setup` so the loggers re-use the original paths.
+
+   If an active logger does not have an entry in the dictionary, then it is configured to
+   start fresh.
+
+   :param run_name: the name of the current run.
+   :param log_root: root directory under which each logger will look for its
+                    subfolder.  ``None`` disables on-disk output.
+   :param loggers_state: mapping of ``{logger_name: state_dict}`` as returned
+                         by a prior call to :py:func:`get_logger_state_dicts`.  ``None``
+                         is treated the same as an empty mapping.
+
+
+.. py:function:: get_logger(name: LoggerType) -> base.Logger
+
+   Return the active logger identified by *name*.
+
+   :param name: the :py:class:`LoggerType` value identifying the desired logger.
+
+   :returns: The requested :py:class:`Logger` instance.
+
+   :raises KeyError: if the requested logger has not been created.
+
+
+.. py:function:: get_logger_state_dicts() -> dict[str, dict[str, Any]]
+
+   Return the state dictionaries of all active loggers.
+
+   :returns: The dictionary containing the state of all active loggers.
+
+
+.. py:function:: flush_loggers() -> None
+
+   Flush all active loggers.
+
+
+.. py:function:: close_loggers() -> None
+
+   Close all active loggers and remove them from the active table.
+
+
+.. py:function:: is_root_logger_active() -> bool
+
+   Return ``True`` if the root logger has been created.
+
+
+.. py:function:: get_root_logger() -> root.RootLogger
+
+   Get the root logger instance.
+
+   :returns: The root logger.
+
+   :raises KeyError: if the root logger has not been created.
+
+
+.. py:function:: get_tensorboard_writer() -> tensorboard.TensorboardWriter | None
+
+   Return the Tensorboard writer.
+
+   If Tensorboard is disabled, this function will return ``None``.
+
+   :returns: The Tensorboard logger, or ``None`` if it doesn't exist.
+
+
+.. py:function:: get_wandb_writer() -> wandb.WandbWriter | None
+
+   Return the WandbWriter.
+
+   If Wandb is disabled, this function will return ``None``.
+
+   :returns: The Wandb logger, or ``None`` if it doesn't exist.
+
+

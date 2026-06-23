@@ -23,7 +23,7 @@ Module Contents
    Implements Exponential Moving Average (EMA).
 
    :param net: the bare network on which EMA will be performed.
-   :param decay: decay rate. Defaults to 0.9997.
+   :param decay: (optional) decay rate.
    :param device: (optional) the device to be used.
 
 

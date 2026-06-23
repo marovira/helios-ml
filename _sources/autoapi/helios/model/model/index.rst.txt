@@ -9,11 +9,85 @@ Classes
 
 .. autoapisummary::
 
+   helios.model.model.AMPContext
+   helios.model.model.BatchPhase
    helios.model.model.Model
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.model.model.get_model_safe_types_for_load
 
 
 Module Contents
 ---------------
+
+.. py:class:: AMPContext
+
+   The AMP scaler state.
+
+   You can use this class to gain access to the AMP state of the model. For example, you
+   can do this:
+
+   .. code-block:: python
+
+       Class MyModel(helios.model.Model):
+           def train_step(self, batch: typing.Any, state: TrainingState) -> None:
+               with self.autocast():
+                   loss = ...
+
+               # Now scale the loss
+               if self.amp_context is not None:
+                   scaler = self.amp_context.scaler
+                   scaler.scale(loss).backward()
+                   scaler.step(optimizer)
+
+   :param scaler: the :py:class:`torch.amp.GradScaler` (if enabled).
+   :param dtype: the :py:class:`torch.dtype` of the scaler.
+
+
+   .. py:attribute:: scaler
+      :type:  torch.amp.GradScaler
+
+
+   .. py:attribute:: dtype
+      :type:  torch.dtype
+      :value: Ellipsis
+
+
+
+.. py:class:: BatchPhase
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   Identifies which phase a batch originates from.
+
+
+   .. py:attribute:: TRAIN
+      :value: 0
+
+
+
+   .. py:attribute:: VALID
+      :value: 1
+
+
+
+   .. py:attribute:: TEST
+      :value: 2
+
+
+
+.. py:function:: get_model_safe_types_for_load() -> list[Callable | tuple[Callable, str]]
+
+   Return the list of safe types for loading needed by the model.
+
+   :returns: The list of types that need to be registered for safe loading.
+
 
 .. py:class:: Model(save_name: str)
 
@@ -55,7 +129,7 @@ Module Contents
        import helios.model as hlm
        import helios.trainer as hlt
        class MyModel(hlm.Model):
-           def setup(self, fast_init: bool = False) -> None:
+           def setup(self, for_inference: bool = False) -> None:
                self._net = ...
                self._optimizer = ...
                self._criterion = ...
@@ -118,6 +192,21 @@ Module Contents
       Reference to the trainer.
 
 
+   .. py:method:: get_train_steps_per_epoch() -> int
+
+      Return the number of iterations per training epoch.
+
+      This is a convenience wrapper around
+      :py:meth:`~helios.data.datamodule.DataModule.get_train_steps_per_epoch`.
+      Please see that function for more details.
+
+      .. note::
+          This function only applies to the training split.
+
+      :returns: The number of iterations per training epoch.
+
+
+
    .. py:property:: metrics
       :type: dict[str, Any]
 
@@ -125,7 +214,14 @@ Module Contents
       The metric table for the model.
 
 
-   .. py:method:: setup(fast_init: bool = False) -> None
+   .. py:property:: amp_context
+      :type: AMPContext | None
+
+
+      The AMP state of the model.
+
+
+   .. py:method:: setup(for_inference: bool = False) -> None
       :abstractmethod:
 
 
@@ -135,10 +231,85 @@ Module Contents
       that you require for training. This will be called before training starts and
       after the distributed processes have been launched (if applicable).
 
-      The ``fast_init`` flag is used to indicate that the model should **not** load any
-      training state. This can be used for testing or for other purposes.
+      The ``for_inference`` flag signals that the model is being loaded for inference
+      rather than training. When ``True``, training-only state such as optimisers and
+      schedulers should not be loaded.
 
-      :param fast_init: if True, only networks are loaded.
+      :param for_inference: if True, skip loading training-only state (optimisers,
+                            schedulers, etc.) and load only the network weights.
+
+
+
+   .. py:method:: create_scaler(dtype: torch.dtype = torch.float16, **kwargs: Any) -> None
+
+      Create the :py:class:`torch.amp.GradScaler` for AMP training.
+
+      This should be called in your :py:meth:`setup` function to enable Automatic Mixed
+      Precision.
+
+      .. note::
+          There is no need to pass in the "device" argument to
+          :py:class:`torch.amp.GradScaler`. This is already handled internally. If the
+          keyword is passed in, it will be removed.
+
+      .. note::
+          On CPU, only ``torch.bfloat16`` is supported. If any other type is passed in
+          when the device is CPU, then a :py:exc:`ValueError` will be raised.
+
+      :param dtype: the dtype to use for :py:func:`torch.amp.autocast`. Defaults to
+                    ``torch.float16``.
+      :param kwargs: additional keyword arguments for :py:class:`torch.amp.GradScaler`.
+
+      :raises ValueError: if the device is CPU and ``dtype`` is not ``torch.bfloat16``.
+
+
+
+   .. py:method:: autocast() -> contextlib.AbstractContextManager
+
+      Return a context manager for Automatic Mixed Precision.
+
+      Return :py:class:`torch.amp.autocast` configured with the AMP dtype if AMP is
+      enabled, otherwise returns a null context.
+
+      :returns: The context manager.
+
+
+
+   .. py:method:: clip_gradients(parameters: torch.Tensor | Iterable[torch.Tensor], optimizer: torch.optim.Optimizer, max_norm: float, **kwargs: Any) -> None
+
+      Clip gradient norms, handling AMP unscaling automatically.
+
+      When AMP is active, gradients must be unscaled before clipping or the norm
+      is computed on scaled values, producing incorrect results.
+
+      This function performs the following steps:
+          #. Call :py:meth:`torch.amp.GradScaler.unscale_` if AMP is active.
+          #. Call :py:func:`torch.nn.utils.clip_grad_norm_`.
+
+      If AMP is not acitve, then :py:func:`torch.nn.utils.clip_grad_norm_` is called
+      directly.
+
+      Call this between the backward pass and the optimizer step:
+
+      .. code-block:: python
+
+          if self.amp_context.enabled:
+              scaler = self.amp_context.scaler
+              scaler.scale(loss).backward()
+              self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
+              scaler.step(self._optimizer)
+              scaler.update()
+          else:
+              loss.backward()
+              self.clip_gradients(self._net.parameters(), self._optimizer, max_norm=1.0)
+              self._optimizer.step()
+
+      :param parameters: the parameters whose gradients will be clipped.
+      :param optimizer: the optimizer associated with the parameters. Only used when AMP
+                        is enabled to perform gradient unscaling.
+      :param max_norm: the maximum norm of the gradients.
+      :param kwargs: additional keyword arguments forwarded to
+                     :py:func:`torch.nn.utils.clip_grad_norm_`.
 
 
 
@@ -153,29 +324,59 @@ Module Contents
 
 
 
-   .. py:method:: load_state_dict(state_dict: dict[str, Any], fast_init: bool = False) -> None
+   .. py:method:: load_state_dict(state_dict: dict[str, Any], for_inference: bool = False) -> None
 
       Load the model state from the given state dictionary.
 
-      Use this function to restore any training state from a checkpoint. Note that any
-      weights will have been automatically mapped to the correct device.
+      Restores the state from the dictionary in the following order:
+          1. Internal state
+          1. User-state
 
-      The ``fast_init`` flag is used to indicate that the model should **not** load any
-      training state. This can be used for testing or for other purposes. As such, you
-      should only load the state of your network(s) and nothing else.
+      Note that any weights will have been automatically mapped to the correct device.
+      Also note that internal state is only loaded if ``for_inference`` is set to False.
 
       :param state_dict: the state dictionary to load from.
-      :param fast_init: if True, only networks need to be loaded.
+      :param for_inference: if True, skip loading training-only state (optimisers,
+                            schedulers, etc.) and load only the network weights.
+
+
+
+   .. py:method:: load_user_state_dict(state_dict: dict[str, Any], for_inference: bool) -> None
+
+      Load the user-defined model state from the given state dictionary.
+
+      Use this function to restore any training state from a checkpoint. Note that any
+      weights will have already been automatically mapped to the correct device.
+
+      The ``for_inference`` flag signals that the model is being loaded for inference
+      rather than training. When ``True``, you should load only the network weights and
+      skip any training-only state such as optimisers and schedulers.
+
+      :param state_dict: the state dictionary to load from.
+      :param for_inference: if True, skip loading training-only state and load only
+                            network weights.
 
 
 
    .. py:method:: state_dict() -> dict[str, Any]
 
-      Get the state dictionary of the model.
+      Get the full state dictionary of the model.
 
-      Use this function to save any state that you require for checkpoints.
+      The full dictionary is assembled like this:
+          #. Call :py:meth:`user_state_dict` to gather any user state.
+          #. Add the model internal state.
 
       :returns: The state dictionary of the model.
+
+
+
+   .. py:method:: user_state_dict() -> dict[str, Any]
+
+      Get the user-defined state dictionary of the model.
+
+      Use this  function to save any state that you require for checkpoints.
+
+      :returns: The user-defined state dictionary of the model.
 
 
 
@@ -238,6 +439,10 @@ Module Contents
 
       Switch the model to training mode.
 
+      This function is a no-op by default. You must override it to set your network(s)
+      in training mode by calling ``.train()``. The trainer calls this function at the
+      appropriate point in the training loop.
+
 
 
    .. py:method:: on_training_start() -> None
@@ -271,6 +476,31 @@ Module Contents
 
 
 
+   .. py:method:: batch_to_device(batch: Any, phase: BatchPhase) -> Any
+
+      Move the batch to the model's device.
+
+      This function is called before the following functions are called:
+          * :py:meth:`train_step`,
+          * :py:meth:`valid_step`, and
+          * :py:meth:`test_step`.
+
+      Thereby ensuring that the batch has already been moved before the ``_step``
+      functions are called. By default, this function will recursively look through the
+      batch and move any tensors it can find to the model's device. Non-tensor elements
+      are left as is.
+
+      If you require special logic for handling your batches, you can override this
+      function and use the provided ``phase`` argument to differentiate between
+      training, validation, and testing batches as needed.
+
+      :param batch: the batch data returned from the dataloader.
+      :param phase: the phase the batch originates from.
+
+      :returns: The batch with all tensors moved to :py:attr:`device`.
+
+
+
    .. py:method:: train_step(batch: Any, state: helios.trainer.TrainingState) -> None
 
       Perform a single training step.
@@ -280,10 +510,6 @@ Module Contents
       network(s). If you use schedulers, they should be updated here as well. Note that
       you do not have to clear the losses or gather them. This will be handled
       automatically for you.
-
-      .. warning::
-          The contents of the batch **are not** moved to any devices prior to this call.
-          It is your responsibility to move them (if necessary).
 
       :param batch: the batch data returned from the dataset.
       :param state: the current training state.
@@ -328,6 +554,10 @@ Module Contents
    .. py:method:: eval() -> None
 
       Switch the model to evaluation mode.
+
+      This function is a no-op by default. You must override it to set your network(s)
+      in evaluation mode by calling ``.eval()``. The trainer calls this function at the
+      appropriate point in the training loop.
 
 
 
@@ -422,6 +652,50 @@ Module Contents
         *after* :py:meth:`on_training_epoch_end`.
 
       :returns: False if training should continue, true otherwise.
+
+
+
+   .. py:method:: should_advance_dataset_phase() -> bool
+
+      Determine whether the training dataset should advance to the next phase.
+
+      This is used for multi-phase training and is checked by the trainer depending on
+      the training mode:
+
+      * If training by epoch, then it is checked at the end of each epoch.
+      * If training by iteration, then it is checked at the end of every iteration.
+
+      If this function returns ``True``, then the trainer will call
+      :py:meth:`~helios.data.datamodule.DataModule.advance_train_phase` and rebuild the
+      training dataloader for the next phase.
+
+      .. important::
+          This function should only return ``True`` if and only if the dataset should be
+          advanced. It is the models' responsibility to keep track of the phase changes.
+          For example:
+
+          .. code-block:: python
+
+              def should_advance_dataset_phase(self) -> bool:
+                  if not self._phase_advanced and self._current_epoch >= 10:
+                      self._phase_advanced = True
+                      return True
+                  return False
+
+      :returns: True if the phase should change, False otherwise.
+
+
+
+   .. py:method:: should_save_checkpoint() -> bool
+
+      Determine whether the current checkpoint should be saved or not.
+
+      This is used when only the checkpoint containing the best weights should be saved.
+      You may override this function to only save when the highest metric score is
+      attained, or some other custom logic. This is called every time the trainer has
+      been configured to save a checkpoint.
+
+      :returns: True if a checkpoint should be saved, false otherwise.
 
 
 

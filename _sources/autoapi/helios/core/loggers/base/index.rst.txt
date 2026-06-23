@@ -1,0 +1,104 @@
+helios.core.loggers.base
+========================
+
+.. py:module:: helios.core.loggers.base
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   helios.core.loggers.base.Logger
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   helios.core.loggers.base.get_default_log_name
+
+
+Module Contents
+---------------
+
+.. py:class:: Logger
+
+   Bases: :py:obj:`abc.ABC`
+
+
+   Base class for all Helios' loggers.
+
+   Each logger sub-class is in charge of the following:
+       * Their own storage (if applicable) under ``log_root``.
+       * Their own persistent settings so they can be resumed.
+
+
+   .. py:method:: setup(run_name: str, log_root: pathlib.Path | None, is_resume: bool) -> None
+      :abstractmethod:
+
+
+      Finish configuring the logger.
+
+      Called after the logger has been created. If the logger is being restored, then
+      this is called after :py:meth:`load_state_dict` is called. Each derived class
+      should configure its own folder under ``log_root`` and create it as needed.
+
+      :param run_name: the name of the current run.
+      :param log_root: root directory for all logs.  ``None`` means no on-disk
+                       output is desired.
+      :param is_resume: ``True`` when continuing a previous run.
+
+
+
+   .. py:method:: flush() -> None
+      :abstractmethod:
+
+
+      Flush any buffered data to disk.
+
+
+
+   .. py:method:: close() -> None
+      :abstractmethod:
+
+
+      Close the logger and release any held resources.
+
+
+
+   .. py:method:: state_dict() -> dict[str, Any]
+      :abstractmethod:
+
+
+      Return a dictionary containing the logger state.
+
+      :returns: A dictionary that can be passed to :py:meth:`load_state_dict` to
+                restore the logger to the same state.
+
+
+
+   .. py:method:: load_state_dict(state_dict: dict[str, Any]) -> None
+      :abstractmethod:
+
+
+      Restore the logger state from a previously saved dictionary.
+
+      Must be called *before* :py:meth:`setup` when resuming so that
+      ``setup`` can use the saved paths.
+
+      :param state_dict: the state dictionary returned by a prior call to
+                         :py:meth:`state_dict`.
+
+
+
+.. py:function:: get_default_log_name(run_name: str) -> str
+
+   Generate the default name used for loggers.
+
+   :param run_name: the name of the run.
+
+   :returns: The string with the default name.
+
+

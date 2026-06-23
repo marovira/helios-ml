@@ -143,67 +143,7 @@ Built-in Plug-ins
 Helios ships with the following built-in plug-ins, which will be discussed in the
 following sections:
 
-* :py:class:`~helios.plugins.plugin.CUDAPlugin`
 * :py:class:`~helios.plugins.optuna.OptunaPlugin`
-
-CUDA Plug-in
-------------
-
-The :py:class:`~helios.plugins.plugin.CUDAPlugin` is designed to move tensors from the
-batches returned by the datasets to the current CUDA device. The device is determined by
-the trainer when training starts with the same logic used to assign the device to the
-model. Specifically:
-
-* If training isn't distributed, the device is the GPU that is used for training.
-* If training is distributed, then the device corresponds to the GPU assigned to the given
-  process (i.e. the local rank).
-
-.. warning::
-   As its name implies, the :py:class:`~helios.plugins.plugin.CUDAPlugin` **requires**
-   CUDA to be enabled to function. If it isn't, an exception is raised.
-
-The plug-in is designed to handle the following types of batches:
-
-* :py:class:`torch.Tensor`,
-* Lists of :py:class:`torch.Tensor`,
-* Tuples of :py:class:`torch.Tensor`, and
-* Dictionaries whose values are :py:class:`torch.Tensor`.
-
-.. note::
-   The contents of the containers need not be homogeneous. In other words, it is perfectly
-   valid some entries in a dictionary to *not* be tensors. The plug-in will automatically
-   recognise tensors and move them to the device.
-
-.. warning::
-   The plug-in is **not** designed to handle nested containers. For instance, if your
-   batch is a dictionary containing arrays of tensors, then the plug-in will **not**
-   recognise the tensors contained in the arrays and move them.
-
-In the event that your batch requires special handling, you can easily derive the class
-and override the function that moves the tensors to the device. For example, suppose that
-our batch consists of a dictionary of arrays of tensors. Then we would do the following:
-
-.. code-block:: python
-
-   import helios.plugins as hlp
-   import torch
-
-   class MyCUDAPlugin(hlp.CUDAPlugin):
-       # Only need to override this function. Everything else will work automatically.
-       def _move_collection_to_device(
-           self, batch: dict[str, list[torch.Tensor]]
-       ) -> dict[str, list[torch.Tensor]]:
-           for key, value in batch.items():
-               for i in range(len(value)):
-                   value[i] = value[i].to(self.device)
-               batch[key] = value
-
-           return batch
-
-.. note::
-   The :py:class:`~helios.plugins.plugin.CUDAPlugin` is automatically registered in the
-   plug-in registry and can therefore be created through the
-   :py:func:`~helios.plugins.plugin.create_plugin` function.
 
 Optuna Plug-in
 --------------
