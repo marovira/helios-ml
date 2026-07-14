@@ -534,7 +534,9 @@ class Trainer:
             root_logger = loggers.get_root_logger()
             root_logger.exception("error: uncaught exception")
             loggers.close_loggers()
-        return True
+            return True
+
+        return False
 
     def _configure_env_for_distributed_error_handling(self) -> None:
         assert self._distributed_error_queue is not None

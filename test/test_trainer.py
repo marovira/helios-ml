@@ -307,6 +307,20 @@ class ExceptionModel(hlm.Model):
         raise self._exc_type("error")
 
 
+class PrepareDataErrorDataModule(data.DataModule):
+    def __init__(self, exc_type: type[Exception]) -> None:
+        super().__init__()
+        self._exc_type = exc_type
+
+    def setup(self) -> None:
+        params = data.DataLoaderParams(batch_size=1, num_workers=0)
+        self._add_train_phase(RandomDataset(), params)
+        self._add_test_dataset(RandomDataset(), params)
+
+    def prepare_data(self) -> None:
+        raise self._exc_type("error from prepare_data")
+
+
 class EmptyModel(hlm.Model):
     def __init__(self) -> None:
         super().__init__("empty")
@@ -1126,6 +1140,16 @@ class TestTrainer:
                 OverrideFlagsPlugin(plug_id="dup", training_batch=True)
             )
         assert "dup" not in trainer.plugins
+
+    def test_exception_before_logger_propagates(self) -> None:
+        for exc_type in [ValueError, RuntimeError, KeyError]:
+            trainer = hlt.Trainer(use_cpu=True)
+            with pytest.raises(exc_type):
+                trainer.fit(EmptyModel(), PrepareDataErrorDataModule(exc_type))
+
+            trainer = hlt.Trainer(use_cpu=True)
+            with pytest.raises(exc_type):
+                trainer.test(EmptyModel(), PrepareDataErrorDataModule(exc_type))
 
 
 class TestTrainerPhase:
