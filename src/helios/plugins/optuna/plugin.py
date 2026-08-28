@@ -229,7 +229,7 @@ class OptunaPlugin(hlp.Plugin):
         # Sync the value across all processes (if using distributed training).
         if self.is_distributed:
             t = dist.all_reduce_tensors(torch.tensor(should_stop).to(self.device))
-            should_stop = t.item()  # type: ignore[assignment]
+            should_stop = bool(t.item())
 
         if should_stop and self.rank == 0:
             self.trial.set_user_attr(_PRUNED_KEY, True)

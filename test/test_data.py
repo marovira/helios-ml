@@ -95,7 +95,7 @@ class TestTransforms:
     def check_type(self, x, exp_type: type) -> None:
         assert isinstance(x, exp_type)
 
-        if isinstance(exp_type, list | tuple):
+        if issubclass(exp_type, list | tuple):
             for elem in x:  # type: ignore[attr-defined]
                 assert isinstance(elem, torch.Tensor)
 

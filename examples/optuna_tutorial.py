@@ -117,11 +117,11 @@ class ClassifierModel(hlm.Model):
 
         # Assign the tunable parameters so we can log them as hyper-parameters when
         # training ends.
-        self._tune_params["l1"] = plugin.trial.suggest_categorical(
-            "l1", [2**i for i in range(9)]
+        self._tune_params["l1"] = typing.cast(
+            int, plugin.trial.suggest_categorical("l1", [2**i for i in range(9)])
         )
-        self._tune_params["l2"] = plugin.trial.suggest_categorical(
-            "l2", [2**i for i in range(9)]
+        self._tune_params["l2"] = typing.cast(
+            int, plugin.trial.suggest_categorical("l2", [2**i for i in range(9)])
         )
         self._tune_params["lr"] = plugin.trial.suggest_float("lr", 1e-4, 1e-1, log=True)
 

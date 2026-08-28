@@ -88,7 +88,10 @@ class ToImageTensor(nn.Module):
             The converted images.
         """
         out_tens: list[torch.Tensor] = []
-        for elem in core.convert_to_list(img):
+        ImageLike = npt.NDArray | PIL.Image.Image
+        for elem in core.convert_to_list(
+            typing.cast(ImageLike | list[ImageLike] | tuple[ImageLike, ...], img)
+        ):
             out_tens.append(self._transform(elem))
 
         if len(out_tens) == 1:

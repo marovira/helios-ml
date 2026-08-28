@@ -942,7 +942,7 @@ class TestTrainer:
                 assert not trainer.test(model, datamodule)
 
     def test_trainer_exceptions_in_setup(self) -> None:
-        exception_types = [ValueError, RuntimeError, KeyError]
+        exception_types: list[type[Exception]] = [ValueError, RuntimeError, KeyError]
         trainer = hlt.Trainer()
         trainer.train_exceptions = exception_types[:2]
         for exc_type in trainer.train_exceptions:
@@ -968,7 +968,7 @@ class TestTrainer:
         )
 
     def test_trainer_exceptions_post_setup(self) -> None:
-        exception_types = [ValueError, RuntimeError, KeyError]
+        exception_types: list[type[Exception]] = [ValueError, RuntimeError, KeyError]
         trainer = hlt.Trainer()
         trainer.train_exceptions = exception_types[:2]
         for exc_type in trainer.train_exceptions:

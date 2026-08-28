@@ -29,6 +29,7 @@ dependencies = [
     "torch>=2.5.0",
     "torchvision>=0.20.0",
     "tqdm>=4.66.0",
+    "zuban>=0.9.2",
 ]
 
 dynamic = ["version"]
@@ -97,6 +98,11 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 pkgname = ["py.typed"]
+
+[tool.zuban]
+mode = "default"
+untyped_strict_optional = true
+untyped_function_return_mode = "inferred"
 
 [tool.mypy]
 warn_unused_configs = true

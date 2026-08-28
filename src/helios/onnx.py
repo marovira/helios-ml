@@ -1,6 +1,8 @@
 import pathlib
+import typing
 
 import numpy as np
+import numpy.typing as npt
 import onnx
 import onnxruntime  # type: ignore[import-untyped]
 import packaging.version as pv
@@ -87,7 +89,10 @@ def export_to_onnx(
         try:
             for expected, actual in zip(outs_seq, ort_outs, strict=True):
                 np.testing.assert_allclose(
-                    to_numpy(expected), actual, rtol=rtol, atol=atol
+                    to_numpy(expected),
+                    typing.cast(npt.NDArray, actual),
+                    rtol=rtol,
+                    atol=atol,
                 )
         except AssertionError as e:
             if not save_on_validation_fail:

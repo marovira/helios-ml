@@ -1,4 +1,5 @@
 import pathlib
+import typing
 
 import torch
 
@@ -51,7 +52,7 @@ class TestChkptMigrator:
         assert new_state[_CheckpointKeys.LOGGERS] == {}
 
     def test_from_current_release(self, tmp_path: pathlib.Path) -> None:
-        state = {
+        state: dict[str, typing.Any] = {
             _CheckpointKeys.TRAINING_STATE: hlt.TrainingState(),
             _CheckpointKeys.MODEL: {_InternalStateKeys.USER: {}},
             _CheckpointKeys.RNG: {},
@@ -104,7 +105,7 @@ class TestChkptMigrator:
 
     def test_log_path_migration(self, tmp_path: pathlib.Path) -> None:
         log_file = tmp_path / "run.log"
-        state = {
+        state: dict[str, typing.Any] = {
             "training_state": hlt.TrainingState(),
             "model": {},
             "rng": {},
@@ -121,7 +122,7 @@ class TestChkptMigrator:
 
     def test_run_path_migration(self, tmp_path: pathlib.Path) -> None:
         run_path = tmp_path / "tensorboard" / "run_0"
-        state = {
+        state: dict[str, typing.Any] = {
             "training_state": hlt.TrainingState(),
             "model": {},
             "rng": {},
@@ -141,7 +142,7 @@ class TestChkptMigrator:
     def test_log_and_run_path_migration(self, tmp_path: pathlib.Path) -> None:
         log_file = tmp_path / "run.log"
         run_path = tmp_path / "tensorboard" / "run_0"
-        state = {
+        state: dict[str, typing.Any] = {
             "training_state": hlt.TrainingState(),
             "model": {},
             "rng": {},

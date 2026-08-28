@@ -50,9 +50,6 @@ class AdaptiveAvgPool2d(nn.Module):
 
     def _get_output_size(self, x: torch.Tensor) -> npt.NDArray:
         x_size = np.array(x.shape[-2:])
-        if self._output_size is None:
-            return x_size
-
         # At this point, the output size should just be a tuple
         assert isinstance(self._output_size, tuple)
         x_size[0] = (

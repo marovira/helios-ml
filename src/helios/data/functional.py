@@ -1,4 +1,5 @@
 import pathlib
+import typing
 
 import cv2
 import numpy as np
@@ -135,7 +136,7 @@ def tensor_to_numpy(
         )
 
     if as_uint8:
-        as_np = np.uint8((as_np * 255.0).round())  # type: ignore[assignment]
+        as_np = typing.cast(npt.NDArray, np.uint8((as_np * 255.0).round()))
     return as_np
 
 
