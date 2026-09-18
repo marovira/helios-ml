@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pathlib
 import typing
+import warnings
 
 from helios import core
 
@@ -46,6 +47,10 @@ def find_pretrained_file(root: pathlib.Path, name: str) -> pathlib.Path:
     """
     Find the pre-trained file in the given root.
 
+    .. deprecated:: 2.0.2
+        This function enforces a naming convention that is too rigid for general use
+        and will be removed in 3.0.0.
+
     The assumption is the following:
     Given a root ``/models/cifar`` and a name ``resnet-50``, then the name of the
     pre-trained file will contain ``cifar_resnet-50_`` as a prefix. If no file is
@@ -53,7 +58,7 @@ def find_pretrained_file(root: pathlib.Path, name: str) -> pathlib.Path:
 
     Args:
         root: the root where the file is stored.
-        net_name: the save name of the file.
+        name: the save name of the file.
 
     Returns:
         The path to the file.
@@ -61,6 +66,11 @@ def find_pretrained_file(root: pathlib.Path, name: str) -> pathlib.Path:
     Raises:
         RuntimeError: if no pre-trained network was found.
     """
+    warnings.warn(
+        "find_pretrained_file is deprecated and will be removed in 3.0.0",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     for path in root.glob("*.pth"):
         file_name = str(path.stem)
         base_name = f"{str(root.stem)}_{name}_"
